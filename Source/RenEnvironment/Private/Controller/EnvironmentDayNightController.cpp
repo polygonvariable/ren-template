@@ -12,6 +12,7 @@
 #include "RenGlobal/Public/Macro/LogMacro.h"
 #include "RenGlobal/Public/Library/MiscLibrary.h"
 #include "RenGameplay/Public/GameClockSubsystem.h"
+#include "RenGlobal/Public/Interface/GameClockInterface.h"
 
 #include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
@@ -21,7 +22,7 @@
 
 void UEnvironmentDayNightController::StartDayTimer()
 {
-	if (!IsValid(DayTimer) || !SunComponent.IsValid() || !MoonComponent.IsValid() || !IsValid(GameClockSubsystem))
+	if (!IsValid(DayTimer) || !SunComponent.IsValid() || !MoonComponent.IsValid() || !GameClockSubsystemInterface.IsValid())
 	{
 		LOG_ERROR(LogTemp, "DayTimer, GameClockSubsystem, SunComponent or MoonComponent is not valid");
 		return;
@@ -43,7 +44,8 @@ void UEnvironmentDayNightController::StopDayTimer()
 
 void UEnvironmentDayNightController::HandleDayTimerTick(float ElapsedTime)
 {
-	float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTime();
+	/*float NormalizedTime = GameClockSubsystem->GetSmoothNormalizedTime();*/
+	float NormalizedTime = GameClockSubsystemInterface->GetSmoothNormalizedTime();
 	float RealTime = NormalizedTime * 24.0f;
 
 	SunComponent->SetTime(RealTime);
@@ -83,7 +85,6 @@ void UEnvironmentDayNightController::InitializeController()
 		return;
 	}
 
-
 	if (!IsValid(DayTimer))
 	{
 		DayTimer = NewObject<UTimer>(this);
@@ -96,13 +97,46 @@ void UEnvironmentDayNightController::InitializeController()
 	}
 	else
 	{
-		LOG_ERROR(LogTemp, "DayTimer is already valid");
+		LOG_WARNING(LogTemp, "DayTimer is already valid");
+	}
+
+
+
+	if (IGameClockSubsystemInterface* ClockInterface = GetSubsystemInterface<UWorld, UWorldSubsystem, IGameClockSubsystemInterface>(GetWorld()))
+	{
+		GameClockSubsystemInterface = TWeakInterfacePtr<IGameClockSubsystemInterface>(ClockInterface);
+
+		GameClockSubsystemInterface->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
+		GameClockSubsystemInterface->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
+
+		if (GameClockSubsystemInterface->GetIsActive())
+		{
+			StartDayTimer();
+		}
 	}
 
 
 	if (UWorld* World = GetWorld())
 	{
-		GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>();
+
+
+		/*const TArray<UWorldSubsystem*>& Subsystems = World->GetSubsystemArray<UWorldSubsystem>();
+
+		for (UWorldSubsystem* Subsystem : Subsystems)
+		{
+			if (IsValid(Subsystem) && Subsystem->Implements<UGameClockSubsystemInterface>())
+			{
+				GameClockSubsystemInterface = Cast<IGameClockSubsystemInterface>(Subsystem);
+				if (GameClockSubsystemInterface.IsValid())
+				{
+					GameClockSubsystemInterface->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
+					GameClockSubsystemInterface->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
+					break;
+				}
+			}
+		}*/
+
+		/*GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>();
 		if (!IsValid(GameClockSubsystem))
 		{
 			LOG_ERROR(LogTemp, TEXT("GameClockSubsystem is not valid"));
@@ -114,7 +148,7 @@ void UEnvironmentDayNightController::InitializeController()
 		if (GameClockSubsystem->IsActive())
 		{
 			StartDayTimer();
-		}
+		}*/
 	}
 	else
 	{
@@ -125,15 +159,22 @@ void UEnvironmentDayNightController::InitializeController()
 
 void UEnvironmentDayNightController::CleanupController()
 {
-	if (IsValid(GameClockSubsystem))
+	if (GameClockSubsystemInterface.IsValid())
+	{
+		GameClockSubsystemInterface->GetOnGameClockStarted().RemoveAll(this);
+		GameClockSubsystemInterface->GetOnGameClockStopped().RemoveAll(this);
+		GameClockSubsystemInterface.Reset();
+	}
+
+	/*if (IsValid(GameClockSubsystem))
 	{
 		GameClockSubsystem->OnClockStarted.RemoveAll(this);
 		GameClockSubsystem->OnClockStopped.RemoveAll(this);
-	}
+	}*/
 
 	if (IsValid(DayTimer))
 	{
-		DayTimer->StopTimer();
+		DayTimer->StopTimer(true);
 		DayTimer->OnTick.RemoveAll(this);
 		DayTimer->MarkAsGarbage();
 	}

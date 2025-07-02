@@ -24,7 +24,7 @@ void UGameClockWidget::NativeConstruct()
 	GameClockSubsystem = GetSubsystem<UGameClockSubsystem>(GetWorld());
 	if (IsValid(TimeTextBlock) && IsValid(GameClockSubsystem))
 	{
-		GameClockSubsystem->OnTimeChanged.AddDynamic(this, &UGameClockWidget::HandleClockTick);
+		GameClockSubsystem->OnGameTimeChanged.AddDynamic(this, &UGameClockWidget::HandleClockTick);
 	}
 }
 
@@ -32,7 +32,7 @@ void UGameClockWidget::NativeDestruct()
 {
 	if (IsValid(GameClockSubsystem))
 	{
-		GameClockSubsystem->OnTimeChanged.RemoveAll(this);
+		GameClockSubsystem->OnGameTimeChanged.RemoveAll(this);
 	}
 
 	Super::NativeDestruct();

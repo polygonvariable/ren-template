@@ -63,6 +63,7 @@ bool UStorageSubsystem::DoesStorageExist(FName SlotId)
 
 UStorage* UStorageSubsystem::GetLocalStorage()
 {
+	// WHAT !?!
 	return IsValid(Storage) ? Storage : nullptr;
 }
 

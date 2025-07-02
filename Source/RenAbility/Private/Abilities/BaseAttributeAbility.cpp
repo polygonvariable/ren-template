@@ -176,5 +176,3 @@ void UAttributeLevelObserversComponent::OnAttributeChanged(const FOnAttributeCha
 		AbilityComponent->ApplyGameplayEffectToSelf(GameplayEffect, Data.NewValue, EffectContext);
 	}
 }
-
-

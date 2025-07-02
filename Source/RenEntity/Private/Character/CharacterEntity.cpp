@@ -62,6 +62,16 @@ ACharacterEntity::ACharacterEntity() : Super()
 	bUseControllerRotationYaw = false;
 }
 
+void ACharacterEntity::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	RAbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
+}
+
+
+UAbilitySystemComponent* ACharacterEntity::GetAbilitySystemComponent() const
+{
+	return RAbilitySystemComponent;
+}
 
 void ACharacterEntity::CameraPan(const FVector2D Axis)
 {

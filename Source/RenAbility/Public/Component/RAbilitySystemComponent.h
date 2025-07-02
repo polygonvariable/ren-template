@@ -38,7 +38,28 @@ public:
 	UFUNCTION()
 	float GetAggregatedNumericAttribute(const FGameplayAttribute& Attribute);
 
+
+
+	UFUNCTION(BlueprintCallable)
+	void BP_AddReplicatedGameplayTags(const FGameplayTagContainer& Tags);
+
+	UFUNCTION(BlueprintCallable)
+	void BP_RemoveReplicatedGameplayTags(const FGameplayTagContainer& Tags);
+
+
+
+	UFUNCTION()
+	UAnimInstance* GetActorAnimInstance();
+
+	UFUNCTION(BlueprintCallable)
+	float AnimPlayMontage(UAnimMontage* Montage, float PlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = false);
+
+	UFUNCTION(BlueprintCallable)
+	void AnimStopMontage(UAnimMontage* Montage, float BlendOutTime = 0.0f);
+
 protected:
+
+	TSet<TObjectPtr<UAnimMontage>> ActiveMontages;
 
 	TMap<FGameplayAttribute, TSet<TWeakObjectPtr<AActor>>> AggregatedActors;
 

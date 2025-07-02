@@ -41,6 +41,44 @@ TSubsystem* GetGameInstanceSubsystem(UWorld* WorldContext)
 	return GameInstance->GetSubsystem<TSubsystem>();
 }
 
+
+template <typename TContext, typename TSubsystem, typename TInterface>
+TSubsystem* GetSubsystemByInterface(TContext* Context)
+{
+	if (!IsValid(Context)) return nullptr;
+
+	const TArray<TSubsystem*>& Subsystems = Context->GetSubsystemArray<TSubsystem>();
+
+	for (TSubsystem* Subsystem : Subsystems)
+	{
+		if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(TInterface::UClassType::StaticClass()))
+		{
+			return Subsystem;
+		}
+	}
+
+	return nullptr;
+}
+
+template <typename TContext, typename TSubsystem, typename TInterface>
+TInterface* GetSubsystemInterface(TContext* Context)
+{
+	if (!IsValid(Context)) return nullptr;
+
+	if (TSubsystem* Subsystem = GetSubsystemByInterface<TContext, TSubsystem, TInterface>(Context))
+	{
+		if (TInterface* Interface = Cast<TInterface>(Subsystem))
+		{
+			return Interface;
+		}
+	}
+
+	return nullptr;
+}
+
+
+
+
 UCLASS()
 class RENGLOBAL_API UMiscLibrary : public UObject
 {

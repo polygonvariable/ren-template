@@ -3,6 +3,9 @@
 // Parent Header
 #include "Ability/RGameplayAbility.h"
 
+// Engine Headers
+#include "AbilitySystemComponent.h"
+
 // Project Headers
 
 

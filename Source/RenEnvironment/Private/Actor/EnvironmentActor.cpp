@@ -18,7 +18,7 @@
 AEnvironmentActor::AEnvironmentActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	Tags.Add(TEXT("Actor.Environment"));
+	Tags.Push(TEXT("Actor.Environment"));
 
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	if(IsValid(SceneComponent))

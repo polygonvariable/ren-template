@@ -221,7 +221,7 @@ void USeasonSubsystem::PostInitialize()
 
 		if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())
 		{
-			GameClockSubsystem->OnDayChanged.AddDynamic(this, &USeasonSubsystem::HandleDayChange);
+			GameClockSubsystem->OnGameDayChanged.AddDynamic(this, &USeasonSubsystem::HandleDayChange);
 		}
 	}
 }
@@ -236,7 +236,7 @@ void USeasonSubsystem::Deinitialize()
 {
 	if (IsValid(GameClockSubsystem))
 	{
-		GameClockSubsystem->OnDayChanged.RemoveAll(this);
+		GameClockSubsystem->OnGameDayChanged.RemoveAll(this);
 	}
 
 	GameClockAsset = nullptr;

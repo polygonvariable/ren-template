@@ -3,6 +3,9 @@
 // Parent Header
 #include "Component/RAbilitySystemComponent.h"
 
+// Engine Headers
+#include "GameFramework/Character.h"
+
 // Project Headers
 #include "RenGlobal/Public/Macro/LogMacro.h"
 
@@ -19,9 +22,9 @@ FGameplayAbilitySpecHandle URAbilitySystemComponent::GiveAbilityWithDynamicTags(
 	{
 		return FGameplayAbilitySpecHandle(); 
 	}
-
+	
 	AbilitySpec.DynamicAbilityTags.AppendTags(DynamicTags);
-
+	
 	return GiveAbility(AbilitySpec);
 }
 
@@ -45,7 +48,6 @@ void URAbilitySystemComponent::RemoveAggregatedActor(const FGameplayAttribute& A
 
 	OnAggregatedRefresh.Broadcast();
 	OnAggregatedActorRemoved.Broadcast(Actor);
-	
 }
 
 float URAbilitySystemComponent::GetAggregatedNumericAttribute(const FGameplayAttribute& Attribute)
@@ -64,5 +66,48 @@ float URAbilitySystemComponent::GetAggregatedNumericAttribute(const FGameplayAtt
 	}
 
 	return Value;
+}
+
+void URAbilitySystemComponent::BP_AddReplicatedGameplayTags(const FGameplayTagContainer& Tags)
+{
+	AddReplicatedLooseGameplayTags(Tags);
+}
+
+void URAbilitySystemComponent::BP_RemoveReplicatedGameplayTags(const FGameplayTagContainer& Tags)
+{
+	RemoveReplicatedLooseGameplayTags(Tags);
+}
+
+
+
+
+UAnimInstance* URAbilitySystemComponent::GetActorAnimInstance()
+{
+	if (!AbilityActorInfo.IsValid())
+	{
+		return nullptr;
+	}
+	return AbilityActorInfo->GetAnimInstance();
+}
+
+
+float URAbilitySystemComponent::AnimPlayMontage(UAnimMontage* Montage, float PlayRate, float StartTime, bool bStopAllMontages)
+{
+	if (UAnimInstance* AnimInstance = GetActorAnimInstance())
+	{
+		if (!AnimInstance->Montage_IsPlaying(Montage))
+		{
+			return AnimInstance->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, StartTime, bStopAllMontages);
+		}
+	}
+	return 0.0f;
+}
+
+void URAbilitySystemComponent::AnimStopMontage(UAnimMontage* Montage, float BlendOutTime)
+{
+	if (UAnimInstance* AnimInstance = GetActorAnimInstance())
+	{
+		AnimInstance->Montage_Stop(BlendOutTime, Montage);
+	}
 }
 

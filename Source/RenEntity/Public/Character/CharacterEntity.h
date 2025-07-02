@@ -5,6 +5,9 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
+#include "AbilitySystemInterface.h"
+#include "GameplayTagAssetInterface.h"
+
 // Project Headers
 #include "Entity.h"
 
@@ -37,7 +40,7 @@ class UGameplayEffect;
  *
  */
 UCLASS(Abstract, DisplayName = "Character Entity")
-class RENENTITY_API ACharacterEntity : public AEntity
+class RENENTITY_API ACharacterEntity : public AEntity, public IAbilitySystemInterface, public IGameplayTagAssetInterface
 {
 
 	GENERATED_BODY()
@@ -52,7 +55,6 @@ public:
 	//UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Default")
 	//bool bCanSprint = false;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<USpringArmComponent> SpringArm;
 
@@ -61,6 +63,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<URAbilitySystemComponent> RAbilitySystemComponent;
+
+
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
 

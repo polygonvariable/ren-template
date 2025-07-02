@@ -135,9 +135,17 @@ void UEnvironmentSubsystem::Deinitialize()
 
 	for(TPair<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>>& Kvp : EnvironmentStackedControllers)
 	{
+		Kvp.Value->CleanupController();
 		Kvp.Value->MarkAsGarbage();
 	}
 	EnvironmentStackedControllers.Empty();
+
+	for(UEnvironmentDiscreteController* Controller : EnvironmentDiscreateControllers)
+	{
+		Controller->CleanupController();
+		Controller->MarkAsGarbage();
+	}
+	EnvironmentDiscreateControllers.Empty();
 
 	Super::Deinitialize();
 }

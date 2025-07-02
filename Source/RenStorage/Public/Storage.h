@@ -16,11 +16,12 @@
 #include "Storage.generated.h"
 
 
+
 /**
  *
  */
 UCLASS()
-class RENSTORAGE_API UStorage : public URenSaveGame, public IInventoryStorageInterface, public IGameClockInterface
+class RENSTORAGE_API UStorage : public URenSaveGame, public IInventoryStorageInterface, public IGameClockStorageInterface
 {
 
 	GENERATED_BODY()
@@ -48,19 +49,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FClockRecord> ClockRecords;
 
-	UPROPERTY(BlueprintReadWrite)
-	FName Test;
 
-
-	virtual TMap<FName, FInventoryRecord>& GetInventory()
+	virtual TMap<FName, FInventoryRecord>& GetInventory() override
 	{
 		return InventoryRecords;
 	}
 
-	virtual TMap<FName, FClockRecord>& GetClockRecords()
-	{
-		return ClockRecords;
-	}
+
+	virtual const TMap<FName, FClockRecord>& GetClockRecords() const override { return ClockRecords; }
+	virtual TMap<FName, FClockRecord>& GetMutableClockRecords() override { return ClockRecords; }
 
 };
 

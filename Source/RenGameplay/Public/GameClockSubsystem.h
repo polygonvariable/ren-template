@@ -6,20 +6,22 @@
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
 
+// Project Headers
+#include "RenGlobal/Public/Interface/GameClockInterface.h"
+
 // Generated Headers
 #include "GameClockSubsystem.generated.h"
 
 // Forward Declarations
 class UTimer;
 class UGameClockAsset;
-class IGameClockInterface;
 
 
 /**
  *
  */
 UCLASS()
-class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem
+class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem, public IGameClockSubsystemInterface
 {
 
 	GENERATED_BODY()
@@ -56,8 +58,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetNormalizedTime() const;
 
-	UFUNCTION(BlueprintCallable)
-	float GetSmoothNormalizedTime() const;
+
+
 
 	UFUNCTION(BlueprintPure)
 	float GetSimulatedRealTime() const;
@@ -74,15 +76,14 @@ public:
 	bool IsNight() const;
 
 
-
-	UFUNCTION(BlueprintPure)
-	bool IsActive() const;
-
 protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
 
-	TWeakInterfacePtr<IGameClockInterface> GameClockInterface;
+	TWeakInterfacePtr<IGameClockStorageInterface> GameClockInterface;
+
+
+
 
 
 
@@ -128,37 +129,36 @@ protected:
 	UFUNCTION()
 	void HandleWorldBeginTearDown(UWorld* World);
 
+public:
+
+	float GetSmoothNormalizedTime() const override;
+	bool GetIsActive() const override;
+
+	virtual FOnGameDayChanged& GetOnGameDayChanged() override { return OnGameDayChanged; }
+	virtual FOnGameTimeChanged& GetOnGameTimeChanged() override { return OnGameTimeChanged; }
+	virtual FOnGameClockStarted& GetOnGameClockStarted() override { return OnGameClockStarted; }
+	virtual FOnGameClockStopped& GetOnGameClockStopped() override { return OnGameClockStopped; }
+
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
-
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
-
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
-
 	virtual void Deinitialize() override;
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDayChanged, int, Day);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnDayChanged OnDayChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnGameDayChanged OnGameDayChanged;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTimeChanged, float, Time);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnTimeChanged OnTimeChanged;
+	UPROPERTY(BlueprintAssignable)
+	FOnGameTimeChanged OnGameTimeChanged;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnGameClockStarted OnGameClockStarted;
 
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClockStarted);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnClockStarted OnClockStarted;
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClockStopped);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnClockStopped OnClockStopped;
+	UPROPERTY(BlueprintAssignable)
+	FOnGameClockStopped OnGameClockStopped;
 
 };
 

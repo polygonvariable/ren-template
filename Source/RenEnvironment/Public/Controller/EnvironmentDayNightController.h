@@ -16,7 +16,7 @@
 // Forward Declarations
 class UOrbitalLightComponent;
 class UGameClockSubsystem;
-
+class IGameClockSubsystemInterface;
 
 
 /**
@@ -53,6 +53,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
+
+	TWeakInterfacePtr<IGameClockSubsystemInterface> GameClockSubsystemInterface;
 
 
 	UFUNCTION()
