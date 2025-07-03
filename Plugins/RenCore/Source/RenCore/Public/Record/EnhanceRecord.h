@@ -16,7 +16,7 @@
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Enhance Record")
+USTRUCT(BlueprintType)
 struct FEnhanceRecord : public FRenRecord
 {
 

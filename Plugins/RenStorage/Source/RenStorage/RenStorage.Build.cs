@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenCore : ModuleRules
+public class RenStorage : ModuleRules
 {
-	public RenCore(ReadOnlyTargetRules Target) : base(Target)
+	public RenStorage(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -12,14 +12,14 @@ public class RenCore : ModuleRules
 			new string[] {
 				// ... add public include paths required here ...
 			}
-			);
+		);
 				
 		
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
 			}
-			);
+		);
 			
 		
 		PublicDependencyModuleNames.AddRange(
@@ -27,8 +27,9 @@ public class RenCore : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"RenCore",
 			}
-			);
+		);
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -40,10 +41,8 @@ public class RenCore : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "StructUtils",
-                "GameplayTags",
-                "DeveloperSettings",
             }
-			);
+		);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
@@ -51,7 +50,7 @@ public class RenCore : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
+		);
 	}
 }
 

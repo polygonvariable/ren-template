@@ -17,7 +17,7 @@
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Character Record")
+USTRUCT(BlueprintType)
 struct FCharacterRecord : public FRenRecord
 {
 

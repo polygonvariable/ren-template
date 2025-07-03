@@ -15,22 +15,7 @@
 			]
 		},
 		{
-			"Name": "RenAsset",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RenStorage",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RenDialogue",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RenGameplay",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

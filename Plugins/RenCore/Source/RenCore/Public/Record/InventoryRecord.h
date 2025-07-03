@@ -19,8 +19,8 @@
 /**
  * 
  */
-USTRUCT(BlueprintType, DisplayName = "Inventory Record")
-struct FInventoryRecord : public FRenRecord
+USTRUCT(BlueprintType)
+struct FInventoryRecord
 {
 
 	GENERATED_BODY()
@@ -70,7 +70,7 @@ class UInventoryRecordLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure, Category = "Inventory Record|Library")
+	UFUNCTION(BlueprintPure)
 	static bool IsValid(const FInventoryRecord& Record) { return Record.IsValid(); }
 
 };
@@ -80,7 +80,7 @@ public:
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Inventory Table")
+USTRUCT(BlueprintType)
 struct FInventoryTable : public FTableRowBase
 {
 
@@ -96,7 +96,7 @@ struct FInventoryTable : public FTableRowBase
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Inventory Filter Rule")
+USTRUCT(BlueprintType)
 struct FInventoryFilterRule
 {
 

@@ -30,5 +30,8 @@ public:
 
 	virtual TMap<FName, FInventoryRecord>& GetInventory() = 0;
 
+	virtual const TMap<FName, FInventoryRecord>& GetInventoryRecords() const = 0;
+	virtual TMap<FName, FInventoryRecord>& GetMutableInventoryRecords() = 0;
+
 };
 

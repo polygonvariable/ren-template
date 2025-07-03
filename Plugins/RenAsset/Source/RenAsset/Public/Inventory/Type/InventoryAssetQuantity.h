@@ -4,26 +4,26 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "InstancedStruct.h"
-
-// Module Headers
 
 // Generated Headers
-#include "RenRecord.generated.h"
+#include "InventoryAssetQuantity.generated.h"
+
+// Forward Declarations
+class UInventoryAsset;
 
 
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FRenRecord
+struct FInventoryAssetQuantity
 {
 
 	GENERATED_BODY()
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInstancedStruct CustomRecord;
+	TMap<UInventoryAsset*, int32> InventoryRecords;
+
+	TMap<FName, int> ConvertToIds();
 
 };
-

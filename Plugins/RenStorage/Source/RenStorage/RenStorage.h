@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRenCoreModule : public IModuleInterface
+class FRenStorageModule : public IModuleInterface
 {
 public:
 
