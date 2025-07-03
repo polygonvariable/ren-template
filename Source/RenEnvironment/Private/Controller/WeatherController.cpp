@@ -9,7 +9,7 @@
 
 // Project Header
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"

@@ -4,7 +4,7 @@
 #include "Controller/EnvironmentController.h"
 
 // Project Header
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Timer/Timer.h"
 
 

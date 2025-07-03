@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
-#include "RenGlobal/Public/Storage/StorageInterface.h"
+#include "RenCore/Public/Storage/StorageInterface.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"

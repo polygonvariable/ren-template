@@ -21,7 +21,6 @@ public class RenInteract : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
                 "RenCore",
                 "RenStorage",
                 "RenGameplay",

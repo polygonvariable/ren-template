@@ -4,8 +4,8 @@
 #include "Region/RegionActor.h"
 
 // Project Headers
-#include "RenGlobal/Public/Library/MiscLibrary.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Library/MiscLibrary.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"

@@ -63,14 +63,9 @@ void AInteractActor::OnInteracted_Implementation()
 {
 }
 
-void AInteractActor::EndStage_Implementation()
-{
-	EndInteract();
-}
-
 void AInteractActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Execute_EndStage(this);
+	EndInteract();
 	Super::EndPlay(EndPlayReason);
 }
 

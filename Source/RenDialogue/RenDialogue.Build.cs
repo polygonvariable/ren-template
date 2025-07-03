@@ -27,7 +27,6 @@ public class RenDialogue : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
                 "RenCore",
 				"RenAsset",
                 "RenStorage",

@@ -11,7 +11,7 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Tag/GameTags.h"
 
 #include "EffectSubsystem.h"

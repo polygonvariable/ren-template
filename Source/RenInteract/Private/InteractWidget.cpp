@@ -11,7 +11,7 @@
 // Project Headers
 #include "InteractActor.h"
 #include "InteractComponent.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 
 bool UInteractEntryWidget::InitializeEntry_Implementation(AActor* Actor)

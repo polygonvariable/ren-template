@@ -12,8 +12,8 @@
 #include "RenCore/Public/Priority/PrioritySystem.h"
 #include "RenCore/Public/Timer/Timer.h"
 
-#include "RenGlobal/Public/Library/MiscLibrary.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Library/MiscLibrary.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Controller/WeatherController.h"

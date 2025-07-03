@@ -6,10 +6,9 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/ValueMacro.h"
-#include "RenCore/Public/Asset/RenDataAsset.h"
-#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
-#include "RenGlobal/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Macro/ValueMacro.h"
+#include "RenCore/Public/Inventory/InventoryItemRarity.h"
+#include "RenCore/Public/Inventory/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryAsset.generated.h"
@@ -18,13 +17,26 @@
 /**
  *
  */
-UCLASS(DisplayName = "Inventory Asset")
-class RENASSET_API UInventoryAsset : public URenDataAsset
+UCLASS()
+class RENASSET_API UInventoryAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
 
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	FName AssetId;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	FText AssetName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	FText AssetDescription;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	TSoftObjectPtr<UTexture2D> AssetIcon;
+
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
 	TEnumAsByte<EInventoryItemType> ItemType;

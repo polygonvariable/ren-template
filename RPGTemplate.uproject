@@ -15,22 +15,9 @@
 			]
 		},
 		{
-			"Name": "RenGlobal",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RenWidget",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RenCore",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
 		},
 		{
 			"Name": "RenAsset",

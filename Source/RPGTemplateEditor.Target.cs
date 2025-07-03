@@ -14,9 +14,9 @@ public class RPGTemplateEditorTarget : TargetRules
         ExtraModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
+                //"RenGlobal",
                 "RenWidget",
-                "RenCore",
+                //"RenCore",
                 "RenAsset",
                 "RenStorage",
                 "RenDialogue",

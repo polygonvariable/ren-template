@@ -27,7 +27,6 @@ public class RenAbility : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
                 "RenCore",
 				"RenAsset",
                 "RenStorage",

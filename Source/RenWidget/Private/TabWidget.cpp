@@ -9,7 +9,7 @@
 #include "Components/PanelWidget.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 
 void UTabControl::SetSelected_Implementation(bool bIsSelected)

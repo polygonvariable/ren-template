@@ -10,7 +10,7 @@
 
 // Project Header
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "Profile/EnvironmentProfile.h"
 #include "Controller/EnvironmentController.h"

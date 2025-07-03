@@ -7,10 +7,10 @@
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
-#include "RenGlobal/Public/Enhance/EnhanceLibrary.h"
-#include "RenGlobal/Public/Record/InventoryRecord.h"
-#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Library/EnhanceLibrary.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Macro/GameInstanceMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 
 bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName EnhanceableRecordId, const FName EnhanceRecordId)

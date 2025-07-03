@@ -11,8 +11,8 @@
 #include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/GameInstanceMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 // Module Headers
 #include "InventorySubsystem.h"

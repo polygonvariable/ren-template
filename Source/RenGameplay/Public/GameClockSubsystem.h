@@ -7,7 +7,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenGlobal/Public/Interface/GameClockInterface.h"
+#include "RenCore/Public/Interface/GameClockInterface.h"
 
 // Generated Headers
 #include "GameClockSubsystem.generated.h"
@@ -82,51 +82,25 @@ protected:
 
 	TWeakInterfacePtr<IGameClockStorageInterface> GameClockInterface;
 
-
-
-
-
-
 	UPROPERTY()
 	TObjectPtr<UGameClockAsset> ClockAsset;
 	
 	UPROPERTY()
 	TObjectPtr<UTimer> ClockTimer;
 
-	// UPROPERTY()
-	// TWeakObjectPtr<UStorage> Storage;
 
-	UPROPERTY()
 	int CurrentDay = 1; // Clamped from 1 and TotalDaysInAYear
-
-	UPROPERTY()
 	float CurrentTime = 0.0f; // Clamped from 0 and TotalSecondsInADay
-
-	UPROPERTY()
 	float LastTickAt = 0.0f;
 
 
-
-	UFUNCTION()
 	void CreateClock();
-
-	UFUNCTION()
 	void CleanupClock();
 
-
-
-	UFUNCTION()
 	void LoadWorldTime();
-
-	UFUNCTION()
 	void SaveWorldTime();
 
-
-
-	UFUNCTION()
 	void HandleClockTick(float ElapsedTime);
-
-	UFUNCTION()
 	void HandleWorldBeginTearDown(UWorld* World);
 
 public:

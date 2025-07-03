@@ -8,9 +8,9 @@
 
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 
-#include "RenGlobal/Public/Inventory/InventoryItemType.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenGlobal/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
 
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
@@ -21,7 +21,7 @@ bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Q
 {
 	if (!Storage || !InventoryAsset || Quantity <= 0)
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage, Asset is null or Quantity less than or equal to 0");
+		LOG_ERROR(LogTemp, "Storage, Asset is null or Quantity less than or equal to 0");
 		return false;
 	}
 
@@ -31,7 +31,7 @@ bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Q
 
 	if (RecordId.IsNone())
 	{
-		LOG_ERROR(LogInventorySubsystem, "AssetId is not valid");
+		LOG_ERROR(LogTemp, "AssetId is not valid");
 		return false;
 	}
 	
@@ -42,7 +42,7 @@ bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Q
 		if (Record)
 		{
 			Record->ItemQuantity += Quantity;
-			LOG_INFO(LogInventorySubsystem, "Stackable record %s updated", *InventoryAsset->AssetName.ToString());
+			LOG_INFO(LogTemp, "Stackable record %s updated", *InventoryAsset->AssetName.ToString());
 		}
 		else {
 			FInventoryRecord NewRecord;
@@ -51,7 +51,7 @@ bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Q
 			NewRecord.ItemQuantity = Quantity;
 
 			Records.Add(RecordId, NewRecord);
-			LOG_INFO(LogInventorySubsystem, "Stackable record %s added", *InventoryAsset->AssetName.ToString());
+			LOG_INFO(LogTemp, "Stackable record %s added", *InventoryAsset->AssetName.ToString());
 		}
 	}
 	else {
@@ -61,7 +61,7 @@ bool UInventorySubsystem::AddRecord(UInventoryAsset* InventoryAsset, const int Q
 		NewRecord.ItemQuantity = Quantity;
 
 		Records.Add(FName(FGuid::NewGuid().ToString()), NewRecord);
-		LOG_INFO(LogInventorySubsystem, "Non stackable record added: %s", *InventoryAsset->AssetName.ToString());
+		LOG_INFO(LogTemp, "Non stackable record added: %s", *InventoryAsset->AssetName.ToString());
 	}
 
 	return true;
@@ -71,7 +71,7 @@ bool UInventorySubsystem::AddRecords(const TMap<UInventoryAsset*, int32>& Invent
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return false;
 	}
 
@@ -94,7 +94,7 @@ bool UInventorySubsystem::RemoveRecord(const FName InventoryRecordId, const int 
 {
 	if (!Storage || Quantity <= 0)
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage is null or Quantity less than or equal to 0");
+		LOG_ERROR(LogTemp, "Storage is null or Quantity less than or equal to 0");
 		return false;
 	}
 
@@ -103,19 +103,19 @@ bool UInventorySubsystem::RemoveRecord(const FName InventoryRecordId, const int 
 
 	if (!Record)
 	{
-		LOG_ERROR(LogInventorySubsystem, "Record not found: %s", *InventoryRecordId.ToString());
+		LOG_ERROR(LogTemp, "Record not found: %s", *InventoryRecordId.ToString());
 		return false;
 	}
 
 	if (Record->ItemQuantity > Quantity)
 	{
 		Record->ItemQuantity -= Quantity;
-		LOG_INFO(LogInventorySubsystem, "Record quantity reduced: %s", *InventoryRecordId.ToString());
+		LOG_INFO(LogTemp, "Record quantity reduced: %s", *InventoryRecordId.ToString());
 	}
 	else
 	{
 		Records.Remove(InventoryRecordId);
-		LOG_INFO(LogInventorySubsystem, "Record removed: %s", *InventoryRecordId.ToString());
+		LOG_INFO(LogTemp, "Record removed: %s", *InventoryRecordId.ToString());
 	}
 
 	return true;
@@ -125,7 +125,7 @@ bool UInventorySubsystem::RemoveRecords(const TMap<FName, int32>& InventoryRecor
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return false;
 	}
 
@@ -148,19 +148,19 @@ bool UInventorySubsystem::UpdateRecord(const FName InventoryRecordId, FInventory
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return false;
 	}
 
 	TMap<FName, FInventoryRecord>& Records = Storage->InventoryRecords;
 	if (!Records.Contains(InventoryRecordId))
 	{
-		LOG_ERROR(LogInventorySubsystem, "Record not found: %s", *InventoryRecordId.ToString());
+		LOG_ERROR(LogTemp, "Record not found: %s", *InventoryRecordId.ToString());
 		return false;
 	}
 
 	Records.Add(InventoryRecordId, InventoryRecord);
-	LOG_INFO(LogInventorySubsystem, "Record updated: %s", *InventoryRecordId.ToString());
+	LOG_INFO(LogTemp, "Record updated: %s", *InventoryRecordId.ToString());
 	return true;
 }
 
@@ -198,14 +198,14 @@ UInventoryAsset* UInventorySubsystem::GetRecordAsset(const FName InventoryAssetI
 {
 	if (!InventoryTable)
 	{
-		LOG_ERROR(LogInventorySubsystem, "InventoryTable is null");
+		LOG_ERROR(LogTemp, "InventoryTable is null");
 		return nullptr;
 	}
 
 	FInventoryTable* RecordTable = InventoryTable->FindRow<FInventoryTable>(InventoryAssetId, TEXT(""));
 	if (!RecordTable || !RecordTable->InventoryAsset)
 	{
-		LOG_ERROR(LogInventorySubsystem, "Record asset not found: %s", *InventoryAssetId.ToString());
+		LOG_ERROR(LogTemp, "Record asset not found: %s", *InventoryAssetId.ToString());
 		return nullptr;
 	}
 
@@ -236,12 +236,12 @@ void UInventorySubsystem::OverwriteRecords(const TMap<FName, FInventoryRecord>& 
 {
 	if (!IsValid(Storage))
 	{
-		LOG_ERROR(LogInventorySubsystem, "Storage is null");
+		LOG_ERROR(LogTemp, "Storage is null");
 		return;
 	}
 
 	Storage->InventoryRecords = InventoryRecords;
-	LOG_INFO(LogInventorySubsystem, "Records overwritten");
+	LOG_INFO(LogTemp, "Records overwritten");
 }
 
 void UInventorySubsystem::PostInitialize_Implementation()
@@ -254,24 +254,24 @@ void UInventorySubsystem::PostInitialize_Implementation()
 		Storage = StorageSubsystem->GetLocalStorage();
 		if (!IsValid(Storage))
 		{
-			LOG_ERROR(LogInventorySubsystem, "LocalStorage not found");
+			LOG_ERROR(LogTemp, "LocalStorage not found");
 			return;
 		}
 
 		const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
 		if (!IsValid(GameMetadata) || GameMetadata->InventoryTable.IsNull())
 		{
-			LOG_ERROR(LogInventorySubsystem, "GameMetadata or InventoryTable is null");
+			LOG_ERROR(LogTemp, "GameMetadata or InventoryTable is null");
 			return;
 		}
 
 		InventoryTable = Cast<UDataTable>(GameMetadata->InventoryTable.LoadSynchronous());
 		if (!IsValid(InventoryTable))
 		{
-			LOG_ERROR(LogInventorySubsystem, "InventoryTable cast failed");
+			LOG_ERROR(LogTemp, "InventoryTable cast failed");
 		}
 
-		LOG_INFO(LogInventorySubsystem, "Inventory Table & Local Storage loaded");
+		LOG_INFO(LogTemp, "Inventory Table & Local Storage loaded");
 	}
 }
 

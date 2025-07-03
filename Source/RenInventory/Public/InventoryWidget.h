@@ -8,9 +8,9 @@
 #include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
-#include "RenGlobal/Public/Record/InventoryRecord.h"
-#include "RenGlobal/Public/Inventory/InventoryItemRarity.h"
-#include "RenGlobal/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Inventory/InventoryItemRarity.h"
+#include "RenCore/Public/Inventory/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"

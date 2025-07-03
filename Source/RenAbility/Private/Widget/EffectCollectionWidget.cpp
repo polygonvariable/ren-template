@@ -13,7 +13,7 @@
 // Project Headers
 #include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 #include "RenAbility/Public/Widget/EffectCollectionEntryWidget.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 
 

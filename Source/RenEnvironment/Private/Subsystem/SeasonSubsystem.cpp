@@ -9,7 +9,7 @@
 
 // Project Header
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 #include "RenAsset/Public/Game/GameClockAsset.h"
 #include "RenGameplay/Public/GameClockSubsystem.h"
 

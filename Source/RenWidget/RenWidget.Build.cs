@@ -20,7 +20,7 @@ public class RenWidget : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
+                "RenCore",
             }
         );
 

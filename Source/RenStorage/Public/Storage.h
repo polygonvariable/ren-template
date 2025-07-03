@@ -4,13 +4,13 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "RenCore/Public/Common/RenSaveGame.h"
-#include "RenGlobal/Public/Record/ClockRecord.h"
-#include "RenGlobal/Public/Record/InventoryRecord.h"
-#include "RenGlobal/Public/Inventory/InventoryInterface.h"
-#include "RenGlobal/Public/Interface/GameClockInterface.h"
+#include "RenCore/Public/Record/ClockRecord.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Inventory/InventoryInterface.h"
+#include "RenCore/Public/Interface/GameClockInterface.h"
 
 // Generated Headers
 #include "Storage.generated.h"
@@ -21,7 +21,7 @@
  *
  */
 UCLASS()
-class RENSTORAGE_API UStorage : public URenSaveGame, public IInventoryStorageInterface, public IGameClockStorageInterface
+class RENSTORAGE_API UStorage : public USaveGame, public IInventoryStorageInterface, public IGameClockStorageInterface
 {
 
 	GENERATED_BODY()

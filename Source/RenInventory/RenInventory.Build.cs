@@ -21,7 +21,6 @@ public class RenInventory : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "RenGlobal",
                 "RenCore",
 				"RenAsset",
 				"RenStorage",

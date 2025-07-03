@@ -4,8 +4,8 @@
 #include "StampedEvent/StampedEventSubsystem.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/GameInstanceMacro.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/GameInstanceMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 #include "RenStorage/Public/Storage.h"
 #include "RenStorage/Public/StorageSubsystem.h"
 

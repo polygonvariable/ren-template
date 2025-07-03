@@ -7,7 +7,6 @@
 
 // Project Headers
 #include "InteractItem.h"
-#include "RenCore/Public/LifeCycle/LifeCycleInterface.h"
 
 // Generated Headers
 #include "InteractActor.generated.h"
@@ -20,7 +19,7 @@ class UInteractComponent;
  *
  */
 UCLASS(Abstract, DisplayName = "Interact Actor")
-class RENINTERACT_API AInteractActor : public AActor, public ILifeCycleInterface
+class RENINTERACT_API AInteractActor : public AActor
 {
 
 	GENERATED_BODY()
@@ -70,7 +69,6 @@ protected:
 
 protected:
 
-	virtual void EndStage_Implementation();
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:

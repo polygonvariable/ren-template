@@ -4,7 +4,7 @@
 #include "Asset/EnvironmentAsset.h"
 
 // Project Headers
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "Asset/WeatherAsset.h"
 #include "Asset/SeasonAsset.h"

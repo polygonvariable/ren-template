@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Component/RAbilitySystemComponent.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 
 

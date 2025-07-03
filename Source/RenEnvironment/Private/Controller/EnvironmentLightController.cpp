@@ -9,8 +9,8 @@
 
 // Project Headers
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
-#include "RenGlobal/Public/Library/MiscLibrary.h"
+#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Library/MiscLibrary.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"

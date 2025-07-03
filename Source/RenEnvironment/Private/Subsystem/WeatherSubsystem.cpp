@@ -8,7 +8,7 @@
 // Project Header
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Timer/Timer.h"
-#include "RenGlobal/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Macro/LogMacro.h"
 
 #include "EnvironmentWorldSettings.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
