@@ -25,26 +25,26 @@ class RENASSET_API UInventoryAsset : public UPrimaryDataAsset
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName AssetId;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText AssetName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText AssetDescription;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Asset Detail")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UTexture2D> AssetIcon;
 
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<EInventoryItemType> ItemType;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<EInventoryItemRarity> ItemRarity;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Inventory Item")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bIsStackable = false;
 
 };

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenCore : ModuleRules
+public class RenWidget : ModuleRules
 {
-	public RenCore(ReadOnlyTargetRules Target) : base(Target)
+	public RenWidget(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,6 +27,8 @@ public class RenCore : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"UMG",
+				"RenCore",
 			}
 			);
 			
@@ -38,10 +40,7 @@ public class RenCore : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				// ... add private dependencies that you statically link with here ...	
-				"GameplayTags",
-                "StructUtils",
-                "DeveloperSettings",
+				// ... add private dependencies that you statically link with here ...
             }
 			);
 		

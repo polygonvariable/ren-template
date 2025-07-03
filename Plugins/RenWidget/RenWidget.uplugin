@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "RenCore",
+	"FriendlyName": "RenWidget",
 	"Description": "",
 	"Category": "Other",
 	"CreatedBy": "polygonvariable",
@@ -16,15 +16,9 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenCore",
+			"Name": "RenWidget",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		}
-	],
-	"Plugins": [
-		{
-			"Name": "StructUtils",
-			"Enabled": true
 		}
 	]
 }

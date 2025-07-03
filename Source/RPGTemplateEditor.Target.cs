@@ -15,7 +15,7 @@ public class RPGTemplateEditorTarget : TargetRules
             new string[]
             {
                 //"RenGlobal",
-                "RenWidget",
+                //"RenWidget",
                 //"RenCore",
                 "RenAsset",
                 "RenStorage",
