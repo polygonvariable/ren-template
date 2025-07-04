@@ -18,7 +18,7 @@ class UGameClockSubsystem;
  *
  */
 UCLASS(Abstract)
-class RENGAMEPLAY_API UGameClockWidget : public UUserWidget
+class UGameClockWidget : public UUserWidget
 {
 
 	GENERATED_BODY()
@@ -36,7 +36,7 @@ protected:
 
 
 	UFUNCTION()
-	void HandleClockTick(float Time);
+	void HandleTimeChanged(float Time);
 
 protected:
 

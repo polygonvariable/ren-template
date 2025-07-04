@@ -27,25 +27,31 @@ class RENSTORAGE_API UStorageSubsystem : public UGameInstanceSubsystem, public I
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Runtime")
-	TObjectPtr<UStorage> Storage;
-
-
+	UFUNCTION(BlueprintCallable)
+	bool ReadStorage(FName SlotId = "Default", int UserIndex = 0);
 
 	UFUNCTION(BlueprintCallable)
-	void ReadStorage(FName SlotId = "Default");
-
-	UFUNCTION(BlueprintCallable)
-	void UpdateStorage(FName SlotId = "Default");
+	bool UpdateStorage(FName SlotId = "Default", int UserIndex = 0);
 
 	UFUNCTION(BlueprintCallable, Meta = (BlueprintPure))
-	bool DoesStorageExist(FName SlotId = "Default");
+	bool DoesStorageExist(FName SlotId = "Default", int UserIndex = 0);
+
 
 	UFUNCTION(BlueprintCallable)
 	UStorage* GetLocalStorage();
 
 
 	virtual USaveGame* IGetLocalStorage() override;
+
+protected:
+
+	UPROPERTY()
+	TObjectPtr<UStorage> CurrentStorage;
+
+	FName CurrentSlotId = NAME_None;
+	int CurrentUserIndex = 0;
+
+	bool CreateNewStorage(FName SlotId, int UserIndex);
 
 protected:
 

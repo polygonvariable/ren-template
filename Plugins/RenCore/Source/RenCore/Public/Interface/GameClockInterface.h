@@ -62,7 +62,7 @@ public:
 	virtual FOnGameClockStopped& GetOnGameClockStopped() = 0;
 
 	virtual float GetSmoothNormalizedTime() const = 0;
-	virtual bool GetIsActive() const = 0;
+	virtual bool IsClockActive() const = 0;
 
 };
 

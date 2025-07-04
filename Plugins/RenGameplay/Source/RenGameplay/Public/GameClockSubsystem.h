@@ -36,16 +36,16 @@ public:
 
 
 
+	UFUNCTION()
+	bool StartClock();
+
+	UFUNCTION()
+	bool StopClock();
+
+
+
 	UFUNCTION(BlueprintPure)
 	UGameClockAsset* GetClockAsset() const;
-
-
-
-	UFUNCTION()
-	void StartClock();
-
-	UFUNCTION()
-	void StopClock();
 
 
 
@@ -53,21 +53,20 @@ public:
 	float GetCurrentTime() const;
 
 	UFUNCTION(BlueprintPure)
-	FString GetFormattedTime(const FString& Format = TEXT("hh:mm:ss ap")) const;
-
-	UFUNCTION(BlueprintPure)
 	float GetNormalizedTime() const;
-
-
-
 
 	UFUNCTION(BlueprintPure)
 	float GetSimulatedRealTime() const;
+
+	UFUNCTION(BlueprintPure)
+	FString GetFormattedTime(const FString& Format = TEXT("hh:mm:ss ap")) const;
 
 
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentDay() const;
+
+
 
 	UFUNCTION(BlueprintPure)
 	bool IsDay() const;
@@ -75,18 +74,17 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsNight() const;
 
-
 protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
+	TWeakInterfacePtr<IGameClockStorageInterface> ClockStorageInterface;
 
-	TWeakInterfacePtr<IGameClockStorageInterface> GameClockInterface;
 
 	UPROPERTY()
 	TObjectPtr<UGameClockAsset> ClockAsset;
 	
 	UPROPERTY()
-	TObjectPtr<UTimer> ClockTimer;
+	FTimerHandle ClockHandle;
 
 
 	int CurrentDay = 1; // Clamped from 1 and TotalDaysInAYear
@@ -94,19 +92,16 @@ protected:
 	float LastTickAt = 0.0f;
 
 
-	void CreateClock();
-	void CleanupClock();
+	void LoadStoredTime();
+	void UpdateStoredTime();
 
-	void LoadWorldTime();
-	void SaveWorldTime();
-
-	void HandleClockTick(float ElapsedTime);
+	void HandleClockTick();
 	void HandleWorldBeginTearDown(UWorld* World);
 
 public:
 
 	float GetSmoothNormalizedTime() const override;
-	bool GetIsActive() const override;
+	bool IsClockActive() const override;
 
 	virtual FOnGameDayChanged& GetOnGameDayChanged() override { return OnGameDayChanged; }
 	virtual FOnGameTimeChanged& GetOnGameTimeChanged() override { return OnGameTimeChanged; }

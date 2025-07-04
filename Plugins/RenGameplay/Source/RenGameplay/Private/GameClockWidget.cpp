@@ -8,11 +8,10 @@
 
 // Project Headers
 #include "GameClockSubsystem.h"
-#include "RenCore/Public/Library/MiscLibrary.h"
 
 
 
-void UGameClockWidget::HandleClockTick(float Time)
+void UGameClockWidget::HandleTimeChanged(float Time)
 {
 	TimeTextBlock->SetText(FText::FromString(GameClockSubsystem->GetFormattedTime(Format)));
 }
@@ -21,10 +20,17 @@ void UGameClockWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	GameClockSubsystem = GetSubsystem<UGameClockSubsystem>(GetWorld());
-	if (IsValid(TimeTextBlock) && IsValid(GameClockSubsystem))
+	UWorld* World = GetWorld();
+	if (IsValid(World))
 	{
-		GameClockSubsystem->OnGameTimeChanged.AddDynamic(this, &UGameClockWidget::HandleClockTick);
+		UGameClockSubsystem* ClockSubsystem = World->GetSubsystem<UGameClockSubsystem>();
+		if (IsValid(ClockSubsystem) && IsValid(TimeTextBlock))
+		{
+			GameClockSubsystem = ClockSubsystem;
+			GameClockSubsystem->OnGameTimeChanged.AddDynamic(this, &UGameClockWidget::HandleTimeChanged);
+
+			HandleTimeChanged(0.0f);
+		}
 	}
 }
 
@@ -34,6 +40,7 @@ void UGameClockWidget::NativeDestruct()
 	{
 		GameClockSubsystem->OnGameTimeChanged.RemoveAll(this);
 	}
+	GameClockSubsystem = nullptr;
 
 	Super::NativeDestruct();
 }

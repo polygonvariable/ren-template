@@ -12,66 +12,103 @@
 
 
 
-void UStorageSubsystem::ReadStorage(FName SlotId)
+bool UStorageSubsystem::ReadStorage(FName SlotId, int UserIndex)
 {
+	if (IsValid(CurrentStorage) && CurrentSlotId != NAME_None)
+	{
+		UpdateStorage(CurrentSlotId, CurrentUserIndex);
+	}
+
+	const FString SlotName = SlotId.ToString();
+
 	if (DoesStorageExist(SlotId))
 	{
-		Storage = Cast<UStorage>(UGameplayStatics::LoadGameFromSlot(SlotId.ToString(), 0));
-		LOG_INFO(LogTemp, TEXT("Storage loaded from slot"));
+		if (USaveGame* LoadedSaveGame = UGameplayStatics::LoadGameFromSlot(SlotName, UserIndex))
+		{
+			CurrentStorage = Cast<UStorage>(LoadedSaveGame);
+			CurrentSlotId = SlotId;
+			CurrentUserIndex = UserIndex;
+
+			LOG_INFO(LogTemp, TEXT("Storage loaded from slot: %s"), *SlotName);
+			return true;
+		}
+
+		LOG_ERROR(LogTemp, TEXT("Failed to load storage from slot: %s"), *SlotName);
+		return false;
 	}
-	else
+
+	if (!CreateNewStorage(SlotId, UserIndex))
 	{
-		USaveGame* NewStorage = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
-		if (!IsValid(NewStorage))
-		{
-			LOG_ERROR(LogTemp, TEXT("Failed to create save game object"));
-			return;
-		}
-
-		if (!UGameplayStatics::SaveGameToSlot(NewStorage, SlotId.ToString(), 0))
-		{
-			LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot"));
-			return;
-		}
-		Storage = Cast<UStorage>(NewStorage);
-
-		LOG_INFO(LogTemp, TEXT("Storage created and saved to slot"));
+		LOG_ERROR(LogTemp, TEXT("Failed to create new storage for slot: %s"), *SlotName);
+		return false;
 	}
+
+	CurrentSlotId = SlotId;
+	CurrentUserIndex = UserIndex;
+
+	return true;
 }
 
-void UStorageSubsystem::UpdateStorage(FName SlotId)
+bool UStorageSubsystem::UpdateStorage(FName SlotId, int UserIndex)
 {
-	if (!IsValid(Storage))
+	if (!IsValid(CurrentStorage))
 	{
 		LOG_ERROR(LogTemp, TEXT("Storage is not valid"));
-		return;
+		return false;
 	}
 
-	if (!UGameplayStatics::SaveGameToSlot(Storage, SlotId.ToString(), 0))
+	const FString SlotName = SlotId.ToString();
+
+	if (!UGameplayStatics::SaveGameToSlot(CurrentStorage, SlotName, UserIndex))
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot"));
-		return;
+		LOG_ERROR(LogTemp, TEXT("Failed to save storage to slot: %s"), *SlotName);
+		return false;
 	}
 
-	LOG_INFO(LogTemp, TEXT("Storage updated and saved to slot"));
+	LOG_INFO(LogTemp, TEXT("Storage updated and saved to slot: %s"), *SlotName);
+	return true;
 }
 
-bool UStorageSubsystem::DoesStorageExist(FName SlotId)
+bool UStorageSubsystem::DoesStorageExist(FName SlotId, int UserIndex)
 {
-	return UGameplayStatics::DoesSaveGameExist(SlotId.ToString(), 0);
+	return UGameplayStatics::DoesSaveGameExist(SlotId.ToString(), UserIndex);
 }
+
+
 
 UStorage* UStorageSubsystem::GetLocalStorage()
 {
-	// WHAT !?!
-	return IsValid(Storage) ? Storage : nullptr;
+	return CurrentStorage;
+}
+USaveGame* UStorageSubsystem::IGetLocalStorage()
+{
+	return CurrentStorage;
 }
 
 
 
-USaveGame* UStorageSubsystem::IGetLocalStorage()
+
+bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
 {
-	return Storage;
+	USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());
+	if (!IsValid(NewSaveGame))
+	{
+		LOG_ERROR(LogTemp, TEXT("Failed to create save game object"));
+		return false;
+	}
+
+	const FString SlotName = SlotId.ToString();
+
+	if (!UGameplayStatics::SaveGameToSlot(NewSaveGame, SlotName, UserIndex))
+	{
+		LOG_ERROR(LogTemp, TEXT("Failed to save new storage to slot: %s"), *SlotName);
+		return false;
+	}
+
+	CurrentStorage = Cast<UStorage>(NewSaveGame);
+
+	LOG_INFO(LogTemp, TEXT("New storage created and saved to slot: %s"), *SlotName);
+	return true;
 }
 
 

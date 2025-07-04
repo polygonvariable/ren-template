@@ -109,7 +109,7 @@ void UEnvironmentDayNightController::InitializeController()
 		GameClockSubsystemInterface->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
 		GameClockSubsystemInterface->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
 
-		if (GameClockSubsystemInterface->GetIsActive())
+		if (GameClockSubsystemInterface->IsClockActive())
 		{
 			StartDayTimer();
 		}
