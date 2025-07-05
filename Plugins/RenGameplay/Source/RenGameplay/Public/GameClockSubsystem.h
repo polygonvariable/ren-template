@@ -84,7 +84,7 @@ protected:
 	TObjectPtr<UGameClockAsset> ClockAsset;
 	
 	UPROPERTY()
-	FTimerHandle ClockHandle;
+	FTimerHandle ClockTimerHandle;
 
 
 	int CurrentDay = 1; // Clamped from 1 and TotalDaysInAYear

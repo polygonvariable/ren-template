@@ -8,15 +8,14 @@
 
 // Project Headers
 #include "RenEnvironment/Public/Controller/EnvironmentController.h"
-#include "RenEnvironment/Public/Profile/EnvironmentProfile.h"
 
 // Generated Headers
 #include "EnvironmentDayNightController.generated.h"
 
 // Forward Declarations
 class UOrbitalLightComponent;
-class UGameClockSubsystem;
 class IGameClockSubsystemInterface;
+
 
 
 /**
@@ -30,32 +29,24 @@ class UEnvironmentDayNightController : public UEnvironmentDiscreteController
 
 public:
 
-	UPROPERTY()
 	FName ActorTag = TEXT("Actor.Environment");
-
-	UPROPERTY()
-	FName SunComponentName = TEXT("Environment.Sun");
-
-	UPROPERTY()
-	FName MoonComponentName = TEXT("Environment.Moon");
+	FName SunComponentTag = TEXT("Environment.Sun");
+	FName MoonComponentTag = TEXT("Environment.Moon");
 
 protected:
 
 	UPROPERTY()
-	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
-
-	UPROPERTY()
-	TObjectPtr<UTimer> DayTimer;
-
-	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UOrbitalLightComponent> SunComponent;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
+	TWeakInterfacePtr<IGameClockSubsystemInterface> ClockSubsystemInterface;
 
-	TWeakInterfacePtr<IGameClockSubsystemInterface> GameClockSubsystemInterface;
+	FTimerHandle DayTimerHandle;
 
+
+	bool FindComponents();
 
 	UFUNCTION()
 	void StartDayTimer();
@@ -64,7 +55,7 @@ protected:
 	void StopDayTimer();
 
 	UFUNCTION()
-	void HandleDayTimerTick(float ElapsedTime);
+	void HandleDayTimerTick();
 
 public:
 

@@ -19,20 +19,10 @@
 
 bool UGameClockSubsystem::StartClock()
 {
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	if (TimerManager.TimerExists(ClockHandle))
+	if (!TimerUtils::StartTimer(ClockTimerHandle, this, &UGameClockSubsystem::HandleClockTick, 1.0f))
 	{
-		if (!TimerManager.IsTimerPaused(ClockHandle))
-		{
-			LOG_WARNING(LogTemp, TEXT("Clock is already running"));
-			return false;
-		}
-
-		TimerManager.UnPauseTimer(ClockHandle);
-	}
-	else
-	{
-		TimerManager.SetTimer(ClockHandle, this, &UGameClockSubsystem::HandleClockTick, 1.0f, true);
+		LOG_ERROR(LogTemp, TEXT("Failed to create timer or timer is already running"));
+		return false;
 	}
 
 	OnGameClockStarted.Broadcast();
@@ -41,12 +31,9 @@ bool UGameClockSubsystem::StartClock()
 
 bool UGameClockSubsystem::StopClock()
 {
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	if (TimerManager.IsTimerActive(ClockHandle))
+	if (TimerUtils::PauseTimer(ClockTimerHandle, this))
 	{
-		TimerManager.PauseTimer(ClockHandle);
 		OnGameClockStopped.Broadcast();
-
 		return true;
 	}
 
@@ -136,7 +123,7 @@ float UGameClockSubsystem::GetSmoothNormalizedTime() const
 bool UGameClockSubsystem::IsClockActive() const
 {
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	return TimerManager.IsTimerActive(ClockHandle);
+	return TimerManager.IsTimerActive(ClockTimerHandle);
 }
 
 
@@ -272,7 +259,7 @@ void UGameClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 	if (IsValid(GameInstance))
 	{
-		IStorageSubsystemInterface* StorageInterface = GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageSubsystemInterface>(GameInstance);
+		IStorageSubsystemInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageSubsystemInterface>(GameInstance);
 		if (StorageInterface)
 		{
 			USaveGame* SaveGame = StorageInterface->IGetLocalStorage();
@@ -303,9 +290,7 @@ void UGameClockSubsystem::Deinitialize()
 {
 	FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
 
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	TimerManager.ClearAllTimersForObject(this);
-	ClockHandle.Invalidate();
+	TimerUtils::ClearTimer(ClockTimerHandle, this);
 
 	LOG_WARNING(LogTemp, TEXT("ClockSubsystem deinitialized"));
 	Super::Deinitialize();

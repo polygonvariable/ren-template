@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenWidget : ModuleRules
+public class RenEnvironment : ModuleRules
 {
-	public RenWidget(ReadOnlyTargetRules Target) : base(Target)
+	public RenEnvironment(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -28,8 +28,11 @@ public class RenWidget : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"UMG",
+                "StructUtils",
+                "SunPosition",
 				"RenCore",
-			}
+				"RenAsset",
+            }
 			);
 			
 		

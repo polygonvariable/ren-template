@@ -24,7 +24,7 @@ public class RPGTemplateEditorTarget : TargetRules
                 "RenAbility",
                 "RenInventory",
                 "RenEntity",
-                "RenEnvironment",
+                //"RenEnvironment",
                 "RenInteract",
             }
         );

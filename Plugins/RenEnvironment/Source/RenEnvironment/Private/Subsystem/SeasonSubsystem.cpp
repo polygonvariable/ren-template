@@ -8,14 +8,13 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
+#include "RenAsset/Public/Game/GameClockAsset.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenAsset/Public/Game/GameClockAsset.h"
-#include "RenGameplay/Public/GameClockSubsystem.h"
 
-#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/SeasonAsset.h"
+#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
 
 
 
@@ -219,10 +218,10 @@ void USeasonSubsystem::PostInitialize()
 			return;
 		}
 
-		if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())
+		/*if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())
 		{
 			GameClockSubsystem->OnGameDayChanged.AddDynamic(this, &USeasonSubsystem::HandleDayChange);
-		}
+		}*/
 	}
 }
 
@@ -234,13 +233,13 @@ void USeasonSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 void USeasonSubsystem::Deinitialize()
 {
-	if (IsValid(GameClockSubsystem))
+	/*if (IsValid(GameClockSubsystem))
 	{
 		GameClockSubsystem->OnGameDayChanged.RemoveAll(this);
-	}
+	}*/
 
 	GameClockAsset = nullptr;
-	GameClockSubsystem = nullptr;
+	//GameClockSubsystem = nullptr;
 
 	CurrentSeason = nullptr;
 	EnvironmentAsset = nullptr;

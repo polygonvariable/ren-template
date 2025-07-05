@@ -42,42 +42,6 @@ TSubsystem* GetGameInstanceSubsystem(UWorld* WorldContext)
 }
 
 
-template <typename TContext, typename TSubsystem, typename TInterface>
-TSubsystem* GetSubsystemByInterface(TContext* Context)
-{
-	if (!IsValid(Context)) return nullptr;
-
-	const TArray<TSubsystem*>& Subsystems = Context->GetSubsystemArray<TSubsystem>();
-
-	for (TSubsystem* Subsystem : Subsystems)
-	{
-		if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(TInterface::UClassType::StaticClass()))
-		{
-			return Subsystem;
-		}
-	}
-
-	return nullptr;
-}
-
-template <typename TContext, typename TSubsystem, typename TInterface>
-TInterface* GetSubsystemInterface(TContext* Context)
-{
-	if (!IsValid(Context)) return nullptr;
-
-	if (TSubsystem* Subsystem = GetSubsystemByInterface<TContext, TSubsystem, TInterface>(Context))
-	{
-		if (TInterface* Interface = Cast<TInterface>(Subsystem))
-		{
-			return Interface;
-		}
-	}
-
-	return nullptr;
-}
-
-
-
 
 UCLASS()
 class RENCORE_API UMiscLibrary : public UObject
@@ -96,6 +60,100 @@ public:
 			World->WorldType == EWorldType::GameRPC ||
 			World->WorldType == EWorldType::PIE
 		);
+	}
+
+};
+
+
+
+
+
+
+class SubsystemUtils
+{
+
+public:
+
+	template <typename TContext, typename TSubsystem, typename TInterface>
+	static TSubsystem* GetSubsystemByInterface(TContext* Context)
+	{
+		if (!IsValid(Context)) return nullptr;
+
+		const TArray<TSubsystem*>& Subsystems = Context->GetSubsystemArray<TSubsystem>();
+
+		for (TSubsystem* Subsystem : Subsystems)
+		{
+			if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(TInterface::UClassType::StaticClass()))
+			{
+				return Subsystem;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <typename TContext, typename TSubsystem, typename TInterface>
+	static TInterface* GetSubsystemInterface(TContext* Context)
+	{
+		if (!IsValid(Context)) return nullptr;
+
+		if (TSubsystem* Subsystem = GetSubsystemByInterface<TContext, TSubsystem, TInterface>(Context))
+		{
+			if (TInterface* Interface = Cast<TInterface>(Subsystem))
+			{
+				return Interface;
+			}
+		}
+
+		return nullptr;
+	}
+
+};
+
+class TimerUtils
+{
+
+public:
+
+	template <typename UserClass>
+	static bool StartTimer(FTimerHandle& TimerHandle, UserClass* Object, typename FTimerDelegate::TMethodPtr<UserClass> InTimerMethod, float Rate)
+	{
+		FTimerManager& TimerManager = Object->GetWorld()->GetTimerManager();
+		if (TimerManager.TimerExists(TimerHandle))
+		{
+			if (!TimerManager.IsTimerPaused(TimerHandle))
+			{
+				return false;
+			}
+			TimerManager.UnPauseTimer(TimerHandle);
+		}
+		else
+		{
+			TimerManager.SetTimer(TimerHandle, Object, InTimerMethod, Rate, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
+		}
+
+		return true;
+	}
+
+	template <typename UserClass>
+	static bool PauseTimer(FTimerHandle& TimerHandle, UserClass* Object)
+	{
+		FTimerManager& TimerManager = Object->GetWorld()->GetTimerManager();
+		if (TimerManager.TimerExists(TimerHandle))
+		{
+			TimerManager.PauseTimer(TimerHandle);
+			return true;
+		}
+
+		return false;
+	}
+
+	template <typename UserClass>
+	static void ClearTimer(FTimerHandle& TimerHandle, UserClass* Object)
+	{
+		FTimerManager& TimerManager = Object->GetWorld()->GetTimerManager();
+		TimerManager.ClearAllTimersForObject(Object);
+		TimerHandle.Invalidate();
 	}
 
 };

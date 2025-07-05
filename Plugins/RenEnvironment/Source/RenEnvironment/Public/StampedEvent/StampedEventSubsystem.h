@@ -4,23 +4,23 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
 #include "StampedEvent/StampedEventType.h"
 
 // Generated Headers
 #include "StampedEventSubsystem.generated.h"
 
 // Forward Declarations
-class UStorage;
+// class UStorage;
 
 
 /**
  *
  */
-UCLASS(DisplayName = "Stamped Event Subsystem")
-class RENENVIRONMENT_API UStampedEventSubsystem : public URenGameInstanceSubsystem
+UCLASS()
+class UStampedEventSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
@@ -58,12 +58,8 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Stamped Event Subsystem|Runtime")
-	UStorage* Storage;
-
-public:
-
-	virtual void PostInitialize_Implementation() override;
+	//UPROPERTY(BlueprintReadOnly, Category = "Stamped Event Subsystem|Runtime")
+	//UStorage* Storage;
 
 };
 

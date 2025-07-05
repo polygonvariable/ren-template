@@ -15,7 +15,6 @@
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
-class UGameClockSubsystem;
 
 class USeasonAsset;
 class UGameClockAsset;
@@ -43,8 +42,8 @@ protected:
 
 	UMaterialParameterCollectionInstance* SeasonPrameterInstance;
 
-	UPROPERTY()
-	TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
+	// UPROPERTY()
+	// TObjectPtr<UGameClockSubsystem> GameClockSubsystem;
 
 	UPROPERTY()
 	TObjectPtr<USeasonAsset> CurrentSeason;

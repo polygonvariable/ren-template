@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRenWidgetModule : public IModuleInterface
+class FRenEnvironmentModule : public IModuleInterface
 {
 public:
 

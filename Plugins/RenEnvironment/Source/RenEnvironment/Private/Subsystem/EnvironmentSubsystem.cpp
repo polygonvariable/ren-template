@@ -4,23 +4,14 @@
 #include "Subsystem/EnvironmentSubsystem.h"
 
 // Engine Header
-#include "EngineUtils.h"
-#include "GameFramework/Actor.h"
-#include "Components/SceneComponent.h"
 
 // Project Header
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
-#include "Profile/EnvironmentProfile.h"
-#include "Controller/EnvironmentController.h"
-
-#include "EnvironmentWorldSettings.h"
 #include "Asset/EnvironmentAsset.h"
 #include "Asset/EnvironmentProfileAsset.h"
-#include "Controller/EnvironmentLightController.h"
-#include "Controller/EnvironmentFogController.h"
-#include "Controller/EnvironmentAtmosphereController.h"
+#include "Controller/EnvironmentController.h"
+#include "EnvironmentWorldSettings.h"
 
 
 
@@ -54,11 +45,13 @@ bool UEnvironmentSubsystem::CreateDiscreteController(TSubclassOf<UEnvironmentDis
 		LOG_ERROR(LogTemp, "Failed to create Environment Discrete Controller");
 		return false;
 	}
+
 	NewController->InitializeController();
 	EnvironmentDiscreateControllers.Push(NewController);
 
 	return true;
 }
+
 
 
 void UEnvironmentSubsystem::AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
@@ -85,7 +78,6 @@ void UEnvironmentSubsystem::RemoveStackedProfile(TEnumAsByte<EEnvironmentProfile
 
 
 
-
 bool UEnvironmentSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
 	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
@@ -102,38 +94,36 @@ void UEnvironmentSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem OnWorldBeginPlay"));
 
-
 	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
-	if (!IsValid(WorldSettings))
+	if (IsValid(WorldSettings))
+	{
+		UEnvironmentAsset* EnvironmentAsset = WorldSettings->EnvironmentAsset;
+		if (IsValid(EnvironmentAsset))
+		{
+			for (auto& Kvp : EnvironmentAsset->StackedControllers)
+			{
+				CreateStackedController(Kvp.Key, Kvp.Value);
+			}
+
+			for (auto It = EnvironmentAsset->DiscreteControllers.CreateIterator(); It; ++It)
+			{
+				CreateDiscreteController(*It);
+			}
+		}
+		else
+		{
+			LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
+		}
+	}
+	else
 	{
 		LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
-		return;
 	}
-
-	UEnvironmentAsset* EnvironmentAsset = WorldSettings->EnvironmentAsset;
-	if (!IsValid(EnvironmentAsset))
-	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
-		return;
-	}
-
-	for (auto& Kvp : EnvironmentAsset->StackedControllers)
-	{
-		CreateStackedController(Kvp.Key, Kvp.Value);
-	}
-
-	for (auto It = EnvironmentAsset->DiscreteControllers.CreateIterator(); It; ++It)
-	{
-		CreateDiscreteController(*It);
-	}
-
 }
 
 void UEnvironmentSubsystem::Deinitialize()
 {
-	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem deinitialized"));
-
-	for(TPair<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>>& Kvp : EnvironmentStackedControllers)
+	for(auto& Kvp : EnvironmentStackedControllers)
 	{
 		Kvp.Value->CleanupController();
 		Kvp.Value->MarkAsGarbage();
@@ -147,6 +137,7 @@ void UEnvironmentSubsystem::Deinitialize()
 	}
 	EnvironmentDiscreateControllers.Empty();
 
+	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem deinitialized"));
 	Super::Deinitialize();
 }
 

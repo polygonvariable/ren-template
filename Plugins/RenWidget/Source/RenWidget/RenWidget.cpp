@@ -18,3 +18,4 @@ void FRenWidgetModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FRenWidgetModule, RenWidget)
+

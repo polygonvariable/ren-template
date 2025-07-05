@@ -87,7 +87,6 @@ USaveGame* UStorageSubsystem::IGetLocalStorage()
 
 
 
-
 bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
 {
 	USaveGame* NewSaveGame = UGameplayStatics::CreateSaveGameObject(UStorage::StaticClass());

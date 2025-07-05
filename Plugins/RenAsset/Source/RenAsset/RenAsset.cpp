@@ -18,3 +18,4 @@ void FRenAssetModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FRenAssetModule, RenAsset)
+

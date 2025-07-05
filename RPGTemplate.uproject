@@ -38,14 +38,6 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEnvironment",
-			"Type": "Runtime",
-			"LoadingPhase": "Default",
-			"AdditionalDependencies": [
-				"Engine"
-			]
-		},
-		{
 			"Name": "RenInteract",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

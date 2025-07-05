@@ -7,7 +7,6 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Profile/EnvironmentProfile.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 // Generated Headers
@@ -19,11 +18,12 @@ class UEnvironmentStackedController;
 class UEnvironmentProfileAsset;
 
 
+
 /**
  *
  */
 UCLASS(Blueprintable) // Add Blueprintable for easiy debug in live blueprint debugger
-class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
+class UEnvironmentSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
@@ -38,19 +38,15 @@ public:
 
 protected:
 
-	UFUNCTION()
-	bool CreateStackedController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentStackedController> ControllerClass);
-
-	UFUNCTION()
-	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
-
-
 	UPROPERTY(BlueprintReadOnly)
 	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>> EnvironmentStackedControllers;
 
-
 	UPROPERTY(BlueprintReadOnly)
 	TArray<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
+
+
+	bool CreateStackedController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentStackedController> ControllerClass);
+	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
 
 protected:
 
