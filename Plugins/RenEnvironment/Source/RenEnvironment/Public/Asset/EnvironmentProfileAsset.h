@@ -70,16 +70,16 @@ public:
 
 
     UPROPERTY(EditDefaultsOnly)
-    float SunIntensity = 10.0f;
+    float SunIntensity = 20.0f;
 
     UPROPERTY(EditDefaultsOnly)
     FColor SunColor = FColor::White;
 
     UPROPERTY(EditDefaultsOnly)
-    float MoonIntensity = 10.0f;
+    float MoonIntensity = 5.0f;
 
     UPROPERTY(EditDefaultsOnly)
-    FColor MoonColor = FColor::White;
+    FColor MoonColor = FColor::FromHex("#4B6F91");
  
 };
 

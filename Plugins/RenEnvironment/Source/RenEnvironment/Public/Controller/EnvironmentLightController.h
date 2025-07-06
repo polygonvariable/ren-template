@@ -5,11 +5,9 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "InstancedStruct.h"
 
 // Project Headers
 #include "RenEnvironment/Public/Controller/EnvironmentController.h"
-#include "RenEnvironment/Public/Profile/EnvironmentProfile.h"
 
 // Generated Headers
 #include "EnvironmentLightController.generated.h"
@@ -30,14 +28,11 @@ class UEnvironmentLightController : public UEnvironmentStackedController
 
 public:
 
-	UPROPERTY()
+	UEnvironmentLightController();
+
 	FName ActorTag = TEXT("Actor.Environment");
-
-	UPROPERTY()
-	FName SunComponentName = TEXT("Environment.Sun");
-
-	UPROPERTY()
-	FName MoonComponentName = TEXT("Environment.Moon");
+	FName SunComponentTag = TEXT("Environment.Sun");
+	FName MoonComponentTag = TEXT("Environment.Moon");
 
 protected:
 
@@ -50,6 +45,7 @@ protected:
 public:
 
 	virtual void InitializeController() override;
+	virtual void CleanupController() override;
 
 protected:
 

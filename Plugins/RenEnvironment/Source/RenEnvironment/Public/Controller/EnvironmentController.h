@@ -45,6 +45,8 @@ class UEnvironmentStackedController : public UObjectPrioritySystem
 
 public:
 
+	TEnumAsByte<EEnvironmentProfileType> EnvironmentProfileType;
+
 	virtual void InitializeController();
 	virtual void CleanupController();
 

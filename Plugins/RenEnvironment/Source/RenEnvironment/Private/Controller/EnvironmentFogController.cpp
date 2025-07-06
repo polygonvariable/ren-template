@@ -8,14 +8,17 @@
 #include "EngineUtils.h"
 
 // Project Headers
-#include "RenCore/Public/Timer/Timer.h"
-#include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 
+
+UEnvironmentFogController::UEnvironmentFogController()
+{
+	EnvironmentProfileType = EEnvironmentProfileType::Fog;
+}
 
 void UEnvironmentFogController::InitializeController()
 {
@@ -29,21 +32,28 @@ void UEnvironmentFogController::InitializeController()
 	}
 }
 
+void UEnvironmentFogController::CleanupController()
+{
+	FogComponent.Reset();
+}
+
 void UEnvironmentFogController::HandleItemChanged(UObject* Item)
 {
-	if (!FogComponent.IsValid())
+	if (UExponentialHeightFogComponent* FogComponentPtr = FogComponent.Get())
 	{
-		LOG_ERROR(LogTemp, TEXT("FogComponent not found"));
-		return;
+		UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
+		if (IsValid(FogProfile))
+		{
+			FogComponentPtr->SetFogDensity(FogProfile->FogDensity);
+		}
+		else
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("FogProfile asset is invalid"));
+		}
 	}
-
-	UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
-	if (!IsValid(FogProfile))
+	else
 	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("FogProfile asset is invalid"));
-		return;
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("FogComponent not found"));
 	}
-
-	FogComponent->SetFogDensity(FogProfile->FogDensity);
 }
 

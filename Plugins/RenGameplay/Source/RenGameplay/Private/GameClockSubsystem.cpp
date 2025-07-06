@@ -199,7 +199,7 @@ void UGameClockSubsystem::HandleClockTick()
 		OnGameDayChanged.Broadcast(CurrentDay);
 	}
 
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Current time: %f"), CurrentTime);
+	// PRINT_INFO(LogTemp, 1.0f, TEXT("Current time: %f"), CurrentTime);
 
 	LastTickAt = GetWorld()->GetTimeSeconds();
 	OnGameTimeChanged.Broadcast(CurrentTime);

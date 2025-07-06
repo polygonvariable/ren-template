@@ -46,7 +46,7 @@ AEnvironmentActor::AEnvironmentActor()
 			ExponentialHeightFog->SetFogDensity(0.025f);
 		}
 
-		SunLight = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("SunLight"));
+		SunLight = CreateDefaultSubobject<UOrbitalLightComponent>(TEXT("Sun"));
 		if (IsValid(SunLight))
 		{
 			SunLight->SetupAttachment(SceneComponent);

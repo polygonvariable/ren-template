@@ -15,10 +15,61 @@
 
 
 
-
-bool UEnvironmentSubsystem::CreateStackedController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentStackedController> ControllerClass)
+void UEnvironmentSubsystem::AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
 {
-	if (EnvironmentStackedControllers.Contains(ProfileType))
+	if (!IsValid(ProfileAsset))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("ProfileAsset is not valid"));
+		return;
+	}
+
+	UEnvironmentStackedController* Controller = EnvironmentStackedControllers.FindRef(ProfileAsset->ProfileType);
+	if (IsValid(Controller))
+	{
+		Controller->AddItem(ProfileAsset, Priority);
+	}
+}
+
+void UEnvironmentSubsystem::RemoveStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
+{
+	if (!IsValid(ProfileAsset))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("ProfileAsset is not valid"));
+		return;
+	}
+
+	UEnvironmentStackedController* Controller = EnvironmentStackedControllers.FindRef(ProfileAsset->ProfileType);
+	if (IsValid(Controller))
+	{
+		Controller->RemoveItem(Priority);
+	}
+}
+
+void UEnvironmentSubsystem::LoadDefaultStackedProfiles()
+{
+	if (!IsValid(EnvironmentAsset))
+	{
+		LOG_ERROR(LogTemp, "EnvironmentAsset is not valid");
+		return;
+	}
+
+	TSet<TObjectPtr<UEnvironmentProfileAsset>>& StackedProfiles = EnvironmentAsset->DefaultStackedProfiles;
+	for (auto& Profile : StackedProfiles)
+	{
+		AddStackedProfile(Profile, 0);
+	}
+}
+
+bool UEnvironmentSubsystem::CreateStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass)
+{
+	if (!IsValid(ControllerClass))
+	{
+		LOG_ERROR(LogTemp, "ControllerClass is not valid");
+		return false;
+	}
+
+	UEnvironmentStackedController* EnvironmentCDO = ControllerClass->GetDefaultObject<UEnvironmentStackedController>();
+	if (EnvironmentStackedControllers.Contains(EnvironmentCDO->EnvironmentProfileType))
 	{
 		LOG_ERROR(LogTemp, "Environment Controller already exists");
 		return false;
@@ -27,18 +78,24 @@ bool UEnvironmentSubsystem::CreateStackedController(const TEnumAsByte<EEnvironme
 	UEnvironmentStackedController* NewController = NewObject<UEnvironmentStackedController>(this, ControllerClass);
 	if (!IsValid(NewController))
 	{
-		LOG_ERROR(LogTemp, "Failed to create Environment Controller");
+		LOG_ERROR(LogTemp, "Failed to create Environment Stacked Controller");
 		return false;
 	}
 
 	NewController->InitializeController();
-	EnvironmentStackedControllers.Add(ProfileType, NewController);
+	EnvironmentStackedControllers.Add(EnvironmentCDO->EnvironmentProfileType, NewController);
 
 	return true;
 }
 
 bool UEnvironmentSubsystem::CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass)
 {
+	if (!IsValid(ControllerClass))
+	{
+		LOG_ERROR(LogTemp, "ControllerClass is not valid");
+		return false;
+	}
+
 	UEnvironmentDiscreteController* NewController = NewObject<UEnvironmentDiscreteController>(this, ControllerClass);
 	if (!IsValid(NewController))
 	{
@@ -47,36 +104,10 @@ bool UEnvironmentSubsystem::CreateDiscreteController(TSubclassOf<UEnvironmentDis
 	}
 
 	NewController->InitializeController();
-	EnvironmentDiscreateControllers.Push(NewController);
+	EnvironmentDiscreateControllers.Add(NewController);
 
 	return true;
 }
-
-
-
-void UEnvironmentSubsystem::AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
-{
-	if (!IsValid(ProfileAsset))
-	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("ProfileAsset is not valid"));
-		return;
-	}
-
-	if (UEnvironmentStackedController* Controller = EnvironmentStackedControllers.FindRef(ProfileAsset->ProfileType))
-	{
-		Controller->AddItem(ProfileAsset, Priority);
-	}
-}
-
-void UEnvironmentSubsystem::RemoveStackedProfile(TEnumAsByte<EEnvironmentProfileType> ProfileType, int Priority)
-{
-	if (UEnvironmentStackedController* Controller = EnvironmentStackedControllers.FindRef(ProfileType))
-	{
-		Controller->RemoveItem(Priority);
-	}
-}
-
-
 
 bool UEnvironmentSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
@@ -89,26 +120,28 @@ void UEnvironmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem initialized"));
 }
 
-void UEnvironmentSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
-	Super::OnWorldBeginPlay(InWorld);
-	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem OnWorldBeginPlay"));
+	Super::OnWorldComponentsUpdated(InWorld);
+	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem OnWorldComponentsUpdated"));
 
 	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
 	if (IsValid(WorldSettings))
 	{
-		UEnvironmentAsset* EnvironmentAsset = WorldSettings->EnvironmentAsset;
+		EnvironmentAsset = WorldSettings->EnvironmentAsset;
 		if (IsValid(EnvironmentAsset))
 		{
-			for (auto& Kvp : EnvironmentAsset->StackedControllers)
+			for (auto& Controller : EnvironmentAsset->StackedControllers)
 			{
-				CreateStackedController(Kvp.Key, Kvp.Value);
+				CreateStackedController(Controller);
 			}
 
-			for (auto It = EnvironmentAsset->DiscreteControllers.CreateIterator(); It; ++It)
+			for (auto& Controller : EnvironmentAsset->DiscreteControllers)
 			{
-				CreateDiscreteController(*It);
+				CreateDiscreteController(Controller);
 			}
+
+			LoadDefaultStackedProfiles();
 		}
 		else
 		{
@@ -130,7 +163,7 @@ void UEnvironmentSubsystem::Deinitialize()
 	}
 	EnvironmentStackedControllers.Empty();
 
-	for(UEnvironmentDiscreteController* Controller : EnvironmentDiscreateControllers)
+	for(auto& Controller : EnvironmentDiscreateControllers)
 	{
 		Controller->CleanupController();
 		Controller->MarkAsGarbage();

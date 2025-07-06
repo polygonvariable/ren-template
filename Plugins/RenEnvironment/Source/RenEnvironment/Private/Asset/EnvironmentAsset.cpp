@@ -8,5 +8,6 @@
 
 #include "Asset/WeatherAsset.h"
 #include "Asset/SeasonAsset.h"
+#include "Asset/EnvironmentProfileAsset.h"
 #include "Controller/EnvironmentController.h"
 

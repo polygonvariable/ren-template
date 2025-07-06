@@ -16,7 +16,7 @@
 class UEnvironmentDiscreteController;
 class UEnvironmentStackedController;
 class UEnvironmentProfileAsset;
-
+class UEnvironmentAsset;
 
 
 /**
@@ -34,7 +34,7 @@ public:
 	void AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveStackedProfile(TEnumAsByte<EEnvironmentProfileType> ProfileType, int Priority);
+	void RemoveStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
 protected:
 
@@ -42,17 +42,22 @@ protected:
 	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>> EnvironmentStackedControllers;
 
 	UPROPERTY(BlueprintReadOnly)
-	TArray<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
+	TSet<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
+
+	UPROPERTY()
+	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 
-	bool CreateStackedController(const TEnumAsByte<EEnvironmentProfileType> ProfileType, TSubclassOf<UEnvironmentStackedController> ControllerClass);
+	void LoadDefaultStackedProfiles();
+
+	bool CreateStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass);
 	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
 
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
 
 };

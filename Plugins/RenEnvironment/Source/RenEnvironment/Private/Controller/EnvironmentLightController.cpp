@@ -8,14 +8,17 @@
 #include "EngineUtils.h"
 
 // Project Headers
-#include "RenCore/Public/Timer/Timer.h"
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Library/MiscLibrary.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 
+
+UEnvironmentLightController::UEnvironmentLightController()
+{
+	EnvironmentProfileType = EEnvironmentProfileType::Light;
+}
 
 void UEnvironmentLightController::InitializeController()
 {
@@ -26,14 +29,14 @@ void UEnvironmentLightController::InitializeController()
 	{
 		if (IsValid(*ActorItr) && ActorItr->ActorHasTag(ActorTag))
 		{
-			TArray<UActorComponent*> SunComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), SunComponentName);
+			TArray<UActorComponent*> SunComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), SunComponentTag);
 			if (SunComponents.IsValidIndex(0) && IsValid(SunComponents[0]))
 			{
 				SunComponent = Cast<UDirectionalLightComponent>(SunComponents[0]);
 				bSunFound = true;
 			}
 
-			TArray<UActorComponent*> MoonComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), MoonComponentName);
+			TArray<UActorComponent*> MoonComponents = ActorItr->GetComponentsByTag(UDirectionalLightComponent::StaticClass(), MoonComponentTag);
 			if (MoonComponents.IsValidIndex(0) && IsValid(MoonComponents[0]))
 			{
 				MoonComponent = Cast<UDirectionalLightComponent>(MoonComponents[0]);
@@ -48,24 +51,35 @@ void UEnvironmentLightController::InitializeController()
 	if (!bMoonFound) LOG_ERROR(LogTemp, TEXT("Moon not found"));
 }
 
+void UEnvironmentLightController::CleanupController()
+{
+	SunComponent.Reset();
+	MoonComponent.Reset();
+}
+
 void UEnvironmentLightController::HandleItemChanged(UObject* Item)
 {
-	if (!SunComponent.IsValid() || !MoonComponent.IsValid())
-	{
-		LOG_ERROR(LogTemp, TEXT("Sun or Moon not found"));
-		return;
-	}
+	UDirectionalLightComponent* SunComponentPtr = SunComponent.Get();
+	UDirectionalLightComponent* MoonComponentPtr = MoonComponent.Get();
 
-	UEnvironmentLightProfileAsset* LightProfile = Cast<UEnvironmentLightProfileAsset>(Item);
-	if (!IsValid(LightProfile))
+	if (IsValid(SunComponentPtr) && IsValid(MoonComponentPtr))
 	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("LightProfile asset is invalid"));
-		return;
+		UEnvironmentLightProfileAsset* LightProfile = Cast<UEnvironmentLightProfileAsset>(Item);
+		if (IsValid(LightProfile))
+		{
+			SunComponentPtr->SetIntensity(LightProfile->SunIntensity);
+			SunComponentPtr->SetLightColor(LightProfile->SunColor);
+			MoonComponentPtr->SetIntensity(LightProfile->MoonIntensity);
+			MoonComponentPtr->SetLightColor(LightProfile->MoonColor);
+		}
+		else
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("LightProfile asset is invalid"));
+		}
 	}
-
-	SunComponent->SetIntensity(LightProfile->SunIntensity);
-	SunComponent->SetLightColor(LightProfile->SunColor);
-	MoonComponent->SetIntensity(LightProfile->MoonIntensity);
-	MoonComponent->SetLightColor(LightProfile->MoonColor);
+	else
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Sun or Moon not found"));
+	}
 }
 

@@ -41,12 +41,11 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
-	TWeakInterfacePtr<IGameClockSubsystemInterface> ClockSubsystemInterface;
-
+	TWeakInterfacePtr<IGameClockSubsystemInterface> ClockInterface;
 	FTimerHandle DayTimerHandle;
 
 
-	bool FindComponents();
+	bool LoadComponents();
 
 	UFUNCTION()
 	void StartDayTimer();

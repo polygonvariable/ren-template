@@ -15,7 +15,7 @@
 
 
 
-bool UEnvironmentDayNightController::FindComponents()
+bool UEnvironmentDayNightController::LoadComponents()
 {
 	bool bSunFound = false;
 	bool bMoonFound = false;
@@ -69,7 +69,7 @@ void UEnvironmentDayNightController::StopDayTimer()
 
 void UEnvironmentDayNightController::HandleDayTimerTick()
 {
-	float NormalizedTime = ClockSubsystemInterface->GetSmoothNormalizedTime();
+	float NormalizedTime = ClockInterface->GetSmoothNormalizedTime();
 	float RealTime = NormalizedTime * 24.0f;
 
 	SunComponent->SetTime(RealTime);
@@ -80,34 +80,34 @@ void UEnvironmentDayNightController::HandleDayTimerTick()
 
 void UEnvironmentDayNightController::InitializeController()
 {
-	if (!FindComponents())
+	if (!LoadComponents())
 	{
 		LOG_ERROR(LogTemp, "Failed to find components");
 		return;
 	}
 
-	if (IGameClockSubsystemInterface* ClockInterface = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IGameClockSubsystemInterface>(GetWorld()))
+	if (IGameClockSubsystemInterface* ClockInterfacePtr = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IGameClockSubsystemInterface>(GetWorld()))
 	{
-		ClockSubsystemInterface = TWeakInterfacePtr<IGameClockSubsystemInterface>(ClockInterface);
+		ClockInterfacePtr->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
+		ClockInterfacePtr->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
 
-		ClockSubsystemInterface->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
-		ClockSubsystemInterface->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
-
-		if (ClockSubsystemInterface->IsClockActive())
+		if (ClockInterfacePtr->IsClockActive())
 		{
 			StartDayTimer();
 		}
+
+		ClockInterface = TWeakInterfacePtr<IGameClockSubsystemInterface>(ClockInterfacePtr);
 	}
 }
 
 void UEnvironmentDayNightController::CleanupController()
 {
-	if (ClockSubsystemInterface.IsValid())
+	if (IGameClockSubsystemInterface* ClockInterfacePtr = ClockInterface.Get())
 	{
-		ClockSubsystemInterface->GetOnGameClockStarted().RemoveAll(this);
-		ClockSubsystemInterface->GetOnGameClockStopped().RemoveAll(this);
-		ClockSubsystemInterface.Reset();
+		ClockInterfacePtr->GetOnGameClockStarted().RemoveAll(this);
+		ClockInterfacePtr->GetOnGameClockStopped().RemoveAll(this);
 	}
+	ClockInterface.Reset();
 
 	TimerUtils::ClearTimer(DayTimerHandle, this);
 

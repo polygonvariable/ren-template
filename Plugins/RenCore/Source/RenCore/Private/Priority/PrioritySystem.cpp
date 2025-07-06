@@ -99,12 +99,12 @@ void UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 		return;
 	}
 
-	int HighestPriority = GetHighestPriority();
+	int OldPriority = GetHighestPriority();
 
 	Items.Add(Priority, Item);
 	HandleItemAdded(Item);
 
-	if (Priority > HighestPriority)
+	if (Priority > OldPriority)
 	{
 		HandleItemChanged(Item);
 	}
@@ -116,17 +116,15 @@ void UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 
 void UObjectPrioritySystem::RemoveItem(int Priority)
 {
-	UObject* Item = Items.FindRef(Priority);
-	if (!IsValid(Item))
-	{
-		LOG_WARNING(LogTemp, TEXT("Item not found or is not valid"));
-		return;
-	}
-
 	int OldPriority = GetHighestPriority();
+	UObject* OldItem = Items.FindRef(Priority);
 
 	Items.Remove(Priority);
-	HandleItemRemoved(Item);
+
+	if (IsValid(OldItem))
+	{
+		HandleItemRemoved(OldItem);
+	}
 
 	if (Priority != OldPriority)
 	{
@@ -141,6 +139,7 @@ void UObjectPrioritySystem::RemoveItem(int Priority)
 
 	int NewPriority = GetHighestPriority();
 	UObject* NewItem = Items.FindRef(NewPriority);
+
 	if (IsValid(NewItem))
 	{
 		HandleItemChanged(NewItem);

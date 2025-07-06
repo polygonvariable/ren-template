@@ -16,6 +16,7 @@
 // Forward Declarations
 class UWeatherAsset;
 class USeasonAsset;
+class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
 
@@ -33,10 +34,15 @@ class UEnvironmentAsset : public UPrimaryDataAsset
 public:
 
     UPROPERTY(EditDefaultsOnly)
-    TMap<TEnumAsByte<EEnvironmentProfileType>, TSubclassOf<UEnvironmentStackedController>> StackedControllers;
+    TSet<TSubclassOf<UEnvironmentStackedController>> StackedControllers;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSet<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
+
+
+
+    UPROPERTY(EditDefaultsOnly)
+    TSet<TObjectPtr<UEnvironmentProfileAsset>> DefaultStackedProfiles;
 
 
 

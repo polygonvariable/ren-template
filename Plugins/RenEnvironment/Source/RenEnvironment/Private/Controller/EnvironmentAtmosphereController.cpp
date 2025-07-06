@@ -8,14 +8,17 @@
 #include "EngineUtils.h"
 
 // Project Headers
-#include "RenCore/Public/Timer/Timer.h"
-#include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 
+
+UEnvironmentAtmosphereController::UEnvironmentAtmosphereController()
+{
+	EnvironmentProfileType = EEnvironmentProfileType::Atmosphere;
+}
 
 void UEnvironmentAtmosphereController::InitializeController()
 {
@@ -29,21 +32,28 @@ void UEnvironmentAtmosphereController::InitializeController()
 	}
 }
 
+void UEnvironmentAtmosphereController::CleanupController()
+{
+	AtmosphereComponent.Reset();
+}
+
 void UEnvironmentAtmosphereController::HandleItemChanged(UObject* Item)
 {
-	if (!AtmosphereComponent.IsValid())
+	if (USkyAtmosphereComponent* AtmosphereComponentPtr = AtmosphereComponent.Get())
 	{
-		LOG_ERROR(LogTemp, TEXT("AtmosphereComponent not found"));
-		return;
+		UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
+		if (IsValid(AtmosphereProfile))
+		{
+			AtmosphereComponentPtr->SetMieScatteringScale(AtmosphereProfile->MieScatteringScale);
+		}
+		else
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("AtmosphereProfile asset is invalid"));
+		}
 	}
-
-	UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
-	if (!IsValid(AtmosphereProfile))
+	else
 	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("AtmosphereProfile asset is invalid"));
-		return;
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("AtmosphereComponent not found"));
 	}
-
-	AtmosphereComponent->SetMieScatteringScale(AtmosphereProfile->MieScatteringScale);
 }
 
