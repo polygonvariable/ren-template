@@ -17,7 +17,7 @@ class UEnvironmentProfileAsset;
  *
  */
 UCLASS()
-class UWeatherAsset : public UPrimaryDataAsset
+class RENENVIRONMENT_API UWeatherAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()

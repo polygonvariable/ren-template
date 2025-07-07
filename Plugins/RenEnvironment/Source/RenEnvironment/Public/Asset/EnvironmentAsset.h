@@ -49,8 +49,8 @@ public:
     UPROPERTY(EditDefaultsOnly)
     bool bEnableWeather = true;
 
-    UPROPERTY(EditDefaultsOnly)
-    UWeatherAsset* DefaultWeather;
+    //UPROPERTY(EditDefaultsOnly)
+    //UWeatherAsset* DefaultWeather;
 
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;

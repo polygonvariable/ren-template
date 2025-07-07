@@ -5,16 +5,14 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "InstancedStruct.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Profile/WeatherProfile.h"
+#include "RenWeather/Public/WeatherProfile.h"
 
 // Generated Headers
 #include "WeatherSubsystem.generated.h"
 
 // Forward Declarations
-class UTimer;
 class UWeatherController;
 class UEnvironmentAsset;
 
@@ -23,7 +21,7 @@ class UEnvironmentAsset;
 /**
  *
  */
-UCLASS(Blueprintable)
+UCLASS()
 class UWeatherSubsystem : public UWorldSubsystem
 {
 
@@ -39,51 +37,40 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float WeatherChangeTime = 10.0f;
 
+	UPROPERTY()
+	FTimerHandle WeatherTimerHandle;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UTimer> WeatherTimer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	TObjectPtr<UWeatherController> WeatherController;
 
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 
-
 	UFUNCTION()
+	void HandleWeatherTimer();
+
 	void CreateWeatherTimer();
-
-	UFUNCTION()
-	void HandleWeatherTimer(float ElapsedTime);
-
-
-
-	UFUNCTION()
 	bool CreateWeatherController();
-
-	UFUNCTION()
 	void CreateWeatherMaterialCollection();
 
+
+	void HandleWorldBeginTearDown(UWorld* World);
 
 protected:
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void PostInitialize() override;
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherCanChange);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherChanged);
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnWeatherCanChange OnWeatherCanChange;
+	FOnWeatherChanged OnWeatherChanged;
 
 };
 

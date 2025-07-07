@@ -30,19 +30,17 @@ public:
 
 	void SetMaterialCollection(UMaterialParameterCollection* MaterialCollection);
 
+	virtual void CleanUpItems() override;
+
 protected:
 
+	UPROPERTY()
 	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
-
-	UPROPERTY(BlueprintReadOnly)
-	FName CurrentWeatherName = NAME_None;
-
-
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	UWeatherAsset* CurrentWeatherAsset;
 
-
+	FName CurrentWeatherName = NAME_None;
 
 	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
 	void HandleVectorTransition(FName ParameterName, const FLinearColor& Target, float Alpha);

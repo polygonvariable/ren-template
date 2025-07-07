@@ -1,19 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Subsystem/WeatherSubsystem.h"
+#include "WeatherSubsystem.h"
 
 // Engine Header
 
 // Project Header
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenCore/Public/Timer/Timer.h"
+#include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
-#include "EnvironmentWorldSettings.h"
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/WeatherAsset.h"
-#include "RenEnvironment/Public/Controller/WeatherController.h"
+#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
+
+#include "RenWeather/Public/WeatherController.h"
 
 
 
@@ -41,24 +42,13 @@ void UWeatherSubsystem::RemoveWeather(int Priority)
 
 void UWeatherSubsystem::CreateWeatherTimer()
 {
-	if (!IsValid(WeatherTimer))
-	{
-		WeatherTimer = NewObject<UTimer>(this);
-		if (!IsValid(WeatherTimer))
-		{
-			LOG_ERROR(LogTemp, "Failed to create weather timer");
-			return;
-		}
-		WeatherTimer->OnTick.AddDynamic(this, &UWeatherSubsystem::HandleWeatherTimer);
-	}
-
-	WeatherTimer->StartTimer(WeatherChangeTime, 0, false);
+	TimerUtils::StartTimer(WeatherTimerHandle, this, &UWeatherSubsystem::HandleWeatherTimer, 10.0f);
 }
 
-void UWeatherSubsystem::HandleWeatherTimer(float ElapsedTime)
+void UWeatherSubsystem::HandleWeatherTimer()
 {
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather can change"));
-	OnWeatherCanChange.Broadcast();
+	OnWeatherChanged.Broadcast();
 }
 
 
@@ -95,6 +85,12 @@ void UWeatherSubsystem::CreateWeatherMaterialCollection()
 
 
 
+void UWeatherSubsystem::HandleWorldBeginTearDown(UWorld* World)
+{
+}
+
+
+
 bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
 	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
@@ -104,37 +100,28 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem initialized"));
+
+	FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
+	FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UWeatherSubsystem::HandleWorldBeginTearDown);
 }
 
-void UWeatherSubsystem::PostInitialize()
+void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
-	Super::PostInitialize();
-	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem post initialized"));
+	Super::OnWorldComponentsUpdated(InWorld);
 
-
-	if (UWorld* World = GetWorld())
+	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
+	if (!IsValid(WorldSettings))
 	{
-		AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(World->GetWorldSettings());
-		if (!IsValid(WorldSettings))
-		{
-			LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
-			return;
-		}
-
-		EnvironmentAsset = WorldSettings->EnvironmentAsset;
-		if (!IsValid(EnvironmentAsset))
-		{
-			LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
-			return;
-		}
+		LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
+		return;
 	}
-}
 
-void UWeatherSubsystem::OnWorldBeginPlay(UWorld& InWorld)
-{
-	Super::OnWorldBeginPlay(InWorld);
-	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem begin play"));
-
+	EnvironmentAsset = WorldSettings->EnvironmentAsset;
+	if (!IsValid(EnvironmentAsset))
+	{
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
+		return;
+	}
 
 	if (CreateWeatherController())
 	{
@@ -147,17 +134,12 @@ void UWeatherSubsystem::Deinitialize()
 {
 	if (IsValid(WeatherController))
 	{
+		WeatherController->CleanUpItems();
 		WeatherController->MarkAsGarbage();
 	}
 	WeatherController = nullptr;
 
-	if (IsValid(WeatherTimer))
-	{
-		WeatherTimer->StopTimer(false);
-		WeatherTimer->OnTick.RemoveAll(this);
-		WeatherTimer->MarkAsGarbage();
-	}
-	WeatherTimer = nullptr;
+	TimerUtils::ClearTimer(WeatherTimerHandle, this);
 
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem deinitialized"));
 	Super::Deinitialize();

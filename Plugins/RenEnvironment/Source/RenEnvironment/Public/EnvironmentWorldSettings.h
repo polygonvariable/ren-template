@@ -18,7 +18,7 @@ class UEnvironmentAsset;
  * 
  */
 UCLASS()
-class AEnvironmentWorldSettings : public AWorldSettings
+class RENENVIRONMENT_API AEnvironmentWorldSettings : public AWorldSettings
 {
 
 	GENERATED_BODY()

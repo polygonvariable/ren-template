@@ -1,21 +1,20 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "RenEnvironment.h"
+#include "RenWeather.h"
 
-#define LOCTEXT_NAMESPACE "FRenEnvironmentModule"
+#define LOCTEXT_NAMESPACE "FRenWeatherModule"
 
-void FRenEnvironmentModule::StartupModule()
+void FRenWeatherModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRenEnvironmentModule::ShutdownModule()
+void FRenWeatherModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 }
 
 #undef LOCTEXT_NAMESPACE
-
-IMPLEMENT_MODULE(FRenEnvironmentModule, RenEnvironment)
-
+	
+IMPLEMENT_MODULE(FRenWeatherModule, RenWeather)

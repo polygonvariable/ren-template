@@ -23,7 +23,7 @@ class UEnvironmentAsset;
  *
  */
 UCLASS(Blueprintable) // Add Blueprintable for easiy debug in live blueprint debugger
-class UEnvironmentSubsystem : public UWorldSubsystem
+class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()

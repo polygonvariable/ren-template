@@ -161,6 +161,11 @@ int UObjectPrioritySystem::GetHighestPriority() const
 	return Highest;
 }
 
+void UObjectPrioritySystem::CleanUpItems()
+{
+	Items.Empty();
+}
+
 void UObjectPrioritySystem::HandleItemAdded(UObject* Item)
 {
 }

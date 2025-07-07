@@ -7,16 +7,14 @@
 #include "GameFramework/Actor.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Profile/WeatherProfile.h"
+#include "RenCore/Public/Actor/RegionActor.h"
+
+#include "RenWeather/Public/WeatherProfile.h"
 
 // Generated Headers
 #include "WeatherActor.generated.h"
 
 // Forward Declarations
-class UTimer;
-class UPrioritySystem;
-class UMaterialParameterCollectionInstance;
-class UWeatherController;
 class UWeatherSubsystem;
 class UWeatherAsset;
 
@@ -25,7 +23,7 @@ class UWeatherAsset;
  *
  */
 UCLASS()
-class AWeatherActor : public AActor
+class AWeatherRegionActor : public ARegionActor
 {
 
 	GENERATED_BODY()
@@ -36,37 +34,23 @@ protected:
 	TObjectPtr<UWeatherAsset> WeatherAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int Priority;
+	int Priority = 20;
 
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UWeatherSubsystem> WeatherSubsystem;
+	TWeakObjectPtr<UWeatherSubsystem> WeatherSubsystem;
 
 
-	/**
-	* TMap of weights to weather profiles
-	* TMap<int = Weight, FWeatherProfile = Weather Profile>
-	*/
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<int, FString> WeatherCollection;
-
-
-
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
 	void AddWeather();
-
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
 	void RemoveWeather();
 
+
+	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
 
 
 	UFUNCTION()
 	void HandleWeatherCanChange();
-
-
-
-	UFUNCTION(BlueprintCallable)
-	FString Roll(const TMap<int, FString>& Items);
 
 protected:
 

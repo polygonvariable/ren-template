@@ -1,20 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Controller/WeatherController.h"
+#include "WeatherController.h"
 
 // Engine Headers
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
-#include "RenCore/Public/Timer/Timer.h"
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Timer/Timer.h"
 
-#include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
-#include "RenEnvironment/Public/Profile/WeatherProfile.h"
+#include "RenEnvironment/Public/Asset/WeatherAsset.h"
+#include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
+
+#include "RenWeather/Public/WeatherProfile.h"
 
 
 
@@ -25,7 +26,17 @@ void UWeatherController::SetMaterialCollection(UMaterialParameterCollection* Mat
 		LOG_ERROR(LogTemp, TEXT("MaterialCollection is invalid"));
 		return;
 	}
+
 	MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(MaterialCollection);
+}
+
+void UWeatherController::CleanUpItems()
+{
+	MaterialCollectionInstance = nullptr;
+	CurrentWeatherAsset = nullptr;
+	CurrentWeatherName = NAME_None;
+
+	Super::CleanUpItems();
 }
 
 
@@ -52,7 +63,6 @@ void UWeatherController::HandleVectorTransition(FName ParameterName, const FLine
 	}
 }
 
-
 void UWeatherController::HandleItemChanged(UObject* Item)
 {
 	if (!IsValid(Item) || !MaterialCollectionInstance)
@@ -63,14 +73,16 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 
 	if (UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item))
 	{
-		if(WeatherAsset->WeatherName == CurrentWeatherName) return;
+		if (WeatherAsset->WeatherName == CurrentWeatherName) return;
 
 		if (UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>())
 		{
-			for (TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kvp : WeatherAsset->EnvironmentProfiles)
+			for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
 			{
-				if(!IsValid(Kvp.Key)) continue;
-				EnvironmentSubsystem->AddStackedProfile(Kvp.Key, Kvp.Value);
+				if (IsValid(Kvp.Key))
+				{
+					EnvironmentSubsystem->AddStackedProfile(Kvp.Key, Kvp.Value);
+				}
 			}
 		}
 

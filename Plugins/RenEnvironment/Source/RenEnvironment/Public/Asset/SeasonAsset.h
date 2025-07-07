@@ -7,7 +7,7 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Profile/WeatherWeight.h"
+// #include "RenEnvironment/Public/Profile/WeatherWeight.h"
 
 // Generated Headers
 #include "SeasonAsset.generated.h"
@@ -57,8 +57,8 @@ public:
 
 
 
-    UPROPERTY(EditDefaultsOnly)
-    TArray<FWeatherWeight> WeatherWeights;
+    //UPROPERTY(EditDefaultsOnly)
+    //TArray<FWeatherWeight> WeatherWeights;
 
 };
 

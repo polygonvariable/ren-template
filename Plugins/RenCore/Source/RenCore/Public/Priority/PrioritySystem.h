@@ -68,6 +68,8 @@ public:
 
 	int GetHighestPriority() const;
 
+	virtual void CleanUpItems();
+
 protected:
 
 	// TODO:
