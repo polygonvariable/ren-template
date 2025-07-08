@@ -14,7 +14,6 @@
 
 
 // Forward Declarations
-class UWeatherAsset;
 class USeasonAsset;
 class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
@@ -49,8 +48,8 @@ public:
     UPROPERTY(EditDefaultsOnly)
     bool bEnableWeather = true;
 
-    //UPROPERTY(EditDefaultsOnly)
-    //UWeatherAsset* DefaultWeather;
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherAsset"))
+    TObjectPtr<UPrimaryDataAsset> DefaultWeather;
 
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;

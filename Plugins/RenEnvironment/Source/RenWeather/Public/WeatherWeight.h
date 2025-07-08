@@ -5,6 +5,9 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
+// Project Headers
+#include "RenWeather/Public/WeatherAsset.h"
+
 // Generated Headers
 #include "WeatherWeight.generated.h"
 
@@ -25,7 +28,7 @@ struct FWeatherWeight
 public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UWeatherAsset* WeatherAsset;
+    TObjectPtr<UWeatherAsset> WeatherAsset;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int Weight = 0;

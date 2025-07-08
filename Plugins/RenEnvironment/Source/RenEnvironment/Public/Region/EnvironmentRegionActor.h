@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 
 // Project Headers
+#include "RenCore/Public/Actor/RegionActor.h"
 
 // Generated Headers
 #include "EnvironmentRegionActor.generated.h"
@@ -24,7 +25,7 @@ class UEnvironmentProfileAsset;
  * so other actors can be ignored
  */
 UCLASS()
-class AEnvironmentRegionActor : public AActor
+class AEnvironmentRegionActor : public ARegionActor
 {
 
 	GENERATED_BODY()
@@ -32,24 +33,18 @@ class AEnvironmentRegionActor : public AActor
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<int, TObjectPtr<UEnvironmentProfileAsset>> ProfileAssets;
+	TMap<TObjectPtr<UEnvironmentProfileAsset>, int> ProfileAssets;
 
 	UPROPERTY()
 	TWeakObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
 
 
-	UFUNCTION(BlueprintCallable)
-	void RegisterCollisionComponent(UPrimitiveComponent* CollisionComponent);
-
-	UFUNCTION(BlueprintCallable)
-	void UnregisterCollisionComponent(UPrimitiveComponent* CollisionComponent);
+	void AddProfile();
+	void RemoveProfile();
 
 
-	UFUNCTION()
-	void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	UFUNCTION()
-	void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex);
+	void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
 
 protected:
 

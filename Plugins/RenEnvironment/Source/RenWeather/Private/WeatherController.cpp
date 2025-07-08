@@ -4,18 +4,14 @@
 #include "WeatherController.h"
 
 // Engine Headers
-#include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Timer/Timer.h"
 
-#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 
-#include "RenWeather/Public/WeatherProfile.h"
+#include "RenWeather/Public/WeatherAsset.h"
 
 
 
@@ -29,17 +25,6 @@ void UWeatherController::SetMaterialCollection(UMaterialParameterCollection* Mat
 
 	MaterialCollectionInstance = GetWorld()->GetParameterCollectionInstance(MaterialCollection);
 }
-
-void UWeatherController::CleanUpItems()
-{
-	MaterialCollectionInstance = nullptr;
-	CurrentWeatherAsset = nullptr;
-	CurrentWeatherName = NAME_None;
-
-	Super::CleanUpItems();
-}
-
-
 
 void UWeatherController::HandleScalarTransition(FName ParameterName, float Target, float Alpha)
 {
@@ -63,19 +48,33 @@ void UWeatherController::HandleVectorTransition(FName ParameterName, const FLine
 	}
 }
 
+void UWeatherController::CleanUpItems()
+{
+	MaterialCollectionInstance = nullptr;
+	CurrentWeatherAsset = nullptr;
+
+	Super::CleanUpItems();
+}
+
 void UWeatherController::HandleItemChanged(UObject* Item)
 {
 	if (!IsValid(Item) || !MaterialCollectionInstance)
 	{
-		LOG_ERROR(LogTemp, TEXT("Item or MaterialCollection is invalid"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item or MaterialCollection is invalid"));
 		return;
 	}
 
-	if (UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item))
+	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
+	if (IsValid(WeatherAsset))
 	{
-		if (WeatherAsset->WeatherName == CurrentWeatherName) return;
+		if (CurrentWeatherAsset == WeatherAsset)
+		{
+			PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset is already active"));
+			return;
+		}
 
-		if (UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>())
+		UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>();
+		if (IsValid(EnvironmentSubsystem))
 		{
 			for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
 			{
@@ -86,38 +85,53 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 			}
 		}
 
-		CurrentWeatherName = WeatherAsset->WeatherName;
-		CurrentWeatherAsset = WeatherAsset;
-
 		HandleScalarTransition(TEXT("WeatherAlpha"), WeatherAsset->MaterialAlpha, 1.0f);
 		HandleScalarTransition(TEXT("WeatherSpecular"), WeatherAsset->MaterialSpecular, 1.0f);
 		HandleScalarTransition(TEXT("WeatherRoughness"), WeatherAsset->MaterialRoughness, 1.0f);
 		HandleScalarTransition(TEXT("WeatherOpacity"), WeatherAsset->MaterialOpacity, 1.0f);
+		HandleScalarTransition(TEXT("WeatherWind"), WeatherAsset->MaterialWind, 1.0f);
 		HandleVectorTransition(TEXT("WeatherColor"), WeatherAsset->MaterialColor, 1.0f);
+
+		CurrentWeatherAsset = WeatherAsset;
+
+		OnWeatherChanged.Broadcast(WeatherAsset);
+
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset changed"));
 	}
 }
 
 
-//void UWeatherController::HandleItemRemoved(UObject* Item)
-//{
-//	if (UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item))
-//	{
-//		if (UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>())
-//		{
-//			for (TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kvp : WeatherAsset->EnvironmentProfiles)
-//			{
-//				if (Kvp.Key == nullptr) continue;
-//				EnvironmentSubsystem->RemoveStackedProfile(Kvp.Key->ProfileType, Kvp.Value);
-//			}
-//		}
-//	}
-//}
+void UWeatherController::HandleItemRemoved(UObject* Item, bool bWasReplaced)
+{
+	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
+	if (!IsValid(WeatherAsset))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherAsset is invalid"));
+		return;
+	}
+
+	UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>();
+	if (IsValid(EnvironmentSubsystem))
+	{
+		for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
+		{
+			if (Kvp.Key)
+			{
+				EnvironmentSubsystem->RemoveStackedProfile(Kvp.Key, Kvp.Value);
+			}
+		}
+	}
+
+	OnWeatherRemoved.Broadcast(WeatherAsset);
+
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset removed"));
+}
 
 
 void UWeatherController::HandleNoItemsLeft()
 {
-	CurrentWeatherName = NAME_None;
 	CurrentWeatherAsset = nullptr;
 
-	LOG_ERROR(LogTemp, TEXT("Weather controller has no items left, which was not supposed to happen"));
+	PRINT_ERROR(LogTemp, 1.0f, TEXT("Weather controller has no items left, which was not supposed to happen"));
 }
+

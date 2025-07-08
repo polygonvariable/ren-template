@@ -7,7 +7,6 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenWeather/Public/WeatherProfile.h"
 
 // Generated Headers
 #include "WeatherSubsystem.generated.h"
@@ -15,7 +14,8 @@
 // Forward Declarations
 class UWeatherController;
 class UEnvironmentAsset;
-
+class UWeatherAsset;
+class AWeatherEffectActor;
 
 
 /**
@@ -30,14 +30,19 @@ class UWeatherSubsystem : public UWorldSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveWeather(int Priority);
+	bool RemoveWeather(int Priority);
+
+	UWeatherController* GetWeatherController() const;
 
 protected:
 
-	float WeatherChangeTime = 10.0f;
+	float WeatherChangeTime = 5.0f;
+
+	UPROPERTY()
+	TMap<TSubclassOf<AWeatherEffectActor>, TObjectPtr<AWeatherEffectActor>> EffectActors;
 
 	UPROPERTY()
 	FTimerHandle WeatherTimerHandle;
@@ -49,15 +54,14 @@ protected:
 	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 
-	UFUNCTION()
-	void HandleWeatherTimer();
-
 	void CreateWeatherTimer();
 	bool CreateWeatherController();
 	void CreateWeatherMaterialCollection();
 
-
-	void HandleWorldBeginTearDown(UWorld* World);
+	UFUNCTION()
+	void HandleWeatherTimer();
+	void HandleItemChanged(UWeatherAsset* WeatherAsset);
+	void HandleItemRemoved(UWeatherAsset* WeatherAsset);
 
 protected:
 
@@ -68,9 +72,8 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeatherChanged);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnWeatherChanged OnWeatherChanged;
+	DECLARE_MULTICAST_DELEGATE(FOnWeatherCanChange);
+	FOnWeatherCanChange OnWeatherCanChange;
 
 };
 

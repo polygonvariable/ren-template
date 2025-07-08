@@ -63,22 +63,20 @@ class RENCORE_API UObjectPrioritySystem : public UObject
 
 public:
 
-	virtual void AddItem(UObject* Item, int Priority);
-	virtual void RemoveItem(int Priority);
-
-	int GetHighestPriority() const;
-
+	bool AddItem(UObject* Item, int Priority);
+	bool RemoveItem(int Priority);
 	virtual void CleanUpItems();
 
 protected:
 
-	// TODO:
-	// Replace UObject* with TWeakObjectPtr
-	UPROPERTY(BlueprintReadOnly)
-	TMap<int, UObject*> Items;
+	int HighestPriority = -1;
+
+	TMap<int, TWeakObjectPtr<UObject>> Items;
+
+	void CalculateHighestPriority();
 
 	virtual void HandleItemAdded(UObject* Item);
-	virtual void HandleItemRemoved(UObject* Item);
+	virtual void HandleItemRemoved(UObject* Item, bool bWasReplaced);
 	virtual void HandleItemChanged(UObject* Item);
 	virtual void HandleNoItemsLeft();
 

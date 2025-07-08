@@ -28,6 +28,13 @@ class RENCORE_API ARegionActor : public AActor
 	
 protected:
 
+	ARegionActor();
+
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bPlayerInRegion = false;
+
+
 	UFUNCTION(BlueprintNativeEvent)
 	UPrimitiveComponent* GetCollisionComponent() const;
 	virtual UPrimitiveComponent* GetCollisionComponent_Implementation() const;

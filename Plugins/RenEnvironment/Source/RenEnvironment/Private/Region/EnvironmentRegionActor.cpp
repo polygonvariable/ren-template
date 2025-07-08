@@ -15,68 +15,50 @@
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 
 
-void AEnvironmentRegionActor::RegisterCollisionComponent(UPrimitiveComponent* CollisionComponent)
+
+void AEnvironmentRegionActor::AddProfile()
 {
-	if (!IsValid(CollisionComponent))
+	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
+	if (!IsValid(SubsystemPtr))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid collision component"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
 		return;
 	}
 
-	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AEnvironmentRegionActor::HandlePlayerEntered);
-	CollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AEnvironmentRegionActor::HandlePlayerExited);
+	for (auto& Kvp : ProfileAssets)
+	{
+		SubsystemPtr->AddStackedProfile(Kvp.Key, Kvp.Value);
+	}
 }
 
-void AEnvironmentRegionActor::UnregisterCollisionComponent(UPrimitiveComponent* CollisionComponent)
+void AEnvironmentRegionActor::RemoveProfile()
 {
-	if (!IsValid(CollisionComponent))
+	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
+	if (!IsValid(SubsystemPtr))
 	{
-		LOG_ERROR(LogTemp, TEXT("Invalid collision component"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
 		return;
 	}
 
-	CollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &AEnvironmentRegionActor::HandlePlayerEntered);
-	CollisionComponent->OnComponentEndOverlap.RemoveDynamic(this, &AEnvironmentRegionActor::HandlePlayerExited);
+	for (auto& Kvp : ProfileAssets)
+	{
+		SubsystemPtr->RemoveStackedProfile(Kvp.Key, Kvp.Value);
+	}
 }
 
 void AEnvironmentRegionActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	ACharacter* CollidedCharacter = Cast<ACharacter>(OtherActor);
-
-	if (PlayerCharacter != CollidedCharacter)
+	if (DoesCollidedWithPlayer(OtherActor))
 	{
-		LOG_WARNING(LogTemp, TEXT("Actor entered region, but not player character"));
-		return;
-	}
-
-	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
-	if (IsValid(SubsystemPtr))
-	{
-		for (auto& Kvp : ProfileAssets)
-		{
-			SubsystemPtr->AddStackedProfile(Kvp.Value, Kvp.Key);
-		}
-	}
-	else
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
+		AddProfile();
 	}
 }
 
 void AEnvironmentRegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
-	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
-	if (IsValid(SubsystemPtr))
+	if (DoesCollidedWithPlayer(OtherActor))
 	{
-		for (auto& Kvp : ProfileAssets)
-		{
-			SubsystemPtr->RemoveStackedProfile(Kvp.Value, Kvp.Key);
-		}
-	}
-	else
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
+		RemoveProfile();
 	}
 }
 
@@ -93,7 +75,7 @@ void AEnvironmentRegionActor::BeginPlay()
 
 void AEnvironmentRegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	HandlePlayerExited(nullptr, nullptr, nullptr, 0);
+	RemoveProfile();
 	EnvironmentSubsystem.Reset();
 
 	Super::EndPlay(EndPlayReason);

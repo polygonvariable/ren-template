@@ -13,6 +13,11 @@
 
 
 
+ARegionActor::ARegionActor()
+{
+	PrimaryActorTick.bCanEverTick = false;
+}
+
 UPrimitiveComponent* ARegionActor::GetCollisionComponent_Implementation() const
 {
 	return nullptr;
@@ -62,10 +67,12 @@ bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor)
 
 void ARegionActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	bPlayerInRegion = true;
 }
 
 void ARegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
+	bPlayerInRegion = false;
 }
 
 

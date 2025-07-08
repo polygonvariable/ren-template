@@ -9,8 +9,6 @@
 // Project Headers
 #include "RenCore/Public/Actor/RegionActor.h"
 
-#include "RenWeather/Public/WeatherProfile.h"
-
 // Generated Headers
 #include "WeatherActor.generated.h"
 
@@ -19,10 +17,11 @@ class UWeatherSubsystem;
 class UWeatherAsset;
 
 
+
 /**
  *
  */
-UCLASS()
+UCLASS(Abstract)
 class AWeatherRegionActor : public ARegionActor
 {
 
@@ -31,26 +30,25 @@ class AWeatherRegionActor : public ARegionActor
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UWeatherAsset> WeatherAsset;
+	TArray<TObjectPtr<UWeatherAsset>> WeatherAssets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int Priority = 20;
+	int WeatherPriority = 20;
 
 
 	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UWeatherSubsystem> WeatherSubsystem;
 
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UWeatherAsset> CurrentWeatherAsset;
+
 
 	void AddWeather();
 	void RemoveWeather();
 
-
 	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
-
-
-	UFUNCTION()
-	void HandleWeatherCanChange();
+	void HandleWeatherCanChanged();
 
 protected:
 

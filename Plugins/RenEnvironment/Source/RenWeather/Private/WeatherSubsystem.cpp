@@ -6,51 +6,48 @@
 // Engine Header
 
 // Project Header
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-#include "RenEnvironment/Public/Asset/WeatherAsset.h"
 #include "RenEnvironment/Public/EnvironmentWorldSettings.h"
 
+#include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherController.h"
 
 
 
-void UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
+bool UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
 	if (!IsValid(WeatherController) || !IsValid(WeatherAsset))
 	{
 		LOG_ERROR(LogTemp, "WeatherController or WeatherAsset is not valid");
-		return;
+		return false;
 	}
-	WeatherController->AddItem(WeatherAsset, Priority);
+	return WeatherController->AddItem(WeatherAsset, Priority);
 }
 
-void UWeatherSubsystem::RemoveWeather(int Priority)
+bool UWeatherSubsystem::RemoveWeather(int Priority)
 {
 	if (!IsValid(WeatherController))
 	{
 		LOG_ERROR(LogTemp, "WeatherController is not valid");
-		return;
+		return false;
 	}
-	WeatherController->RemoveItem(Priority);
+	return WeatherController->RemoveItem(Priority);
+}
+
+UWeatherController* UWeatherSubsystem::GetWeatherController() const
+{
+	return WeatherController;
 }
 
 
 
 void UWeatherSubsystem::CreateWeatherTimer()
 {
-	TimerUtils::StartTimer(WeatherTimerHandle, this, &UWeatherSubsystem::HandleWeatherTimer, 10.0f);
+	TimerUtils::StartTimer(WeatherTimerHandle, this, &UWeatherSubsystem::HandleWeatherTimer, WeatherChangeTime);
 }
-
-void UWeatherSubsystem::HandleWeatherTimer()
-{
-	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather can change"));
-	OnWeatherChanged.Broadcast();
-}
-
 
 
 bool UWeatherSubsystem::CreateWeatherController()
@@ -67,6 +64,9 @@ bool UWeatherSubsystem::CreateWeatherController()
 		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
 		return false;
 	}
+
+	WeatherController->OnWeatherChanged.AddUObject(this, &UWeatherSubsystem::HandleItemChanged);
+	WeatherController->OnWeatherRemoved.AddUObject(this, &UWeatherSubsystem::HandleItemRemoved);
 
 	return true;
 }
@@ -85,11 +85,49 @@ void UWeatherSubsystem::CreateWeatherMaterialCollection()
 
 
 
-void UWeatherSubsystem::HandleWorldBeginTearDown(UWorld* World)
+void UWeatherSubsystem::HandleWeatherTimer()
 {
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather changed"));
+	OnWeatherCanChange.Broadcast();
 }
 
+void UWeatherSubsystem::HandleItemChanged(UWeatherAsset* WeatherAsset)
+{
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
+	TSet<TSubclassOf<AWeatherEffectActor>> WeatherEffects = WeatherAsset->WeatherEffects;
+	for(auto& WeatherEffect : WeatherEffects)
+	{
+		AWeatherEffectActor* EffectActor = EffectActors.FindRef(WeatherEffect);
+		if (IsValid(EffectActor))
+		{
+			EffectActor->ActivateEffect();
+		}
+		else
+		{
+			AWeatherEffectActor* NewEffectActor = GetWorld()->SpawnActor<AWeatherEffectActor>(WeatherEffect, SpawnParameters);
+			if (IsValid(NewEffectActor))
+			{
+				NewEffectActor->ActivateEffect();
+				EffectActors.Add(WeatherEffect, NewEffectActor);
+			}
+		}
+	}
+}
+
+void UWeatherSubsystem::HandleItemRemoved(UWeatherAsset* WeatherAsset)
+{
+	TSet<TSubclassOf<AWeatherEffectActor>> WeatherEffects = WeatherAsset->WeatherEffects;
+	for (auto& WeatherEffect : WeatherEffects)
+	{
+		AWeatherEffectActor* EffectActor = EffectActors.FindRef(WeatherEffect);
+		if (IsValid(EffectActor))
+		{
+			EffectActor->DeactivateEffect();
+		}
+	}
+}
 
 bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
@@ -100,9 +138,6 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem initialized"));
-
-	FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
-	FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UWeatherSubsystem::HandleWorldBeginTearDown);
 }
 
 void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
@@ -127,6 +162,16 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	{
 		CreateWeatherTimer();
 		CreateWeatherMaterialCollection();
+
+		UPrimaryDataAsset* PrimaryWeatherAsset = EnvironmentAsset->DefaultWeather;
+		if (IsValid(PrimaryWeatherAsset))
+		{
+			UWeatherAsset* DefaultWeatherAsset = Cast<UWeatherAsset>(PrimaryWeatherAsset);
+			if (IsValid(DefaultWeatherAsset))
+			{
+				AddWeather(DefaultWeatherAsset, 0);
+			}
+		}
 	}
 }
 
@@ -134,10 +179,21 @@ void UWeatherSubsystem::Deinitialize()
 {
 	if (IsValid(WeatherController))
 	{
+		WeatherController->OnWeatherChanged.RemoveAll(this);
+		WeatherController->OnWeatherRemoved.RemoveAll(this);
 		WeatherController->CleanUpItems();
 		WeatherController->MarkAsGarbage();
 	}
 	WeatherController = nullptr;
+
+	for(auto& EffectActor : EffectActors)
+	{
+		if (IsValid(EffectActor.Value))
+		{
+			EffectActor.Value->Destroy();
+		}
+	}
+	EffectActors.Empty();
 
 	TimerUtils::ClearTimer(WeatherTimerHandle, this);
 

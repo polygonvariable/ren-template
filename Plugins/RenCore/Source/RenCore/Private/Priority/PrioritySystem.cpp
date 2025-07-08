@@ -91,74 +91,95 @@ void UPrioritySystem::HandleItemChanged(const FInstancedStruct& Item)
 
 
 
-void UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
+bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 {
 	if (!IsValid(Item) || Priority < 0)
 	{
 		LOG_ERROR(LogTemp, TEXT("Item is not valid or priority is less than 0"));
-		return;
+		return false;
 	}
 
-	int OldPriority = GetHighestPriority();
-
-	Items.Add(Priority, Item);
-	HandleItemAdded(Item);
-
-	if (Priority > OldPriority)
+	TWeakObjectPtr<UObject> FoundItem = Items.FindRef(Priority);
+	UObject* FoundItemPtr = FoundItem.Get();
+	if (FoundItemPtr == Item)
 	{
-		HandleItemChanged(Item);
+		LOG_WARNING(LogTemp, TEXT("Item already exists at priority"));
+		return false;
 	}
 	else
 	{
-		LOG_WARNING(LogTemp, TEXT("Priority is less than highest priority, added in queue"));
-	}
-}
-
-void UObjectPrioritySystem::RemoveItem(int Priority)
-{
-	int OldPriority = GetHighestPriority();
-	UObject* OldItem = Items.FindRef(Priority);
-
-	Items.Remove(Priority);
-
-	if (IsValid(OldItem))
-	{
-		HandleItemRemoved(OldItem);
-	}
-
-	if (Priority != OldPriority)
-	{
-		return;
-	}
-
-	if (Items.Num() == 0)
-	{
-		HandleNoItemsLeft();
-		return;
-	}
-
-	int NewPriority = GetHighestPriority();
-	UObject* NewItem = Items.FindRef(NewPriority);
-
-	if (IsValid(NewItem))
-	{
-		HandleItemChanged(NewItem);
-	}
-}
-
-int UObjectPrioritySystem::GetHighestPriority() const
-{
-	if (Items.Num() == 0) return -1;
-
-	int Highest = TNumericLimits<int>::Lowest();
-	for (const auto& Pair : Items)
-	{
-		if (Pair.Key > Highest)
+		if (IsValid(FoundItemPtr))
 		{
-			Highest = Pair.Key;
+			HandleItemRemoved(FoundItemPtr, true);
+		}
+
+		Items.Add(Priority, Item);
+		HandleItemAdded(Item);
+
+		if (Priority >= HighestPriority)
+		{
+			HighestPriority = Priority;
+			HandleItemChanged(Item);
+		}
+		else
+		{
+			LOG_WARNING(LogTemp, TEXT("Priority is less than highest priority, added in queue"));
+		}
+
+		return true;
+	}
+}
+
+bool UObjectPrioritySystem::RemoveItem(int Priority)
+{
+	TWeakObjectPtr<UObject> RemovedItem;
+	if (!Items.RemoveAndCopyValue(Priority, RemovedItem))
+	{
+		LOG_ERROR(LogTemp, TEXT("Item failed to remove"));
+		return false;
+	}
+
+	UObject* RemovedItemPtr = RemovedItem.Get();
+	if (IsValid(RemovedItemPtr))
+	{
+		HandleItemRemoved(RemovedItemPtr, false);
+	}
+
+	if (Priority == HighestPriority)
+	{
+		if (Items.Num() == 0)
+		{
+			HighestPriority = -1;
+			HandleNoItemsLeft();
+		}
+		else
+		{
+			CalculateHighestPriority();
+
+			TWeakObjectPtr<UObject> NewItem = Items.FindRef(HighestPriority);
+			UObject* NewItemPtr = NewItem.Get();
+			if (IsValid(NewItemPtr))
+			{
+				HandleItemChanged(NewItemPtr);
+			}
 		}
 	}
-	return Highest;
+
+	return true;
+}
+
+void UObjectPrioritySystem::CalculateHighestPriority()
+{
+	int NewPriority = TNumericLimits<int>::Lowest();
+	for (const auto& Pair : Items)
+	{
+		if (Pair.Key > NewPriority)
+		{
+			NewPriority = Pair.Key;
+		}
+	}
+	
+	HighestPriority = NewPriority;
 }
 
 void UObjectPrioritySystem::CleanUpItems()
@@ -170,7 +191,7 @@ void UObjectPrioritySystem::HandleItemAdded(UObject* Item)
 {
 }
 
-void UObjectPrioritySystem::HandleItemRemoved(UObject* Item)
+void UObjectPrioritySystem::HandleItemRemoved(UObject* Item, bool bWasReplaced)
 {
 }
 

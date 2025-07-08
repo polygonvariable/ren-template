@@ -5,6 +5,10 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "GameFramework/Actor.h"
+
+// Project Headers
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 
 // Generated Headers
 #include "WeatherAsset.generated.h"
@@ -17,7 +21,7 @@ class UEnvironmentProfileAsset;
  *
  */
 UCLASS()
-class RENENVIRONMENT_API UWeatherAsset : public UPrimaryDataAsset
+class UWeatherAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
@@ -39,6 +43,9 @@ public:
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialOpacity = 0.0f;
 
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "100", ClampMin = "-1", ClampMax = "100"))
+    float MaterialWind = 0.0f;
+
     UPROPERTY(EditDefaultsOnly)
     FColor MaterialColor = FColor::Transparent;
 
@@ -50,5 +57,28 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TMap<TObjectPtr<UEnvironmentProfileAsset>, int> EnvironmentProfiles;
 
+
+    UPROPERTY(EditDefaultsOnly)
+    TSet<TSubclassOf<AWeatherEffectActor>> WeatherEffects;
+
 };
 
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class AWeatherEffectActor : public AActor
+{
+
+    GENERATED_BODY()
+
+public:
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void ActivateEffect();
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void DeactivateEffect();
+
+};
