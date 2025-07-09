@@ -43,7 +43,10 @@ class UEnvironmentFogProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentFogProfileAsset();
+    UEnvironmentFogProfileAsset()
+    {
+        ProfileType = EEnvironmentProfileType::Fog;
+    }
 
 
 
@@ -65,7 +68,10 @@ class UEnvironmentLightProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentLightProfileAsset();
+    UEnvironmentLightProfileAsset()
+    {
+        ProfileType = EEnvironmentProfileType::Light;
+    }
 
 
 
@@ -96,7 +102,10 @@ class UEnvironmentAtmosphereProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentAtmosphereProfileAsset();
+    UEnvironmentAtmosphereProfileAsset()
+    {
+        ProfileType = EEnvironmentProfileType::Atmosphere;
+    }
 
 
 

@@ -8,9 +8,9 @@
 // Project Header
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
 
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherController.h"
@@ -94,7 +94,7 @@ void UWeatherSubsystem::CreateWeatherMaterialCollection()
 void UWeatherSubsystem::HandleWeatherTimer()
 {
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather changed"));
-	OnWeatherRefresh.Broadcast();
+	OnWeatherRefreshed.Broadcast();
 }
 
 bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
@@ -113,15 +113,15 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem components updated"));
 
-	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
+	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
 	{
 		LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
 		return;
 	}
 
-	EnvironmentAsset = WorldSettings->EnvironmentAsset;
-	if (!IsValid(WorldSettings->EnvironmentAsset))
+	EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
+	if (!IsValid(EnvironmentAsset))
 	{
 		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
 		return;

@@ -37,7 +37,7 @@ void AWeatherRegionActor::RemoveWeather()
     WeatherSubsystem->RemoveWeather(WeatherPriority);
 }
 
-void AWeatherRegionActor::HandleWeatherRefresh()
+void AWeatherRegionActor::HandleWeatherRefreshed()
 {
     CurrentIndex = (CurrentIndex == 0) ? 1 : 0;
 
@@ -74,7 +74,7 @@ void AWeatherRegionActor::BeginPlay()
     UWeatherSubsystem* WeatherSubsystemPtr = GetWorld()->GetSubsystem<UWeatherSubsystem>();
 	if (IsValid(WeatherSubsystemPtr))
 	{
-        WeatherSubsystemPtr->OnWeatherRefresh.AddUObject(this, &AWeatherRegionActor::HandleWeatherRefresh);
+        WeatherSubsystemPtr->OnWeatherRefreshed.AddUObject(this, &AWeatherRegionActor::HandleWeatherRefreshed);
         WeatherSubsystem = WeatherSubsystemPtr;
 	}
 
@@ -88,7 +88,7 @@ void AWeatherRegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
     if (IsValid(WeatherSubsystemPtr))
     {
-		WeatherSubsystemPtr->OnWeatherRefresh.RemoveAll(this);
+		WeatherSubsystemPtr->OnWeatherRefreshed.RemoveAll(this);
     }
     WeatherSubsystem.Reset();
 

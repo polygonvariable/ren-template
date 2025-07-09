@@ -13,7 +13,6 @@
 #include "EnvironmentController.generated.h"
 
 // Forward Declarations
-class UTimer;
 
 
 

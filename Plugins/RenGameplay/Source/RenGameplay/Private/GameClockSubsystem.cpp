@@ -4,14 +4,14 @@
 #include "GameClockSubsystem.h"
 
 // Engine Headers
-#include "Kismet/GameplayStatics.h"
+#include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Record/ClockRecord.h"
 #include "RenCore/Public/Storage/StorageInterface.h"
+#include "RenCore/Public/WorldConfigSettings.h"
 
 #include "RenAsset/Public/Game/GameClockAsset.h"
 
@@ -221,31 +221,6 @@ void UGameClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("ClockSubsystem initialized"));
-
-	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
-	if (IsValid(GameMetadata))
-	{
-		UDataAsset* LoadedAsset = GameMetadata->ClockAsset.LoadSynchronous();
-		if (IsValid(LoadedAsset))
-		{
-			UGameClockAsset* LoadedClockAsset = Cast<UGameClockAsset>(LoadedAsset);
-			if (IsValid(LoadedClockAsset))
-			{
-				ClockAsset = LoadedClockAsset;
-
-				TotalSecondsInADay = LoadedClockAsset->TotalSecondsInADay;
-				TotalDaysInAYear = LoadedClockAsset->TotalDaysInAYear;
-			}
-			else
-			{
-				LOG_ERROR(LogTemp, TEXT("Loaded ClockAsset is not of type UGameClockAsset"));
-			}
-		}
-		else
-		{
-			LOG_ERROR(LogTemp, TEXT("Failed to load ClockAsset"));
-		}
-	}
 }
 
 void UGameClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
@@ -253,8 +228,32 @@ void UGameClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogTemp, TEXT("ClockSubsystem OnWorldComponentsUpdated"));
 
+
 	FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
 	FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UGameClockSubsystem::HandleWorldBeginTearDown);
+
+
+	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
+	if (IsValid(WorldSettings))
+	{
+		UGameClockAsset* LoadedAsset = Cast<UGameClockAsset>(WorldSettings->ClockAsset);
+		if (IsValid(LoadedAsset))
+		{
+			TotalSecondsInADay = LoadedAsset->TotalSecondsInADay;
+			TotalDaysInAYear = LoadedAsset->TotalDaysInAYear;
+
+			ClockAsset = LoadedAsset;
+		}
+		else
+		{
+			LOG_ERROR(LogTemp, TEXT("Loaded ClockAsset is not of type UGameClockAsset"));
+		}
+	}
+	else
+	{
+		LOG_ERROR(LogTemp, TEXT("WorldSettings is not valid"));
+	}
+
 
 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
 	if (IsValid(GameInstance))

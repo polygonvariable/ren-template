@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenWeather/Public/WeatherAsset.h"
 
 // Generated Headers
 #include "WeatherWeight.generated.h"

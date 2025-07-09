@@ -39,28 +39,5 @@ void URenWorldSubsystem::Deinitialize()
 
 bool URenWorldSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
-	if (!Object)
-	{
-		LOG_ERROR(LogTemp, "Object is null");
-		return false;
-	}
-
-	const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>();
-	if (!GameMetadata)
-	{
-		LOG_ERROR(LogTemp, "GameMetadataSettings is null");
-		return false;
-	}
-
-	for (auto& SubsystemClass : GameMetadata->SubsystemClasses)
-	{
-		if (SubsystemClass == this->GetClass())
-		{
-			LOG_WARNING(LogTemp, "Subsystem found");
-			return true;
-		}
-	}
-
-	LOG_ERROR(LogTemp, "Subsystem not found");
 	return false;
 }

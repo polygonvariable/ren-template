@@ -45,7 +45,7 @@ protected:
 
 	void AddWeather();
 	void RemoveWeather();
-	void HandleWeatherRefresh();
+	void HandleWeatherRefreshed();
 
 protected:
 

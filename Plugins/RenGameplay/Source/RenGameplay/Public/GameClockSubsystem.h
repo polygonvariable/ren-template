@@ -13,41 +13,31 @@
 #include "GameClockSubsystem.generated.h"
 
 // Forward Declarations
-class UTimer;
 class UGameClockAsset;
+
 
 
 /**
  *
  */
 UCLASS()
-class RENGAMEPLAY_API UGameClockSubsystem : public UWorldSubsystem, public IGameClockSubsystemInterface
+class UGameClockSubsystem : public UWorldSubsystem, public IGameClockSubsystemInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY()
 	float TotalSecondsInADay = 60.0f; // Total time of a day in game
-
-	UPROPERTY()
 	int TotalDaysInAYear = 30; // Total days in game to complete a year
 
 
-
-	UFUNCTION()
 	bool StartClock();
-
-	UFUNCTION()
 	bool StopClock();
-
 
 
 	UFUNCTION(BlueprintPure)
 	UGameClockAsset* GetClockAsset() const;
-
-
 
 	UFUNCTION(BlueprintCallable)
 	float GetCurrentTime() const;
@@ -61,12 +51,8 @@ public:
 	UFUNCTION(BlueprintPure)
 	FString GetFormattedTime(const FString& Format = TEXT("hh:mm:ss ap")) const;
 
-
-
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentDay() const;
-
-
 
 	UFUNCTION(BlueprintPure)
 	bool IsDay() const;

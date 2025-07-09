@@ -7,11 +7,11 @@
 
 // Project Header
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/WorldConfigSettings.h"
 
-#include "Asset/EnvironmentAsset.h"
-#include "Asset/EnvironmentProfileAsset.h"
-#include "Controller/EnvironmentController.h"
-#include "EnvironmentWorldSettings.h"
+#include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
+#include "RenEnvironment/Public/Controller/EnvironmentController.h"
 
 
 
@@ -125,10 +125,10 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogTemp, TEXT("EnvironmentSubsystem OnWorldComponentsUpdated"));
 
-	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
+	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
 	if (IsValid(WorldSettings))
 	{
-		EnvironmentAsset = WorldSettings->EnvironmentAsset;
+		EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
 		if (IsValid(EnvironmentAsset))
 		{
 			for (auto& Controller : EnvironmentAsset->StackedControllers)

@@ -9,6 +9,7 @@
 // Project Header
 #include "RenCore/Public/Macro/LogMacro.h"
 
+#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 
 #include "RenWeather/Public/WeatherAsset.h"
@@ -110,7 +111,7 @@ void UWeatherController::HandleItemRemoved(UObject* Item, bool bWasReplaced)
 	UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>();
 	if (IsValid(EnvironmentSubsystem))
 	{
-		for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
+		for (const auto& Kvp : WeatherAsset->EnvironmentProfiles)
 		{
 			if (Kvp.Key)
 			{

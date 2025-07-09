@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Subsystem/SeasonSubsystem.h"
+#include "SeasonSubsystem.h"
 
 // Engine Header
 #include "Kismet/KismetMaterialLibrary.h"
@@ -13,8 +13,8 @@
 #include "RenCore/Public/Macro/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
-#include "RenEnvironment/Public/Asset/SeasonAsset.h"
-#include "RenEnvironment/Public/EnvironmentWorldSettings.h"
+
+#include "RenSeason/Public/SeasonAsset.h"
 
 
 
@@ -27,7 +27,7 @@ USeasonAsset* USeasonSubsystem::GetCurrentSeason()
 USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, int TotalDays, float& Alpha, float& CurveAlpha) const
 {
 
-	if (!IsValid(EnvironmentAsset))
+	/*if (!IsValid(EnvironmentAsset))
 	{
 		PRINT_ERROR(LogTemp, 2.0f, TEXT("EnvironmentAsset or GameClockAsset is not valid"));
 		return nullptr;
@@ -70,7 +70,7 @@ USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, int TotalDays, fl
 	}
 
 	Alpha = 0.0f;
-	CurveAlpha = 0.0f;
+	CurveAlpha = 0.0f;*/
 	return nullptr;
 }
 
@@ -78,7 +78,7 @@ USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, int TotalDays, fl
 
 bool USeasonSubsystem::IsSeasonsValid() const
 {
-	if (!IsValid(EnvironmentAsset) || !IsValid(GameClockAsset))
+	/*if (!IsValid(EnvironmentAsset) || !IsValid(GameClockAsset))
 	{
 		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset or GameClockAsset is invalid"));
 		return false;
@@ -124,7 +124,7 @@ bool USeasonSubsystem::IsSeasonsValid() const
 	if (FirstSeason->SeasonStartDay != 1 || LastSeason->SeasonEndDay != GameClockAsset->TotalDaysInAYear) {
 		LOG_ERROR(LogTemp, TEXT("First season's start day is not 1 or last season's doesnt cover the whole year"));
 		return false;
-	}
+	}*/
 
 	return true;
 }
@@ -136,7 +136,7 @@ bool USeasonSubsystem::IsSeasonsValid() const
 
 void USeasonSubsystem::HandleDayChange(int CurrentDay)
 {
-	if (!SeasonPrameterInstance || !IsValid(GameClockAsset))
+	/*if (!SeasonPrameterInstance || !IsValid(GameClockAsset))
 	{
 		PRINT_ERROR(LogTemp, 2.0f, TEXT("Season ParameterCollection or GameClockAsset is invalid"));
 		return;
@@ -157,7 +157,7 @@ void USeasonSubsystem::HandleDayChange(int CurrentDay)
 		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonRoughness"), FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
 		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonOpacity"), FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
 		SeasonPrameterInstance->SetVectorParameterValue(TEXT("SeasonColor"), FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
-	}
+	}*/
 }
 
 
@@ -172,7 +172,7 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem initialized"));
 
 
-	if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
+	/*if (const UGameMetadataSettings* GameMetadata = GetDefault<UGameMetadataSettings>())
 	{
 		if (GameMetadata->ClockAsset.IsNull())
 		{
@@ -186,7 +186,7 @@ void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 			LOG_ERROR(LogTemp, TEXT("ClockAsset cast failed or is not valid"));
 			return;
 		}
-	}
+	}*/
 }
 
 void USeasonSubsystem::PostInitialize()
@@ -197,7 +197,7 @@ void USeasonSubsystem::PostInitialize()
 
 	if (UWorld* World = GetWorld())
 	{
-		AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(World->GetWorldSettings());
+		/*AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(World->GetWorldSettings());
 		if (!IsValid(WorldSettings))
 		{
 			LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
@@ -216,7 +216,7 @@ void USeasonSubsystem::PostInitialize()
 		{
 			LOG_ERROR(LogTemp, TEXT("Season MaterialPrameterCollectionInstance is invalid"));
 			return;
-		}
+		}*/
 
 		/*if (GameClockSubsystem = World->GetSubsystem<UGameClockSubsystem>())
 		{

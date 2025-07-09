@@ -7,14 +7,11 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 // Generated Headers
 #include "EnvironmentAsset.generated.h"
 
-
 // Forward Declarations
-class USeasonAsset;
 class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
@@ -26,7 +23,7 @@ class UObjectPrioritySystem;
  *
  */
 UCLASS()
-class UEnvironmentAsset : public UPrimaryDataAsset
+class RENENVIRONMENT_API UEnvironmentAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
@@ -38,7 +35,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSet<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
-
 
 
     UPROPERTY(EditDefaultsOnly)
@@ -62,11 +58,12 @@ public:
     float WeatherRefreshDuration = 5.0f;
 
 
+
     UPROPERTY(EditDefaultsOnly)
     bool bEnableSeason = true;
 
-    UPROPERTY(EditDefaultsOnly)
-    TArray<USeasonAsset*> DefaultSeasons;
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenSeason.SeasonAsset"))
+    TArray<TObjectPtr<UPrimaryDataAsset>> DefaultSeasons;
 
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> SeasonMaterialParameter;

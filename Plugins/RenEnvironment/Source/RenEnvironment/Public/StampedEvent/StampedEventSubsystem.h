@@ -7,7 +7,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "StampedEvent/StampedEventType.h"
+#include "RenEnvironment/Public/StampedEvent/StampedEventType.h"
 
 // Generated Headers
 #include "StampedEventSubsystem.generated.h"

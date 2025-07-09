@@ -4,7 +4,3 @@
 
 #include "CoreMinimal.h"
 
-#define TEXT_INVALID \
-    TEXT("INVALID")
-
-

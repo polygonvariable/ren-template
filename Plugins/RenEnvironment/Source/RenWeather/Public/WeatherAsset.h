@@ -5,10 +5,8 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "GameFramework/Actor.h"
 
 // Project Headers
-#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 
 // Generated Headers
 #include "WeatherAsset.generated.h"

@@ -2,7 +2,6 @@
 
 // Parent Header
 #include "Actor/EnvironmentActor.h"
-#include "Kismet/GameplayStatics.h"
 
 // Engine Headers
 #include "Components/ExponentialHeightFogComponent.h"
@@ -12,7 +11,7 @@
 #include "Components/StaticMeshComponent.h"
 
 // Project Header
-#include "Component/OrbitalLightComponent.h"
+#include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 
 
 AEnvironmentActor::AEnvironmentActor()

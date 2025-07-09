@@ -7,14 +7,14 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenWeather/Public/WeatherController.h"
+#include "RenWeather/Public/WeatherDelegate.h"
 
 // Generated Headers
 #include "WeatherSubsystem.generated.h"
 
 // Forward Declarations
-class UWeatherController;
 class UEnvironmentAsset;
+class UWeatherController;
 class UWeatherAsset;
 
 
@@ -67,8 +67,7 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE(FOnWeatherRefresh);
-	FOnWeatherRefresh OnWeatherRefresh;
+	FOnWeatherRefreshed OnWeatherRefreshed;
 
 };
 

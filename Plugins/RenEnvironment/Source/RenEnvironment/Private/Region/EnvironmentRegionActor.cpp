@@ -5,13 +5,10 @@
 
 // Engine Headers
 #include "Components/PrimitiveComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/Character.h"
 
 // Project Headers
 #include "RenCore/Public/Macro/LogMacro.h"
 
-#include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 
 

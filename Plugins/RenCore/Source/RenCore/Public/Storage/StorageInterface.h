@@ -7,12 +7,12 @@
 #include "UObject/Interface.h"
 
 // Project Headers
+#include "GameFramework/SaveGame.h"
 
 // Generated Headers
 #include "StorageInterface.generated.h"
 
 // Forward Declarations
-class USaveGame;
 
 
 

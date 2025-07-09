@@ -8,16 +8,14 @@
 // Project Headers
 #include "RenCore/Public/Priority/PrioritySystem.h"
 
+#include "RenWeather/Public/WeatherDelegate.h"
+
 // Generated Headers
 #include "WeatherController.generated.h"
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
 class UWeatherAsset;
-
-// Delegate Declarations
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherChanged, UWeatherAsset* /* WeatherAsset */);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherRemoved, UWeatherAsset* /* WeatherAsset */);
 
 
 
