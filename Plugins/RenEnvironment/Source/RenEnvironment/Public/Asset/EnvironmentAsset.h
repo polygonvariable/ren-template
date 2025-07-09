@@ -18,6 +18,7 @@ class USeasonAsset;
 class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
+class UObjectPrioritySystem;
 
 
 
@@ -54,6 +55,11 @@ public:
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
 
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherController"))
+    TSubclassOf<UObjectPrioritySystem> WeatherController;
+
+    UPROPERTY(EditDefaultsOnly)
+    float WeatherRefreshDuration = 5.0f;
 
 
     UPROPERTY(EditDefaultsOnly)

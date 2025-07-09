@@ -37,16 +37,21 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 	return WeatherController->RemoveItem(Priority);
 }
 
-UWeatherController* UWeatherSubsystem::GetWeatherController() const
+
+
+FOnWeatherChanged& UWeatherSubsystem::GetOnWeatherChanged()
 {
-	return WeatherController;
+	return WeatherController->OnWeatherChanged;
+}
+FOnWeatherRemoved& UWeatherSubsystem::GetOnWeatherRemoved()
+{
+	return WeatherController->OnWeatherRemoved;
 }
 
 
-
-void UWeatherSubsystem::CreateWeatherTimer()
+void UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
 {
-	TimerUtils::StartTimer(WeatherTimerHandle, this, &UWeatherSubsystem::HandleWeatherTimer, WeatherChangeTime);
+	TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(RefreshTime, 1.0f));
 }
 
 
@@ -58,19 +63,21 @@ bool UWeatherSubsystem::CreateWeatherController()
 		return false;
 	}
 
-	WeatherController = NewObject<UWeatherController>(this);
+	if (!IsValid(EnvironmentAsset) || !IsValid(EnvironmentAsset->WeatherController))
+	{
+		LOG_ERROR(LogTemp, " EnvironmentAsset, WeatherController Class is not valid");
+		return false;
+	}
+
+	WeatherController = NewObject<UWeatherController>(this, EnvironmentAsset->WeatherController);
 	if (!IsValid(WeatherController))
 	{
 		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
 		return false;
 	}
 
-	WeatherController->OnWeatherChanged.AddUObject(this, &UWeatherSubsystem::HandleItemChanged);
-	WeatherController->OnWeatherRemoved.AddUObject(this, &UWeatherSubsystem::HandleItemRemoved);
-
 	return true;
 }
-
 
 
 void UWeatherSubsystem::CreateWeatherMaterialCollection()
@@ -84,49 +91,10 @@ void UWeatherSubsystem::CreateWeatherMaterialCollection()
 }
 
 
-
 void UWeatherSubsystem::HandleWeatherTimer()
 {
 	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weather changed"));
-	OnWeatherCanChange.Broadcast();
-}
-
-void UWeatherSubsystem::HandleItemChanged(UWeatherAsset* WeatherAsset)
-{
-	FActorSpawnParameters SpawnParameters;
-	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-	TSet<TSubclassOf<AWeatherEffectActor>> WeatherEffects = WeatherAsset->WeatherEffects;
-	for(auto& WeatherEffect : WeatherEffects)
-	{
-		AWeatherEffectActor* EffectActor = EffectActors.FindRef(WeatherEffect);
-		if (IsValid(EffectActor))
-		{
-			EffectActor->ActivateEffect();
-		}
-		else
-		{
-			AWeatherEffectActor* NewEffectActor = GetWorld()->SpawnActor<AWeatherEffectActor>(WeatherEffect, SpawnParameters);
-			if (IsValid(NewEffectActor))
-			{
-				NewEffectActor->ActivateEffect();
-				EffectActors.Add(WeatherEffect, NewEffectActor);
-			}
-		}
-	}
-}
-
-void UWeatherSubsystem::HandleItemRemoved(UWeatherAsset* WeatherAsset)
-{
-	TSet<TSubclassOf<AWeatherEffectActor>> WeatherEffects = WeatherAsset->WeatherEffects;
-	for (auto& WeatherEffect : WeatherEffects)
-	{
-		AWeatherEffectActor* EffectActor = EffectActors.FindRef(WeatherEffect);
-		if (IsValid(EffectActor))
-		{
-			EffectActor->DeactivateEffect();
-		}
-	}
+	OnWeatherRefresh.Broadcast();
 }
 
 bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
@@ -143,6 +111,7 @@ void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
 	Super::OnWorldComponentsUpdated(InWorld);
+	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem components updated"));
 
 	AEnvironmentWorldSettings* WorldSettings = Cast<AEnvironmentWorldSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
@@ -152,7 +121,7 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 
 	EnvironmentAsset = WorldSettings->EnvironmentAsset;
-	if (!IsValid(EnvironmentAsset))
+	if (!IsValid(WorldSettings->EnvironmentAsset))
 	{
 		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
 		return;
@@ -160,17 +129,13 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	if (CreateWeatherController())
 	{
-		CreateWeatherTimer();
+		CreateWeatherTimer(EnvironmentAsset->WeatherRefreshDuration);
 		CreateWeatherMaterialCollection();
 
-		UPrimaryDataAsset* PrimaryWeatherAsset = EnvironmentAsset->DefaultWeather;
-		if (IsValid(PrimaryWeatherAsset))
+		UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(EnvironmentAsset->DefaultWeather);
+		if (IsValid(WeatherAsset))
 		{
-			UWeatherAsset* DefaultWeatherAsset = Cast<UWeatherAsset>(PrimaryWeatherAsset);
-			if (IsValid(DefaultWeatherAsset))
-			{
-				AddWeather(DefaultWeatherAsset, 0);
-			}
+			AddWeather(WeatherAsset, 0);
 		}
 	}
 }
@@ -179,23 +144,13 @@ void UWeatherSubsystem::Deinitialize()
 {
 	if (IsValid(WeatherController))
 	{
-		WeatherController->OnWeatherChanged.RemoveAll(this);
-		WeatherController->OnWeatherRemoved.RemoveAll(this);
 		WeatherController->CleanUpItems();
 		WeatherController->MarkAsGarbage();
 	}
 	WeatherController = nullptr;
+	EnvironmentAsset = nullptr;
 
-	for(auto& EffectActor : EffectActors)
-	{
-		if (IsValid(EffectActor.Value))
-		{
-			EffectActor.Value->Destroy();
-		}
-	}
-	EffectActors.Empty();
-
-	TimerUtils::ClearTimer(WeatherTimerHandle, this);
+	TimerUtils::ClearTimer(WeatherTimer, this);
 
 	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem deinitialized"));
 	Super::Deinitialize();

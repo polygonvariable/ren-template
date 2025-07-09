@@ -30,13 +30,26 @@ void AWeatherRegionActor::RemoveWeather()
     UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
     if (!IsValid(WeatherSubsystemPtr))
     {
-        PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherSubsystem or WeatherAsset is not valid"));
+        PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherSubsystem is not valid"));
         return;
     }
 
     WeatherSubsystem->RemoveWeather(WeatherPriority);
 }
 
+void AWeatherRegionActor::HandleWeatherRefresh()
+{
+    CurrentIndex = (CurrentIndex == 0) ? 1 : 0;
+
+    if (WeatherAssets.IsValidIndex(CurrentIndex))
+    {
+        CurrentWeatherAsset = WeatherAssets[CurrentIndex];
+        if (bPlayerInRegion)
+        {
+            AddWeather();
+        }
+    }
+}
 
 void AWeatherRegionActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -56,29 +69,12 @@ void AWeatherRegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComp
     }
 }
 
-void AWeatherRegionActor::HandleWeatherCanChanged()
-{
-    int Length = WeatherAssets.Num();
-    int RandomIndex = FMath::RandRange(0, Length - 1);
-
-    if (WeatherAssets.IsValidIndex(RandomIndex))
-    {
-		CurrentWeatherAsset = WeatherAssets[RandomIndex];
-        if (bPlayerInRegion)
-        {
-            // RemoveWeather();
-            AddWeather();
-        }
-    }
-}
-
-
 void AWeatherRegionActor::BeginPlay()
 {
     UWeatherSubsystem* WeatherSubsystemPtr = GetWorld()->GetSubsystem<UWeatherSubsystem>();
 	if (IsValid(WeatherSubsystemPtr))
 	{
-        WeatherSubsystemPtr->OnWeatherCanChange.AddUObject(this, &AWeatherRegionActor::HandleWeatherCanChanged);
+        WeatherSubsystemPtr->OnWeatherRefresh.AddUObject(this, &AWeatherRegionActor::HandleWeatherRefresh);
         WeatherSubsystem = WeatherSubsystemPtr;
 	}
 
@@ -92,7 +88,7 @@ void AWeatherRegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
     if (IsValid(WeatherSubsystemPtr))
     {
-		WeatherSubsystemPtr->OnWeatherCanChange.RemoveAll(this);
+		WeatherSubsystemPtr->OnWeatherRefresh.RemoveAll(this);
     }
     WeatherSubsystem.Reset();
 

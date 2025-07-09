@@ -135,7 +135,7 @@ bool UObjectPrioritySystem::RemoveItem(int Priority)
 	TWeakObjectPtr<UObject> RemovedItem;
 	if (!Items.RemoveAndCopyValue(Priority, RemovedItem))
 	{
-		LOG_ERROR(LogTemp, TEXT("Item failed to remove"));
+		LOG_ERROR(LogTemp, TEXT("Item not found"));
 		return false;
 	}
 

@@ -34,21 +34,23 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int WeatherPriority = 20;
+	int CurrentIndex = 0;
 
-
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	TWeakObjectPtr<UWeatherSubsystem> WeatherSubsystem;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	TObjectPtr<UWeatherAsset> CurrentWeatherAsset;
 
 
 	void AddWeather();
 	void RemoveWeather();
+	void HandleWeatherRefresh();
+
+protected:
 
 	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
-	void HandleWeatherCanChanged();
 
 protected:
 

@@ -7,6 +7,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
+#include "RenWeather/Public/WeatherController.h"
 
 // Generated Headers
 #include "WeatherSubsystem.generated.h"
@@ -15,7 +16,7 @@
 class UWeatherController;
 class UEnvironmentAsset;
 class UWeatherAsset;
-class AWeatherEffectActor;
+
 
 
 /**
@@ -34,18 +35,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool RemoveWeather(int Priority);
+	
 
-	UWeatherController* GetWeatherController() const;
+	FOnWeatherChanged& GetOnWeatherChanged();
+	FOnWeatherRemoved& GetOnWeatherRemoved();
 
 protected:
 
-	float WeatherChangeTime = 5.0f;
-
 	UPROPERTY()
-	TMap<TSubclassOf<AWeatherEffectActor>, TObjectPtr<AWeatherEffectActor>> EffectActors;
-
-	UPROPERTY()
-	FTimerHandle WeatherTimerHandle;
+	FTimerHandle WeatherTimer;
 
 	UPROPERTY()
 	TObjectPtr<UWeatherController> WeatherController;
@@ -54,14 +52,11 @@ protected:
 	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
 
-	void CreateWeatherTimer();
+	void CreateWeatherTimer(float RefreshTime);
 	bool CreateWeatherController();
 	void CreateWeatherMaterialCollection();
 
-	UFUNCTION()
 	void HandleWeatherTimer();
-	void HandleItemChanged(UWeatherAsset* WeatherAsset);
-	void HandleItemRemoved(UWeatherAsset* WeatherAsset);
 
 protected:
 
@@ -72,8 +67,8 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE(FOnWeatherCanChange);
-	FOnWeatherCanChange OnWeatherCanChange;
+	DECLARE_MULTICAST_DELEGATE(FOnWeatherRefresh);
+	FOnWeatherRefresh OnWeatherRefresh;
 
 };
 

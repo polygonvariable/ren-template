@@ -65,39 +65,36 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 	}
 
 	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
-	if (IsValid(WeatherAsset))
+	if (!IsValid(WeatherAsset) || WeatherAsset == CurrentWeatherAsset)
 	{
-		if (CurrentWeatherAsset == WeatherAsset)
-		{
-			PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset is already active"));
-			return;
-		}
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherAsset is invalid or already active"));
+		return;
+	}
 
-		UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>();
-		if (IsValid(EnvironmentSubsystem))
+	UEnvironmentSubsystem* EnvironmentSubsystem = GetWorld()->GetSubsystem<UEnvironmentSubsystem>();
+	if (IsValid(EnvironmentSubsystem))
+	{
+		for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
 		{
-			for (auto& Kvp : WeatherAsset->EnvironmentProfiles)
+			if (IsValid(Kvp.Key))
 			{
-				if (IsValid(Kvp.Key))
-				{
-					EnvironmentSubsystem->AddStackedProfile(Kvp.Key, Kvp.Value);
-				}
+				EnvironmentSubsystem->AddStackedProfile(Kvp.Key, Kvp.Value);
 			}
 		}
-
-		HandleScalarTransition(TEXT("WeatherAlpha"), WeatherAsset->MaterialAlpha, 1.0f);
-		HandleScalarTransition(TEXT("WeatherSpecular"), WeatherAsset->MaterialSpecular, 1.0f);
-		HandleScalarTransition(TEXT("WeatherRoughness"), WeatherAsset->MaterialRoughness, 1.0f);
-		HandleScalarTransition(TEXT("WeatherOpacity"), WeatherAsset->MaterialOpacity, 1.0f);
-		HandleScalarTransition(TEXT("WeatherWind"), WeatherAsset->MaterialWind, 1.0f);
-		HandleVectorTransition(TEXT("WeatherColor"), WeatherAsset->MaterialColor, 1.0f);
-
-		CurrentWeatherAsset = WeatherAsset;
-
-		OnWeatherChanged.Broadcast(WeatherAsset);
-
-		PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset changed"));
 	}
+
+	HandleScalarTransition(TEXT("WeatherAlpha"), WeatherAsset->MaterialAlpha, 1.0f);
+	HandleScalarTransition(TEXT("WeatherSpecular"), WeatherAsset->MaterialSpecular, 1.0f);
+	HandleScalarTransition(TEXT("WeatherRoughness"), WeatherAsset->MaterialRoughness, 1.0f);
+	HandleScalarTransition(TEXT("WeatherOpacity"), WeatherAsset->MaterialOpacity, 1.0f);
+	HandleScalarTransition(TEXT("WeatherWind"), WeatherAsset->MaterialWind, 1.0f);
+	HandleVectorTransition(TEXT("WeatherColor"), WeatherAsset->MaterialColor, 1.0f);
+
+	CurrentWeatherAsset = WeatherAsset;
+
+	OnWeatherChanged.Broadcast(WeatherAsset);
+
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset changed"));
 }
 
 
@@ -124,7 +121,14 @@ void UWeatherController::HandleItemRemoved(UObject* Item, bool bWasReplaced)
 
 	OnWeatherRemoved.Broadcast(WeatherAsset);
 
-	PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset removed"));
+	if (bWasReplaced)
+	{
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset was replaced"));
+	}
+	else
+	{
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("WeatherAsset removed"));
+	}
 }
 
 

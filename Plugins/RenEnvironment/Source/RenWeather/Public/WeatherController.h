@@ -14,7 +14,10 @@
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
 class UWeatherAsset;
-class AWeatherEffectActor;
+
+// Delegate Declarations
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherChanged, UWeatherAsset* /* WeatherAsset */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherRemoved, UWeatherAsset* /* WeatherAsset */);
 
 
 
@@ -34,13 +37,11 @@ public:
 protected:
 
 	UPROPERTY()
-	TSet<TWeakObjectPtr<AWeatherEffectActor>> WeatherEffectActors;
-
-	UPROPERTY()
 	UMaterialParameterCollectionInstance* MaterialCollectionInstance;
 
 	UPROPERTY()
 	TObjectPtr<UWeatherAsset> CurrentWeatherAsset;
+
 
 	void HandleScalarTransition(FName ParameterName, float Target, float Alpha);
 	void HandleVectorTransition(FName ParameterName, const FLinearColor& Target, float Alpha);
@@ -57,10 +58,7 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherChanged, UWeatherAsset* /* WeatherAsset */);
 	FOnWeatherChanged OnWeatherChanged;
-
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherRemoved, UWeatherAsset* /* WeatherAsset */);
 	FOnWeatherRemoved OnWeatherRemoved;
 
 };

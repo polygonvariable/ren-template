@@ -15,6 +15,8 @@
 
 // Forward Declarations
 class UEnvironmentProfileAsset;
+class AWeatherEffectActor;
+
 
 
 /**
@@ -63,22 +65,3 @@ public:
 
 };
 
-
-/**
- *
- */
-UCLASS(Abstract)
-class AWeatherEffectActor : public AActor
-{
-
-    GENERATED_BODY()
-
-public:
-
-    UFUNCTION(BlueprintImplementableEvent)
-    void ActivateEffect();
-
-    UFUNCTION(BlueprintImplementableEvent)
-    void DeactivateEffect();
-
-};
