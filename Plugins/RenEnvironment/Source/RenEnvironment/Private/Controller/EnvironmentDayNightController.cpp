@@ -7,7 +7,7 @@
 #include "EngineUtils.h"
 
 // Project Headers
-#include "RenCore/Public/Interface/GameClockInterface.h"
+#include "RenCore/Public/Interface/ClockProviderInterface.h"
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
@@ -86,23 +86,23 @@ void UEnvironmentDayNightController::InitializeController()
 		return;
 	}
 
-	if (IGameClockSubsystemInterface* ClockInterfacePtr = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IGameClockSubsystemInterface>(GetWorld()))
+	if (IClockProviderInterface* ClockInterfacePtr = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockProviderInterface>(GetWorld()))
 	{
-		ClockInterfacePtr->GetOnGameClockStarted().AddDynamic(this, &UEnvironmentDayNightController::StartDayTimer);
-		ClockInterfacePtr->GetOnGameClockStopped().AddDynamic(this, &UEnvironmentDayNightController::StopDayTimer);
+		ClockInterfacePtr->GetOnGameClockStarted().AddUObject(this, &UEnvironmentDayNightController::StartDayTimer);
+		ClockInterfacePtr->GetOnGameClockStopped().AddUObject(this, &UEnvironmentDayNightController::StopDayTimer);
 
 		if (ClockInterfacePtr->IsClockActive())
 		{
 			StartDayTimer();
 		}
 
-		ClockInterface = TWeakInterfacePtr<IGameClockSubsystemInterface>(ClockInterfacePtr);
+		ClockInterface = TWeakInterfacePtr<IClockProviderInterface>(ClockInterfacePtr);
 	}
 }
 
 void UEnvironmentDayNightController::CleanupController()
 {
-	if (IGameClockSubsystemInterface* ClockInterfacePtr = ClockInterface.Get())
+	if (IClockProviderInterface* ClockInterfacePtr = ClockInterface.Get())
 	{
 		ClockInterfacePtr->GetOnGameClockStarted().RemoveAll(this);
 		ClockInterfacePtr->GetOnGameClockStopped().RemoveAll(this);

@@ -21,7 +21,7 @@ bool UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
 	if (!IsValid(WeatherController) || !IsValid(WeatherAsset))
 	{
-		LOG_ERROR(LogTemp, "WeatherController or WeatherAsset is not valid");
+		LOG_ERROR(LogTemp, "WeatherController or WeatherAsset is invalid");
 		return false;
 	}
 	return WeatherController->AddItem(WeatherAsset, Priority);
@@ -31,7 +31,7 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 {
 	if (!IsValid(WeatherController))
 	{
-		LOG_ERROR(LogTemp, "WeatherController is not valid");
+		LOG_ERROR(LogTemp, "WeatherController is invalid");
 		return false;
 	}
 	return WeatherController->RemoveItem(Priority);
@@ -49,45 +49,40 @@ FOnWeatherRemoved& UWeatherSubsystem::GetOnWeatherRemoved()
 }
 
 
-void UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
+bool UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
 {
-	TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(RefreshTime, 1.0f));
+	return TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(RefreshTime, 1.0f));
 }
 
 
-bool UWeatherSubsystem::CreateWeatherController()
+bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UObjectPrioritySystem> ControllerClass)
 {
-	if (IsValid(WeatherController))
+	if (IsValid(WeatherController) || !IsValid(ControllerClass))
 	{
-		LOG_WARNING(LogTemp, "Weather Controller is already valid");
+		LOG_ERROR(LogTemp, "WeatherController is already valid or WeatherController Class is invalid");
 		return false;
 	}
 
-	if (!IsValid(EnvironmentAsset) || !IsValid(EnvironmentAsset->WeatherController))
-	{
-		LOG_ERROR(LogTemp, " EnvironmentAsset, WeatherController Class is not valid");
-		return false;
-	}
-
-	WeatherController = NewObject<UWeatherController>(this, EnvironmentAsset->WeatherController);
-	if (!IsValid(WeatherController))
+	UWeatherController* Controller = NewObject<UWeatherController>(this, ControllerClass);
+	if (!IsValid(Controller))
 	{
 		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
 		return false;
 	}
+	WeatherController = Controller;
 
 	return true;
 }
 
 
-void UWeatherSubsystem::CreateWeatherMaterialCollection()
+void UWeatherSubsystem::CreateWeatherMaterialCollection(UMaterialParameterCollection* Collection)
 {
-	if (!IsValid(EnvironmentAsset) || !IsValid(WeatherController))
+	if (!IsValid(WeatherController) || !Collection)
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset or WeatherController is invalid"));
+		LOG_ERROR(LogTemp, TEXT("WeatherController or MaterialParameterCollection is invalid"));
 		return;
 	}
-	WeatherController->SetMaterialCollection(EnvironmentAsset->WeatherMaterialParameter);
+	WeatherController->SetMaterialCollection(Collection);
 }
 
 
@@ -116,27 +111,30 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is not valid"));
+		LOG_ERROR(LogTemp, TEXT("EnvironmentWorldSettings is invalid"));
 		return;
 	}
 
-	EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset))
+	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
+	if (!IsValid(EnvironmentAsset) || !EnvironmentAsset->bEnableWeather)
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is not valid"));
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid or Weather is disabled"));
 		return;
 	}
 
-	if (CreateWeatherController())
+	if (!CreateWeatherController(EnvironmentAsset->WeatherController))
 	{
-		CreateWeatherTimer(EnvironmentAsset->WeatherRefreshDuration);
-		CreateWeatherMaterialCollection();
+		LOG_ERROR(LogTemp, TEXT("Failed to create WeatherController"));
+		return;
+	}
 
-		UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(EnvironmentAsset->DefaultWeather);
-		if (IsValid(WeatherAsset))
-		{
-			AddWeather(WeatherAsset, 0);
-		}
+	CreateWeatherMaterialCollection(EnvironmentAsset->WeatherMaterialParameter);
+	CreateWeatherTimer(EnvironmentAsset->WeatherRefreshDuration);
+
+	UWeatherAsset* DefaultWeather = Cast<UWeatherAsset>(EnvironmentAsset->DefaultWeather);
+	if (IsValid(DefaultWeather))
+	{
+		AddWeather(DefaultWeather, 0);
 	}
 }
 
@@ -148,7 +146,6 @@ void UWeatherSubsystem::Deinitialize()
 		WeatherController->MarkAsGarbage();
 	}
 	WeatherController = nullptr;
-	EnvironmentAsset = nullptr;
 
 	TimerUtils::ClearTimer(WeatherTimer, this);
 

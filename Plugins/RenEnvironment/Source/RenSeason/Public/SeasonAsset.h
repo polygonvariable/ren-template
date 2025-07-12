@@ -31,7 +31,7 @@ public:
 
 
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
-    int SeasonStartDay = 0;
+    int SeasonStartDay = 1;
 
 	UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
 	int SeasonEndDay = 10;
@@ -51,6 +51,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float MaterialOpacity = 0.0f;
+
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    float MaterialWind = 0.0f;
 
     UPROPERTY(EditDefaultsOnly)
     FColor MaterialColor = FColor::White;

@@ -25,7 +25,7 @@ class RENCORE_API AWorldConfigSettings : public AWorldSettings
 	
 public:
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.GameClockAsset"))
+	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"))
 	TObjectPtr<UPrimaryDataAsset> ClockAsset;
 
 	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"))

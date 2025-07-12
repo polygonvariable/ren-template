@@ -13,10 +13,10 @@
 #include "WeatherSubsystem.generated.h"
 
 // Forward Declarations
+class UObjectPrioritySystem;
 class UEnvironmentAsset;
 class UWeatherController;
 class UWeatherAsset;
-
 
 
 /**
@@ -48,13 +48,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UWeatherController> WeatherController;
 
-	UPROPERTY()
-	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
-
-	void CreateWeatherTimer(float RefreshTime);
-	bool CreateWeatherController();
-	void CreateWeatherMaterialCollection();
+	bool CreateWeatherTimer(float RefreshTime);
+	bool CreateWeatherController(TSubclassOf<UObjectPrioritySystem> ControllerClass);
+	void CreateWeatherMaterialCollection(UMaterialParameterCollection* Collection);
 
 	void HandleWeatherTimer();
 

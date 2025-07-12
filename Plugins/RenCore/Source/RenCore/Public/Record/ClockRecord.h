@@ -22,7 +22,10 @@ struct FClockRecord
 	float Time = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Day = 0;
+	int Day = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Year = 1;
 
 };
 

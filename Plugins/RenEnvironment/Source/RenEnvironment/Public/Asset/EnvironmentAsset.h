@@ -12,10 +12,10 @@
 #include "EnvironmentAsset.generated.h"
 
 // Forward Declarations
+class UObjectPrioritySystem;
 class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
-class UObjectPrioritySystem;
 
 
 
@@ -63,7 +63,7 @@ public:
     bool bEnableSeason = true;
 
     UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenSeason.SeasonAsset"))
-    TArray<TObjectPtr<UPrimaryDataAsset>> DefaultSeasons;
+    TSet<TObjectPtr<UPrimaryDataAsset>> DefaultSeasons;
 
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UMaterialParameterCollection> SeasonMaterialParameter;

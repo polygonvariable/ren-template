@@ -14,7 +14,7 @@
  * 
  */
 UCLASS(ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
-class RENENVIRONMENT_API UOrbitalLightComponent : public UDirectionalLightComponent
+class UOrbitalLightComponent : public UDirectionalLightComponent
 {
 
 	GENERATED_BODY()

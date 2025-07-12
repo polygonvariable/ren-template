@@ -14,7 +14,7 @@
 
 // Forward Declarations
 class UOrbitalLightComponent;
-class IGameClockSubsystemInterface;
+class IClockProviderInterface;
 
 
 
@@ -41,19 +41,14 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
-	TWeakInterfacePtr<IGameClockSubsystemInterface> ClockInterface;
+	TWeakInterfacePtr<IClockProviderInterface> ClockInterface;
 	FTimerHandle DayTimerHandle;
 
 
 	bool LoadComponents();
 
-	UFUNCTION()
 	void StartDayTimer();
-
-	UFUNCTION()
 	void StopDayTimer();
-
-	UFUNCTION()
 	void HandleDayTimerTick();
 
 public:
