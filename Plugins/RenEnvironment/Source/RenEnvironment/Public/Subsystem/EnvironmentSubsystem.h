@@ -19,6 +19,7 @@ class UEnvironmentProfileAsset;
 class UEnvironmentAsset;
 
 
+
 /**
  *
  */
@@ -31,10 +32,10 @@ class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	bool AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	bool RemoveStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
 protected:
 
@@ -44,11 +45,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	TSet<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
 
-	UPROPERTY()
-	TObjectPtr<UEnvironmentAsset> EnvironmentAsset;
 
-
-	void LoadDefaultStackedProfiles();
+	void LoadDefaultStackedProfiles(const TSet<TObjectPtr<UEnvironmentProfileAsset>>& ProfileAssets);
 
 	bool CreateStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass);
 	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);

@@ -30,16 +30,16 @@ class RENCORE_API ISubsystemInterface
 
 public:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction))
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction), Category = "Subsystem Interface")
 	void PostInitialize();
 
 protected:
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected), Category = "Subsystem Interface")
 	void OnInitialized();
 
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected))
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (ForceAsFunction, BlueprintProtected), Category = "Subsystem Interface")
 	void OnDeinitialized();
 
 };

@@ -27,7 +27,6 @@ public class RenEnvironment : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "StructUtils",
                 "SunPosition",
 				"RenCore",
 				"RenAsset",

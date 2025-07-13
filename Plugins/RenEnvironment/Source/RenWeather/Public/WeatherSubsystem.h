@@ -19,6 +19,7 @@ class UWeatherController;
 class UWeatherAsset;
 
 
+
 /**
  *
  */
@@ -36,11 +37,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool RemoveWeather(int Priority);
 	
-
-	FOnWeatherChanged& GetOnWeatherChanged();
-	FOnWeatherRemoved& GetOnWeatherRemoved();
-
 protected:
+
+	FDelegateHandle OnWeatherChangedHandle;
+	FDelegateHandle OnWeatherRemovedHandle;
 
 	UPROPERTY()
 	FTimerHandle WeatherTimer;
@@ -65,6 +65,8 @@ protected:
 public:
 
 	FOnWeatherRefreshed OnWeatherRefreshed;
+	FOnWeatherChanged OnWeatherChanged;
+	FOnWeatherRemoved OnWeatherRemoved;
 
 };
 

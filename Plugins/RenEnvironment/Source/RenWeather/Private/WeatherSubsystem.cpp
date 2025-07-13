@@ -38,20 +38,9 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 }
 
 
-
-FOnWeatherChanged& UWeatherSubsystem::GetOnWeatherChanged()
-{
-	return WeatherController->OnWeatherChanged;
-}
-FOnWeatherRemoved& UWeatherSubsystem::GetOnWeatherRemoved()
-{
-	return WeatherController->OnWeatherRemoved;
-}
-
-
 bool UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
 {
-	return TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(RefreshTime, 1.0f));
+	return TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(5.0f, RefreshTime));
 }
 
 
@@ -66,9 +55,12 @@ bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UObjectPrioritySyste
 	UWeatherController* Controller = NewObject<UWeatherController>(this, ControllerClass);
 	if (!IsValid(Controller))
 	{
-		LOG_ERROR(LogTemp, "Failed to create Weather Controller");
+		LOG_ERROR(LogTemp, "Failed to create WeatherController");
 		return false;
 	}
+	OnWeatherChangedHandle = Controller->OnWeatherChanged.AddLambda([this](UWeatherAsset* WeatherAsset) { OnWeatherChanged.Broadcast(WeatherAsset); });
+	OnWeatherRemovedHandle = Controller->OnWeatherRemoved.AddLambda([this](UWeatherAsset* WeatherAsset) { OnWeatherRemoved.Broadcast(WeatherAsset); });
+
 	WeatherController = Controller;
 
 	return true;
@@ -100,13 +92,13 @@ bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem initialized"));
+	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem Initialize"));
 }
 
 void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
 	Super::OnWorldComponentsUpdated(InWorld);
-	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem components updated"));
+	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem OnWorldComponentsUpdated"));
 
 	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
@@ -116,9 +108,9 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 
 	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset) || !EnvironmentAsset->bEnableWeather)
+	if (!IsValid(EnvironmentAsset) || !IsValid(EnvironmentAsset->WeatherController) || !EnvironmentAsset->WeatherMaterialParameter || !EnvironmentAsset->bEnableWeather)
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid or Weather is disabled"));
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset, WeatherController, WeatherMaterialParameter is invalid or Weather is disabled"));
 		return;
 	}
 
@@ -142,6 +134,8 @@ void UWeatherSubsystem::Deinitialize()
 {
 	if (IsValid(WeatherController))
 	{
+		WeatherController->OnWeatherChanged.Remove(OnWeatherChangedHandle);
+		WeatherController->OnWeatherRemoved.Remove(OnWeatherRemovedHandle);
 		WeatherController->CleanUpItems();
 		WeatherController->MarkAsGarbage();
 	}
@@ -149,7 +143,7 @@ void UWeatherSubsystem::Deinitialize()
 
 	TimerUtils::ClearTimer(WeatherTimer, this);
 
-	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem deinitialized"));
+	LOG_WARNING(LogTemp, TEXT("WeatherSubsystem Deinitialized"));
 	Super::Deinitialize();
 }
 

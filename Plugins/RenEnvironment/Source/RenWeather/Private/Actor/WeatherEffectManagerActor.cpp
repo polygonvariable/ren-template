@@ -65,8 +65,8 @@ void AWeatherEffectManagerActor::BeginPlay()
     UWeatherSubsystem* WeatherSubsystemPtr = GetWorld()->GetSubsystem<UWeatherSubsystem>();
     if (IsValid(WeatherSubsystemPtr))
     {
-        WeatherSubsystemPtr->GetOnWeatherChanged().AddUObject(this, &AWeatherEffectManagerActor::OnWeatherChanged);
-		WeatherSubsystemPtr->GetOnWeatherRemoved().AddUObject(this, &AWeatherEffectManagerActor::OnWeatherRemoved);
+        WeatherSubsystemPtr->OnWeatherChanged.AddUObject(this, &AWeatherEffectManagerActor::OnWeatherChanged);
+		WeatherSubsystemPtr->OnWeatherRemoved.AddUObject(this, &AWeatherEffectManagerActor::OnWeatherRemoved);
 
         WeatherSubsystem = WeatherSubsystemPtr;
     }
@@ -88,8 +88,8 @@ void AWeatherEffectManagerActor::EndPlay(const EEndPlayReason::Type EndPlayReaso
     UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
     if (IsValid(WeatherSubsystemPtr))
     {
-        WeatherSubsystemPtr->GetOnWeatherChanged().RemoveAll(this);
-		WeatherSubsystemPtr->GetOnWeatherRemoved().RemoveAll(this);
+		WeatherSubsystemPtr->OnWeatherChanged.RemoveAll(this);
+		WeatherSubsystemPtr->OnWeatherRemoved.RemoveAll(this);
     }
     WeatherSubsystem.Reset();
 

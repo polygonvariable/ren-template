@@ -18,17 +18,17 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct FCharacterRecord : public FRenRecord
+struct FCharacterRecord
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Record")
 	int Health = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Record")
 	FEnhanceRecord EnhanceRecord;
 
 };

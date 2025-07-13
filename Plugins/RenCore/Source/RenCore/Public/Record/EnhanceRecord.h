@@ -4,7 +4,6 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "InstancedStruct.h"
 
 // Project Headers
 #include "Record/RenRecord.h"
@@ -13,25 +12,26 @@
 #include "EnhanceRecord.generated.h"
 
 
+
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FEnhanceRecord : public FRenRecord
+struct FEnhanceRecord
 {
 
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Rank = 1;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Level = 1;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Experience = 0;
 
 };

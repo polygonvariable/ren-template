@@ -25,10 +25,10 @@ class RENCORE_API AWorldConfigSettings : public AWorldSettings
 	
 public:
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"))
+	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> ClockAsset;
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"))
+	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> EnvironmentAsset;
 
 };

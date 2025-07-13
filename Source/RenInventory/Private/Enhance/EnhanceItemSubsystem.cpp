@@ -59,8 +59,6 @@ bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName Enhanceab
 	}
 
 	return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, *EnhancePoints);
-
-    return false;
 }
 
 bool UEnhanceRecordSubsystem::RankUpRecord_Implementation(const FName EnhanceableRecordId)

@@ -22,7 +22,7 @@ struct FRenRecord
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ren Record")
 	FInstancedStruct CustomRecord;
 
 };

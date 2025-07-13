@@ -29,7 +29,7 @@ class RENCORE_API IStorageSubsystemInterface
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Storage Subsystem")
 	virtual USaveGame* IGetLocalStorage() = 0;
 
 };

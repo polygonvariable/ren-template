@@ -6,14 +6,14 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "Filter/FilterRule.h"
-#include "Record/RenRecord.h"
-#include "Record/EnhanceRecord.h"
-#include "RenCore/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Filter/FilterRule.h"
 #include "RenCore/Public/Inventory/InventoryItemRarity.h"
+#include "RenCore/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Record/EnhanceRecord.h"
 
 // Generated Headers
 #include "InventoryRecord.generated.h"
+
 
 
 /**
@@ -26,19 +26,19 @@ struct FInventoryRecord
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Record")
 	FName ItemId;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Record")
 	TEnumAsByte<EInventoryItemType> ItemType = EInventoryItemType::Food;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Record")
 	int ItemQuantity = 1;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Record")
 	FEnhanceRecord EnhanceRecord;
 
 
@@ -70,7 +70,7 @@ class UInventoryRecordLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintPure)
+	UFUNCTION(BlueprintPure, Category = "Inventory Record Library")
 	static bool IsValid(const FInventoryRecord& Record) { return Record.IsValid(); }
 
 };
@@ -87,7 +87,7 @@ struct FInventoryTable : public FTableRowBase
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Table")
 	UPrimaryDataAsset* InventoryAsset = nullptr;
 
 };
@@ -103,35 +103,35 @@ struct FInventoryFilterRule
 	GENERATED_BODY()
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterNameRule FilterId = FFilterNameRule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterUInt8Rule FilterType = FFilterUInt8Rule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterUInt8Rule FilterRarity = FFilterUInt8Rule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterIntegerRule FilterRank = FFilterIntegerRule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterIntegerRule FilterLevel = FFilterIntegerRule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterIntegerRule FilterXp = FFilterIntegerRule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	FFilterIntegerRule FilterQuantity = FFilterIntegerRule();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inventory Filter Rule")
 	EFilterCombination FilterCombination = EFilterCombination::And;
 
 

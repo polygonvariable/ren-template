@@ -31,7 +31,7 @@ protected:
 	ARegionActor();
 
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Region Actor")
 	bool bPlayerInRegion = false;
 
 
