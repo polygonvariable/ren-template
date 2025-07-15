@@ -6,8 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
-#include "RenCore/Public/Storage/StorageInterface.h"
+#include "RenCore/Public/Interface/StorageProviderInterface.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"
@@ -16,42 +15,36 @@
 class UStorage;
 
 
+
 /**
  * 
  */
 UCLASS()
-class RENSTORAGE_API UStorageSubsystem : public UGameInstanceSubsystem, public IStorageSubsystemInterface
+class UStorageSubsystem : public UGameInstanceSubsystem, public IStorageProviderInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable)
 	bool ReadStorage(FName SlotId = "Default", int UserIndex = 0);
-
-	UFUNCTION(BlueprintCallable)
 	bool UpdateStorage(FName SlotId = "Default", int UserIndex = 0);
-
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintPure))
 	bool DoesStorageExist(FName SlotId = "Default", int UserIndex = 0);
 
-
-	UFUNCTION(BlueprintCallable)
-	UStorage* GetLocalStorage();
-
-
-	virtual USaveGame* IGetLocalStorage() override;
-
 protected:
-
-	UPROPERTY()
-	TObjectPtr<UStorage> CurrentStorage;
 
 	FName CurrentSlotId = NAME_None;
 	int CurrentUserIndex = 0;
 
+	UPROPERTY()
+	TObjectPtr<UStorage> CurrentStorage;
+
 	bool CreateNewStorage(FName SlotId, int UserIndex);
+	void OnGameInitialized();
+
+public:
+
+	virtual USaveGame* GetLocalStorage() override;
 
 protected:
 
@@ -60,3 +53,4 @@ protected:
 	virtual void Deinitialize() override;
 
 };
+

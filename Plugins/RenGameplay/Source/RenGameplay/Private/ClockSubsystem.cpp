@@ -7,13 +7,13 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
+#include "RenAsset/Public/Game/ClockAsset.h"
+
+#include "RenCore/Public/Interface/StorageProviderInterface.h"
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Record/ClockRecord.h"
-#include "RenCore/Public/Storage/StorageInterface.h"
 #include "RenCore/Public/WorldConfigSettings.h"
-
-#include "RenAsset/Public/Game/ClockAsset.h"
 
 
 
@@ -224,14 +224,14 @@ void UClockSubsystem::LoadClockRecord(UWorld& InWorld)
 		return;
 	}
 
-	IStorageSubsystemInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageSubsystemInterface>(GameInstance);
+	IStorageProviderInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GameInstance);
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("StorageInterface is invalid"));
 		return;
 	}
 
-	USaveGame* SaveGame = StorageInterface->IGetLocalStorage();
+	USaveGame* SaveGame = StorageInterface->GetLocalStorage();
 	if (IsValid(SaveGame) && SaveGame->Implements<UClockRecordProviderInterface>())
 	{
 		IClockRecordProviderInterface* ClockRecordInterfacePtr = Cast<IClockRecordProviderInterface>(SaveGame);

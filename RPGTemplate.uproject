@@ -28,11 +28,6 @@
 			]
 		},
 		{
-			"Name": "RenInventory",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RenEntity",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

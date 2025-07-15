@@ -10,7 +10,7 @@
 #include "RenCore/Public/Interface/WorldHistoryProviderInterface.h"
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Storage/StorageInterface.h"
+#include "RenCore/Public/Interface/StorageProviderInterface.h"
 
 
 
@@ -123,14 +123,14 @@ void UWorldHistorySubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		return;
 	}
 
-	IStorageSubsystemInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageSubsystemInterface>(GameInstance);
+	IStorageProviderInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GameInstance);
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("StorageInterface is invalid"));
 		return;
 	}
 
-	USaveGame* SaveGame = StorageInterface->IGetLocalStorage();
+	USaveGame* SaveGame = StorageInterface->GetLocalStorage();
 	if (IsValid(SaveGame) && SaveGame->Implements<UWorldHistoryProviderInterface>())
 	{
 		IWorldHistoryProviderInterface* WorldHistoryInterfacePtr = Cast<IWorldHistoryProviderInterface>(SaveGame);

@@ -195,12 +195,12 @@ void UInventoryDetailWidget::RefreshDetail_Implementation()
 		return;
 	}
 
-	InventoryRecord = InventorySubsystem->GetRecord(InventoryRecordId);
+	/*InventoryRecord = InventorySubsystem->GetRecord(InventoryRecordId);
 	if (!InventoryRecord.IsValid())
 	{
 		LOG_ERROR(LogTemp, "Record not found to refresh detail widget");
 		return;
-	}
+	}*/
 
 	HandleDetail();
 }

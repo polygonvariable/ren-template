@@ -22,7 +22,7 @@ public class RPGTemplateEditorTarget : TargetRules
                 "RenDialogue",
                 //"RenGameplay",
                 "RenAbility",
-                "RenInventory",
+                //"RenInventory",
                 "RenEntity",
                 //"RenEnvironment",
                 "RenInteract",

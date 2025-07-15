@@ -12,7 +12,6 @@
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Controller/EnvironmentController.h"
-#include <UObject/Object.h>
 
 
 
@@ -23,7 +22,7 @@ bool UEnvironmentSubsystem::AddStackedProfile(UEnvironmentProfileAsset* ProfileA
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("ProfileAsset is invalid"));
 		return false;
 	}
-
+	
 	UEnvironmentStackedController* Controller = EnvironmentStackedControllers.FindRef(ProfileAsset->ProfileType);
 	if (!IsValid(Controller))
 	{

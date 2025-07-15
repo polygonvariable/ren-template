@@ -58,8 +58,8 @@ bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UObjectPrioritySyste
 		LOG_ERROR(LogTemp, "Failed to create WeatherController");
 		return false;
 	}
-	OnWeatherChangedHandle = Controller->OnWeatherChanged.AddLambda([this](UWeatherAsset* WeatherAsset) { OnWeatherChanged.Broadcast(WeatherAsset); });
-	OnWeatherRemovedHandle = Controller->OnWeatherRemoved.AddLambda([this](UWeatherAsset* WeatherAsset) { OnWeatherRemoved.Broadcast(WeatherAsset); });
+	Controller->OnWeatherChanged.AddWeakLambda(this, [this](UWeatherAsset* WeatherAsset) { OnWeatherChanged.Broadcast(WeatherAsset); });
+	Controller->OnWeatherRemoved.AddWeakLambda(this, [this](UWeatherAsset* WeatherAsset) { OnWeatherRemoved.Broadcast(WeatherAsset); });
 
 	WeatherController = Controller;
 
@@ -134,8 +134,8 @@ void UWeatherSubsystem::Deinitialize()
 {
 	if (IsValid(WeatherController))
 	{
-		WeatherController->OnWeatherChanged.Remove(OnWeatherChangedHandle);
-		WeatherController->OnWeatherRemoved.Remove(OnWeatherRemovedHandle);
+		WeatherController->OnWeatherChanged.RemoveAll(this);
+		WeatherController->OnWeatherRemoved.RemoveAll(this);
 		WeatherController->CleanUpItems();
 		WeatherController->MarkAsGarbage();
 	}

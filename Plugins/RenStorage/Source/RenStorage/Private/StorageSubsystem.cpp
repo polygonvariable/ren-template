@@ -8,18 +8,20 @@
 
 // Project Headers
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "Storage.h"
+#include "RenCore/Public/Delegate/LatentDelegates.h"
+
+#include "RenStorage/Public/Storage.h"
 
 
 
 bool UStorageSubsystem::ReadStorage(FName SlotId, int UserIndex)
 {
-	if (IsValid(CurrentStorage) && CurrentSlotId != NAME_None)
+	if (IsValid(CurrentStorage) && CurrentSlotId.IsValid())
 	{
 		UpdateStorage(CurrentSlotId, CurrentUserIndex);
 	}
 
-	const FString SlotName = SlotId.ToString();
+	FString SlotName = SlotId.ToString();
 
 	if (DoesStorageExist(SlotId))
 	{
@@ -57,7 +59,7 @@ bool UStorageSubsystem::UpdateStorage(FName SlotId, int UserIndex)
 		return false;
 	}
 
-	const FString SlotName = SlotId.ToString();
+	FString SlotName = SlotId.ToString();
 
 	if (!UGameplayStatics::SaveGameToSlot(CurrentStorage, SlotName, UserIndex))
 	{
@@ -76,11 +78,7 @@ bool UStorageSubsystem::DoesStorageExist(FName SlotId, int UserIndex)
 
 
 
-UStorage* UStorageSubsystem::GetLocalStorage()
-{
-	return CurrentStorage;
-}
-USaveGame* UStorageSubsystem::IGetLocalStorage()
+USaveGame* UStorageSubsystem::GetLocalStorage()
 {
 	return CurrentStorage;
 }
@@ -110,7 +108,13 @@ bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
 	return true;
 }
 
-
+void UStorageSubsystem::OnGameInitialized()
+{
+	FLatentDelegates::OnGameInstanceSubsystemsInitialized.RemoveAll(this);
+	if (ReadStorage())
+	{
+		FLatentDelegates::OnStorageLoaded.Broadcast();
+	}
 
 bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
@@ -120,11 +124,17 @@ bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	ReadStorage();
+
+	if (!FLatentDelegates::OnGameInstanceSubsystemsInitialized.IsBoundToObject(this))
+	{
+		FLatentDelegates::OnGameInstanceSubsystemsInitialized.AddUObject(this, &UStorageSubsystem::OnGameInitialized);
+	}
 }
 
 void UStorageSubsystem::Deinitialize()
 {
+	FLatentDelegates::OnGameInstanceSubsystemsInitialized.RemoveAll(this);
+
 	UpdateStorage();
 	Super::Deinitialize();
 }

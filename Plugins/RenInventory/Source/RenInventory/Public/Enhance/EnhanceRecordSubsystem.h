@@ -4,10 +4,10 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
 #include "InventorySubsystem.h"
-#include "RenCore/Public/Subsystem/RenGameInstanceSubsystem.h"
 
 // Generated Headers
 #include "EnhanceRecordSubsystem.generated.h"
@@ -20,7 +20,7 @@ class UEnhanceableAsset;
  *
  */
 UCLASS(DisplayName = "Enhance Record Subsystem")
-class RENINVENTORY_API UEnhanceRecordSubsystem : public URenGameInstanceSubsystem
+class RENINVENTORY_API UEnhanceRecordSubsystem : public UGameInstanceSubsystem
 {
 
 	GENERATED_BODY()
@@ -41,10 +41,6 @@ public:
 protected:
 
 	bool HandleLevelUp(const FName& EnhanceableRecordId, const FName& EnhanceRecordId, FInventoryRecord EnhanceableRecord, UEnhanceableAsset* EnhanceableAsset, int EnhancePoint);
-
-public:
-
-	virtual void PostInitialize_Implementation() override;
 
 };
 

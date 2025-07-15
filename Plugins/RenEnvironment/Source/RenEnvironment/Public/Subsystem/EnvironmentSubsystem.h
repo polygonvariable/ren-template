@@ -39,10 +39,10 @@ public:
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>> EnvironmentStackedControllers;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY()
 	TSet<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
 
 

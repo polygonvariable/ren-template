@@ -10,27 +10,28 @@
 #include "GameFramework/SaveGame.h"
 
 // Generated Headers
-#include "StorageInterface.generated.h"
+#include "StorageProviderInterface.generated.h"
 
 // Forward Declarations
 
 
 
 UINTERFACE(MinimalAPI, NotBlueprintable)
-class UStorageSubsystemInterface : public UInterface
+class UStorageProviderInterface : public UInterface
 {
+
 	GENERATED_BODY()
+
 };
 
-class RENCORE_API IStorageSubsystemInterface
+class RENCORE_API IStorageProviderInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "Storage Subsystem")
-	virtual USaveGame* IGetLocalStorage() = 0;
+	virtual USaveGame* GetLocalStorage() = 0;
 
 };
 

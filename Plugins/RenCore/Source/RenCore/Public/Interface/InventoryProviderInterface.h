@@ -10,25 +10,26 @@
 #include "RenCore/Public/Record/InventoryRecord.h"
 
 // Generated Headers
-#include "InventoryInterface.generated.h"
+#include "InventoryProviderInterface.generated.h"
 
 // Forward Declarations
 
 
 
 UINTERFACE(MinimalAPI)
-class UInventoryStorageInterface : public UInterface
+class UInventoryProviderInterface : public UInterface
 {
+
 	GENERATED_BODY()
+
 };
 
-class RENCORE_API IInventoryStorageInterface
+class RENCORE_API IInventoryProviderInterface
 {
+
 	GENERATED_BODY()
 
 public:
-
-	virtual TMap<FName, FInventoryRecord>& GetInventory() = 0;
 
 	virtual const TMap<FName, FInventoryRecord>& GetInventoryRecords() const = 0;
 	virtual TMap<FName, FInventoryRecord>& GetMutableInventoryRecords() = 0;

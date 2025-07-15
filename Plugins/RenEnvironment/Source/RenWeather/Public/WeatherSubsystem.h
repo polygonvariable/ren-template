@@ -39,9 +39,6 @@ public:
 	
 protected:
 
-	FDelegateHandle OnWeatherChangedHandle;
-	FDelegateHandle OnWeatherRemovedHandle;
-
 	UPROPERTY()
 	FTimerHandle WeatherTimer;
 

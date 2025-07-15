@@ -14,7 +14,7 @@
 
 
 bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName EnhanceableRecordId, const FName EnhanceRecordId)
-{
+{/*
 	bool bFound = false;
 	UInventoryAsset* REnhanceableAsset = nullptr;
 	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
@@ -58,11 +58,13 @@ bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName Enhanceab
 		return false;
 	}
 
-	return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, *EnhancePoints);
+	return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, *EnhancePoints);*/
+	return false;
 }
 
 bool UEnhanceRecordSubsystem::RankUpRecord_Implementation(const FName EnhanceableRecordId)
 {
+	/*
 	bool bFound = false;
 	UInventoryAsset* REnhanceableAsset = nullptr;
 	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
@@ -100,12 +102,14 @@ bool UEnhanceRecordSubsystem::RankUpRecord_Implementation(const FName Enhanceabl
 		return false;
 	}
 
-	LOG_WARNING(LogTemp, "Rank up successful");
+	LOG_WARNING(LogTemp, "Rank up successful");*/
+
 	return true;
 }
 
 bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, const FName& EnhanceRecordId, FInventoryRecord EnhanceableRecord, UEnhanceableAsset* EnhanceableAsset, int EnhancePoint)
 {
+	/*
 	int NewXp = 0;
 	int NewLevel = 0;
 	bool bDoesLevelUpdated = false;
@@ -148,12 +152,6 @@ bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, co
 		return true;
 	}
 
-	LOG_ERROR(LogTemp, "Level up failed");
+	LOG_ERROR(LogTemp, "Level up failed");*/
 	return false;
-}
-
-void UEnhanceRecordSubsystem::PostInitialize_Implementation()
-{
-	Super::PostInitialize_Implementation();
-	GET_GAMEINSTANCESUBSYSTEM_FROM_GAMEINSTANCE(UInventorySubsystem, InventorySubsystem);
 }

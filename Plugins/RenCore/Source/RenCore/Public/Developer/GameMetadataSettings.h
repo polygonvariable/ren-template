@@ -5,6 +5,7 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
+#include "Engine/DataAsset.h"
 
 // Project Headers
 
@@ -23,8 +24,11 @@ class RENCORE_API UGameMetadataSettings : public UDeveloperSettings
 
 public:
 
-	UPROPERTY(Config, EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+	UPROPERTY(Config, EditAnywhere, Category = "Inventory")
 	TSoftObjectPtr<UDataTable> InventoryTable;
+
+	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.PrimaryAssetMap"), Category = "Inventory")
+	TSoftObjectPtr<UPrimaryDataAsset> InventoryAssetMap;
 
 };
 

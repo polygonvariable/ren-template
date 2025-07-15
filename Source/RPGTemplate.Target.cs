@@ -27,7 +27,7 @@ public class RPGTemplateTarget : TargetRules
                 "RenDialogue",
                 //"RenGameplay",
                 "RenAbility",
-                "RenInventory",
+                //"RenInventory",
                 "RenEntity",
                 //"RenEnvironment",
                 "RenInteract",

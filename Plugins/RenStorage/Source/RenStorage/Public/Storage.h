@@ -9,7 +9,7 @@
 // Project Headers
 #include "RenCore/Public/Record/ClockRecord.h"
 #include "RenCore/Public/Record/InventoryRecord.h"
-#include "RenCore/Public/Inventory/InventoryInterface.h"
+#include "RenCore/Public/Interface/InventoryProviderInterface.h"
 #include "RenCore/Public/Interface/ClockProviderInterface.h"
 #include "RenCore/Public/Interface/WorldHistoryProviderInterface.h"
 
@@ -22,7 +22,7 @@
  *
  */
 UCLASS()
-class RENSTORAGE_API UStorage : public USaveGame, public IInventoryStorageInterface, public IClockRecordProviderInterface, public IWorldHistoryProviderInterface
+class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public IWorldHistoryProviderInterface
 {
 
 	GENERATED_BODY()
@@ -49,9 +49,6 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, FClockRecord> ClockRecords;
-
-
-	virtual TMap<FName, FInventoryRecord>& GetInventory() override { return InventoryRecords; }
 
 	virtual const TMap<FName, FInventoryRecord>& GetInventoryRecords() const override { return InventoryRecords; }
 	virtual TMap<FName, FInventoryRecord>& GetMutableInventoryRecords() override { return InventoryRecords; }
