@@ -13,6 +13,7 @@
 #include "InventoryAsset.generated.h"
 
 
+
 /**
  *
  */
@@ -25,17 +26,16 @@ class RENASSET_API UInventoryAsset : public UPrimaryDataAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName AssetId;
+	FName ItemId;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText AssetName;
+	FText ItemName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FText AssetDescription;
+	FText ItemDescription;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UTexture2D> AssetIcon;
-
+	TSoftObjectPtr<UTexture2D> ItemIcon;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TEnumAsByte<EInventoryItemType> ItemType;

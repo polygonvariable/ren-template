@@ -8,9 +8,9 @@
 #include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
-#include "RenCore/Public/Record/InventoryRecord.h"
 #include "RenCore/Public/Inventory/InventoryItemRarity.h"
 #include "RenCore/Public/Inventory/InventoryItemType.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"
@@ -26,80 +26,76 @@ class UInventoryAsset;
 class UInventorySubsystem;
 
 
-/**
- *
- */
-UCLASS(Blueprintable, DisplayName = "Inventory Entry Object")
-class RENINVENTORY_API UInventoryEntryObject : public UObject
+
+struct FInventorySortEntry
 {
 
-	GENERATED_BODY()
+	FName Guid = NAME_None;
+	UInventoryAsset* Asset = nullptr;
+	const FInventoryRecord* Record = nullptr;
 
-public:
+	FInventorySortEntry(FName InGuid, UInventoryAsset* InAsset, const FInventoryRecord* InRecord) : Guid(InGuid), Asset(InAsset), Record(InRecord) {}
 
-	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Inventory Entry Object")
-	FName InventoryRecordId;
-
-	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Inventory Entry Object")
-	FInventoryRecord InventoryRecord;
-
-	UPROPERTY(BlueprintReadWrite, Meta = (ExposeOnSpawn = true), Category = "Inventory Entry Object")
-	UInventoryAsset* InventoryAsset;
+	void Reset()
+	{
+		Guid = NAME_None;
+		Asset = nullptr;
+		Record = nullptr;
+	}
 
 };
 
 
+
 /**
  *
  */
-UCLASS(Abstract, DisplayName = "Inventory Widget")
-class RENINVENTORY_API UInventoryWidget : public UUserWidget
+UCLASS()
+class UInventoryEntryObject : public UObject
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Widget|Properties")
+	FName Guid = NAME_None;
+	UInventoryAsset* Asset = nullptr;
+	FInventoryRecord Record = FInventoryRecord();
+
+};
+
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class UInventoryWidget : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UInventoryEntryObject> EntryObjectClass = UInventoryEntryObject::StaticClass();
 
 protected:
 
-	// TMap<FName, TObjectPtr<UInventoryAsset>> CachedAssets;
-
+	UPROPERTY()
 	TObjectPtr<UInventorySubsystem> InventorySubsystem;
 
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UListView> InventoryContainer;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Widget|Runtime")
-	TMap<FName, FInventoryRecord> InventoryRecords;
 
+	UFUNCTION(BlueprintCallable)
+	void DisplayStoredRecords();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Action")
-	void DisplayStoredRecords(const bool bForceRefresh = false);
-	virtual void DisplayStoredRecords_Implementation(const bool bForceRefresh = false);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
 	void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
-	virtual void HandleDisplayOfEntry_Implementation(UInventoryEntryObject* EntryObject);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
-	bool HandleEntryFiltering(const FInventoryRecord InventoryRecord, UInventoryAsset* InventoryAsset);
-	virtual bool HandleEntryFiltering_Implementation(const FInventoryRecord InventoryRecord, UInventoryAsset* InventoryAsset);
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Widget|Handler")
-	void HandleSelectedEntry(UInventoryEntryObject* EntryObject);
-	virtual void HandleSelectedEntry_Implementation(UInventoryEntryObject* EntryObject);
-
-private:
-
-	void HandleSelectedEntryCast(UObject* Object);
+	bool HandleEntryFiltering(const FInventoryRecord& InventoryRecord, UInventoryAsset* InventoryAsset);
+	void HandleSelectedEntry(UObject* Object);
 
 protected:
 
@@ -112,40 +108,40 @@ protected:
 /**
  *
  */
-UCLASS(Abstract, DisplayName = "Inventory Entry Widget")
-class RENINVENTORY_API UInventoryEntryWidget : public UUserWidget, public IUserObjectListEntry
+UCLASS(Abstract)
+class UInventoryEntryWidget : public UUserWidget, public IUserObjectListEntry
 {
 
 	GENERATED_BODY()
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Entry Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UImage> AssetImage;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Entry Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> AssetTitle;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Entry Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	FName InventoryRecordId;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Entry Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	FInventoryRecord InventoryRecord;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Entry Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventoryAsset> InventoryAsset;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Entry Widget|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void SelectEntry();
 	virtual void SelectEntry_Implementation();
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Entry Widget|Handler")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void HandleEntry(UInventoryEntryObject* EntryObject);
 	virtual void HandleEntry_Implementation(UInventoryEntryObject* EntryObject);
 
@@ -159,20 +155,20 @@ protected:
 /**
  *
  */
-UCLASS(Abstract, DisplayName = "Inventory Detail Widget")
-class RENINVENTORY_API UInventoryDetailWidget : public UUserWidget
+UCLASS(Abstract)
+class UInventoryDetailWidget : public UUserWidget
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Detail Widget|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
 	void InitializeDetail(FInventoryRecord Record = FInventoryRecord(), FName RecordId = NAME_None, UInventoryAsset* Asset = nullptr);
 	virtual void InitializeDetail_Implementation(FInventoryRecord Record = FInventoryRecord(), FName RecordId = NAME_None, UInventoryAsset* Asset = nullptr);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Inventory Detail Widget|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction))
 	void RefreshDetail();
 	virtual void RefreshDetail_Implementation();
 
@@ -181,55 +177,55 @@ protected:
 	TObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UWidgetSwitcher> DetailSwitcher;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UImage> AssetImage;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> AssetTitle;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> AssetDescription;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> RecordRank;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> RecordLevel;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> RecordExperience;
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Inventory Detail Widget|Binding")
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UPanelWidget> AssetTypeWidget;
 
 
-	UPROPERTY(BlueprintReadOnly, Category = "Inventory Detail Widget|Property")
+	UPROPERTY(BlueprintReadOnly)
 	TSet<TEnumAsByte<EInventoryItemType>> AssetTypeVisibility;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Detail Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	FName InventoryRecordId;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Detail Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	FInventoryRecord InventoryRecord;
 
 
-	UPROPERTY(BlueprintReadWrite, Category = "Inventory Detail Widget|Runtime")
+	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UInventoryAsset> InventoryAsset;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Inventory Detail Widget|Handler")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void HandleDetail();
 	virtual void HandleDetail_Implementation();
 

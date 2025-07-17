@@ -108,13 +108,14 @@ bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
 	return true;
 }
 
-void UStorageSubsystem::OnGameInitialized()
+void UStorageSubsystem::HandleGameInitialized()
 {
 	FLatentDelegates::OnGameInstanceSubsystemsInitialized.RemoveAll(this);
 	if (ReadStorage())
 	{
 		FLatentDelegates::OnStorageLoaded.Broadcast();
 	}
+}
 
 bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
@@ -127,7 +128,7 @@ void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 	if (!FLatentDelegates::OnGameInstanceSubsystemsInitialized.IsBoundToObject(this))
 	{
-		FLatentDelegates::OnGameInstanceSubsystemsInitialized.AddUObject(this, &UStorageSubsystem::OnGameInitialized);
+		FLatentDelegates::OnGameInstanceSubsystemsInitialized.AddUObject(this, &UStorageSubsystem::HandleGameInitialized);
 	}
 }
 

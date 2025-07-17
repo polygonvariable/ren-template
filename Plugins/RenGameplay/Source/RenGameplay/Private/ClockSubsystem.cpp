@@ -4,7 +4,6 @@
 #include "ClockSubsystem.h"
 
 // Engine Headers
-#include "GameFramework/SaveGame.h"
 
 // Project Headers
 #include "RenAsset/Public/Game/ClockAsset.h"
@@ -231,7 +230,7 @@ void UClockSubsystem::LoadClockRecord(UWorld& InWorld)
 		return;
 	}
 
-	USaveGame* SaveGame = StorageInterface->GetLocalStorage();
+	UObject* SaveGame = StorageInterface->GetLocalStorage();
 	if (IsValid(SaveGame) && SaveGame->Implements<UClockRecordProviderInterface>())
 	{
 		IClockRecordProviderInterface* ClockRecordInterfacePtr = Cast<IClockRecordProviderInterface>(SaveGame);
@@ -281,9 +280,15 @@ void UClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 
 	UClockAsset* LoadedAsset = Cast<UClockAsset>(WorldSettings->ClockAsset);
-	if (!IsValid(LoadedAsset) || !LoadedAsset->bEnableClock)
+	if (!IsValid(LoadedAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("Loaded ClockAsset is invalid or not enabled"));
+		LOG_ERROR(LogTemp, TEXT("ClockAsset is invalid"));
+		return;
+	}
+
+	if (!LoadedAsset->bEnableClock)
+	{
+		LOG_ERROR(LogTemp, TEXT("Clock is disabled"));
 		return;
 	}
 

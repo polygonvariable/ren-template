@@ -34,33 +34,37 @@ class RENINVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	bool AddRecord(UInventoryAsset* InventoryAsset, int Quantity = 1);
+	bool AddItem(UInventoryAsset* InventoryAsset, int Quantity = 1);
 
 	UFUNCTION(BlueprintCallable)
-	bool AddRecords(const TMap<UInventoryAsset*, int32>& Items);
+	bool AddItems(const TMap<UInventoryAsset*, int>& Items);
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveRecord(FName ItemGuid, int Quantity = 1);
+	bool RemoveItem(FName ItemGuid, int Quantity = 1);
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveRecords(const TMap<FName, int32>& Items);
+	bool RemoveItems(const TMap<FName, int>& Items);
 
 	UFUNCTION(BlueprintCallable)
-	bool UpdateRecord(FName ItemGuid, FInventoryRecord InventoryRecord);
+	bool UpdateItem(FName ItemGuid, FInventoryRecord ItemRecord);
 
 	UFUNCTION(BlueprintCallable)
-	bool HasRecord(FName ItemGuid);
+	bool ContainsItem(FName ItemGuid);
 
 
 
 	UFUNCTION(BlueprintCallable)
-	bool GetRecord(FName ItemGuid, FInventoryRecord& OutInventoryRecord);
+	FInventoryRecord GetItemRecord(FName ItemGuid);
 
 	UFUNCTION(BlueprintCallable)
-	TMap<FName, FInventoryRecord> GetRecords();
+	TMap<FName, FInventoryRecord> GetAllItemRecords();
 
 	UFUNCTION(BlueprintCallable)
-	UInventoryAsset* GetRecordAsset(FName InventoryAssetId);
+	UInventoryAsset* GetItemAsset(const FName& ItemId) const;
+
+
+	void ForEachItem(TFunctionRef<void(const FName&, const FInventoryRecord&, UInventoryAsset*)> InCallback) const;
+
 
 protected:
 
@@ -73,8 +77,8 @@ protected:
 	void HandleStorageLoaded();
 
 
-	bool InternalAddRecord(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>& Records);
-	bool InternalRemoveRecord(FName ItemId, int Quantity, TMap<FName, FInventoryRecord>& Records);
+	bool AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>& Records);
+	bool RemoveItemRecord_Internal(FName ItemId, int Quantity, TMap<FName, FInventoryRecord>& Records);
 
 protected:
 

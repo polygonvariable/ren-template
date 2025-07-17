@@ -108,9 +108,27 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 
 	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset) || !IsValid(EnvironmentAsset->WeatherController) || !EnvironmentAsset->WeatherMaterialParameter || !EnvironmentAsset->bEnableWeather)
+	if (!IsValid(EnvironmentAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset, WeatherController, WeatherMaterialParameter is invalid or Weather is disabled"));
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid"));
+		return;
+	}
+
+	if (!EnvironmentAsset->bEnableWeather)
+	{
+		LOG_ERROR(LogTemp, TEXT("Weather is disabled"));
+		return;
+	}
+
+	if (!IsValid(EnvironmentAsset->WeatherController))
+	{
+		LOG_ERROR(LogTemp, TEXT("WeatherController is invalid"));
+		return;
+	}
+
+	if (!EnvironmentAsset->WeatherMaterialParameter)
+	{
+		LOG_ERROR(LogTemp, TEXT("WeatherMaterialParameter is invalid"));
 		return;
 	}
 

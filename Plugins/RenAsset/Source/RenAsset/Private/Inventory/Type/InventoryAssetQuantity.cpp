@@ -13,7 +13,7 @@ TMap<FName, int> FInventoryAssetQuantity::ConvertToIds()
 	TMap<FName, int> Ids;
 	for (auto& Pair : InventoryRecords)
 	{
-		Ids.Add(Pair.Key->AssetId, Pair.Value);
+		Ids.Add(Pair.Key->ItemId, Pair.Value);
 	}
 	return Ids;
 }

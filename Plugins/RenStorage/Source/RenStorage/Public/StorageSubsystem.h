@@ -40,7 +40,7 @@ protected:
 	TObjectPtr<UStorage> CurrentStorage;
 
 	bool CreateNewStorage(FName SlotId, int UserIndex);
-	void OnGameInitialized();
+	void HandleGameInitialized();
 
 public:
 

@@ -186,9 +186,21 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 
 	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset) || !EnvironmentAsset->bEnableSeason || !EnvironmentAsset->SeasonMaterialParameter)
+	if (!IsValid(EnvironmentAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid, season is disabled, or SeasonMaterialParameter is missing"));
+		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid"));
+		return;
+	}
+
+	if (!EnvironmentAsset->bEnableSeason)
+	{
+		LOG_ERROR(LogTemp, TEXT("Season is disabled"));
+		return;
+	}
+
+	if (!EnvironmentAsset->SeasonMaterialParameter)
+	{
+		LOG_ERROR(LogTemp, TEXT("SeasonMaterialParameter is invalid"));
 		return;
 	}
 

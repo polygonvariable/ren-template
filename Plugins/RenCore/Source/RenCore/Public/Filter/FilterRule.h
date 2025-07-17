@@ -11,22 +11,22 @@
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Filter Name Rule")
+USTRUCT(BlueprintType)
 struct FFilterNameRule
 {
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnable = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnableStrictMode = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	TArray<FName> Included;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	TArray<FName> Excluded;
 
 	bool Matches(const FName& Value) const
@@ -44,22 +44,22 @@ struct FFilterNameRule
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Filter Byte Rule")
+USTRUCT(BlueprintType)
 struct FFilterUInt8Rule
 {
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnable = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnableStrictMode = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	TArray<uint8> Included;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	TArray<uint8> Excluded;
 
 	bool Matches(const uint8& Value) const
@@ -76,22 +76,22 @@ struct FFilterUInt8Rule
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Filter Integer Rule")
+USTRUCT(BlueprintType)
 struct FFilterIntegerRule
 {
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnable = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	bool bEnableStrictMode = true;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	int32 Min = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Filter Rule")
 	int32 Max = 0;
 
 	bool Matches(const int& Value) const
@@ -113,7 +113,7 @@ struct FFilterIntegerRule
 /**
  *
  */
-UENUM(BlueprintType, DisplayName = "Filter Combination")
+UENUM(BlueprintType)
 enum class EFilterCombination : uint8
 {
 	And UMETA(DisplayName = "AND"),
