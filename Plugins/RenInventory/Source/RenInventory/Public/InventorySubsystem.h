@@ -22,6 +22,72 @@ class IInventoryProviderInterface;
 
 
 
+
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class EInventoryQuerySource : uint8
+{
+	Inventory UMETA(DisplayName = "Inventory"),
+	Glossary UMETA(DisplayName = "Glossary"),
+};
+
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class ESortDirection : uint8
+{
+	Ascending UMETA(DisplayName = "Ascending"),
+	Descending UMETA(DisplayName = "Descending"),
+};
+
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class EInventorySortType : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Alphabetical UMETA(DisplayName = "Alphabetical"),
+	Quantity UMETA(DisplayName = "Quantity"),
+	Rank UMETA(DisplayName = "Rank"),
+	Level UMETA(DisplayName = "Level"),
+};
+
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct FInventoryQueryRule
+{
+
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EInventoryQuerySource QuerySource = EInventoryQuerySource::Inventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ESortDirection SortDirection = ESortDirection::Ascending;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EInventorySortType SortType = EInventorySortType::Alphabetical;
+
+};
+
+struct FInventorySortEntry
+{
+
+	FName Guid = NAME_None;
+	const FInventoryRecord* Record = nullptr;
+	UInventoryAsset* Asset = nullptr;
+
+	FInventorySortEntry(FName InGuid, const FInventoryRecord* InRecord, UInventoryAsset* InAsset) : Guid(InGuid), Record(InRecord), Asset(InAsset) {}
+
+};
+
 /**
  *
  */
@@ -34,19 +100,29 @@ class RENINVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	bool AddItem(UInventoryAsset* InventoryAsset, int Quantity = 1);
+	bool AddItem(UInventoryAsset* ItemAsset, int Quantity = 1);
 
 	UFUNCTION(BlueprintCallable)
-	bool AddItems(const TMap<UInventoryAsset*, int>& Items);
+	bool AddItems(const TMap<UInventoryAsset*, int>& ItemQuantities);
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveItem(FName ItemGuid, int Quantity = 1);
+	bool RemoveItem(FName ItemGuid, int Quantity);
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveItems(const TMap<FName, int>& Items);
+	bool RemoveItems(const TMap<FName, int>& ItemQuantities);
 
 	UFUNCTION(BlueprintCallable)
-	bool UpdateItem(FName ItemGuid, FInventoryRecord ItemRecord);
+	bool DestroyItem(FName ItemGuid);
+
+	UFUNCTION(BlueprintCallable)
+	bool DestroyItems(const TSet<FName>& ItemGuids);
+
+	UFUNCTION(BlueprintCallable)
+	bool ClearItems();
+
+
+	UFUNCTION(BlueprintCallable)
+	bool UpdateItem(FName ItemGuid, FInventoryRecord Record);
 
 	UFUNCTION(BlueprintCallable)
 	bool ContainsItem(FName ItemGuid);
@@ -54,7 +130,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	FInventoryRecord GetItemRecord(FName ItemGuid);
+	FInventoryRecord GetItemRecord(FName ItemGuid) const;
 
 	UFUNCTION(BlueprintCallable)
 	TMap<FName, FInventoryRecord> GetAllItemRecords();
@@ -63,7 +139,7 @@ public:
 	UInventoryAsset* GetItemAsset(const FName& ItemId) const;
 
 
-	void ForEachItem(TFunctionRef<void(const FName&, const FInventoryRecord&, UInventoryAsset*)> InCallback) const;
+	virtual void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
 
 
 protected:
@@ -74,11 +150,16 @@ protected:
 	TObjectPtr<UPrimaryAssetMap> InventoryAssetMap;
 
 
+	virtual void HandleGlossaryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
+	virtual void HandleInventoryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
+	virtual void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
+
+
 	void HandleStorageLoaded();
 
 
 	bool AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>& Records);
-	bool RemoveItemRecord_Internal(FName ItemId, int Quantity, TMap<FName, FInventoryRecord>& Records);
+	bool RemoveItemRecord_Internal(FName ItemGuid, int Quantity, TMap<FName, FInventoryRecord>& Records);
 
 protected:
 

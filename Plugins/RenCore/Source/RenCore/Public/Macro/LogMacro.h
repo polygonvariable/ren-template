@@ -54,3 +54,13 @@
 #define PRINT_ERROR(Category, Time, Text, ...) \
     REN_PRINT_LOG(Category, Error, Time, FColor::Red, Text, ##__VA_ARGS__)
 
+
+#define PROFILE_START(Name) \
+	double __##Name##_StartTime__ = FPlatformTime::Seconds();
+
+#define PROFILE_END(Name, Time, Message) \
+    { \
+	    double __##Name##_EndTime__ = FPlatformTime::Seconds(); \
+        double __##Name##_Duration__ = __##Name##_EndTime__ - __##Name##_StartTime__; \
+        PRINT_WARNING(LogTemp, Time, TEXT("%s: %f"), Message, __##Name##_Duration__); \
+    }

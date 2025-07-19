@@ -20,7 +20,7 @@
 
 
 
-void UInventoryWidget::DisplayStoredRecords()
+void UInventoryWidget::DisplayItems()
 {
 	if (!IsValid(InventorySubsystem))
 	{
@@ -34,26 +34,19 @@ void UInventoryWidget::DisplayStoredRecords()
 		return;
 	}
 
+#if WITH_EDITOR
+
+	PROFILE_START(Inventory);
+
+#endif
+
 	if (IsValid(InventoryContainer))
 	{
 		InventoryContainer->ClearListItems();
 	}
 
-	//const TMap<FName, FInventoryRecord>& InventoryItems = InventorySubsystem->BP_GetAllItemRecords();
-
-	/*TArray<FInventorySortEntry> SortedItems;
-	for (const auto& Item : InventoryItems)
-	{
-		const FInventoryRecord& Record = Item.Value;
-		UInventoryAsset* Asset = InventorySubsystem->GetItemAsset(Record.ItemId);
-
-		if (Asset && Record.IsValid())
-		{
-			SortedItems.Emplace(Item.Key, Asset, &Record);
-		}
-	}*/
-
-	InventorySubsystem->ForEachItem([this](const FName& Guid, const FInventoryRecord& Record, UInventoryAsset* Asset)
+	InventorySubsystem->QueryItems(FilterRule, QueryRule,
+		[this](const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
 		{
 			UInventoryEntryObject* Entry = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
 			if (!IsValid(Entry))
@@ -61,87 +54,27 @@ void UInventoryWidget::DisplayStoredRecords()
 				LOG_ERROR(LogTemp, TEXT("Failed to create entry object"));
 				return;
 			}
-			Entry->Guid = Guid;
-			Entry->Asset = Asset;
-			Entry->Record = Record;
+			Entry->ItemGuid = Guid;
+			Entry->InventoryAsset = Asset;
+			Entry->InventoryRecord = (Record == nullptr) ? FInventoryRecord() : *Record;
 
 			HandleDisplayOfEntry(Entry);
 		}
 	);
 
-	/*SortedArray.Sort([](const FInventorySortEntry& A, const FInventorySortEntry& B)
-		{
-			return A.Asset->AssetName.ToString() > B.Asset->AssetName.ToString();
-		}
-	);
-	SortedArray.Sort([](const FInventorySortEntry& A, const FInventorySortEntry& B)
-		{
-			return A.Asset->ItemRarity > B.Asset->ItemRarity;
-		}
-	);*/
+#if WITH_EDITOR
 
-	/*for (const auto& Item : SortedItems)
-	{
-		const FName& Guid = Item.Guid;
-		UInventoryAsset* Asset = Item.Asset;
-		const FInventoryRecord* Record = Item.Record;
+	PROFILE_END(Inventory, 5.0f, TEXT("Inventory rendered in"));
 
-		if (Asset && Record)
-		{
-			UInventoryEntryObject* Entry = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
-			if (!IsValid(Entry))
-			{
-				LOG_ERROR(LogTemp, TEXT("Failed to create entry object"));
-				continue;
-			}
-			Entry->Guid = Guid;
-			Entry->Asset = Asset;
-			Entry->Record = *Record;
-
-			HandleDisplayOfEntry(Entry);
-		}
-	}*/
-
-	/*for (const auto& Record : InventoryRecords)
-	{
-		UInventoryAsset* Asset = InventorySubsystem->GetRecordAsset(Record.Value.ItemId);
-		if (!IsValid(Asset))
-		{
-			LOG_ERROR(LogTemp, "Failed to get record's asset");
-			continue;
-		}
-
-		if (!HandleEntryFiltering(Record.Value, Asset))
-		{
-			continue;
-		}
-
-		TObjectPtr<UInventoryEntryObject> EntryObject = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
-		if (!IsValid(EntryObject))
-		{
-			LOG_ERROR(LogTemp, "Failed to create entry object");
-			continue;
-		}
-		EntryObject->InventoryRecordId = Record.Key;
-		EntryObject->InventoryRecord = Record.Value;
-		EntryObject->InventoryAsset = Asset;
-
-		HandleDisplayOfEntry(EntryObject);
-	}*/
-
+#endif
 }
 
 void UInventoryWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
 {
-	if (InventoryContainer)
+	if (IsValid(InventoryContainer))
 	{
 		InventoryContainer->AddItem(EntryObject);
 	}
-}
-
-bool UInventoryWidget::HandleEntryFiltering(const FInventoryRecord& InventoryRecord, UInventoryAsset* InventoryAsset)
-{
-	return false;
 }
 
 void UInventoryWidget::HandleSelectedEntry(UObject* Object)
@@ -151,8 +84,7 @@ void UInventoryWidget::HandleSelectedEntry(UObject* Object)
 	{
 		return;
 	}
-
-
+	OnInventoryItemSelected.Broadcast(Entry);
 }
 
 
@@ -194,45 +126,87 @@ void UInventoryWidget::NativeDestruct()
 
 
 
-void UInventoryEntryWidget::SelectEntry_Implementation()
+void UInventoryEntryWidget::SelectInventoryEntry()
 {
+	UObject* ListItem = GetListItem();
 	UListViewBase* ListViewBase = GetOwningListView();
-	UObject* ListRecord = GetListItem();
 
-	if (!IsValid(ListRecord) || !IsValid(ListViewBase))
+	if (!IsValid(ListItem) || !IsValid(ListViewBase))
 	{
-		LOG_ERROR(LogTemp, "ListRecord or ListViewBase is null");
+		LOG_ERROR(LogTemp, "ListItem or ListViewBase is invalid");
 		return;
 	}
 
 	UListView* ListView = Cast<UListView>(ListViewBase);
-	ListView->SetSelectedItem(ListRecord);
-}
-
-void UInventoryEntryWidget::HandleEntry_Implementation(UInventoryEntryObject* EntryObject)
-{
-	if (!IsValid(InventoryAsset) && !IsValid(EntryObject))
+	if (!IsValid(ListView))
 	{
-		LOG_ERROR(LogTemp, "InventoryAsset is null");
+		LOG_ERROR(LogTemp, "ListView is invalid");
 		return;
 	}
-	if (IsValid(AssetImage)) AssetImage->SetBrushFromSoftTexture(InventoryAsset->ItemIcon);
-	if (IsValid(AssetTitle)) AssetTitle->SetText(InventoryAsset->ItemName);
+
+	const ESelectionMode::Type& SelectionMode = ListView->GetSelectionMode();
+	switch (SelectionMode)
+	{
+		case ESelectionMode::None:
+			// Deselect all ?
+			// ListView->SetSelectedIndex(-1);
+			// ListView->SetSelectedItem(nullptr);
+			break;
+		case ESelectionMode::Single:
+			ListView->SetSelectedItem(ListItem);
+			break;
+		case ESelectionMode::SingleToggle:
+			ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
+			break;
+		case ESelectionMode::Multi:
+			ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
+			break;
+		default:
+			break;
+	}
+}
+
+void UInventoryEntryWidget::HandleInventoryEntry(UInventoryEntryObject* Entry)
+{
+	if (!IsValid(Entry) && !Entry->InventoryAsset)
+	{
+		LOG_ERROR(LogTemp, "Entry or Asset is invalid");
+		return;
+	}
+	UInventoryAsset* InventoryAsset = Entry->InventoryAsset;
+
+	if (ItemTitleText) ItemTitleText->SetText(InventoryAsset->ItemName);
+	if (ItemIconImage) ItemIconImage->SetBrushFromSoftTexture(InventoryAsset->ItemIcon);
+	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(Entry->InventoryRecord.ItemQuantity));
+
+	HandleRecordValidity(Entry->InventoryRecord.IsValid());
 }
 
 void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	if (!IsValid(ListItemObject))
 	{
+		LOG_ERROR(LogTemp, "ListItemObject is invalid");
 		return;
 	}
-	UInventoryEntryObject* EntryObject = Cast<UInventoryEntryObject>(ListItemObject);
-	InventoryRecordId = EntryObject->Guid;
-	InventoryRecord = EntryObject->Record;
-	InventoryAsset = EntryObject->Asset;
 
-	HandleEntry(EntryObject);
+	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(ListItemObject);
+	if (!IsValid(Entry))
+	{
+		LOG_ERROR(LogTemp, "Entry is invalid");
+		return;
+	}
+
+	HandleInventoryEntry(Entry);
 }
+
+void UInventoryEntryWidget::NativeOnItemSelectionChanged(bool bSelected)
+{
+	HandleEntrySelectionChanged(bSelected);
+}
+
+
+
 
 
 void UInventoryDetailWidget::InitializeDetail_Implementation(FInventoryRecord Record, FName RecordId, UInventoryAsset* Asset)

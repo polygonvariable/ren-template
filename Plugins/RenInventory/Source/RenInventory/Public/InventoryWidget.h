@@ -12,6 +12,8 @@
 #include "RenCore/Public/Inventory/InventoryItemType.h"
 #include "RenCore/Public/Record/InventoryRecord.h"
 
+#include "RenInventory/Public/InventorySubsystem.h"
+
 // Generated Headers
 #include "InventoryWidget.generated.h"
 
@@ -27,23 +29,6 @@ class UInventorySubsystem;
 
 
 
-struct FInventorySortEntry
-{
-
-	FName Guid = NAME_None;
-	UInventoryAsset* Asset = nullptr;
-	const FInventoryRecord* Record = nullptr;
-
-	FInventorySortEntry(FName InGuid, UInventoryAsset* InAsset, const FInventoryRecord* InRecord) : Guid(InGuid), Asset(InAsset), Record(InRecord) {}
-
-	void Reset()
-	{
-		Guid = NAME_None;
-		Asset = nullptr;
-		Record = nullptr;
-	}
-
-};
 
 
 
@@ -58,9 +43,9 @@ class UInventoryEntryObject : public UObject
 
 public:
 
-	FName Guid = NAME_None;
-	UInventoryAsset* Asset = nullptr;
-	FInventoryRecord Record = FInventoryRecord();
+	FName ItemGuid = NAME_None;
+	UInventoryAsset* InventoryAsset = nullptr;
+	FInventoryRecord InventoryRecord = FInventoryRecord();
 
 };
 
@@ -83,19 +68,29 @@ public:
 protected:
 
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem;
+	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UListView> InventoryContainer;
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UListView> InventoryContainer = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FInventoryFilterRule FilterRule = FInventoryFilterRule();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FInventoryQueryRule QueryRule = FInventoryQueryRule();
 
 
 	UFUNCTION(BlueprintCallable)
-	void DisplayStoredRecords();
+	virtual void DisplayItems();
 
-	void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
-	bool HandleEntryFiltering(const FInventoryRecord& InventoryRecord, UInventoryAsset* InventoryAsset);
-	void HandleSelectedEntry(UObject* Object);
+	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
+	virtual void HandleSelectedEntry(UObject* Object);
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemSelected, UInventoryEntryObject*, EntryObject);
+	UPROPERTY(BlueprintAssignable)
+	FOnInventoryItemSelected OnInventoryItemSelected;
 
 protected:
 
@@ -117,37 +112,30 @@ class UInventoryEntryWidget : public UUserWidget, public IUserObjectListEntry
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UImage> AssetImage;
-
+	TObjectPtr<UImage> ItemIconImage;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> AssetTitle;
+	TObjectPtr<UTextBlock> ItemTitleText;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> ItemQuantityText;
 
 
-	UPROPERTY(BlueprintReadWrite)
-	FName InventoryRecordId;
+	UFUNCTION(BlueprintCallable)
+	void SelectInventoryEntry();
 
+	virtual void HandleInventoryEntry(UInventoryEntryObject* Entry);
 
-	UPROPERTY(BlueprintReadWrite)
-	FInventoryRecord InventoryRecord;
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleEntrySelectionChanged(bool bSelected);
 
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UInventoryAsset> InventoryAsset;
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
-	void SelectEntry();
-	virtual void SelectEntry_Implementation();
-
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
-	void HandleEntry(UInventoryEntryObject* EntryObject);
-	virtual void HandleEntry_Implementation(UInventoryEntryObject* EntryObject);
+	UFUNCTION(BlueprintImplementableEvent)
+	void HandleRecordValidity(bool bIsValid);
 
 protected:
 
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	virtual void NativeOnItemSelectionChanged(bool bSelected) override;
 
 };
 
