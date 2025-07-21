@@ -56,7 +56,7 @@ void UInventoryWidget::DisplayItems()
 			}
 			Entry->ItemGuid = Guid;
 			Entry->InventoryAsset = Asset;
-			Entry->InventoryRecord = (Record == nullptr) ? FInventoryRecord() : *Record;
+			Entry->InventoryRecord = Record;
 
 			HandleDisplayOfEntry(Entry);
 		}
@@ -168,18 +168,20 @@ void UInventoryEntryWidget::SelectInventoryEntry()
 
 void UInventoryEntryWidget::HandleInventoryEntry(UInventoryEntryObject* Entry)
 {
-	if (!IsValid(Entry) && !Entry->InventoryAsset)
+	if (!IsValid(Entry) || !Entry->InventoryAsset)
 	{
 		LOG_ERROR(LogTemp, "Entry or Asset is invalid");
 		return;
 	}
 	UInventoryAsset* InventoryAsset = Entry->InventoryAsset;
+	const FInventoryRecord* InventoryRecord = Entry->InventoryRecord;
+	bool bRecordIsValid = InventoryRecord && InventoryRecord->IsValid();
 
 	if (ItemTitleText) ItemTitleText->SetText(InventoryAsset->ItemName);
 	if (ItemIconImage) ItemIconImage->SetBrushFromSoftTexture(InventoryAsset->ItemIcon);
-	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(Entry->InventoryRecord.ItemQuantity));
+	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(bRecordIsValid ? InventoryRecord->ItemQuantity : 0));
 
-	HandleRecordValidity(Entry->InventoryRecord.IsValid());
+	HandleRecordValidity(bRecordIsValid);
 }
 
 void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)

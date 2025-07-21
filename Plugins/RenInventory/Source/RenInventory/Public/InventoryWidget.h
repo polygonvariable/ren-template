@@ -8,11 +8,10 @@
 #include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
-#include "RenCore/Public/Inventory/InventoryItemRarity.h"
 #include "RenCore/Public/Inventory/InventoryItemType.h"
 #include "RenCore/Public/Record/InventoryRecord.h"
 
-#include "RenInventory/Public/InventorySubsystem.h"
+#include "RenInventory/Public/InventoryDefinition.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"
@@ -29,9 +28,6 @@ class UInventorySubsystem;
 
 
 
-
-
-
 /**
  *
  */
@@ -45,7 +41,14 @@ public:
 
 	FName ItemGuid = NAME_None;
 	UInventoryAsset* InventoryAsset = nullptr;
-	FInventoryRecord InventoryRecord = FInventoryRecord();
+	const FInventoryRecord* InventoryRecord = nullptr;
+
+	void Reset()
+	{
+		ItemGuid = NAME_None;
+		InventoryAsset = nullptr;
+		InventoryRecord = nullptr;
+	}
 
 };
 

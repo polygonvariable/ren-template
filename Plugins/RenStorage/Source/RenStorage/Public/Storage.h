@@ -30,28 +30,28 @@ class UStorage : public USaveGame, public IInventoryProviderInterface, public IC
 public:
 	
 	/**
-	 * A map of inventory items
-	 * <FName = UUID, FInventoryRecord>
+	 * A pair of inventory container with value
+	 * <FGuid = Container UUID, TMap<FName = Item UUID, FInventoryRecord>>
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FName, FInventoryRecord> InventoryRecords;
+	UPROPERTY()
+	TMap<FName, FInventoryContainer> InventoryContainers;
 
 	/**
 	 * A list of events that happened, which is a map of UUIDs to timestamps
 	 * <FName = UUID, FDateTime>
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TMap<FName, FDateTime> WorldHistory;
 
 	/**
 	 * A map of clock related data according to level's name
 	 * <FName = Level Name, FClockRecord>
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	TMap<FName, FClockRecord> ClockRecords;
 
-	virtual const TMap<FName, FInventoryRecord>& GetInventoryRecords() const override { return InventoryRecords; }
-	virtual TMap<FName, FInventoryRecord>& GetMutableInventoryRecords() override { return InventoryRecords; }
+	virtual const TMap<FName, FInventoryContainer>& GetInventoryContainer() const override { return InventoryContainers; }
+	virtual TMap<FName, FInventoryContainer>& GetMutableInventoryContainer() override { return InventoryContainers; }
 
 	virtual const TMap<FName, FClockRecord>& GetClockRecords() const override { return ClockRecords; }
 	virtual TMap<FName, FClockRecord>& GetMutableClockRecords() override { return ClockRecords; }

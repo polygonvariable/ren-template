@@ -28,7 +28,7 @@ public:
 	TMap<FName, TObjectPtr<UPrimaryDataAsset>> AssetMapping;
 
 	template <typename T>
-	T* GetAssetByName(FName Name)
+	T* GetAssetById(FName Name)
 	{
 		TObjectPtr<UPrimaryDataAsset> Found = AssetMapping.FindRef(Name);
 		if (IsValid(Found))

@@ -17,6 +17,7 @@
 
 
 
+
 /**
  * 
  */
@@ -57,6 +58,38 @@ struct FInventoryRecord
 
 };
 
+
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct FInventoryContainer
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TMap<FName, FInventoryRecord> Items;
+
+private:
+
+	UPROPERTY()
+	FGuid Id = FGuid::NewGuid();
+
+	friend inline bool operator == (const FInventoryContainer& A, const FInventoryContainer& B)
+	{
+		return A.Id == B.Id;
+	}
+
+	friend inline uint32 GetTypeHash(const FInventoryContainer& Container)
+	{
+		return GetTypeHash(Container.Id.ToString());
+	}
+
+};
 
 
 //USTRUCT(BlueprintType)
@@ -165,6 +198,47 @@ struct FInventoryFilterRule
 		}
 
 		return bPasses;
+	}
+
+	bool Match(const FInventoryRecord* Record, const FName& ItemId, const uint8& Type, const uint8& Rarity) const
+	{
+		TArray<bool> Results;
+		Results.Add(FilterId.Matches(ItemId));
+		Results.Add(FilterType.Matches(Type));
+		Results.Add(FilterRarity.Matches(Rarity));
+
+		if (Record)
+		{
+			Results.Add(FilterRank.Matches(Record->EnhanceRecord.Rank));
+			Results.Add(FilterLevel.Matches(Record->EnhanceRecord.Level));
+			Results.Add(FilterXp.Matches(Record->EnhanceRecord.Experience));
+			Results.Add(FilterQuantity.Matches(Record->ItemQuantity));
+		}
+
+		if (FilterCombination == EFilterCombination::And)
+		{
+			for (bool Result : Results)
+			{
+				if (!Result)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+		else if (FilterCombination == EFilterCombination::Or)
+		{
+			for (bool Result : Results)
+			{
+				if (Result)
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return false;
 	}
 
 };

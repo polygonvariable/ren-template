@@ -18,38 +18,36 @@
 
 
 
-bool UInventorySubsystem::AddItem(UInventoryAsset* ItemAsset, int Quantity)
+bool UInventorySubsystem::AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr || !IsValid(ItemAsset) || Quantity <= 0 )
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface, ItemAsset is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
-
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
 
 	if (AddItemRecord_Internal(ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records))
 	{
 		OnInventoryUpdated.Broadcast();
 		return true;
 	}
+
 	return false;
 }
 
-bool UInventorySubsystem::AddItems(const TMap<UInventoryAsset*, int32>& ItemQuantities)
+bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset*, int32>& ItemQuantities)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
 	for (const auto& Item : ItemQuantities)
 	{
-		if (IsValid(Item.Key) && Item.Value > 0)
+		if (Item.Key && Item.Value > 0)
 		{
 			AddItemRecord_Internal(Item.Key->ItemId, Item.Key->ItemType, Item.Key->bIsStackable, Item.Value, Records);
 		}
@@ -59,35 +57,33 @@ bool UInventorySubsystem::AddItems(const TMap<UInventoryAsset*, int32>& ItemQuan
 	return true;
 }
 
-bool UInventorySubsystem::RemoveItem(FName ItemGuid, int Quantity)
+bool UInventorySubsystem::RemoveItem(FName ContainerId, FName ItemGuid, int Quantity)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr || Quantity <= 0)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
-
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
 	
 	if (RemoveItemRecord_Internal(ItemGuid, Quantity, Records))
 	{
 		OnInventoryUpdated.Broadcast();
 		return true;
 	}
+
 	return false;
 }
 
-bool UInventorySubsystem::RemoveItems(const TMap<FName, int>& ItemQuantities)
+bool UInventorySubsystem::RemoveItems(FName ContainerId, const TMap<FName, int>& ItemQuantities)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
 	for (const auto& Item : ItemQuantities)
 	{
 		if (Item.Key.IsValid() && Item.Value > 0)
@@ -100,134 +96,213 @@ bool UInventorySubsystem::RemoveItems(const TMap<FName, int>& ItemQuantities)
 	return true;
 }
 
-bool UInventorySubsystem::DestroyItem(FName ItemGuid)
+bool UInventorySubsystem::DeleteItem(FName ContainerId, FName ItemGuid)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
-	if (Records.Remove(ItemGuid) <= 0)
+	if (Records->Remove(ItemGuid) <= 0)
 	{
-		PRINT_WARNING(LogTemp, 1.0f, TEXT("No item removed"));
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("No item deleted"));
 		return false;
 	}
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Item deleted"));
 
 	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
-bool UInventorySubsystem::DestroyItems(const TSet<FName>& ItemGuids)
+bool UInventorySubsystem::DeleteItems(FName ContainerId, const TSet<FName>& ItemGuids)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
+	int Count = 0;
 	for (const auto& Guid : ItemGuids)
 	{
-		Records.Remove(Guid);
+		Count += Records->Remove(Guid);
 	}
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Items deleted: %d"), Count);
 
 	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
-bool UInventorySubsystem::ClearItems()
+bool UInventorySubsystem::ClearItems(FName ContainerId)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid or Quantity less than or equal to 0"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
-	Records.Empty();
+	Records->Empty();
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Items cleared"));
 
 	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
-bool UInventorySubsystem::UpdateItem(FName ItemGuid, FInventoryRecord Record)
+bool UInventorySubsystem::ReplaceItem(FName ContainerId, FName ItemGuid, FInventoryRecord Record)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr || !Record.IsValid())
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface or Record is invalid"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
 
-	TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetMutableInventoryRecords();
-	if (!Records.Contains(ItemGuid))
+	Records->Add(ItemGuid, Record);
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Record replaced: %s"), *ItemGuid.ToString());
+
+	OnInventoryUpdated.Broadcast();
+	return true;
+}
+
+bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback)
+{
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
+		return false;
+	}
+
+	FInventoryRecord* Record = Records->Find(ItemGuid);
+	if (!Record)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record not found: %s"), *ItemGuid.ToString());
 		return false;
 	}
 
-	Records.Add(ItemGuid, Record);
-
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Record updated: %s"), *ItemGuid.ToString());
+	if (!InCallback(Record))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update failed, callback returned false: %s"), *ItemGuid.ToString());
+		return false;
+	}
 
 	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
-bool UInventorySubsystem::ContainsItem(FName ItemGuid)
+
+
+
+bool UInventorySubsystem::ContainsItem(FName ContainerId, FName ItemGuid)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
 		return false;
 	}
-	return InventoryInterfacePtr->GetInventoryRecords().Contains(ItemGuid);
+	return Records->Contains(ItemGuid);
 }
 
-FInventoryRecord UInventorySubsystem::GetItemRecord(FName ItemGuid) const
+
+
+
+
+bool UInventorySubsystem::CreateContainer(FName ContainerId)
 {
 	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
 	if (!InventoryInterfacePtr)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
-		return FInventoryRecord();
+		return false;
 	}
 
-	const TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetInventoryRecords();
-
-	if (const FInventoryRecord* FoundRecord = Records.Find(ItemGuid))
+	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	if (Containers.Contains(ContainerId))
 	{
-		return *FoundRecord;
+		PRINT_WARNING(LogTemp, 1.0f, TEXT("Container already exists: %s"), *ContainerId.ToString());
+		return false;
 	}
-	return FInventoryRecord();
+
+	Containers.Add(ContainerId, FInventoryContainer());
+	OnContainerUpdated.Broadcast(ContainerId);
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Container created: %s"), *ContainerId.ToString());
+	return true;
 }
 
-TMap<FName, FInventoryRecord> UInventorySubsystem::GetAllItemRecords()
+bool UInventorySubsystem::RemoveContainer(FName ContainerId)
 {
 	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
 	if (!InventoryInterfacePtr)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
-		return TMap<FName, FInventoryRecord>();
+		return false;
 	}
 
-	return InventoryInterfacePtr->GetMutableInventoryRecords();
+	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	if (Containers.Remove(ContainerId) > 0)
+	{
+		OnContainerUpdated.Broadcast(ContainerId);
+
+		PRINT_INFO(LogTemp, 1.0f, TEXT("Container removed: %s"), *ContainerId.ToString());
+		return true;
+	}
+
+	PRINT_ERROR(LogTemp, 1.0f, TEXT("Container not found: %s"), *ContainerId.ToString());
+	return false;
 }
 
-UInventoryAsset* UInventorySubsystem::GetItemAsset(const FName& ItemId) const
+
+
+TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(const FName& ContainerId) const
+{
+	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
+	if (!InventoryInterfacePtr)
+	{
+		return nullptr;
+	}
+
+	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	FInventoryContainer* Records = Containers.Find(ContainerId);
+
+	if (!Records)
+	{
+		return nullptr;
+	}
+
+	return &Records->Items;
+}
+
+
+
+
+const FInventoryRecord* UInventorySubsystem::GetItemRecord(FName ContainerId, FName ItemGuid) const
+{
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
+	{
+		return nullptr;
+	}
+
+	return Records->Find(ItemGuid);
+}
+
+UInventoryAsset* UInventorySubsystem::GetItemAsset(FName ItemId) const
 {
 	if (!InventoryAssetMap)
 	{
-		LOG_ERROR(LogTemp, TEXT("InventoryAssetMap is invalid"));
 		return nullptr;
 	}
 	
-	return InventoryAssetMap->GetAssetByName<UInventoryAsset>(ItemId);
+	return InventoryAssetMap->GetAssetById<UInventoryAsset>(ItemId);
 }
 
 
@@ -247,6 +322,7 @@ void UInventorySubsystem::QueryItems(const FInventoryFilterRule& FilterRule, con
 void UInventorySubsystem::HandleGlossaryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const
 {
 	TMap<FName, TObjectPtr<UPrimaryDataAsset>> Glossary = InventoryAssetMap->AssetMapping;
+	const FName& ContainerId = QueryRule.ContainerId;
 
 	if (QueryRule.SortType != EInventorySortType::None)
 	{
@@ -261,13 +337,13 @@ void UInventorySubsystem::HandleGlossaryItems(const FInventoryFilterRule& Filter
 				continue;
 			}
 
-			const FInventoryRecord Record = GetItemRecord(Item.Key);
-			if (!FilterRule.Matches(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
+			const FInventoryRecord* Record = GetItemRecord(ContainerId, Item.Key);
+			if (!FilterRule.Match(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
 			{
 				continue;
 			}
 
-			SortedItems.Emplace(Item.Key, &Record, Asset);
+			SortedItems.Emplace(Item.Key, Record, Asset);
 		}
 
 		HandleItemSorting(SortedItems, QueryRule);
@@ -287,13 +363,13 @@ void UInventorySubsystem::HandleGlossaryItems(const FInventoryFilterRule& Filter
 				continue;
 			}
 
-			const FInventoryRecord Record = GetItemRecord(Item.Key);
-			if (!FilterRule.Matches(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
+			const FInventoryRecord* Record = GetItemRecord(ContainerId, Item.Key);
+			if (!FilterRule.Match(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
 			{
 				continue;
 			}
 
-			InCallback(Item.Key, &Record, Asset);
+			InCallback(Item.Key, Record, Asset);
 		}
 	}
 
@@ -301,22 +377,23 @@ void UInventorySubsystem::HandleGlossaryItems(const FInventoryFilterRule& Filter
 
 void UInventorySubsystem::HandleInventoryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	const FName& ContainerId = QueryRule.ContainerId;
+
+	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	if (!Records)
 	{
-		LOG_ERROR(LogTemp, TEXT("InventoryInterfacePtr is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return;
 	}
 
-	const TMap<FName, FInventoryRecord>& Records = InventoryInterfacePtr->GetInventoryRecords();
 	if (QueryRule.SortType != EInventorySortType::None)
 	{
 		TArray<FInventorySortEntry> SortedItems;
-		SortedItems.Reserve(Records.Num());
+		SortedItems.Reserve(Records->Num());
 
-		for (const auto& Item : Records)
+		for (auto It = Records->CreateIterator(); It; ++It)
 		{
-			const FInventoryRecord& Record = Item.Value;
+			const FInventoryRecord& Record = It.Value();
 			UInventoryAsset* Asset = GetItemAsset(Record.ItemId);
 
 			if (!Asset || !Record.IsValid())
@@ -324,12 +401,12 @@ void UInventorySubsystem::HandleInventoryItems(const FInventoryFilterRule& Filte
 				continue;
 			}
 
-			if (!FilterRule.Matches(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
+			if (!FilterRule.Match(&Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
 			{
 				continue;
 			}
 
-			SortedItems.Emplace(Item.Key, &Record, Asset);
+			SortedItems.Emplace(It.Key(), &Record, Asset);
 		}
 
 		HandleItemSorting(SortedItems, QueryRule);
@@ -341,9 +418,9 @@ void UInventorySubsystem::HandleInventoryItems(const FInventoryFilterRule& Filte
 	}
 	else
 	{
-		for (const auto& Item : Records)
+		for (auto It = Records->CreateIterator(); It; ++It)
 		{
-			const FInventoryRecord& Record = Item.Value;
+			const FInventoryRecord& Record = It.Value();
 			UInventoryAsset* Asset = GetItemAsset(Record.ItemId);
 
 			if (!Asset || !Record.IsValid())
@@ -351,12 +428,12 @@ void UInventorySubsystem::HandleInventoryItems(const FInventoryFilterRule& Filte
 				continue;
 			}
 
-			if (!FilterRule.Matches(Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
+			if (!FilterRule.Match(&Record, Asset->ItemId, Asset->ItemType, Asset->ItemRarity))
 			{
 				continue;
 			}
 
-			InCallback(Item.Key, &Record, Asset);
+			InCallback(It.Key(), &Record, Asset);
 		}
 	}
 }
@@ -416,7 +493,7 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 
 
 
-bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>& Records)
+bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records)
 {
 	if (ItemId.IsNone() || Quantity <= 0)
 	{
@@ -426,43 +503,40 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 
 	if (bIsStackable)
 	{
-		if (FInventoryRecord* FoundRecord = Records.Find(ItemId))
+		if (FInventoryRecord* Record = Records->Find(ItemId))
 		{
-			FoundRecord->ItemQuantity += Quantity;
-
+			Record->ItemQuantity += Quantity;
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s updated"), *ItemId.ToString());
 		}
 		else
 		{
-			Records.Add(ItemId, FInventoryRecord(
+			Records->Add(ItemId, FInventoryRecord(
 				{
 					.ItemId = ItemId,
 					.ItemType = ItemType,
 					.ItemQuantity = Quantity
 				}
 			));
-
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s added"), *ItemId.ToString());
 		}
 	}
 	else
 	{
 		FName Guid = FName(FGuid::NewGuid().ToString());
-		Records.Add(Guid, FInventoryRecord(
+		Records->Add(Guid, FInventoryRecord(
 			{
 				.ItemId = ItemId,
 				.ItemType = ItemType,
 				.ItemQuantity = Quantity
 			}
 		));
-
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Non-stackable record %s added with guid: %s"), *ItemId.ToString(), *Guid.ToString());
 	}
 
 	return true;
 }
 
-bool UInventorySubsystem::RemoveItemRecord_Internal(FName ItemGuid, int Quantity, TMap<FName, FInventoryRecord>& Records)
+bool UInventorySubsystem::RemoveItemRecord_Internal(FName ItemGuid, int Quantity, TMap<FName, FInventoryRecord>* Records)
 {
 	if (Quantity <= 0)
 	{
@@ -470,21 +544,21 @@ bool UInventorySubsystem::RemoveItemRecord_Internal(FName ItemGuid, int Quantity
 		return false;
 	}
 
-	FInventoryRecord* FoundRecord = Records.Find(ItemGuid);
-	if (!FoundRecord)
+	FInventoryRecord* Record = Records->Find(ItemGuid);
+	if (!Record)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record not found: %s"), *ItemGuid.ToString());
 		return false;
 	}
 
-	if (FoundRecord->ItemQuantity > Quantity)
+	if (Record->ItemQuantity > Quantity)
 	{
-		FoundRecord->ItemQuantity -= Quantity;
+		Record->ItemQuantity -= Quantity;
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Record quantity reduced: %s"), *ItemGuid.ToString());
 	}
 	else
 	{
-		Records.Remove(ItemGuid);
+		Records->Remove(ItemGuid);
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Record removed: %s"), *ItemGuid.ToString());
 	}
 
