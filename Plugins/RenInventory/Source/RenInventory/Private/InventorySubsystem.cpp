@@ -3,6 +3,8 @@
 // Parent Header
 #include "InventorySubsystem.h"
 
+#include "Engine/AssetManager.h"
+
 // Project Headers
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
 #include "RenAsset/Public/PrimaryAssetMap.h"
@@ -20,6 +22,12 @@
 
 bool UInventorySubsystem::AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity)
 {
+	if (!ItemAsset)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("ItemAsset is invalid"));
+		return false;
+	}
+
 	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
 	if (!Records)
 	{
@@ -29,14 +37,13 @@ bool UInventorySubsystem::AddItem(FName ContainerId, UInventoryAsset* ItemAsset,
 
 	if (AddItemRecord_Internal(ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records))
 	{
-		OnInventoryUpdated.Broadcast();
 		return true;
 	}
 
 	return false;
 }
 
-bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset*, int32>& ItemQuantities)
+bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities)
 {
 	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
 	if (!Records)
@@ -47,13 +54,15 @@ bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset
 
 	for (const auto& Item : ItemQuantities)
 	{
-		if (Item.Key && Item.Value > 0)
+		UInventoryAsset* ItemAsset = Item.Key;
+		int Quantity = Item.Value;
+
+		if (ItemAsset && Quantity > 0)
 		{
-			AddItemRecord_Internal(Item.Key->ItemId, Item.Key->ItemType, Item.Key->bIsStackable, Item.Value, Records);
+			AddItemRecord_Internal(ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records);
 		}
 	}
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -68,7 +77,6 @@ bool UInventorySubsystem::RemoveItem(FName ContainerId, FName ItemGuid, int Quan
 	
 	if (RemoveItemRecord_Internal(ItemGuid, Quantity, Records))
 	{
-		OnInventoryUpdated.Broadcast();
 		return true;
 	}
 
@@ -92,7 +100,6 @@ bool UInventorySubsystem::RemoveItems(FName ContainerId, const TMap<FName, int>&
 		}
 	}
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -113,7 +120,6 @@ bool UInventorySubsystem::DeleteItem(FName ContainerId, FName ItemGuid)
 
 	PRINT_INFO(LogTemp, 1.0f, TEXT("Item deleted"));
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -134,7 +140,6 @@ bool UInventorySubsystem::DeleteItems(FName ContainerId, const TSet<FName>& Item
 
 	PRINT_INFO(LogTemp, 1.0f, TEXT("Items deleted: %d"), Count);
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -151,7 +156,6 @@ bool UInventorySubsystem::ClearItems(FName ContainerId)
 
 	PRINT_INFO(LogTemp, 1.0f, TEXT("Items cleared"));
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -168,7 +172,6 @@ bool UInventorySubsystem::ReplaceItem(FName ContainerId, FName ItemGuid, FInvent
 
 	PRINT_INFO(LogTemp, 1.0f, TEXT("Record replaced: %s"), *ItemGuid.ToString());
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -194,7 +197,6 @@ bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctio
 		return false;
 	}
 
-	OnInventoryUpdated.Broadcast();
 	return true;
 }
 
@@ -262,7 +264,7 @@ bool UInventorySubsystem::RemoveContainer(FName ContainerId)
 
 
 
-TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(const FName& ContainerId) const
+TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName ContainerId) const
 {
 	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
 	if (!InventoryInterfacePtr)
@@ -301,7 +303,7 @@ UInventoryAsset* UInventorySubsystem::GetItemAsset(FName ItemId) const
 	{
 		return nullptr;
 	}
-	
+
 	return InventoryAssetMap->GetAssetById<UInventoryAsset>(ItemId);
 }
 
@@ -321,7 +323,7 @@ void UInventorySubsystem::QueryItems(const FInventoryFilterRule& FilterRule, con
 
 void UInventorySubsystem::HandleGlossaryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const
 {
-	TMap<FName, TObjectPtr<UPrimaryDataAsset>> Glossary = InventoryAssetMap->AssetMapping;
+	const TMap<FName, TObjectPtr<UPrimaryDataAsset>>& Glossary = InventoryAssetMap->AssetMapping;
 	const FName& ContainerId = QueryRule.ContainerId;
 
 	if (QueryRule.SortType != EInventorySortType::None)
@@ -507,10 +509,11 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 		{
 			Record->ItemQuantity += Quantity;
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s updated"), *ItemId.ToString());
+			// OnItemUpdated.Broadcast(Record);
 		}
 		else
 		{
-			Records->Add(ItemId, FInventoryRecord(
+			FInventoryRecord& NewRecord = Records->Add(ItemId, FInventoryRecord(
 				{
 					.ItemId = ItemId,
 					.ItemType = ItemType,
@@ -518,12 +521,13 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 				}
 			));
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s added"), *ItemId.ToString());
+			// OnItemAdded.Broadcast(&NewRecord);
 		}
 	}
 	else
 	{
 		FName Guid = FName(FGuid::NewGuid().ToString());
-		Records->Add(Guid, FInventoryRecord(
+		FInventoryRecord& NewRecord = Records->Add(Guid, FInventoryRecord(
 			{
 				.ItemId = ItemId,
 				.ItemType = ItemType,
@@ -531,6 +535,7 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 			}
 		));
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Non-stackable record %s added with guid: %s"), *ItemId.ToString(), *Guid.ToString());
+		// OnItemAdded.Broadcast(&NewRecord);
 	}
 
 	return true;
@@ -551,15 +556,32 @@ bool UInventorySubsystem::RemoveItemRecord_Internal(FName ItemGuid, int Quantity
 		return false;
 	}
 
-	if (Record->ItemQuantity > Quantity)
+	int FinalQuantity = Record->ItemQuantity - Quantity;
+	if (FinalQuantity > 0)
 	{
-		Record->ItemQuantity -= Quantity;
+		Record->ItemQuantity = FinalQuantity;
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Record quantity reduced: %s"), *ItemGuid.ToString());
 	}
 	else
 	{
-		Records->Remove(ItemGuid);
-		PRINT_INFO(LogTemp, 1.0f, TEXT("Record removed: %s"), *ItemGuid.ToString());
+		bool bAllowEmptyData = false;
+		UInventoryAsset* Asset = GetItemAsset(ItemGuid);
+
+		if (Asset)
+		{
+			bAllowEmptyData = Asset->bAllowEmptyData;
+		}
+
+		if (bAllowEmptyData)
+		{
+			Record->ItemQuantity = 0;
+			PRINT_INFO(LogTemp, 1.0f, TEXT("Record quantity reduced to zero: %s"), *ItemGuid.ToString());
+		}
+		else
+		{
+			Records->Remove(ItemGuid);
+			PRINT_INFO(LogTemp, 1.0f, TEXT("Record removed: %s"), *ItemGuid.ToString());
+		}
 	}
 
 	return true;

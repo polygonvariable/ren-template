@@ -20,5 +20,5 @@ class RENASSET_API UFoodAsset : public UNonEnhanceableAsset
 {
 
 	GENERATED_BODY()
-	
+
 };

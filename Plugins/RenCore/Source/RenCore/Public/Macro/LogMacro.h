@@ -27,10 +27,8 @@
 
 #define REN_PRINT_LOG(Category, Verbosity, Time, Color, Text, ...) \
     { \
-        const FString __InternalName__ = this ? this->GetClass()->GetName() : TEXT("Static"); \
-        const FString __InternalMessage__ = FString::Printf(TEXT("[%s::%s] " Text), *__InternalName__, *FString(__FUNCTION__), ##__VA_ARGS__); \
+		REN_LOG(Category, Verbosity, Text, ##__VA_ARGS__) \
         const FString __PrintMessage__ = FString::Printf(Text, ##__VA_ARGS__); \
-        UE_LOG(Category, Verbosity, TEXT("%s"), *__InternalMessage__) \
         REN_PRINT(__PrintMessage__, Time, Color) \
     }
 

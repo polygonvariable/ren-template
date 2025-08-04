@@ -46,5 +46,20 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	bool bIsStackable = false;
 
+	/*
+	 * When true, the item will still be present in inventory even if the quantity is 0,
+	 * this can be useful in things like bullets, as it can avoid contant adding &
+	 * removal of key value pairs.
+	 */
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	bool bAllowEmptyData = false;
+
+public:
+
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId(TEXT("Inventory"), GetFName());
+	}
+
 };
 

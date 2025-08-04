@@ -72,7 +72,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool RemoveContainer(FName ContainerId);
 
-	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(const FName& ContainerId) const;
+	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
 
 
 
@@ -113,11 +113,25 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE(FOnInventoryUpdated);
-	FOnInventoryUpdated OnInventoryUpdated;
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemAdded, const FInventoryRecord* /* ItemRecord */);
+	FOnInventoryItemAdded OnItemAdded;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemRemoved, FInventoryRecord /* ItemRecord */);
+	FOnInventoryItemRemoved OnItemRemoved;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdated, const FInventoryRecord* /* ItemRecord */);
+	FOnInventoryItemUpdated OnItemUpdated;
+
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerUpdated, FName);
 	FOnContainerUpdated OnContainerUpdated;
+
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerAdded, FName /* ContainerId */);
+	FOnContainerAdded OnContainerAdded;
+
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerRemoved, FName /* ContainerId */);
+	FOnContainerRemoved OnContainerRemoved;
 
 };
 

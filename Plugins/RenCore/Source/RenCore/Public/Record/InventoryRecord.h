@@ -8,7 +8,6 @@
 
 // Project Headers
 #include "RenCore/Public/Filter/FilterRule.h"
-#include "RenCore/Public/Inventory/InventoryItemRarity.h"
 #include "RenCore/Public/Inventory/InventoryItemType.h"
 #include "RenCore/Public/Record/EnhanceRecord.h"
 
@@ -16,6 +15,8 @@
 #include "InventoryRecord.generated.h"
 
 
+
+// DECLARE_MULTICAST_DELEGATE(FOnRecordUpdated);
 
 
 /**
@@ -40,10 +41,34 @@ struct FInventoryRecord
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Record")
 	FEnhanceRecord EnhanceRecord;
 
+	// FOnRecordUpdated OnUpdated;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Record")
+	FTimespan ExpireTime = FTimespan::Zero();
+
 
 	bool IsValid() const
 	{
 		return ItemId.IsValid() && ItemQuantity > 0;
+	}
+
+	bool CanExpire() const
+	{
+		return ExpireTime.IsZero();
+	}
+
+	bool IsExpired() const
+	{
+		if (!CanExpire()) return false;
+
+		FDateTime CurrentDate = FDateTime::Now();
+		FDateTime ExpireDate = CurrentDate + ExpireTime;
+		return ExpireDate < CurrentDate;
+	}
+
+	const FDateTime GetExpireDate() const
+	{
+		return FDateTime::Now() + ExpireTime;
 	}
 
 	friend inline bool operator == (const FInventoryRecord& A, const FInventoryRecord& B)
