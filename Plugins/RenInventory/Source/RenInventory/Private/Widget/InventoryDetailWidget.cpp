@@ -8,6 +8,7 @@
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/EditableTextBox.h"
 
 // Project Headers
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
@@ -22,30 +23,15 @@ void UInventoryDetailWidget::InitializeDetail(const FName& Guid, const FInventor
 {
 	if (!Asset)
 	{
-		ResetDetail();
 		LOG_ERROR(LogTemp, "Asset is invalid");
 		return;
 	}
 
 	ItemGuid = Guid;
 
-	if (AssetTitle) AssetTitle->SetText(Asset->ItemName);
-	if (AssetDescription) AssetDescription->SetText(Asset->ItemDescription);
-	if (AssetImage && Asset->ItemIcon.IsValid()) AssetImage->SetBrushFromSoftTexture(Asset->ItemIcon);
+	HandleDetail(Record, Asset);
 
-	if (AssetTypeWidget)
-	{
-		AssetTypeWidget->SetVisibility(AssetTypeVisibility.Contains(Asset->ItemType) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	}
-
-	if (Record)
-	{
-		if (RecordRank) RecordRank->SetText(FText::FromString(FString::FromInt(Record->EnhanceRecord.Rank)));
-		if (RecordLevel) RecordLevel->SetText(FText::FromString(FString::FromInt(Record->EnhanceRecord.Level)));
-		if (RecordExperience) RecordExperience->SetText(FText::FromString(FString::FromInt(Record->EnhanceRecord.Experience)));
-	}
-
-	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(IsValid(Asset) ? 1 : 0);
+	if (ItemId) ItemId->SetText(FText::FromName(Guid));
 }
 
 void UInventoryDetailWidget::RefreshDetail()
@@ -79,18 +65,58 @@ void UInventoryDetailWidget::ResetDetail()
 {
 	ItemGuid = NAME_None;
 
-	if (DetailSwitcher)
-	{
-		DetailSwitcher->SetActiveWidgetIndex(0);
-	}
+	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(0);
+
+	SetPrimaryDetail(FText::GetEmpty(), FText::GetEmpty(), nullptr);
+	SetSecondaryDetail();
 }
 
 void UInventoryDetailWidget::HandleDetail(const FInventoryRecord* Record, UInventoryAsset* Asset)
 {
+	if (!Asset)
+	{
+		ResetDetail();
+		LOG_ERROR(LogTemp, "Asset is invalid");
+		return;
+	}
 
+	SetPrimaryDetail(
+		Asset->ItemName,
+		Asset->ItemDescription,
+		Asset->ItemIcon
+	);
+
+	if (Record)
+	{
+		SetSecondaryDetail(
+			Record->ItemQuantity,
+			Record->EnhanceRecord.Rank,
+			Record->EnhanceRecord.Level,
+			Record->EnhanceRecord.Experience
+		);
+	}
+	else
+	{
+		SetSecondaryDetail();
+	}
+
+	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(1);
 }
 
+void UInventoryDetailWidget::SetPrimaryDetail(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image)
+{
+	if (ItemName) ItemName->SetText(Title);
+	if (ItemDescription) ItemDescription->SetText(Description);
+	if (ItemIcon) ItemIcon->SetBrushFromSoftTexture(Image);
+}
 
+void UInventoryDetailWidget::SetSecondaryDetail(int Quantity, int Rank, int Level, int Experience)
+{
+	if (ItemQuantity) ItemQuantity->SetText(FText::FromString(FString::FromInt(Quantity)));
+	if (ItemRank) ItemRank->SetText(FText::FromString(FString::FromInt(Rank)));
+	if (ItemLevel) ItemLevel->SetText(FText::FromString(FString::FromInt(Level)));
+	if (ItemExperience) ItemExperience->SetText(FText::FromString(FString::FromInt(Experience)));
+}
 
 void UInventoryDetailWidget::NativeConstruct()
 {

@@ -9,5 +9,6 @@
 
 
 FLatentDelegates::FLatentTaskDelegate FLatentDelegates::OnStorageLoaded;
-FLatentDelegates::FLatentTaskDelegate FLatentDelegates::OnGameInstanceSubsystemsInitialized;
+FLatentDelegates::FLatentTaskDelegate FLatentDelegates::OnPreGameInitialized;
+FLatentDelegates::FLatentTaskDelegate FLatentDelegates::OnPostGameInitialized;
 

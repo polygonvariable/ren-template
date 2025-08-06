@@ -16,8 +16,14 @@
 
 
 
-void UInventoryWidget::DisplayItems()
+void UInventoryCollectionWidget::DisplayItems()
 {
+	if (!IsValid(EntryObjectClass))
+	{
+		LOG_ERROR(LogTemp, TEXT("EntryObjectClass is invalid"));
+		return;
+	}
+
 	if (!IsValid(InventorySubsystem))
 	{
 		LOG_ERROR(LogTemp, TEXT("InventorySubsystem is invalid"));
@@ -40,7 +46,7 @@ void UInventoryWidget::DisplayItems()
 			// so i thought of removing items individually using .GetListItems() & .RemoveItem() and it doesnt GC the entry object, WHAT!
 			// 
 			// another problem is that .AddItem() doesnt seem to update its' entry object ptr if the object is valid & was used before.
-			// like suppose in 2nd iteration of display items, the display order could be wrong as the object reference didnt update,
+			// for example in 2nd iteration of display items, the display order could be wrong as the object reference didnt update,
 			// this can also cause list to render is reverse order in each iteration.
 			// 
 			// UInventoryEntryObject* Entry = EntryObjectPool->AcquireObject<UInventoryEntryObject>(Index, this);
@@ -71,7 +77,7 @@ void UInventoryWidget::DisplayItems()
 #endif
 }
 
-void UInventoryWidget::ClearItems()
+void UInventoryCollectionWidget::ClearItems()
 {
 	if (InventoryContainer)
 	{
@@ -88,7 +94,7 @@ void UInventoryWidget::ClearItems()
 	}
 }
 
-void UInventoryWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
+void UInventoryCollectionWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
 {
 	if (InventoryContainer)
 	{
@@ -96,20 +102,20 @@ void UInventoryWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
 	}
 }
 
-void UInventoryWidget::HandleSelectedEntry(UObject* Object)
+void UInventoryCollectionWidget::HandleSelectedEntry(UObject* Object)
 {
 	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(Object);
 	if (IsValid(Entry))
 	{
-		OnInventoryItemSelected.Broadcast(Entry);
+		OnItemSelected.Broadcast(Entry->ItemGuid, Entry->InventoryRecord, Entry->InventoryAsset);
 	}
 }
 
-void UInventoryWidget::NativeConstruct()
+void UInventoryCollectionWidget::NativeConstruct()
 {
 	if (InventoryContainer && !InventoryContainer->OnItemSelectionChanged().IsBoundToObject(this))
 	{
-		InventoryContainer->OnItemSelectionChanged().AddUObject(this, &UInventoryWidget::HandleSelectedEntry);
+		InventoryContainer->OnItemSelectionChanged().AddUObject(this, &UInventoryCollectionWidget::HandleSelectedEntry);
 	}
 
 	UGameInstance* GameInstance = GetGameInstance();
@@ -125,7 +131,7 @@ void UInventoryWidget::NativeConstruct()
 		InventorySubsystem = InventorySubsystemPtr;
 	}
 
-	if (!EntryObjectClass)
+	/*if (!EntryObjectClass)
 	{
 		LOG_ERROR(LogTemp, TEXT("EntryObjectClass is invalid"));
 		return;
@@ -138,25 +144,25 @@ void UInventoryWidget::NativeConstruct()
 		return;
 	}
 	EntryObjectPool = ObjectPool;
-	EntryObjectPool->SetObjectClass(EntryObjectClass);
+	EntryObjectPool->SetObjectClass(EntryObjectClass);*/
 
 	Super::NativeConstruct();
 }
 
-void UInventoryWidget::NativeDestruct()
+void UInventoryCollectionWidget::NativeDestruct()
 {
 	if (IsValid(InventoryContainer))
 	{
 		InventoryContainer->OnItemSelectionChanged().RemoveAll(this);
 	}
 
-	if (IsValid(EntryObjectPool))
+	/*if (IsValid(EntryObjectPool))
 	{
 		EntryObjectPool->Reset<UInventoryEntryObject>();
 		EntryObjectPool->MarkAsGarbage();
 	}
 
-	EntryObjectPool = nullptr;
+	EntryObjectPool = nullptr;*/
 	InventorySubsystem = nullptr;
 
 	Super::NativeDestruct();

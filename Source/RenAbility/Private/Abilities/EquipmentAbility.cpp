@@ -13,7 +13,7 @@
 
 
 
-void UEquipmentAbility::OnTagChanged(const FGameplayTag Tag, int32 NewCount)
+void UEquipmentAbility::OnTagChanged(const FGameplayTag Tag, int NewCount)
 {
 	if (RASC.IsValid())
 	{

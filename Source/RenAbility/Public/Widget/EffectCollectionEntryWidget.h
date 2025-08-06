@@ -60,13 +60,13 @@ protected:
 
 
 	UFUNCTION()
-	void OnEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int32 NewStackCount, int32 PreviousStackCount);
+	void OnEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int NewStackCount, int PreviousStackCount);
 
 
 
 	UFUNCTION(BlueprintNativeEvent)
-	void HandleEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int32 NewStackCount, int32 PreviousStackCount);
-	virtual void HandleEffectStackChanged_Implementation(FActiveGameplayEffectHandle EffectHandle, int32 NewStackCount, int32 PreviousStackCount);
+	void HandleEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int NewStackCount, int PreviousStackCount);
+	virtual void HandleEffectStackChanged_Implementation(FActiveGameplayEffectHandle EffectHandle, int NewStackCount, int PreviousStackCount);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleEffectRemoved(const FGameplayEffectRemovalInfo& EffectRemovalInfo);

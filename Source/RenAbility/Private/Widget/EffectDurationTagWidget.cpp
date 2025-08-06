@@ -31,7 +31,7 @@ void UEffectDurationTagWidget::RegisterASC(UAbilitySystemComponent* TargetASC)
 	ASC->RegisterGameplayTagEvent(CaptureDurationTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UEffectDurationTagWidget::OnTagCountChanged);
 }
 
-void UEffectDurationTagWidget::OnTagCountChanged(const FGameplayTag CooldownTag, int32 NewCount)
+void UEffectDurationTagWidget::OnTagCountChanged(const FGameplayTag CooldownTag, int NewCount)
 {
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 

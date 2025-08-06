@@ -27,6 +27,6 @@ class RENASSET_API UCraftableAsset : public UPurchasableAsset
 public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Craftable")
-	TMap<UInventoryAsset*, int32> CraftingCosts;
+	TMap<UInventoryAsset*, int> CraftingCosts;
 
 };

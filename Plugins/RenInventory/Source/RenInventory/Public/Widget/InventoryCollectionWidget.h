@@ -27,7 +27,7 @@ class UInventoryEntryObject;
  *
  */
 UCLASS(Abstract)
-class UInventoryWidget : public UUserWidget
+class UInventoryCollectionWidget : public UUserWidget
 {
 
 	GENERATED_BODY()
@@ -52,8 +52,8 @@ public:
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<UPersistentObjectPool> EntryObjectPool = nullptr;
+	// UPROPERTY()
+	// TObjectPtr<UPersistentObjectPool> EntryObjectPool = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
@@ -67,9 +67,8 @@ protected:
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInventoryItemSelected, UInventoryEntryObject*, EntryObject);
-	UPROPERTY(BlueprintAssignable)
-	FOnInventoryItemSelected OnInventoryItemSelected;
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, FName /* ItemGuid */, const FInventoryRecord* /* Record */, UInventoryAsset* /* Asset */);
+	FOnInventoryItemSelected OnItemSelected;
 
 protected:
 

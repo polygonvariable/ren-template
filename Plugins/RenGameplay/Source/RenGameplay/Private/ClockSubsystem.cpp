@@ -58,10 +58,10 @@ float UClockSubsystem::GetSimulatedRealTime() const
 
 FString UClockSubsystem::GetFormattedTime(const FString& Format, int BaseYear) const
 {
-	int32 TotalSeconds = FMath::FloorToInt(GetCurrentTime());
-	int32 Hours = TotalSeconds / 3600;
-	int32 Minutes = (TotalSeconds % 3600) / 60;
-	int32 Seconds = TotalSeconds % 60;
+	int TotalSeconds = FMath::FloorToInt(GetCurrentTime());
+	int Hours = TotalSeconds / 3600;
+	int Minutes = (TotalSeconds % 3600) / 60;
+	int Seconds = TotalSeconds % 60;
 
 	FString AmPm = IsDay() ? TEXT("AM") : TEXT("PM");
 

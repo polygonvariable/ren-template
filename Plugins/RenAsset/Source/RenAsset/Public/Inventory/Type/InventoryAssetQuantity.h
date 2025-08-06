@@ -12,6 +12,7 @@
 class UInventoryAsset;
 
 
+
 /**
  * 
  */
@@ -22,8 +23,9 @@ struct FInventoryAssetQuantity
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<UInventoryAsset*, int32> InventoryRecords;
+	TMap<UInventoryAsset*, int> InventoryRecords;
 
-	TMap<FName, int> ConvertToIds();
+	RENASSET_API TMap<FName, int> GetItemIds() const;
 
 };
+

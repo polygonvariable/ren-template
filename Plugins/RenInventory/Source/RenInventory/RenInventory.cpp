@@ -72,7 +72,7 @@ void FRenInventoryModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		{
 			FName ContainerId = FName(*Args[0]);
 			FName ItemId = FName(*Args[1]);
-			int32 Quantity = FCString::Atoi(*Args[2]);
+			int Quantity = FCString::Atoi(*Args[2]);
 
 			UInventoryAsset* InventoryAsset = InventorySubsystem->GetItemAsset(ItemId);
 			InventorySubsystem->AddItem(ContainerId, InventoryAsset, Quantity);
@@ -96,7 +96,7 @@ void FRenInventoryModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		{
 			FName ContainerId = FName(*Args[0]);
 			FName ItemGuid = FName(*Args[1]);
-			int32 Quantity = FCString::Atoi(*Args[2]);
+			int Quantity = FCString::Atoi(*Args[2]);
 
 			InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
 		}

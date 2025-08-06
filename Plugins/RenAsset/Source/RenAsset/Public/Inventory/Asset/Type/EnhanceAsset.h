@@ -6,10 +6,11 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "Inventory/Asset/Category/NonEnhanceableAsset.h"
+#include "RenAsset/Public/Inventory/Asset/Category/NonEnhanceableAsset.h"
 
 // Generated Headers
 #include "EnhanceAsset.generated.h"
+
 
 
 /**
@@ -23,7 +24,8 @@ class RENASSET_API UEnhanceAsset : public UNonEnhanceableAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhance")
-	int32 EnhancePoints = 5000;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhancement")
+	int ExchangePoints = 500;
 
 };
+

@@ -193,7 +193,7 @@ bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctio
 
 	if (!InCallback(Record))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update failed, callback returned false: %s"), *ItemGuid.ToString());
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update callback returned false: %s"), *ItemGuid.ToString());
 		return false;
 	}
 
@@ -203,14 +203,41 @@ bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctio
 
 
 
-bool UInventorySubsystem::ContainsItem(FName ContainerId, FName ItemGuid)
+bool UInventorySubsystem::ContainsItem(FName ContainerId, FName ItemGuid, int Quantity) const
 {
-	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
+	const TMap<FName, FInventoryRecord>* Records = GetRecords(ContainerId);
 	if (!Records)
 	{
 		return false;
 	}
-	return Records->Contains(ItemGuid);
+
+	const FInventoryRecord* Record = Records->Find(ItemGuid);
+	if (!Record)
+	{
+		return false;
+	}
+
+	return Record->ItemQuantity >= Quantity;
+}
+
+bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const
+{
+	const TMap<FName, FInventoryRecord>* Records = GetRecords(ContainerId);
+	if (!Records)
+	{
+		return false;
+	}
+
+	for (const auto& Item : ItemQuantities)
+	{
+		const FInventoryRecord* Record = Records->Find(Item.Key);
+		if (!Record || Record->ItemQuantity < Item.Value)
+		{
+			return false;
+		}
+	}
+
+	return true;
 }
 
 
@@ -283,17 +310,45 @@ TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName Cont
 	return &Records->Items;
 }
 
+const TMap<FName, FInventoryRecord>* UInventorySubsystem::GetRecords(FName ContainerId) const
+{
+	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
+	if (!InventoryInterfacePtr)
+	{
+		return nullptr;
+	}
+
+	const TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetInventoryContainer();
+	const FInventoryContainer* Records = Containers.Find(ContainerId);
+
+	if (!Records)
+	{
+		return nullptr;
+	}
+
+	return &Records->Items;
+}
 
 
 
-const FInventoryRecord* UInventorySubsystem::GetItemRecord(FName ContainerId, FName ItemGuid) const
+
+FInventoryRecord* UInventorySubsystem::GetMutableItemRecord(FName ContainerId, FName ItemGuid) const
 {
 	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
 	if (!Records)
 	{
 		return nullptr;
 	}
+	return Records->Find(ItemGuid);
+}
 
+const FInventoryRecord* UInventorySubsystem::GetItemRecord(FName ContainerId, FName ItemGuid) const
+{
+	const TMap<FName, FInventoryRecord>* Records = GetRecords(ContainerId);
+	if (!Records)
+	{
+		return nullptr;
+	}
 	return Records->Find(ItemGuid);
 }
 
@@ -306,7 +361,6 @@ UInventoryAsset* UInventorySubsystem::GetItemAsset(FName ItemId) const
 
 	return InventoryAssetMap->GetAssetById<UInventoryAsset>(ItemId);
 }
-
 
 
 void UInventorySubsystem::QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const

@@ -62,7 +62,7 @@ protected:
 
 
 	UFUNCTION()
-	void OnTagCountChanged(const FGameplayTag GameplayTag, int32 NewCount);
+	void OnTagCountChanged(const FGameplayTag GameplayTag, int NewCount);
 
 
 

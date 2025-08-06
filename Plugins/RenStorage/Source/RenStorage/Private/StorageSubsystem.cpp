@@ -110,7 +110,7 @@ bool UStorageSubsystem::CreateNewStorage(FName SlotId, int UserIndex)
 
 void UStorageSubsystem::HandleGameInitialized()
 {
-	FLatentDelegates::OnGameInstanceSubsystemsInitialized.RemoveAll(this);
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
 	if (ReadStorage())
 	{
 		FLatentDelegates::OnStorageLoaded.Broadcast();
@@ -126,15 +126,15 @@ void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
-	if (!FLatentDelegates::OnGameInstanceSubsystemsInitialized.IsBoundToObject(this))
+	if (!FLatentDelegates::OnPreGameInitialized.IsBoundToObject(this))
 	{
-		FLatentDelegates::OnGameInstanceSubsystemsInitialized.AddUObject(this, &UStorageSubsystem::HandleGameInitialized);
+		FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::HandleGameInitialized);
 	}
 }
 
 void UStorageSubsystem::Deinitialize()
 {
-	FLatentDelegates::OnGameInstanceSubsystemsInitialized.RemoveAll(this);
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
 
 	UpdateStorage();
 	Super::Deinitialize();

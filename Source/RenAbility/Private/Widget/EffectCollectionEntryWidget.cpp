@@ -36,7 +36,7 @@ void UEffectCollectionEntryWidget::RegisterASC(UAbilitySystemComponent* TargetAS
 	CurrentActiveHandle = ActiveHandle;
 }
 
-void UEffectCollectionEntryWidget::OnEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int32 NewStackCount, int32 PreviousStackCount)
+void UEffectCollectionEntryWidget::OnEffectStackChanged(FActiveGameplayEffectHandle EffectHandle, int NewStackCount, int PreviousStackCount)
 {
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	if (TimerHandle.IsValid())
@@ -56,7 +56,7 @@ void UEffectCollectionEntryWidget::OnEffectStackChanged(FActiveGameplayEffectHan
 	HandleEffectStackChanged(EffectHandle, NewStackCount, PreviousStackCount);
 }
 
-void UEffectCollectionEntryWidget::HandleEffectStackChanged_Implementation(FActiveGameplayEffectHandle EffectHandle, int32 NewStackCount, int32 PreviousStackCount)
+void UEffectCollectionEntryWidget::HandleEffectStackChanged_Implementation(FActiveGameplayEffectHandle EffectHandle, int NewStackCount, int PreviousStackCount)
 {
 	if (IsValid(StackTextBlock))
 	{

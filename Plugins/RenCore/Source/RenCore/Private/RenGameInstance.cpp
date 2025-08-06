@@ -11,6 +11,6 @@
 void URenGameInstance::Init()
 {
 	Super::Init();
-	FLatentDelegates::OnGameInstanceSubsystemsInitialized.Broadcast();
+	FLatentDelegates::OnPreGameInitialized.Broadcast();
 }
 

@@ -59,8 +59,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ReplaceItem(FName ContainerId, FName ItemGuid, FInventoryRecord Record);
 
+
+
 	UFUNCTION(BlueprintCallable)
-	bool ContainsItem(FName ContainerId, FName ItemGuid);
+	bool ContainsItem(FName ContainerId, FName ItemGuid, int Quantity) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const;
+
 
 
 	bool UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback);
@@ -72,16 +78,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool RemoveContainer(FName ContainerId);
 
+
 	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
+	virtual const TMap<FName, FInventoryRecord>* GetRecords(FName ContainerId) const;
 
-
-
+	FInventoryRecord* GetMutableItemRecord(FName ContainerId, FName ItemGuid) const;
 	const FInventoryRecord* GetItemRecord(FName ContainerId, FName ItemGuid) const;
 
 
 	UFUNCTION(BlueprintCallable)
 	UInventoryAsset* GetItemAsset(FName ItemId) const;
 
+	template <class T>
+	T* GetItemAsset(FName ItemId) const
+	{
+		return Cast<T>(GetItemAsset(ItemId));
+	}
 
 	virtual void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
 

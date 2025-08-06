@@ -12,6 +12,8 @@
 // Generated Headers
 #include "InventoryAsset.generated.h"
 
+// Forward Declarations
+
 
 
 /**
@@ -25,16 +27,16 @@ class RENASSET_API UInventoryAsset : public UPrimaryDataAsset
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FName ItemId;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FText ItemName;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FText ItemDescription;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TSoftObjectPtr<UTexture2D> ItemIcon;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)

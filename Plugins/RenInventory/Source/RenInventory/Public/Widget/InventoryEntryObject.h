@@ -47,6 +47,7 @@ public:
 	virtual void BeginDestroy() override
 	{
 		ResetData();
+		UE_LOG(LogTemp, Warning, TEXT("Object Destroyed"));
 		Super::BeginDestroy();
 	}
 

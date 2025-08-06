@@ -1,129 +1,153 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Enhance/EnhanceRecordSubsystem.h"
+#include "Enhance/EnhanceItemSubsystem.h"
 
 // Project Headers
+#include "RenAsset/Public/AssetMetadata.h"
+
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
+
 #include "RenCore/Public/Library/EnhanceLibrary.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
-#include "RenCore/Public/Macro/GameInstanceMacro.h"
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Delegate/LatentDelegates.h"
+
+#include "RenInventory/Public/InventorySubsystem.h"
 
 
-bool UEnhanceRecordSubsystem::LevelUpRecord_Implementation(const FName EnhanceableRecordId, const FName EnhanceRecordId)
-{/*
-	bool bFound = false;
-	UInventoryAsset* REnhanceableAsset = nullptr;
-	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
-	if (!bFound || !REnhanceableAsset)
+
+bool UEnhanceItemSubsystem::LevelUpItem(FName ContainerId, FName ItemGuid, FName EnhanceGuid)
+{
+	if (ItemGuid == EnhanceGuid)
 	{
-		LOG_ERROR(LogTemp, "Enhanceable record not found or invalid asset");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item and enhance are the same"));
 		return false;
 	}
 
-	bFound = false;
-	UInventoryAsset* REnhanceAsset = nullptr;
-	FInventoryRecord EnhanceRecord = InventorySubsystem->GetRecordWithAsset(EnhanceRecordId, REnhanceAsset, bFound);
-	if (!bFound || !REnhanceAsset)
+	if (!IsValid(InventorySubsystem))
 	{
-		LOG_ERROR(LogTemp, "Enhance record not found or invalid asset");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
 		return false;
 	}
 
-	UEnhanceableAsset* EnhanceableAsset = Cast<UEnhanceableAsset>(REnhanceableAsset);
-	if (!EnhanceableAsset)
+	const FInventoryRecord* ItemRecord = InventorySubsystem->GetItemRecord(ContainerId, ItemGuid);
+	if (!ItemRecord)
 	{
-		LOG_ERROR(LogTemp, "Inventory record is not of type enhanceable");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
 		return false;
 	}
 
-	UEnhanceAsset* EnhanceAsset = Cast<UEnhanceAsset>(REnhanceAsset);
+	UEnhanceableAsset* ItemAsset = InventorySubsystem->GetItemAsset<UEnhanceableAsset>(ItemRecord->ItemId);
+	if (!ItemAsset)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item asset is invalid"));
+		return false;
+	}
+	
+	const FInventoryRecord* EnhanceRecord = InventorySubsystem->GetItemRecord(ContainerId, EnhanceGuid);
+	if (!EnhanceRecord)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Enhance record is invalid"));
+		return false;
+	}
+
+	UEnhanceAsset* EnhanceAsset = InventorySubsystem->GetItemAsset<UEnhanceAsset>(EnhanceRecord->ItemId);
 	if (EnhanceAsset)
 	{
-		if (EnhanceableAsset->EnhanceCosts.Contains(EnhanceAsset))
+		if (ItemAsset->EnhanceCosts.Contains(EnhanceAsset))
 		{
-			int EnhancePoint = EnhanceAsset->EnhancePoints;
-			return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, EnhancePoint);
+			return HandleLevelUp(
+				ContainerId,
+				ItemGuid,
+				EnhanceGuid,
+				ItemRecord,
+				ItemAsset,
+				EnhanceAsset->ExchangePoints
+			);
 		}
-		LOG_ERROR(LogTemp, "Internal enhance failed, trying to check for external enhance");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Internal enhance not found, trying to check for external enhance"));
 	}
 
-	int* EnhancePoints = EnhanceableAsset->EnhanceExternalCosts.Find(EnhanceAsset->ItemType);
+	int* EnhancePoints = ItemAsset->ExternalCosts.Find(EnhanceAsset->ItemType);
 	if (!EnhancePoints)
 	{
-		LOG_ERROR(LogTemp, "External enhance failed and no points found");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("External enhance failed and no points found"));
 		return false;
 	}
 
-	return HandleLevelUp(EnhanceableRecordId, EnhanceRecordId, EnhanceableRecord, EnhanceableAsset, *EnhancePoints);*/
-	return false;
+	return HandleLevelUp(
+		ContainerId,
+		ItemGuid,
+		EnhanceGuid,
+		ItemRecord,
+		ItemAsset,
+		*EnhancePoints
+	);
 }
 
-bool UEnhanceRecordSubsystem::RankUpRecord_Implementation(const FName EnhanceableRecordId)
+bool UEnhanceItemSubsystem::RankUpItem(FName ContainerId, FName ItemGuid)
 {
-	/*
-	bool bFound = false;
-	UInventoryAsset* REnhanceableAsset = nullptr;
-	FInventoryRecord EnhanceableRecord = InventorySubsystem->GetRecordWithAsset(EnhanceableRecordId, REnhanceableAsset, bFound);
-	if (!bFound || !REnhanceableAsset)
+	if (!IsValid(InventorySubsystem))
 	{
-		LOG_ERROR(LogTemp, "Enhanceable record not found or invalid asset");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
 		return false;
 	}
 
-	UEnhanceableAsset* EnhanceableAsset = Cast<UEnhanceableAsset>(REnhanceableAsset);
-	if (!EnhanceableAsset)
+	const FInventoryRecord* ItemRecord = InventorySubsystem->GetItemRecord(ContainerId, ItemGuid);
+	if (!ItemRecord)
 	{
-		LOG_ERROR(LogTemp, "Inventory record is not of type enhanceable");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
 		return false;
 	}
 
-	TMap<int, FInventoryAssetQuantity>& EnhanceRankings = EnhanceableAsset->EnhanceRankings;
-	FInventoryAssetQuantity* EnhanceRanking = EnhanceRankings.Find(EnhanceableRecord.EnhanceRecord.Rank);
-	if (!EnhanceRanking) {
-		LOG_ERROR(LogTemp, "Enhance rank not found");
-		return false;
-	}
-
-	const TMap<FName, int> RankCostsIds;// = EnhanceRanking->ConvertToIds();
-	if (!InventorySubsystem->RemoveRecords(RankCostsIds))
+	UEnhanceableAsset* ItemAsset = InventorySubsystem->GetItemAsset<UEnhanceableAsset>(ItemRecord->ItemId);
+	if (!ItemAsset)
 	{
-		LOG_ERROR(LogTemp, "Failed to remove rank costs");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item asset is invalid"));
 		return false;
 	}
 
-	EnhanceableRecord.EnhanceRecord.Rank++;
-	if (!InventorySubsystem->UpdateRecord(EnhanceableRecordId, EnhanceableRecord))
+	const TMap<int, FInventoryAssetQuantity>& RankingCosts = ItemAsset->RankingCosts;
+	const FInventoryAssetQuantity* CostItem = RankingCosts.Find(ItemRecord->EnhanceRecord.Rank);
+	if (!CostItem) {
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Ranking cost is invalid"));
+		return false;
+	}
+
+	const TMap<FName, int>& ItemQuantities = CostItem->GetItemIds();
+	if (!InventorySubsystem->ContainsItems(ContainerId, ItemQuantities))
 	{
-		LOG_ERROR(LogTemp, "Failed to update enhanceable record");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Not enough items to rank up"));
 		return false;
 	}
-
-	LOG_WARNING(LogTemp, "Rank up successful");*/
-
-	return true;
+	
+	return HandleRankUp(ContainerId, ItemGuid, ItemRecord, ItemAsset, ItemQuantities);
 }
 
-bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, const FName& EnhanceRecordId, FInventoryRecord EnhanceableRecord, UEnhanceableAsset* EnhanceableAsset, int EnhancePoint)
+bool UEnhanceItemSubsystem::HandleLevelUp(FName ContainerId, FName ItemGuid, FName EnhanceGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, int EnhancePoint)
 {
-	/*
+	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
+	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
+	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
+
 	int NewXp = 0;
 	int NewLevel = 0;
+
 	bool bDoesLevelUpdated = false;
 	bool bDoesRankShouldUpdate = false;
 	bool bDoesMaxLevelReached = false;
 
-	bool bCanLevelUp = UEnhanceLibrary::CalculateEnhance(
+	bool bCanLevelUp = UEnhanceLibrary::CalculateLevelUp(
 		EnhancePoint,
-		EnhanceableRecord.EnhanceRecord.Experience,
-		EnhanceableRecord.EnhanceRecord.Level,
-		EnhanceableRecord.EnhanceRecord.Rank,
-		EnhanceableAsset->EnhanceXpInterval,
-		EnhanceableAsset->EnhanceLevelInterval,
-		EnhanceableAsset->EnhanceLevelMax,
+		CurrentXp,
+		CurrentLevel,
+		CurrentRank,
+		ItemAsset->GetXpInterval(CurrentLevel),
+		ItemAsset->GetLevelInterval(CurrentRank),
+		ItemAsset->MaxLevel,
 		NewXp,
 		NewLevel,
 		bDoesLevelUpdated,
@@ -133,25 +157,110 @@ bool UEnhanceRecordSubsystem::HandleLevelUp(const FName& EnhanceableRecordId, co
 
 	if (!bCanLevelUp)
 	{
-		LOG_ERROR(LogTemp, "Level up cancelled");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Level up cancelled"));
 		return false;
 	}
 
-	EnhanceableRecord.EnhanceRecord.Experience = NewXp;
-	EnhanceableRecord.EnhanceRecord.Level = NewLevel;
-
-	if (!InventorySubsystem->RemoveRecord(EnhanceRecordId, 1))
+	if (!InventorySubsystem->RemoveItem(ContainerId, EnhanceGuid, 1))
 	{
-		LOG_ERROR(LogTemp, "Failed to remove enhance record");
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to remove enhance record"));
 		return false;
 	}
 
-	if (InventorySubsystem->UpdateRecord(EnhanceableRecordId, EnhanceableRecord))
+	bool bResult = InventorySubsystem->UpdateItem(ContainerId, ItemGuid,
+		[this, NewXp, NewLevel](FInventoryRecord* Record)
+		{
+			if (!Record) return false;
+			Record->EnhanceRecord.Experience = NewXp;
+			Record->EnhanceRecord.Level = NewLevel;
+			return true;
+		}
+	);
+
+	if (!bResult)
 	{
-		LOG_WARNING(LogTemp, "Level up success, new xp: %s, new level: %s", *FString::FromInt(EnhanceableRecord.EnhanceRecord.Experience), *FString::FromInt(EnhanceableRecord.EnhanceRecord.Level));
-		return true;
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to update enhanceable record"));
+		return false;
 	}
 
-	LOG_ERROR(LogTemp, "Level up failed");*/
-	return false;
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Level up successful"));
+	return true;
+}
+
+bool UEnhanceItemSubsystem::HandleRankUp(FName ContainerId, FName ItemGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, const TMap<FName, int>& ItemQuantities)
+{
+	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
+	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
+	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
+	if (!UEnhanceLibrary::CanRankUp(CurrentXp, CurrentLevel, ItemAsset->GetLevelInterval(CurrentRank)))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Cannot rank up"));
+		return false;
+	}
+
+	if (!InventorySubsystem->RemoveItems(ContainerId, ItemQuantities))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to remove rank costs"));
+		return false;
+	}
+
+	bool bResult = InventorySubsystem->UpdateItem(ContainerId, ItemGuid,
+		[this](FInventoryRecord* Record)
+		{
+			if (!Record) return false;
+			Record->EnhanceRecord.Rank++;
+			return true;
+		}
+	);
+
+	if (!bResult)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to update enhanceable record"));
+		return false;
+	}
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Rank up successful"));
+	return true;
+}
+
+
+
+void UEnhanceItemSubsystem::HandleGameInitialized()
+{
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+
+	UInventorySubsystem* InventorySubsystemPtr = GetGameInstance()->GetSubsystem<UInventorySubsystem>();
+	if (!IsValid(InventorySubsystemPtr))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
+		return;
+	}
+
+	InventorySubsystem = InventorySubsystemPtr;
+}
+
+bool UEnhanceItemSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	return true;
+}
+
+void UEnhanceItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogTemp, TEXT("EnhanceItemSubsystem Initialized"));
+
+	if (!FLatentDelegates::OnPreGameInitialized.IsBoundToObject(this))
+	{
+		FLatentDelegates::OnPreGameInitialized.AddUObject(this, &UEnhanceItemSubsystem::HandleGameInitialized);
+	}
+}
+
+void UEnhanceItemSubsystem::Deinitialize()
+{
+	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+
+	InventorySubsystem = nullptr;
+
+	LOG_WARNING(LogTemp, TEXT("EnhanceItemSubsystem Deinitialized"));
+	Super::Deinitialize();
 }

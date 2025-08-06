@@ -24,9 +24,9 @@ class RENASSET_API UPurchasableAsset : public UInventoryAsset
 public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Purchasable")
-	int32 PurchaseQuantity;
+	int PurchaseQuantity;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Purchasable")
-	TMap<UInventoryAsset*, int32> PurchaseCosts;
+	TMap<UInventoryAsset*, int> PurchaseCosts;
 
 };

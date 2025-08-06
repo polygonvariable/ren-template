@@ -22,7 +22,8 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FLatentTaskDelegate);
 
 	static FLatentTaskDelegate OnStorageLoaded;
-	static FLatentTaskDelegate OnGameInstanceSubsystemsInitialized;
+	static FLatentTaskDelegate OnPreGameInitialized;
+	static FLatentTaskDelegate OnPostGameInitialized;
 
 };
 

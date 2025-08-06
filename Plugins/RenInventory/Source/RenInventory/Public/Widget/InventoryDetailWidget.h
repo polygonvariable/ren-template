@@ -18,6 +18,7 @@ class UImage;
 class UTextBlock;
 class UPanelWidget;
 class UWidgetSwitcher;
+class UEditableTextBox;
 
 class UInventoryAsset;
 class UInventorySubsystem;
@@ -50,34 +51,37 @@ protected:
 	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	TObjectPtr<UEditableTextBox> ItemId = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UWidgetSwitcher> DetailSwitcher = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UImage> AssetImage = nullptr;
+	TObjectPtr<UImage> ItemIcon = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> AssetTitle = nullptr;
+	TObjectPtr<UTextBlock> ItemName = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> AssetDescription = nullptr;
+	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> RecordRank = nullptr;
+	TObjectPtr<UTextBlock> ItemDescription = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> RecordLevel = nullptr;
+	TObjectPtr<UTextBlock> ItemRank = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> RecordExperience = nullptr;
+	TObjectPtr<UTextBlock> ItemLevel = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UPanelWidget> AssetTypeWidget = nullptr;
-
-	UPROPERTY(BlueprintReadOnly)
-	TSet<TEnumAsByte<EInventoryItemType>> AssetTypeVisibility;
+	TObjectPtr<UTextBlock> ItemExperience = nullptr;
 
 
 	void HandleDetail(const FInventoryRecord* Record, UInventoryAsset* Asset);
+
+	void SetPrimaryDetail(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image);
+	void SetSecondaryDetail(int Quantity = 0, int Rank = 0, int Level = 0, int Experience = 0);
 
 protected:
 

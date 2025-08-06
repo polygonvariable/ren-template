@@ -56,7 +56,7 @@ protected:
 
 	TWeakObjectPtr<URAbilitySystemComponent> RASC;
 
-	void OnTagChanged(const FGameplayTag Tag, int32 NewCount);
+	void OnTagChanged(const FGameplayTag Tag, int NewCount);
 
 public:
 
