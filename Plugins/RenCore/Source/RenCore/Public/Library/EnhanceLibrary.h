@@ -62,49 +62,55 @@ public:
         int InPoints, int InXp, int InLevel, int InRank, int InXpInterval, int InLevelInterval, int InMaxLevel,
         int& OutXp, int& OutLevel, bool& bOutDoesLevelUpdated, bool& bOutDoesRankShouldUpdate, bool& bOutDoesMaxLevelReached)
     {
-        int LocalNewXp = InXp;
+        int LocalNewXp = InXp + InPoints;
         int LocalNewLevel = InLevel;
-        int LocalLevelCapForRank = InRank * InLevelInterval;
-        int LocalLevelGained = 0;
+        bOutDoesLevelUpdated = false;
+        bOutDoesRankShouldUpdate = false;
+        bOutDoesMaxLevelReached = false;
+
+        const int LocalLevelCapForRank = InRank * InLevelInterval;
 
         if (InLevel >= LocalLevelCapForRank)
         {
+            OutXp = 0;
+            OutLevel = InLevel;
             bOutDoesRankShouldUpdate = true;
             return false;
         }
 
-        LocalNewXp += InPoints;
-        LocalLevelGained = LocalNewXp / InXpInterval;
+        int MaxGainableLevels = LocalLevelCapForRank - InLevel;
+        int GainedLevels = LocalNewXp / InXpInterval;
 
-        if (LocalLevelGained > 0)
+        if (GainedLevels > 0)
         {
-            LocalNewXp = 0;
-            LocalNewLevel = LocalLevelGained + InLevel;
+            int AppliedLevels = FMath::Min(GainedLevels, MaxGainableLevels);
+            LocalNewLevel += AppliedLevels;
+            LocalNewXp -= AppliedLevels * InXpInterval;
             bOutDoesLevelUpdated = true;
 
             if (LocalNewLevel >= LocalLevelCapForRank)
             {
-                LocalNewXp = 0;
                 LocalNewLevel = LocalLevelCapForRank;
+                LocalNewXp = 0;
                 bOutDoesRankShouldUpdate = true;
             }
-            if (LocalNewLevel > InMaxLevel)
-            {
-                LocalNewXp = 0;
-                LocalNewLevel = InMaxLevel;
-                bOutDoesMaxLevelReached = true;
-            }
+        }
+
+        if (LocalNewLevel >= InMaxLevel)
+        {
+            LocalNewLevel = InMaxLevel;
+            LocalNewXp = 0;
+            bOutDoesMaxLevelReached = true;
         }
 
         OutXp = LocalNewXp;
         OutLevel = LocalNewLevel;
-
         return true;
     }
 
-	static bool CanRankUp(int Xp, int Level, int LevelInterval)
+	static bool CanRankUp(int Xp, int Level, int Rank, int LevelInterval)
     {
-        return Xp == 0 && Level % LevelInterval == 0;
+        return Xp == 0 && Level % LevelInterval == 0 && Level / LevelInterval == Rank;
     }
 	
 };

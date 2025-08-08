@@ -36,46 +36,50 @@ class UInventoryDetailWidget : public UUserWidget
 
 public:
 
-	void InitializeDetail(const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	bool bAutoRefresh = true;
+
+	void InitializeDetail(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset);
 	void RefreshDetail();
 	void ResetDetail();
 
 protected:
 
-	FName ItemGuid = NAME_None;
+	UPROPERTY(BlueprintReadOnly)
+	FName ActiveItemGuid = NAME_None;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ContainerId = NAME_None;
 
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UEditableTextBox> ItemId = nullptr;
+	TObjectPtr<UEditableTextBox> ItemGuidText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UWidgetSwitcher> DetailSwitcher = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UImage> ItemIcon = nullptr;
+	TObjectPtr<UImage> ItemImage = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemName = nullptr;
+	TObjectPtr<UTextBlock> ItemNameText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
+	TObjectPtr<UTextBlock> ItemQuantityText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemDescription = nullptr;
+	TObjectPtr<UTextBlock> ItemDescriptionText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemRank = nullptr;
+	TObjectPtr<UTextBlock> ItemRankText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemLevel = nullptr;
+	TObjectPtr<UTextBlock> ItemLevelText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemExperience = nullptr;
+	TObjectPtr<UTextBlock> ItemExperienceText = nullptr;
 
 
 	void HandleDetail(const FInventoryRecord* Record, UInventoryAsset* Asset);

@@ -41,8 +41,6 @@ struct FInventoryRecord
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Record")
 	FEnhanceRecord EnhanceRecord;
 
-	// FOnRecordUpdated OnUpdated;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory Record")
 	FTimespan ExpireTime = FTimespan::Zero();
 
@@ -96,8 +94,9 @@ struct FInventoryContainer
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	TMap<FName, FInventoryRecord> Items;
+	// TMultiMap<FName, FInventoryRecord> MultiItems;
 
 private:
 

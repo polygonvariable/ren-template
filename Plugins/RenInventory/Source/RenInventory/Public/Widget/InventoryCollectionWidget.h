@@ -34,13 +34,16 @@ class UInventoryCollectionWidget : public UUserWidget
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
 	TSubclassOf<UInventoryEntryObject> EntryObjectClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	bool bAutoRefresh = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FInventoryFilterRule FilterRule = FInventoryFilterRule();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FInventoryQueryRule QueryRule = FInventoryQueryRule();
 
 
@@ -50,13 +53,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void ClearItems();
 
+	UFUNCTION(BlueprintCallable)
+	virtual void RefreshItems();
+
 protected:
 
-	// UPROPERTY()
-	// TObjectPtr<UPersistentObjectPool> EntryObjectPool = nullptr;
-
 	UPROPERTY()
-	TObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UListView> InventoryContainer = nullptr;

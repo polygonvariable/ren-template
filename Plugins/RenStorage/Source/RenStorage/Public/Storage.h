@@ -31,14 +31,14 @@ public:
 	
 	/**
 	 * A pair of inventory container with value
-	 * <FGuid = Container UUID, TMap<FName = Item UUID, FInventoryRecord>>
+	 * TMap<FName = Container UUID, TMap<FName = Item UUID, FInventoryRecord>>
 	 */
 	UPROPERTY()
 	TMap<FName, FInventoryContainer> InventoryContainers;
 
 	/**
 	 * A list of events that happened, which is a map of UUIDs to timestamps
-	 * <FName = UUID, FDateTime>
+	 * TMap<FName = UUID, FDateTime>
 	 */
 	UPROPERTY()
 	TMap<FName, FDateTime> WorldHistory;

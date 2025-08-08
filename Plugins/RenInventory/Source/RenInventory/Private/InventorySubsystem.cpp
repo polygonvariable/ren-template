@@ -35,7 +35,7 @@ bool UInventorySubsystem::AddItem(FName ContainerId, UInventoryAsset* ItemAsset,
 		return false;
 	}
 
-	if (AddItemRecord_Internal(ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records))
+	if (AddItemRecord_Internal(ContainerId, ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records))
 	{
 		return true;
 	}
@@ -59,7 +59,7 @@ bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset
 
 		if (ItemAsset && Quantity > 0)
 		{
-			AddItemRecord_Internal(ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records);
+			AddItemRecord_Internal(ContainerId, ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records);
 		}
 	}
 
@@ -74,7 +74,7 @@ bool UInventorySubsystem::RemoveItem(FName ContainerId, FName ItemGuid, int Quan
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
 		return false;
 	}
-	
+
 	if (RemoveItemRecord_Internal(ItemGuid, Quantity, Records))
 	{
 		return true;
@@ -175,6 +175,27 @@ bool UInventorySubsystem::ReplaceItem(FName ContainerId, FName ItemGuid, FInvent
 	return true;
 }
 
+int UInventorySubsystem::CountItem(FName ContainerId, FName ItemId) const
+{
+	const TMap<FName, FInventoryRecord>* Records = GetRecords(ContainerId);
+	if (!Records)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Records not found in container: %s"), *ContainerId.ToString());
+		return 0;
+	}
+
+	int Count = 0;
+	for (const auto& Record : *Records)
+	{
+		if (Record.Value.ItemId == ItemId)
+		{
+			Count++;
+		}
+	}
+
+	return Count;
+}
+
 bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback)
 {
 	TMap<FName, FInventoryRecord>* Records = GetMutableRecords(ContainerId);
@@ -196,6 +217,8 @@ bool UInventorySubsystem::UpdateItem(FName ContainerId, FName ItemGuid, TFunctio
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update callback returned false: %s"), *ItemGuid.ToString());
 		return false;
 	}
+
+	OnItemUpdated.Broadcast(ContainerId, ItemGuid, Record);
 
 	return true;
 }
@@ -261,7 +284,7 @@ bool UInventorySubsystem::CreateContainer(FName ContainerId)
 	}
 
 	Containers.Add(ContainerId, FInventoryContainer());
-	OnContainerUpdated.Broadcast(ContainerId);
+	OnContainerAdded.Broadcast(ContainerId);
 
 	PRINT_INFO(LogTemp, 1.0f, TEXT("Container created: %s"), *ContainerId.ToString());
 	return true;
@@ -277,16 +300,16 @@ bool UInventorySubsystem::RemoveContainer(FName ContainerId)
 	}
 
 	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
-	if (Containers.Remove(ContainerId) > 0)
+	if (Containers.Remove(ContainerId) <= 0)
 	{
-		OnContainerUpdated.Broadcast(ContainerId);
-
-		PRINT_INFO(LogTemp, 1.0f, TEXT("Container removed: %s"), *ContainerId.ToString());
-		return true;
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Container not found: %s"), *ContainerId.ToString());
+		return false;
 	}
 
-	PRINT_ERROR(LogTemp, 1.0f, TEXT("Container not found: %s"), *ContainerId.ToString());
-	return false;
+	OnContainerRemoved.Broadcast(ContainerId);
+
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Container removed: %s"), *ContainerId.ToString());
+	return true;
 }
 
 
@@ -549,7 +572,7 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 
 
 
-bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records)
+bool UInventorySubsystem::AddItemRecord_Internal(FName ContainerId, FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records)
 {
 	if (ItemId.IsNone() || Quantity <= 0)
 	{
@@ -562,8 +585,9 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 		if (FInventoryRecord* Record = Records->Find(ItemId))
 		{
 			Record->ItemQuantity += Quantity;
+			OnItemAdded.Broadcast(ContainerId, ItemId, Record);
+
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s updated"), *ItemId.ToString());
-			// OnItemUpdated.Broadcast(Record);
 		}
 		else
 		{
@@ -574,8 +598,9 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 					.ItemQuantity = Quantity
 				}
 			));
+			OnItemAdded.Broadcast(ContainerId, ItemId, &NewRecord);
+
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Stackable record %s added"), *ItemId.ToString());
-			// OnItemAdded.Broadcast(&NewRecord);
 		}
 	}
 	else
@@ -588,8 +613,9 @@ bool UInventorySubsystem::AddItemRecord_Internal(FName ItemId, EInventoryItemTyp
 				.ItemQuantity = Quantity
 			}
 		));
+		OnItemAdded.Broadcast(ContainerId, Guid, &NewRecord);
+
 		PRINT_INFO(LogTemp, 1.0f, TEXT("Non-stackable record %s added with guid: %s"), *ItemId.ToString(), *Guid.ToString());
-		// OnItemAdded.Broadcast(&NewRecord);
 	}
 
 	return true;

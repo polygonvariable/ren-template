@@ -31,33 +31,33 @@ class RENASSET_API UEnhanceableAsset : public UCraftableAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
 	int XpInterval = 5000;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
 	int LevelInterval = 10;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
 	int MaxLevel = 100;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
 	int MaxRank = 100;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
 	TSet<TObjectPtr<UEnhanceAsset>> EnhanceCosts;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
 	TMap<TEnumAsByte<EInventoryItemType>, int> ExternalCosts;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
-	TMap<int, FInventoryAssetQuantity> RankingCosts;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
+	TArray<FInventoryAssetQuantity> RankingCosts;
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
 	FCurveTableRowHandle XpCurveInterval;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Enhanceable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
 	FCurveTableRowHandle LevelCurveInterval;
 
 public:
@@ -65,13 +65,15 @@ public:
 	int GetXpInterval(int Level) const
 	{
 		FString Context = XpCurveInterval.RowName.ToString();
-		return XpCurveInterval.IsValid(Context) ? XpCurveInterval.GetCurve(Context)->Eval(Level) : XpInterval;
+		int Value = XpCurveInterval.IsValid(Context) ? XpCurveInterval.GetCurve(Context)->Eval(Level) : XpInterval;
+		return FMath::Max(1, Value);
 	}
 
 	int GetLevelInterval(int Rank) const
 	{
 		FString Context = LevelCurveInterval.RowName.ToString();
-		return LevelCurveInterval.IsValid(Context) ? LevelCurveInterval.GetCurve(Context)->Eval(Rank) : LevelInterval;
+		int Value = LevelCurveInterval.IsValid(Context) ? LevelCurveInterval.GetCurve(Context)->Eval(Rank) : LevelInterval;
+		return FMath::Max(1, Value);
 	}
 
 };

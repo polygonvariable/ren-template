@@ -24,7 +24,8 @@ void UInventoryCollectionWidget::DisplayItems()
 		return;
 	}
 
-	if (!IsValid(InventorySubsystem))
+	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (!IsValid(Subsystem))
 	{
 		LOG_ERROR(LogTemp, TEXT("InventorySubsystem is invalid"));
 		return;
@@ -34,10 +35,8 @@ void UInventoryCollectionWidget::DisplayItems()
 	PROFILE_START(Inventory);
 #endif
 
-	int Index = 0;
-
-	InventorySubsystem->QueryItems(FilterRule, QueryRule,
-		[this, &Index](const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+	Subsystem->QueryItems(FilterRule, QueryRule,
+		[this](const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
 		{
 			// man i give up on the implementation of object pooling for now.
 			// 
@@ -59,8 +58,6 @@ void UInventoryCollectionWidget::DisplayItems()
 			Entry->ItemGuid = Guid;
 			Entry->InventoryAsset = Asset;
 			Entry->InventoryRecord = Record;
-
-			Index++;
 
 			// Updating the data doesnt update the UI
 			// as the NativeOnListItemObjectSet in UInventoryEntryWidget
@@ -94,6 +91,12 @@ void UInventoryCollectionWidget::ClearItems()
 	}
 }
 
+void UInventoryCollectionWidget::RefreshItems()
+{
+	ClearItems();
+	DisplayItems();
+}
+
 void UInventoryCollectionWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
 {
 	if (InventoryContainer)
@@ -121,49 +124,41 @@ void UInventoryCollectionWidget::NativeConstruct()
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
-		UInventorySubsystem* InventorySubsystemPtr = GameInstance->GetSubsystem<UInventorySubsystem>();
-		if (!IsValid(InventorySubsystemPtr))
+		UInventorySubsystem* Subsystem = GameInstance->GetSubsystem<UInventorySubsystem>();
+		if (!IsValid(Subsystem))
 		{
 			LOG_ERROR(LogTemp, TEXT("InventorySubsystem is invalid"));
 			return;
 		}
 
-		InventorySubsystem = InventorySubsystemPtr;
-	}
+		if (bAutoRefresh)
+		{
+			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+		}
 
-	/*if (!EntryObjectClass)
-	{
-		LOG_ERROR(LogTemp, TEXT("EntryObjectClass is invalid"));
-		return;
+		InventorySubsystem = Subsystem;
 	}
-
-	UPersistentObjectPool* ObjectPool = NewObject<UPersistentObjectPool>(this);
-	if (!IsValid(ObjectPool))
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create entry object pool"));
-		return;
-	}
-	EntryObjectPool = ObjectPool;
-	EntryObjectPool->SetObjectClass(EntryObjectClass);*/
 
 	Super::NativeConstruct();
 }
 
 void UInventoryCollectionWidget::NativeDestruct()
 {
-	if (IsValid(InventoryContainer))
+	if (InventoryContainer)
 	{
 		InventoryContainer->OnItemSelectionChanged().RemoveAll(this);
 	}
 
-	/*if (IsValid(EntryObjectPool))
+	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (IsValid(Subsystem))
 	{
-		EntryObjectPool->Reset<UInventoryEntryObject>();
-		EntryObjectPool->MarkAsGarbage();
+		Subsystem->OnItemAdded.RemoveAll(this);
+		Subsystem->OnItemRemoved.RemoveAll(this);
+		Subsystem->OnItemUpdated.RemoveAll(this);
 	}
-
-	EntryObjectPool = nullptr;*/
-	InventorySubsystem = nullptr;
+	InventorySubsystem.Reset();
 
 	Super::NativeDestruct();
 }

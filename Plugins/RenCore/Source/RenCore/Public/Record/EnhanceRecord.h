@@ -22,14 +22,11 @@ struct FEnhanceRecord
 
 	GENERATED_BODY()
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Rank = 1;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Level = 1;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhance Record")
 	int Experience = 0;

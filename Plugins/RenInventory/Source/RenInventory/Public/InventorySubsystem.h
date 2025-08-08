@@ -68,6 +68,7 @@ public:
 	bool ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const;
 
 
+	int CountItem(FName ContainerId, FName ItemId) const;
 
 	bool UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback);
 
@@ -79,12 +80,9 @@ public:
 	bool RemoveContainer(FName ContainerId);
 
 
-	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
 	virtual const TMap<FName, FInventoryRecord>* GetRecords(FName ContainerId) const;
 
-	FInventoryRecord* GetMutableItemRecord(FName ContainerId, FName ItemGuid) const;
 	const FInventoryRecord* GetItemRecord(FName ContainerId, FName ItemGuid) const;
-
 
 	UFUNCTION(BlueprintCallable)
 	UInventoryAsset* GetItemAsset(FName ItemId) const;
@@ -99,7 +97,6 @@ public:
 
 
 protected:
-
 	TWeakInterfacePtr<IInventoryProviderInterface> InventoryInterface;
 
 	UPROPERTY()
@@ -111,11 +108,15 @@ protected:
 	virtual void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
 
 
-	bool AddItemRecord_Internal(FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records);
+	bool AddItemRecord_Internal(FName ContainerId, FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records);
 	bool RemoveItemRecord_Internal(FName ItemGuid, int Quantity, TMap<FName, FInventoryRecord>* Records);
 
 
 	virtual void HandleStorageLoaded();
+
+	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
+
+	FInventoryRecord* GetMutableItemRecord(FName ContainerId, FName ItemGuid) const;
 
 protected:
 
@@ -125,19 +126,14 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemAdded, const FInventoryRecord* /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemAdded, FName /* ContainerId */, FName /* ItemGuid */, const FInventoryRecord* /* ItemRecord */);
 	FOnInventoryItemAdded OnItemAdded;
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemRemoved, FInventoryRecord /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemRemoved, FName /* ContainerId */, FName /* ItemGuid */, FInventoryRecord /* ItemRecord */);
 	FOnInventoryItemRemoved OnItemRemoved;
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryItemUpdated, const FInventoryRecord* /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemUpdated, FName /* ContainerId */, FName /* ItemGuid */, const FInventoryRecord* /* ItemRecord */);
 	FOnInventoryItemUpdated OnItemUpdated;
-
-
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerUpdated, FName);
-	FOnContainerUpdated OnContainerUpdated;
-
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerAdded, FName /* ContainerId */);
 	FOnContainerAdded OnContainerAdded;
