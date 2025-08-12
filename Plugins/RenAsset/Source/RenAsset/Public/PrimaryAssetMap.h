@@ -16,8 +16,8 @@
 /**
  *
  */
-UCLASS()
-class RENASSET_API UPrimaryAssetMap : public UPrimaryDataAsset
+UCLASS(MinimalAPI)
+class UPrimaryAssetMap : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()

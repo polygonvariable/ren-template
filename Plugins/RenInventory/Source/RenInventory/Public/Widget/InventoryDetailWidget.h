@@ -7,8 +7,7 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "RenCore/Public/Inventory/InventoryItemType.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 
 // Generated Headers
 #include "InventoryDetailWidget.generated.h"
@@ -23,13 +22,15 @@ class UEditableTextBox;
 class UInventoryAsset;
 class UInventorySubsystem;
 
+struct FInventoryRecord;
+
 
 
 /**
  *
  */
 UCLASS(Abstract)
-class UInventoryDetailWidget : public UUserWidget
+class UInventoryDetailWidget : public UInventoryBaseWidget
 {
 
 	GENERATED_BODY()
@@ -37,19 +38,22 @@ class UInventoryDetailWidget : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-	bool bAutoRefresh = true;
+	FName ContainerId = NAME_None;
 
-	void InitializeDetail(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset);
-	void RefreshDetail();
-	void ResetDetail();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	bool bAutoRefresh = false;
+
+	RENINVENTORY_API virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
+	RENINVENTORY_API virtual void RefreshDetails() override;
+	RENINVENTORY_API virtual void ResetDetails() override;
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
 	FName ActiveItemGuid = NAME_None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName ContainerId = NAME_None;
+	UPROPERTY(BlueprintReadOnly)
+	TObjectPtr<UInventoryAsset> ActiveAsset = nullptr;
 
 	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
@@ -82,10 +86,11 @@ protected:
 	TObjectPtr<UTextBlock> ItemExperienceText = nullptr;
 
 
-	void HandleDetail(const FInventoryRecord* Record, UInventoryAsset* Asset);
+	void HandleDetails(const FInventoryRecord* Record);
 
-	void SetPrimaryDetail(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image);
-	void SetSecondaryDetail(int Quantity = 0, int Rank = 0, int Level = 0, int Experience = 0);
+	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image) override;
+	virtual void SetSecondaryDetails(const FText& Guid, int Quantity) override;
+	virtual void SetSecondaryDetails(const FText& Guid, int Quantity, int Rank, int Level, int Experience);
 
 protected:
 

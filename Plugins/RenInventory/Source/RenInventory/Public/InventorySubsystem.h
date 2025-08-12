@@ -9,6 +9,7 @@
 // Project Headers
 #include "RenCore/Public/Inventory/InventoryItemType.h"
 #include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Struct/InventoryFilterRule.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 
@@ -23,11 +24,12 @@ class IInventoryProviderInterface;
 
 
 
+
 /**
  *
  */
-UCLASS()
-class RENINVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem
+UCLASS(MinimalAPI)
+class UInventorySubsystem : public UGameInstanceSubsystem
 {
 
 	GENERATED_BODY()
@@ -35,42 +37,43 @@ class RENINVENTORY_API UInventorySubsystem : public UGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity = 1);
+	RENINVENTORY_API bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity = 1);
 
 	UFUNCTION(BlueprintCallable)
-	bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities);
+	RENINVENTORY_API bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities);
 
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveItem(FName ContainerId, FName ItemGuid, int Quantity);
+	RENINVENTORY_API bool RemoveItem(FName ContainerId, FName ItemGuid, int Quantity);
 
 	UFUNCTION(BlueprintCallable)
-	bool RemoveItems(FName ContainerId, const TMap<FName, int>& ItemQuantities);
+	RENINVENTORY_API bool RemoveItems(FName ContainerId, const TMap<FName, int>& ItemQuantities);
+
 
 	UFUNCTION(BlueprintCallable)
-	bool DeleteItem(FName ContainerId, FName ItemGuid);
+	RENINVENTORY_API bool DeleteItem(FName ContainerId, FName ItemGuid);
 
 	UFUNCTION(BlueprintCallable)
-	bool DeleteItems(FName ContainerId, const TSet<FName>& ItemGuids);
+	RENINVENTORY_API bool DeleteItems(FName ContainerId, const TSet<FName>& ItemGuids);
+
 
 	UFUNCTION(BlueprintCallable)
-	bool ClearItems(FName ContainerId);
+	RENINVENTORY_API bool ClearItems(FName ContainerId);
 
 	UFUNCTION(BlueprintCallable)
 	bool ReplaceItem(FName ContainerId, FName ItemGuid, FInventoryRecord Record);
 
 
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API bool ContainsItem(FName ContainerId, FName ItemGuid, int Quantity) const;
 
 	UFUNCTION(BlueprintCallable)
-	bool ContainsItem(FName ContainerId, FName ItemGuid, int Quantity) const;
-
-	UFUNCTION(BlueprintCallable)
-	bool ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const;
+	RENINVENTORY_API bool ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const;
 
 
-	int CountItem(FName ContainerId, FName ItemId) const;
+	RENINVENTORY_API int CountItem(FName ContainerId, FName ItemId) const;
 
-	bool UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback);
+	RENINVENTORY_API bool UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback);
 
 
 	UFUNCTION(BlueprintCallable)
@@ -80,12 +83,12 @@ public:
 	bool RemoveContainer(FName ContainerId);
 
 
-	virtual const TMap<FName, FInventoryRecord>* GetRecords(FName ContainerId) const;
+	RENINVENTORY_API const TMap<FName, FInventoryRecord>* GetRecords(FName ContainerId) const;
 
-	const FInventoryRecord* GetItemRecord(FName ContainerId, FName ItemGuid) const;
+	RENINVENTORY_API const FInventoryRecord* GetItemRecord(FName ContainerId, FName ItemGuid) const;
 
 	UFUNCTION(BlueprintCallable)
-	UInventoryAsset* GetItemAsset(FName ItemId) const;
+	RENINVENTORY_API UInventoryAsset* GetItemAsset(FName ItemId) const;
 
 	template <class T>
 	T* GetItemAsset(FName ItemId) const
@@ -93,10 +96,10 @@ public:
 		return Cast<T>(GetItemAsset(ItemId));
 	}
 
-	virtual void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
-
+	RENINVENTORY_API void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
 
 protected:
+
 	TWeakInterfacePtr<IInventoryProviderInterface> InventoryInterface;
 
 	UPROPERTY()

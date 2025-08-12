@@ -5,9 +5,10 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "InstancedStruct.h"
 
 // Project Headers
-#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCore/Public/Struct/InventoryFilterRule.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 
@@ -20,6 +21,8 @@ class UListView;
 class UPersistentObjectPool;
 class UInventorySubsystem;
 class UInventoryEntryObject;
+
+struct FInventoryRecord;
 
 
 
@@ -38,7 +41,10 @@ public:
 	TSubclassOf<UInventoryEntryObject> EntryObjectClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-	bool bAutoRefresh = true;
+	bool bAutoRefresh = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	bool bEnablePayloads = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FInventoryFilterRule FilterRule = FInventoryFilterRule();
@@ -48,23 +54,40 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	virtual void DisplayItems();
+	RENINVENTORY_API void DisplayItems();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ClearItems();
+	RENINVENTORY_API void ClearItems();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void RefreshItems();
+	RENINVENTORY_API void RefreshItems();
+
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API UInventoryEntryObject* GetSelectedItem();
+
+
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API void AddPayload(FName ItemId, FInstancedStruct Payload);
+
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API void SetPayloads(TMap<FName, FInstancedStruct> Payloads);
+
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API void ClearPayloads();
 
 protected:
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem = nullptr;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UListView> InventoryContainer = nullptr;
 
+	UPROPERTY(BlueprintReadOnly)
+	TMap<FName, FInstancedStruct> InventoryPayloads;
 
+
+	virtual void ConstructEntry(const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset);
 	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
 	virtual void HandleSelectedEntry(UObject* Object);
 
@@ -77,6 +100,26 @@ protected:
 
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class UInventoryQuantityCollectionWidget : public UInventoryCollectionWidget
+{
+
+	GENERATED_BODY()
+
+public:
+
+	TMap<FName, int32> ItemQuantities;
+
+protected:
+
+	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject) override;
 
 };
 

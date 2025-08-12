@@ -15,8 +15,8 @@
 /**
  * 
  */
-UCLASS(Abstract)
-class RENASSET_API UEquipmentAsset : public UEnhanceableAsset
+UCLASS(MinimalAPI, Abstract)
+class UEquipmentAsset : public UEnhanceableAsset
 {
 
 	GENERATED_BODY()

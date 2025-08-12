@@ -15,8 +15,8 @@
 /**
  *
  */
-UCLASS(Abstract)
-class RENASSET_API UNonCraftableAsset : public UPurchasableAsset
+UCLASS(MinimalAPI, Abstract)
+class UNonCraftableAsset : public UPurchasableAsset
 {
 
 	GENERATED_BODY()

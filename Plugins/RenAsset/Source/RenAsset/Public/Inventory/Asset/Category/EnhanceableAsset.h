@@ -23,8 +23,8 @@ class UEnhanceAsset;
 /**
  * 
  */
-UCLASS(Abstract)
-class RENASSET_API UEnhanceableAsset : public UCraftableAsset
+UCLASS(MinimalAPI, Abstract)
+class UEnhanceableAsset : public UCraftableAsset
 {
 
 	GENERATED_BODY()

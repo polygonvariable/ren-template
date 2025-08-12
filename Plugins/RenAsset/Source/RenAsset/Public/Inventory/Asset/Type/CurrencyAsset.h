@@ -15,8 +15,8 @@
 /**
  *
  */
-UCLASS()
-class RENASSET_API UCurrencyAsset : public UNonCraftableAsset
+UCLASS(MinimalAPI)
+class UCurrencyAsset : public UNonCraftableAsset
 {
 
 	GENERATED_BODY()

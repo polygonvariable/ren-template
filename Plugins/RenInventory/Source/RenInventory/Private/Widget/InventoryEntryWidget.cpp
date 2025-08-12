@@ -12,68 +12,110 @@
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
 
+#include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryEntryObject.h"
 
+
+
+
+void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
+{
+	UInventoryEntryObject* EntryObject = Cast<UInventoryEntryObject>(ListItemObject);
+	if (!IsValid(EntryObject))
+	{
+		LOG_ERROR(LogTemp, TEXT("Entry is invalid"));
+		return;
+	}
+
+	InitializeDetails(
+		EntryObject->ItemGuid,
+		EntryObject->InventoryRecord,
+		EntryObject->InventoryAsset
+	);
+
+	SetTertiaryDetails(EntryObject);
+}
+
+
+
+void UInventoryEntryWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+{
+	if (!Asset)
+	{
+		LOG_ERROR(LogTemp, TEXT("Asset is invalid"));
+		return;
+	}
+
+	SetPrimaryDetails(
+		Asset->ItemName,
+		Asset->ItemDescription,
+		Asset->ItemIcon
+	);
+	SetSecondaryDetails(
+		FText::FromName(ItemGuid),
+		Record ? Record->ItemQuantity : 0
+	);
+}
+
+void UInventoryEntryWidget::SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image)
+{
+	if (ItemTitleText) ItemTitleText->SetText(Title);
+	if (ItemIconImage) ItemIconImage->SetBrushFromSoftTexture(Image);
+}
+
+void UInventoryEntryWidget::SetSecondaryDetails(const FText& Guid, int Quantity)
+{
+	if (ItemGuidText) ItemGuidText->SetText(Guid);
+	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(Quantity));
+}
+
+void UInventoryEntryWidget::SetTertiaryDetails(UInventoryEntryObject* Entry)
+{
+	HandleDetailsValidity((Entry && Entry->InventoryRecord));
+}
+
+void UInventoryEntryWidget::ResetDetails()
+{
+	FText Empty = FText::GetEmpty();
+
+	SetPrimaryDetails(Empty, Empty, nullptr);
+	SetSecondaryDetails(Empty, 0);
+}
 
 
 void UInventoryEntryWidget::SelectEntry()
 {
 	UObject* ListItem = GetListItem();
-	UListViewBase* ListViewBase = GetOwningListView();
+	UListView* ListView = Cast<UListView>(GetOwningListView());
 
-	if (!IsValid(ListItem) || !IsValid(ListViewBase))
+	if (!IsValid(ListItem) || !IsValid(ListView))
 	{
-		LOG_ERROR(LogTemp, "ListItem or ListViewBase is invalid");
-		return;
-	}
-
-	UListView* ListView = Cast<UListView>(ListViewBase);
-	if (!IsValid(ListView))
-	{
-		LOG_ERROR(LogTemp, "ListView is invalid");
+		LOG_ERROR(LogTemp, TEXT("ListItem or ListView is invalid"));
 		return;
 	}
 
 	const ESelectionMode::Type& SelectionMode = ListView->GetSelectionMode();
 	switch (SelectionMode)
 	{
-		case ESelectionMode::None:
-			// Deselect all ?
-			// ListView->SetSelectedIndex(-1);
-			// ListView->SetSelectedItem(nullptr);
-			break;
-		case ESelectionMode::Single:
-			ListView->SetSelectedItem(ListItem);
-			break;
-		case ESelectionMode::SingleToggle:
-			ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
-			break;
-		case ESelectionMode::Multi:
-			ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
-			break;
-		default:
-			break;
+	case ESelectionMode::None:
+		// Deselect all ?
+		// ListView->SetSelectedIndex(-1);
+		// ListView->SetSelectedItem(nullptr);
+		break;
+	case ESelectionMode::Single:
+		ListView->SetSelectedItem(ListItem);
+		break;
+	case ESelectionMode::SingleToggle:
+		ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
+		break;
+	case ESelectionMode::Multi:
+		ListView->SetItemSelection(ListItem, !ListView->IsItemSelected(ListItem));
+		break;
+	default:
+		break;
 	}
-}
-
-void UInventoryEntryWidget::HandleInventoryEntry(UInventoryEntryObject* Entry)
-{
-	if (!IsValid(Entry) || !Entry->InventoryAsset)
-	{
-		LOG_ERROR(LogTemp, "Entry or Asset is invalid");
-		return;
-	}
-
-	UInventoryAsset* InventoryAsset = Entry->InventoryAsset;
-	const FInventoryRecord* InventoryRecord = Entry->InventoryRecord;
-	bool bRecordIsValid = InventoryRecord && InventoryRecord->IsValid();
-
-	if (ItemTitleText) ItemTitleText->SetText(InventoryAsset->ItemName);
-	if (ItemIconImage) ItemIconImage->SetBrushFromSoftTexture(InventoryAsset->ItemIcon);
-	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(bRecordIsValid ? InventoryRecord->ItemQuantity : 0));
-	
-	HandleRecordValidity(bRecordIsValid);
 }
 
 void UInventoryEntryWidget::RemoveEntry()
@@ -94,20 +136,32 @@ void UInventoryEntryWidget::RemoveEntry()
 	}
 }
 
-void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
+void UInventoryEntryWidget::NativeOnItemSelectionChanged(bool bSelected)
 {
-	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(ListItemObject);
-	if (!IsValid(Entry))
+	HandleSelectionChanged(bSelected);
+}
+
+
+
+void UWInventoryEntryQuantity::SetTertiaryDetails(UInventoryEntryObject* Entry)
+{
+	if (!Entry && !Entry->InventoryRecord)
 	{
-		LOG_ERROR(LogTemp, "Entry is invalid");
+		HandleDetailsValidity(false);
 		return;
 	}
 
-	HandleInventoryEntry(Entry);
+	const FInventoryPayloadQuantity* Payload = Entry->InventoryPayload.GetPtr<FInventoryPayloadQuantity>();
+	if (!Payload)
+	{
+		HandleDetailsValidity(false);
+		return;
+	}
+
+	if (ItemRequiredText) ItemRequiredText->SetText(FText::FromString(FString::FromInt(Payload->Quantity)));
+
+	bool bRecordValid = Payload->Quantity >= Entry->InventoryRecord->ItemQuantity;
+	HandleDetailsValidity(bRecordValid);
 }
 
-void UInventoryEntryWidget::NativeOnItemSelectionChanged(bool bSelected)
-{
-	HandleEntrySelectionChanged(bSelected);
-}
 

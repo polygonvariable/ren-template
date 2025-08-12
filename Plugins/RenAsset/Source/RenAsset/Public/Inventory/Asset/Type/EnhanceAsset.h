@@ -16,8 +16,8 @@
 /**
  * 
  */
-UCLASS()
-class RENASSET_API UEnhanceAsset : public UNonEnhanceableAsset
+UCLASS(MinimalAPI)
+class UEnhanceAsset : public UNonEnhanceableAsset
 {
 
 	GENERATED_BODY()

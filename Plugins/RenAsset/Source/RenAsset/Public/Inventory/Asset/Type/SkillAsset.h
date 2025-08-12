@@ -15,8 +15,8 @@
 /**
  * 
  */
-UCLASS()
-class RENASSET_API USkillAsset : public UEquipmentAsset
+UCLASS(MinimalAPI)
+class USkillAsset : public UEquipmentAsset
 {
 
 	GENERATED_BODY()

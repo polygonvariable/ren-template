@@ -4,10 +4,10 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "InstancedStruct.h"
 
 // Project Headers
 #include "RenCore/Public/Interface/ObjectPoolInterface.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "InventoryEntryObject.generated.h"
@@ -15,7 +15,35 @@
 // Forward Declarations
 class UInventoryAsset;
 
+struct FInventoryRecord;
 
+
+
+/**
+ *
+ */
+USTRUCT()
+struct FInventoryPayload
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ *
+ */
+USTRUCT()
+struct FInventoryPayloadQuantity : public FInventoryPayload
+{
+
+	GENERATED_BODY()
+
+public:
+
+	int Quantity = 0;
+
+};
 
 /**
  *
@@ -29,14 +57,19 @@ class UInventoryEntryObject : public UObject, public IObjectPoolInterface
 public:
 
 	FName ItemGuid = NAME_None;
-	UInventoryAsset* InventoryAsset = nullptr;
+	TObjectPtr<UInventoryAsset> InventoryAsset = nullptr;
 	const FInventoryRecord* InventoryRecord = nullptr;
+
+	bool bEnablePayload = false;
+	FInstancedStruct InventoryPayload;
 
 	void ResetData()
 	{
 		ItemGuid = NAME_None;
 		InventoryAsset = nullptr;
 		InventoryRecord = nullptr;
+		bEnablePayload = false;
+		InventoryPayload.Reset();
 	}
 	
 	virtual void ReturnToPool() override

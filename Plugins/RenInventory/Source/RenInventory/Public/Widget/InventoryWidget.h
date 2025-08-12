@@ -7,7 +7,6 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "RenCore/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"
@@ -17,6 +16,10 @@ class UInventoryAsset;
 class UInventoryCollectionWidget;
 class UInventoryDetailWidget;
 class UInventoryEntryObject;
+class UInventorySwitchWidget;
+class UInventoryBaseWidget;
+
+struct FInventoryRecord;
 
 
 
@@ -31,7 +34,16 @@ class UInventoryWidget : public UUserWidget
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	virtual void DisplayEnhanceItem();
+
 protected:
+
+	UPROPERTY()
+	TObjectPtr<UInventoryBaseWidget> EnhanceItemWidget = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	TSubclassOf<UInventoryBaseWidget> EnhanceItemClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventoryCollectionWidget> InventoryCollection = nullptr;
@@ -39,6 +51,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventoryDetailWidget> InventoryDetail = nullptr;
 
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UInventorySwitchWidget> InventorySwitch = nullptr;
 
 	void HandleItemSelected(FName Guid, const FInventoryRecord* Record, UInventoryAsset* Asset);
 

@@ -46,7 +46,7 @@ protected:
 	bool HandleLevelUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, FName EnhanceGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, int EnhancePoint);
 	bool HandleRankUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, const TMap<FName, int>& ItemQuantities);
 
-	virtual void HandleGameInitialized();
+	void HandleGameInitialized();
 
 protected:
 

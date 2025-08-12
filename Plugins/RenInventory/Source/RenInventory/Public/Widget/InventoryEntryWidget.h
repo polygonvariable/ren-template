@@ -8,6 +8,7 @@
 #include "Blueprint/IUserObjectListEntry.h"
 
 // Project Headers
+#include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 
 // Generated Headers
 #include "InventoryEntryWidget.generated.h"
@@ -16,7 +17,10 @@
 class UImage;
 class UTextBlock;
 
-class UInventoryEntryObject;
+class UInventoryAsset;
+class UInventorySubsystem;
+
+struct FInventoryRecord;
 
 
 
@@ -24,15 +28,23 @@ class UInventoryEntryObject;
  *
  */
 UCLASS(Abstract)
-class UInventoryEntryWidget : public UUserWidget, public IUserObjectListEntry
+class UInventoryEntryWidget : public UInventoryBaseWidget, public IUserObjectListEntry
 {
 
 	GENERATED_BODY()
+
+public:
+
+	virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
+	virtual void ResetDetails() override;
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UImage> ItemIconImage = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> ItemGuidText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ItemTitleText = nullptr;
@@ -49,17 +61,39 @@ protected:
 	void SelectEntry();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void HandleEntrySelectionChanged(bool bSelected);
+	void HandleSelectionChanged(bool bSelected);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void HandleRecordValidity(bool bIsValid);
+	void HandleDetailsValidity(bool bIsValid);
 
-	virtual void HandleInventoryEntry(UInventoryEntryObject* Entry);
+
+	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image) override;
+	virtual void SetSecondaryDetails(const FText& Guid, int Quantity) override;
+	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) override;
 
 protected:
 
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	virtual void NativeOnItemSelectionChanged(bool bSelected) override;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class UWInventoryEntryQuantity : public UInventoryEntryWidget
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	TObjectPtr<UTextBlock> ItemRequiredText = nullptr;
+
+	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) override;
 
 };
 

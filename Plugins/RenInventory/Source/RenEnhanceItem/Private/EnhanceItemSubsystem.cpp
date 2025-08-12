@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Enhance/EnhanceItemSubsystem.h"
+#include "EnhanceItemSubsystem.h"
 
 // Project Headers
 #include "RenAsset/Public/AssetMetadata.h"

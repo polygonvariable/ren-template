@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
-// #include "Styling/SlateStyle.h"
+#include "Styling/SlateStyle.h"
 
 class FRenAssetModule : public IModuleInterface
 {
@@ -15,9 +15,12 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 
+
 private:
 
 	static TSharedPtr<FSlateStyleSet> StyleSet;
+
+	void SetIconAndThumbnail(FString ClassName, FString ImagePath);
 
 };
 

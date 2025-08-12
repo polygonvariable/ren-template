@@ -13,8 +13,8 @@
 /**
  *
  */
-UCLASS()
-class RENASSET_API UClockAsset : public UPrimaryDataAsset
+UCLASS(MinimalAPI)
+class UClockAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()

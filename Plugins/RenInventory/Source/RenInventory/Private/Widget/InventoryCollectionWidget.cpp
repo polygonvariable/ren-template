@@ -34,38 +34,11 @@ void UInventoryCollectionWidget::DisplayItems()
 #if WITH_EDITOR
 	PROFILE_START(Inventory);
 #endif
-
+	
 	Subsystem->QueryItems(FilterRule, QueryRule,
 		[this](const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
 		{
-			// man i give up on the implementation of object pooling for now.
-			// 
-			// so when the .ClearListItems() is called it removes all object entries but they cannot be Garbage Collected.
-			// but when .RemoveItem() is called the objects can be Garbage Collected.
-			// so i thought of removing items individually using .GetListItems() & .RemoveItem() and it doesnt GC the entry object, WHAT!
-			// 
-			// another problem is that .AddItem() doesnt seem to update its' entry object ptr if the object is valid & was used before.
-			// for example in 2nd iteration of display items, the display order could be wrong as the object reference didnt update,
-			// this can also cause list to render is reverse order in each iteration.
-			// 
-			// UInventoryEntryObject* Entry = EntryObjectPool->AcquireObject<UInventoryEntryObject>(Index, this);
-			UInventoryEntryObject* Entry = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
-			if (!IsValid(Entry))
-			{
-				LOG_ERROR(LogTemp, TEXT("Failed to create entry object"));
-				return;
-			}
-			Entry->ItemGuid = Guid;
-			Entry->InventoryAsset = Asset;
-			Entry->InventoryRecord = Record;
-
-			// Updating the data doesnt update the UI
-			// as the NativeOnListItemObjectSet in UInventoryEntryWidget
-			// is not called when the same object is reused.
-			// It did worked when creating new objects in each iteration.
-			// Also in object pool if .pop() is used to acquire the object, then the order is reversed in each iteration,
-			// as the actual widget of UInventoryEntryWidget doesnt update the UInventoryEntryObject ptr in InventoryContainer->AddItem(EntryObject);
-			HandleDisplayOfEntry(Entry);
+			ConstructEntry(Guid, Record, Asset);
 		}
 	);
 
@@ -97,6 +70,70 @@ void UInventoryCollectionWidget::RefreshItems()
 	DisplayItems();
 }
 
+UInventoryEntryObject* UInventoryCollectionWidget::GetSelectedItem()
+{
+	if (!InventoryContainer)
+	{
+		return nullptr;
+	}
+	return InventoryContainer->GetSelectedItem<UInventoryEntryObject>();
+}
+
+
+void UInventoryCollectionWidget::AddPayload(FName ItemId, FInstancedStruct Payload)
+{
+	InventoryPayloads.Add(ItemId, Payload);
+}
+
+void UInventoryCollectionWidget::SetPayloads(TMap<FName, FInstancedStruct> Payloads)
+{
+	InventoryPayloads = Payloads;
+}
+
+void UInventoryCollectionWidget::ClearPayloads()
+{
+	InventoryPayloads.Empty();
+}
+
+
+void UInventoryCollectionWidget::ConstructEntry(const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+{
+	// man i give up on the implementation of object pooling for now.
+	// 
+	// so when the .ClearListItems() is called it removes all object entries but they cannot be Garbage Collected.
+	// but when .RemoveItem() is called the objects can be Garbage Collected.
+	// so i thought of removing items individually using .GetListItems() & .RemoveItem() and it doesnt GC the entry object, WHAT!
+	// 
+	// another problem is that .AddItem() doesnt seem to update its' entry object ptr if the object is valid & was used before.
+	// for example in 2nd iteration of display items, the display order could be wrong as the object reference didnt update,
+	// this can also cause list to render is reverse order in each iteration.
+	// 
+	// UInventoryEntryObject* Entry = EntryObjectPool->AcquireObject<UInventoryEntryObject>(Index, this);
+	UInventoryEntryObject* Entry = NewObject<UInventoryEntryObject>(this, EntryObjectClass);
+	if (!IsValid(Entry))
+	{
+		LOG_ERROR(LogTemp, TEXT("Failed to create entry object"));
+		return;
+	}
+	Entry->ItemGuid = Guid;
+	Entry->InventoryAsset = Asset;
+	Entry->InventoryRecord = Record;
+
+	if (bEnablePayloads && Asset)
+	{
+		Entry->bEnablePayload = true;
+		Entry->InventoryPayload = InventoryPayloads.FindRef(Asset->ItemId);
+	}
+
+	// Updating the data doesnt update the UI
+	// as the NativeOnListItemObjectSet in UInventoryEntryWidget
+	// is not called when the same object is reused.
+	// It did worked when creating new objects in each iteration.
+	// Also in object pool if .pop() is used to acquire the object, then the order is reversed in each iteration,
+	// as the actual widget of UInventoryEntryWidget doesnt update the UInventoryEntryObject ptr in InventoryContainer->AddItem(EntryObject);
+	HandleDisplayOfEntry(Entry);
+}
+
 void UInventoryCollectionWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
 {
 	if (InventoryContainer)
@@ -116,9 +153,12 @@ void UInventoryCollectionWidget::HandleSelectedEntry(UObject* Object)
 
 void UInventoryCollectionWidget::NativeConstruct()
 {
-	if (InventoryContainer && !InventoryContainer->OnItemSelectionChanged().IsBoundToObject(this))
+	if (InventoryContainer)
 	{
-		InventoryContainer->OnItemSelectionChanged().AddUObject(this, &UInventoryCollectionWidget::HandleSelectedEntry);
+		if (!InventoryContainer->OnItemSelectionChanged().IsBoundToObject(this))
+		{
+			InventoryContainer->OnItemSelectionChanged().AddUObject(this, &UInventoryCollectionWidget::HandleSelectedEntry);
+		}
 	}
 
 	UGameInstance* GameInstance = GetGameInstance();
@@ -140,6 +180,7 @@ void UInventoryCollectionWidget::NativeConstruct()
 
 		InventorySubsystem = Subsystem;
 	}
+	PRINT_WARNING(LogTemp, 5.0f, TEXT("InventoryCollectionWidget::NativeConstruct"));
 
 	Super::NativeConstruct();
 }
@@ -162,4 +203,22 @@ void UInventoryCollectionWidget::NativeDestruct()
 
 	Super::NativeDestruct();
 }
+
+
+
+void UInventoryQuantityCollectionWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
+{
+	if (InventoryContainer)
+	{
+		int Quantity = ItemQuantities.FindRef(EntryObject->InventoryAsset->ItemId);
+
+
+		InventoryContainer->AddItem(EntryObject);
+	}
+}
+
+
+
+
+
 

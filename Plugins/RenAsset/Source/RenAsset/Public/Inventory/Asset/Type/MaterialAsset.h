@@ -15,8 +15,8 @@
 /**
  *
  */
-UCLASS()
-class RENASSET_API UMaterialAsset : public UNonCraftableAsset
+UCLASS(MinimalAPI)
+class UMaterialAsset : public UNonCraftableAsset
 {
 
 	GENERATED_BODY()

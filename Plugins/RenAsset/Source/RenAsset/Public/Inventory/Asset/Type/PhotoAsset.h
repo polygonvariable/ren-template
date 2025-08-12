@@ -15,8 +15,8 @@
 /**
  *
  */
-UCLASS()
-class RENASSET_API UPhotoAsset : public UNonPurchasableAsset
+UCLASS(MinimalAPI)
+class UPhotoAsset : public UNonPurchasableAsset
 {
 
 	GENERATED_BODY()

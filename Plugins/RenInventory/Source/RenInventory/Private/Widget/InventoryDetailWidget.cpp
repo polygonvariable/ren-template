@@ -4,11 +4,11 @@
 #include "Widget/InventoryDetailWidget.h"
 
 // Engine Headers
+#include "Components/EditableTextBox.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/EditableTextBox.h"
 
 // Project Headers
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
@@ -19,7 +19,7 @@
 
 
 
-void UInventoryDetailWidget::InitializeDetail(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+void UInventoryDetailWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
 {
 	if (!Asset)
 	{
@@ -27,16 +27,17 @@ void UInventoryDetailWidget::InitializeDetail(const FName& ItemGuid, const FInve
 		return;
 	}
 
+	ActiveAsset = Asset;
 	ActiveItemGuid = ItemGuid;
 
-	HandleDetail(Record, Asset);
+	HandleDetails(Record);
 }
 
-void UInventoryDetailWidget::RefreshDetail()
+void UInventoryDetailWidget::RefreshDetails()
 {
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
-	if (!ActiveItemGuid.IsValid() || !IsValid(Subsystem)) {
-		ResetDetail();
+	if (!IsValid(Subsystem)) {
+		ResetDetails();
 		LOG_ERROR(LogTemp, "ItemGuid or InventorySubsystem is invalid");
 		return;
 	}
@@ -44,50 +45,46 @@ void UInventoryDetailWidget::RefreshDetail()
 	const FInventoryRecord* Record = Subsystem->GetItemRecord(ContainerId, ActiveItemGuid);
 	if (!Record)
 	{
-		ResetDetail();
+		ResetDetails();
 		LOG_ERROR(LogTemp, "Record is invalid");
 		return;
 	}
 
-	UInventoryAsset* Asset = Subsystem->GetItemAsset(Record->ItemId);
-	if (!Asset)
-	{
-		ResetDetail();
-		LOG_ERROR(LogTemp, "Asset is invalid");
-		return;
-	}
-
-	HandleDetail(Record, Asset);
+	HandleDetails(Record);
 }
 
-void UInventoryDetailWidget::ResetDetail()
+void UInventoryDetailWidget::ResetDetails()
 {
 	ActiveItemGuid = NAME_None;
+	ActiveAsset = nullptr;
+
+	FText Empty = FText::GetEmpty();
+
+	SetPrimaryDetails(Empty, Empty, nullptr);
+	SetSecondaryDetails(Empty, 0, 0, 0, 0);
 
 	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(0);
-
-	SetPrimaryDetail(FText::GetEmpty(), FText::GetEmpty(), nullptr);
-	SetSecondaryDetail();
 }
 
-void UInventoryDetailWidget::HandleDetail(const FInventoryRecord* Record, UInventoryAsset* Asset)
+void UInventoryDetailWidget::HandleDetails(const FInventoryRecord* Record)
 {
-	if (!Asset)
+	if (!ActiveAsset)
 	{
-		ResetDetail();
-		LOG_ERROR(LogTemp, "Asset is invalid");
+		ResetDetails();
+		LOG_ERROR(LogTemp, "ActiveAsset is invalid");
 		return;
 	}
 
-	SetPrimaryDetail(
-		Asset->ItemName,
-		Asset->ItemDescription,
-		Asset->ItemIcon
+	SetPrimaryDetails(
+		ActiveAsset->ItemName,
+		ActiveAsset->ItemDescription,
+		ActiveAsset->ItemIcon
 	);
 
 	if (Record)
 	{
-		SetSecondaryDetail(
+		SetSecondaryDetails(
+			FText::FromName(ActiveItemGuid),
 			Record->ItemQuantity,
 			Record->EnhanceRecord.Rank,
 			Record->EnhanceRecord.Level,
@@ -96,23 +93,28 @@ void UInventoryDetailWidget::HandleDetail(const FInventoryRecord* Record, UInven
 	}
 	else
 	{
-		SetSecondaryDetail();
+		SetSecondaryDetails(FText::GetEmpty(), 0, 0, 0, 0);
 	}
 
 	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(1);
 }
 
-void UInventoryDetailWidget::SetPrimaryDetail(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image)
+void UInventoryDetailWidget::SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image)
 {
-	if (ItemGuidText) ItemGuidText->SetText(FText::FromName(ActiveItemGuid));
 	if (ItemNameText) ItemNameText->SetText(Title);
 	if (ItemDescriptionText) ItemDescriptionText->SetText(Description);
 	if (ItemImage) ItemImage->SetBrushFromSoftTexture(Image);
 }
 
-void UInventoryDetailWidget::SetSecondaryDetail(int Quantity, int Rank, int Level, int Experience)
+void UInventoryDetailWidget::SetSecondaryDetails(const FText& Guid, int Quantity)
 {
+	if (ItemGuidText) ItemGuidText->SetText(Guid);
 	if (ItemQuantityText) ItemQuantityText->SetText(FText::FromString(FString::FromInt(Quantity)));
+}
+
+void UInventoryDetailWidget::SetSecondaryDetails(const FText& Guid, int Quantity, int Rank, int Level, int Experience)
+{
+	SetSecondaryDetails(Guid, Quantity);
 	if (ItemRankText) ItemRankText->SetText(FText::FromString(FString::FromInt(Rank)));
 	if (ItemLevelText) ItemLevelText->SetText(FText::FromString(FString::FromInt(Level)));
 	if (ItemExperienceText) ItemExperienceText->SetText(FText::FromString(FString::FromInt(Experience)));
@@ -132,9 +134,9 @@ void UInventoryDetailWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetail(); });
-			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetail(); });
-			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetail(); });
+			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
 		}
 
 		InventorySubsystem = Subsystem;
@@ -145,6 +147,8 @@ void UInventoryDetailWidget::NativeConstruct()
 
 void UInventoryDetailWidget::NativeDestruct()
 {
+	ActiveAsset = nullptr;
+
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
 	if (IsValid(Subsystem)) {
 		Subsystem->OnItemAdded.RemoveAll(this);

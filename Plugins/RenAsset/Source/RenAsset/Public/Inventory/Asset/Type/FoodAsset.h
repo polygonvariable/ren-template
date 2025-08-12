@@ -15,8 +15,8 @@
 /**
  * 
  */
-UCLASS()
-class RENASSET_API UFoodAsset : public UNonEnhanceableAsset
+UCLASS(MinimalAPI)
+class UFoodAsset : public UNonEnhanceableAsset
 {
 
 	GENERATED_BODY()
