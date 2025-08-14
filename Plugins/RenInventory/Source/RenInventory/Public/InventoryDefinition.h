@@ -6,13 +6,14 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCore/Public/Record/InventoryRecord.h"
 
 // Generated Headers
 #include "InventoryDefinition.generated.h"
 
 // Forward Declarations
 class UInventoryAsset;
+
+struct FInventoryRecord;
 
 
 
@@ -87,6 +88,33 @@ struct FInventorySortEntry
 	UInventoryAsset* Asset = nullptr;
 
 	FInventorySortEntry(FName InGuid, const FInventoryRecord* InRecord, UInventoryAsset* InAsset) : Guid(InGuid), Record(InRecord), Asset(InAsset) {}
+
+};
+
+
+/**
+ *
+ */
+USTRUCT()
+struct FInventoryPayload
+{
+
+	GENERATED_BODY()
+
+};
+
+/**
+ *
+ */
+USTRUCT()
+struct FInventoryPayloadQuantity : public FInventoryPayload
+{
+
+	GENERATED_BODY()
+
+public:
+
+	int Quantity = 0;
 
 };
 

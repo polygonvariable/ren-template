@@ -30,7 +30,7 @@ public class RPGTemplateTarget : TargetRules
                 //"RenInventory",
                 "RenEntity",
                 //"RenEnvironment",
-                "RenInteract",
+                //"RenInteract",
             }
         );
 

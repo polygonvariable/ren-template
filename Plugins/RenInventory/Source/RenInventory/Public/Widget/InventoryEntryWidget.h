@@ -19,6 +19,7 @@ class UTextBlock;
 
 class UInventoryAsset;
 class UInventorySubsystem;
+class UInventoryEntryObject;
 
 struct FInventoryRecord;
 

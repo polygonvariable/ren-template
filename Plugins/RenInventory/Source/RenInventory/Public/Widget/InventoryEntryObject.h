@@ -22,32 +22,6 @@ struct FInventoryRecord;
 /**
  *
  */
-USTRUCT()
-struct FInventoryPayload
-{
-
-	GENERATED_BODY()
-
-};
-
-/**
- *
- */
-USTRUCT()
-struct FInventoryPayloadQuantity : public FInventoryPayload
-{
-
-	GENERATED_BODY()
-
-public:
-
-	int Quantity = 0;
-
-};
-
-/**
- *
- */
 UCLASS()
 class UInventoryEntryObject : public UObject, public IObjectPoolInterface
 {

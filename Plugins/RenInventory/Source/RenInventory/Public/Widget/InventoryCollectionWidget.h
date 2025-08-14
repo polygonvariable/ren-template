@@ -103,23 +103,3 @@ protected:
 
 };
 
-
-/**
- *
- */
-UCLASS(Abstract)
-class UInventoryQuantityCollectionWidget : public UInventoryCollectionWidget
-{
-
-	GENERATED_BODY()
-
-public:
-
-	TMap<FName, int32> ItemQuantities;
-
-protected:
-
-	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject) override;
-
-};
-

@@ -14,7 +14,7 @@
 #include "RenCore/Public/Macro/LogMacro.h"
 #include "RenCore/Public/Record/InventoryRecord.h"
 
-#include "RenInventory/Public/InventorySubsystem.h"
+#include "RenInventory/Public/InventoryDefinition.h"
 #include "RenInventory/Public/Widget/InventoryEntryObject.h"
 
 

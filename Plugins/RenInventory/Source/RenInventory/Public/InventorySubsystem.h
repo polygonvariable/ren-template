@@ -8,7 +8,6 @@
 
 // Project Headers
 #include "RenCore/Public/Inventory/InventoryItemType.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
 #include "RenCore/Public/Struct/InventoryFilterRule.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
@@ -22,6 +21,7 @@ class UInventoryAsset;
 class UGameMetadataSettings;
 class IInventoryProviderInterface;
 
+struct FInventoryRecord;
 
 
 

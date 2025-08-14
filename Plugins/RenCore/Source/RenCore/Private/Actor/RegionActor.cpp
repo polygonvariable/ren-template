@@ -5,8 +5,8 @@
 
 // Engine Headers
 #include "Components/PrimitiveComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
+#include "Kismet/GameplayStatics.h"
 
 // Project Headers
 #include "RenCore/Public/Macro/LogMacro.h"
@@ -26,7 +26,6 @@ UPrimitiveComponent* ARegionActor::GetCollisionComponent_Implementation() const
 void ARegionActor::RegisterCollisionComponent()
 {
 	UPrimitiveComponent* CollisionComponent = GetCollisionComponent();
-
 	if (!IsValid(CollisionComponent))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid collision component"));
@@ -40,18 +39,17 @@ void ARegionActor::RegisterCollisionComponent()
 void ARegionActor::UnregisterCollisionComponent()
 {
 	UPrimitiveComponent* CollisionComponent = GetCollisionComponent();
-
 	if (!IsValid(CollisionComponent))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid collision component"));
 		return;
 	}
 
-	CollisionComponent->OnComponentBeginOverlap.RemoveDynamic(this, &ARegionActor::HandlePlayerEntered);
-	CollisionComponent->OnComponentEndOverlap.RemoveDynamic(this, &ARegionActor::HandlePlayerExited);
+	CollisionComponent->OnComponentBeginOverlap.RemoveAll(this);
+	CollisionComponent->OnComponentEndOverlap.RemoveAll(this);
 }
 
-bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor)
+bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor) const
 {
 	if (!IsValid(OtherActor))
 	{
@@ -78,13 +76,15 @@ void ARegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, 
 
 void ARegionActor::BeginPlay()
 {
-	Super::BeginPlay();
 	RegisterCollisionComponent();
+
+	Super::BeginPlay();
 }
 
 void ARegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	UnregisterCollisionComponent();
+
 	Super::EndPlay(EndPlayReason);
 }
 

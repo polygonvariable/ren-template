@@ -1,0 +1,27 @@
+// Copyright Epic Games, Inc. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "Modules/ModuleManager.h"
+#include "Styling/SlateStyle.h"
+
+
+
+class FRenInteractModule : public IModuleInterface
+{
+	
+public:
+
+	/** IModuleInterface implementation */
+	virtual void StartupModule() override;
+	virtual void ShutdownModule() override;
+
+private:
+
+	static TSharedPtr<FSlateStyleSet> StyleSet;
+
+	void SetIconAndThumbnail(FString ClassName, FString ImagePath);
+
+};
+

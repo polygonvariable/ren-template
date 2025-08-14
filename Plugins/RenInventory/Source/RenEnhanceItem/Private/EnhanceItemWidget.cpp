@@ -11,10 +11,11 @@
 #include "RenCore/Public/Library/EnhanceLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
 
-#include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
+#include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 
+#include "RenInventory/Public/InventoryDefinition.h"
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryCollectionWidget.h"
 #include "RenInventory/Public/Widget/InventoryDetailWidget.h"

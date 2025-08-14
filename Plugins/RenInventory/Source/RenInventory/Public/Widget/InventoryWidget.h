@@ -15,7 +15,6 @@
 class UInventoryAsset;
 class UInventoryCollectionWidget;
 class UInventoryDetailWidget;
-class UInventoryEntryObject;
 class UInventorySwitchWidget;
 class UInventoryBaseWidget;
 

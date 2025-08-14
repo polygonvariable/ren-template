@@ -10,6 +10,7 @@
 #include "RenAsset/Public/Inventory/InventoryAsset.h"
 
 #include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCore/Public/Record/InventoryRecord.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryEntryObject.h"
@@ -203,22 +204,4 @@ void UInventoryCollectionWidget::NativeDestruct()
 
 	Super::NativeDestruct();
 }
-
-
-
-void UInventoryQuantityCollectionWidget::HandleDisplayOfEntry(UInventoryEntryObject* EntryObject)
-{
-	if (InventoryContainer)
-	{
-		int Quantity = ItemQuantities.FindRef(EntryObject->InventoryAsset->ItemId);
-
-
-		InventoryContainer->AddItem(EntryObject);
-	}
-}
-
-
-
-
-
 

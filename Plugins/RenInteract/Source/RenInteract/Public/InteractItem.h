@@ -6,37 +6,35 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "InstancedStruct.h"
 
 // Generated Headers
 #include "InteractItem.generated.h"
 
 
+
 /**
  *
  */
-USTRUCT(BlueprintType, DisplayName = "Interact Item")
+USTRUCT(BlueprintType)
 struct FInteractItem
 {
 
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGuid UUID;
+	FGuid InteractGuid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FText Name;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInstancedStruct CustomData;
+	FText InteractTitle;
 
 	friend inline bool operator == (const FInteractItem& A, const FInteractItem& B)
 	{
-		return A.UUID == B.UUID;
+		return A.InteractGuid == B.InteractGuid;
 	}
+
 	friend inline uint32 GetTypeHash(const FInteractItem& Item)
 	{
-		return GetTypeHash(Item.UUID);
+		return GetTypeHash(Item.InteractGuid);
 	}
 
 };
