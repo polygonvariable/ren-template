@@ -2,7 +2,10 @@
 
 #include "RenInventory.h"
 
+#if WITH_EDITOR
 #include "Public/InventorySubsystem.h"
+#endif
+
 #include "HAL/IConsoleManager.h"
 
 #define LOCTEXT_NAMESPACE "FRenInventoryModule"
@@ -29,7 +32,6 @@ void FRenInventoryModule::ShutdownModule()
 #endif
 
 }
-
 
 #if WITH_EDITOR
 void FRenInventoryModule::RegisterCommand()
@@ -75,7 +77,7 @@ void FRenInventoryModule::AddItem(const TArray<FString>& Args, UWorld* World)
 			int Quantity = FCString::Atoi(*Args[2]);
 
 			UInventoryAsset* InventoryAsset = InventorySubsystem->GetItemAsset(ItemId);
-			InventorySubsystem->AddItem(ContainerId, InventoryAsset, Quantity);
+			//InventorySubsystem->AddItem(ContainerId, InventoryAsset, Quantity);
 		}
 	}
 }

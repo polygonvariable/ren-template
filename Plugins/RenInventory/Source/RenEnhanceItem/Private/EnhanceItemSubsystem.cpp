@@ -11,9 +11,9 @@
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 
 #include "RenCore/Public/Delegate/LatentDelegates.h"
-#include "RenCore/Public/Library/EnhanceLibrary.h"
+#include "RenCoreEnhance/Public/EnhanceLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCoreInventory/Public/InventoryRecord.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 

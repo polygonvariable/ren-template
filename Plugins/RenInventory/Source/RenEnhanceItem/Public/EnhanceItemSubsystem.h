@@ -7,7 +7,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "RenCore/Public/Record/InventoryRecord.h"
+#include "RenCoreInventory/Public/InventoryRecord.h"
 
 // Generated Headers
 #include "EnhanceItemSubsystem.generated.h"

@@ -29,8 +29,6 @@ public class RenInventory : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
 				"StructUtils",
-				"RenCore",
-				"RenAsset",
             }
 			);
 			
@@ -43,8 +41,11 @@ public class RenInventory : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"RenCore",
+                "RenAsset",
+                "RenCoreInventory",
             }
-			);
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

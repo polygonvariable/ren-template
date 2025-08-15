@@ -31,7 +31,7 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenWorldHistory",
+			"Name": "RenEventTimestamp",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
@@ -47,10 +47,6 @@
 		},
 		{
 			"Name": "RenCore",
-			"Enabled": true
-		},
-		{
-			"Name": "RenAsset",
 			"Enabled": true
 		}
 	]

@@ -34,10 +34,6 @@
 		{
 			"Name": "RenCore",
 			"Enabled": true
-		},
-		{
-			"Name": "RenAsset",
-			"Enabled": true
 		}
 	]
 }

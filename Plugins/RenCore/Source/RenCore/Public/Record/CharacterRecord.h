@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Record/RenRecord.h"
-#include "Record/EnhanceRecord.h"
+//#include "Record/EnhanceRecord.h"
 
 // Generated Headers
 #include "CharacterRecord.generated.h"
@@ -28,8 +28,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Record")
 	int Health = 0;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Record")
-	FEnhanceRecord EnhanceRecord;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Record")
+	//FEnhanceRecord EnhanceRecord;
 
 };
 

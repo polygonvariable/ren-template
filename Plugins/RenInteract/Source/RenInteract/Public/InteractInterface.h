@@ -42,12 +42,6 @@ public:
 	virtual FOnInteracted& GetOnInteracted() = 0;
 	virtual FOnInteractUpdated& GetOnInteractUpdated() = 0;
 
-protected:
-
-	virtual void StartInteract() = 0;
-	virtual void EndInteract() = 0;
-	virtual void UpdateInteract() = 0;
-
 };
 
 

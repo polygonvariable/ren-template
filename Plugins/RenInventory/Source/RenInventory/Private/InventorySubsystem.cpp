@@ -7,17 +7,32 @@
 // #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "RenAsset/Public/Inventory/InventoryAsset.h"
 #include "RenAsset/Public/PrimaryAssetMap.h"
 
 #include "RenCore/Public/Delegate/LatentDelegates.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenCore/Public/Interface/InventoryProviderInterface.h"
 #include "RenCore/Public/Interface/StorageProviderInterface.h"
-#include "RenCore/Public/Inventory/InventoryItemType.h"
+
+#include "RenCoreInventory/Public/InventoryAsset.h"
+#include "RenCoreInventory/Public/InventoryItemType.h"
+#include "RenCoreInventory/Public/InventoryProviderInterface.h"
+#include "RenCoreInventory/Public/InventoryRecord.h"
+
 #include "RenCore/Public/Library/MiscLibrary.h"
 #include "RenCore/Public/Macro/LogMacro.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
+
+
+
+
+bool UInventorySubsystem::BP_AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity)
+{
+	return AddItem(ContainerId, ItemAsset, Quantity);
+}
+
+bool UInventorySubsystem::BP_AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities)
+{
+	return AddItems(ContainerId, ItemQuantities);
+}
 
 
 
@@ -55,12 +70,12 @@ bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<UInventoryAsset
 
 	for (const auto& Item : ItemQuantities)
 	{
-		UInventoryAsset* ItemAsset = Item.Key;
+		UInventoryAsset* Asset = Item.Key;
 		int Quantity = Item.Value;
 
-		if (ItemAsset && Quantity > 0)
+		if (Asset && Quantity > 0)
 		{
-			AddItemRecord_Internal(ContainerId, ItemAsset->ItemId, ItemAsset->ItemType, ItemAsset->bIsStackable, Quantity, Records);
+			AddItemRecord_Internal(ContainerId, Asset->ItemId, Asset->ItemType, Asset->bIsStackable, Quantity, Records);
 		}
 	}
 
@@ -270,14 +285,14 @@ bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FName, int
 
 bool UInventorySubsystem::CreateContainer(FName ContainerId)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	IInventoryProviderInterface* InventoryProvider = InventoryInterface.Get();
+	if (!InventoryProvider)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
 		return false;
 	}
 
-	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetMutableInventoryContainer();
 	if (Containers.Contains(ContainerId))
 	{
 		PRINT_WARNING(LogTemp, 1.0f, TEXT("Container already exists: %s"), *ContainerId.ToString());
@@ -293,14 +308,14 @@ bool UInventorySubsystem::CreateContainer(FName ContainerId)
 
 bool UInventorySubsystem::RemoveContainer(FName ContainerId)
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	IInventoryProviderInterface* InventoryProvider = InventoryInterface.Get();
+	if (!InventoryProvider)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
 		return false;
 	}
 
-	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetMutableInventoryContainer();
 	if (Containers.Remove(ContainerId) <= 0)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Container not found: %s"), *ContainerId.ToString());
@@ -317,13 +332,13 @@ bool UInventorySubsystem::RemoveContainer(FName ContainerId)
 
 TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName ContainerId) const
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	IInventoryProviderInterface* InventoryProvider = InventoryInterface.Get();
+	if (!InventoryProvider)
 	{
 		return nullptr;
 	}
 
-	TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetMutableInventoryContainer();
+	TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetMutableInventoryContainer();
 	FInventoryContainer* Records = Containers.Find(ContainerId);
 
 	if (!Records)
@@ -336,13 +351,13 @@ TMap<FName, FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName Cont
 
 const TMap<FName, FInventoryRecord>* UInventorySubsystem::GetRecords(FName ContainerId) const
 {
-	IInventoryProviderInterface* InventoryInterfacePtr = InventoryInterface.Get();
-	if (!InventoryInterfacePtr)
+	IInventoryProviderInterface* InventoryProvider = InventoryInterface.Get();
+	if (!InventoryProvider)
 	{
 		return nullptr;
 	}
 
-	const TMap<FName, FInventoryContainer>& Containers = InventoryInterfacePtr->GetInventoryContainer();
+	const TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetInventoryContainer();
 	const FInventoryContainer* Records = Containers.Find(ContainerId);
 
 	if (!Records)
@@ -689,14 +704,14 @@ void UInventorySubsystem::HandleStorageLoaded()
 		return;
 	}
 
-	IInventoryProviderInterface* InventoryInterfacePtr = Cast<IInventoryProviderInterface>(Storage);
-	if (!InventoryInterfacePtr)
+	IInventoryProviderInterface* InventoryProvider = Cast<IInventoryProviderInterface>(Storage);
+	if (!InventoryProvider)
 	{
 		LOG_ERROR(LogTemp, TEXT("InventoryInterface is invalid"));
 		return;
 	}
 
-	InventoryInterface = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryInterfacePtr);
+	InventoryInterface = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryProvider);
 	LOG_INFO(LogTemp, TEXT("InventorySubsystem storage loaded"));
 }
 

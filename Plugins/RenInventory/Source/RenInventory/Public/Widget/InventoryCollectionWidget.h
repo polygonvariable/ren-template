@@ -8,7 +8,7 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RenCore/Public/Struct/InventoryFilterRule.h"
+#include "RenCoreInventory/Public/InventoryFilterRule.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 

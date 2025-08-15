@@ -7,8 +7,9 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "RenCore/Public/Inventory/InventoryItemType.h"
-#include "RenCore/Public/Struct/InventoryFilterRule.h"
+#include "RenCoreInventory/Public/InventoryFilterRule.h"
+#include "RenCoreInventory/Public/InventoryItemType.h"
+#include "RenCoreInventory/Public/InventoryManagerInterface.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 
@@ -22,6 +23,7 @@ class UGameMetadataSettings;
 class IInventoryProviderInterface;
 
 struct FInventoryRecord;
+class UCraftableAsset;
 
 
 
@@ -29,7 +31,7 @@ struct FInventoryRecord;
  *
  */
 UCLASS(MinimalAPI)
-class UInventorySubsystem : public UGameInstanceSubsystem
+class UInventorySubsystem : public UGameInstanceSubsystem, public IInventoryManagerInterface
 {
 
 	GENERATED_BODY()
@@ -37,10 +39,14 @@ class UInventorySubsystem : public UGameInstanceSubsystem
 public:
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity = 1);
+	bool BP_AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity);
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities);
+	bool BP_AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities);
+
+
+	virtual bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity) override;
+	virtual bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities) override;
 
 
 	UFUNCTION(BlueprintCallable)

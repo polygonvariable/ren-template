@@ -7,11 +7,13 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "RenCore/Public/Record/ClockRecord.h"
-#include "RenCore/Public/Record/InventoryRecord.h"
-#include "RenCore/Public/Interface/InventoryProviderInterface.h"
 #include "RenCore/Public/Interface/ClockProviderInterface.h"
-#include "RenCore/Public/Interface/WorldHistoryProviderInterface.h"
+
+#include "RenCoreInventory/Public/InventoryContainer.h"
+#include "RenCoreInventory/Public/InventoryProviderInterface.h"
+
+#include "RenCore/Public/Record/ClockRecord.h"
+#include "RenCore/Public/EventTimestamp/EventTimestampProviderInterface.h"
 
 // Generated Headers
 #include "Storage.generated.h"
@@ -22,7 +24,7 @@
  *
  */
 UCLASS()
-class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public IWorldHistoryProviderInterface
+class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public IEventTimestampProviderInterface
 {
 
 	GENERATED_BODY()
@@ -41,7 +43,7 @@ public:
 	 * TMap<FName = UUID, FDateTime>
 	 */
 	UPROPERTY()
-	TMap<FName, FDateTime> WorldHistory;
+	TMap<FName, FDateTime> EventTimestamp;
 
 	/**
 	 * A map of clock related data according to level's name
@@ -56,8 +58,8 @@ public:
 	virtual const TMap<FName, FClockRecord>& GetClockRecords() const override { return ClockRecords; }
 	virtual TMap<FName, FClockRecord>& GetMutableClockRecords() override { return ClockRecords; }
 
-	virtual const TMap<FName, FDateTime>& GetWorldHistory() const override { return WorldHistory; }
-	virtual TMap<FName, FDateTime>& GetMutableWorldHistory() override { return WorldHistory; }
+	virtual const TMap<FName, FDateTime>& GetEventTimestamp() const override { return EventTimestamp; }
+	virtual TMap<FName, FDateTime>& GetMutableEventTimestamp() override { return EventTimestamp; }
 
 };
 

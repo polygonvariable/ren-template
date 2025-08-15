@@ -28,8 +28,6 @@ public class RenInteract : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"RenCore",
-				"RenAsset",
             }
 			);
 			
@@ -43,6 +41,8 @@ public class RenInteract : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"Projects",
+                "RenCore",
+                "RenCoreInventory",
             }
 			);
 		

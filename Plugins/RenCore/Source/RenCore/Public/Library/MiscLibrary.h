@@ -108,6 +108,18 @@ public:
 		return nullptr;
 	}
 
+	template <typename TInterface>
+	static TInterface* GetSubsystemInterface(UWorld* Context)
+	{
+		return GetSubsystemInterface<UWorld, UWorldSubsystem, TInterface>(Context);
+	}
+
+	template <typename TInterface>
+	static TInterface* GetSubsystemInterface(UGameInstance* Context)
+	{
+		return GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, TInterface>(Context);
+	}
+
 };
 
 
