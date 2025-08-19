@@ -13,7 +13,7 @@
 #include "GameplayEffect.h"
 
 // Project Headers
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 #include "WeaponTest.h"
 #include "RenAbility/Public/Attributes/DamageAttributeSet.h"
 #include "RenAbility/Public/Library/AbilitySystemLibrary.h"

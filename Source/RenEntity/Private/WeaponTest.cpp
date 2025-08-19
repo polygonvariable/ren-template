@@ -11,7 +11,7 @@
 #include "GameplayEffect.h"
 
 // Project Headers
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 
 
 AWeaponTest::AWeaponTest()

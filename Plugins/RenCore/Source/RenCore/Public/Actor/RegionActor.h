@@ -20,15 +20,15 @@ class UPrimitiveComponent;
  * 
  * 
  */
-UCLASS(MinimalAPI)
-class ARegionActor : public AActor
+UCLASS(Abstract)
+class RENCORE_API ARegionActor : public AActor
 {
 
 	GENERATED_BODY()
 
 public:
 
-	RENCORE_API ARegionActor();
+	ARegionActor();
 	
 protected:
 
@@ -38,22 +38,22 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	UPrimitiveComponent* GetCollisionComponent() const;
-	RENCORE_API virtual UPrimitiveComponent* GetCollisionComponent_Implementation() const;
+	virtual UPrimitiveComponent* GetCollisionComponent_Implementation() const;
 
-	RENCORE_API virtual void RegisterCollisionComponent();
-	RENCORE_API virtual void UnregisterCollisionComponent();
-	RENCORE_API virtual bool DoesCollidedWithPlayer(AActor* OtherActor) const;
+	virtual void RegisterCollisionComponent();
+	virtual void UnregisterCollisionComponent();
+	virtual bool DoesCollidedWithPlayer(AActor* OtherActor) const;
 
 	UFUNCTION()
-	RENCORE_API virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION()
-	RENCORE_API virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex);
+	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex);
 
 protected:
 
-	RENCORE_API virtual void BeginPlay() override;
-	RENCORE_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 };
 

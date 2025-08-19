@@ -9,7 +9,7 @@
 // Project Headers
 #include "Component/RAbilitySystemComponent.h"
 #include "RenCore/Public/Tag/GameTags.h"
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 
 
 

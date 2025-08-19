@@ -9,7 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 
 
 
@@ -55,10 +55,10 @@ bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor) const
 	{
 		return false;
 	}
-
+	
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	ACharacter* CollidedCharacter = Cast<ACharacter>(OtherActor);
-
+	
 	return PlayerCharacter == CollidedCharacter;
 }
 

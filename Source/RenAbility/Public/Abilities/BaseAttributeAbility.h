@@ -12,7 +12,7 @@
 #include "AbilitySystemComponent.h"
 
 // Project Headers
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 
 // Generated Headers
 #include "BaseAttributeAbility.generated.h"

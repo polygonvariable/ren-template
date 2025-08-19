@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 
 // Project Headers
-#include "RenCore/Public/Macro/LogMacro.h"
+#include "RenCoreLibrary/Public/LogMacro.h"
 
 
 FGameplayAbilitySpecHandle URAbilitySystemComponent::GiveAbilityWithDynamicTags(TSubclassOf<UGameplayAbility> AbilityClass, int Level, int InputID, const FGameplayTagContainer& DynamicTags)

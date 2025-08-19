@@ -26,6 +26,16 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenCoreEnhance",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenCoreTimestamp",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenAsset",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
