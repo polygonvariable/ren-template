@@ -28,8 +28,6 @@ public class RenWidget : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"UMG",
-				"RenCore",
-				"RenCoreLibrary",
 			}
 			);
 			
@@ -42,6 +40,7 @@ public class RenWidget : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"RenCoreLibrary",
             }
 			);
 		

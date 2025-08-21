@@ -7,10 +7,8 @@
 #include "Components/SphereComponent.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
-
 #include "RenInventory/Public/InventorySubsystem.h"
-#include "RenTimestamp/Public/TimestampComponent.h"
+#include "RenTimestamp/Public/TimestampCooldownComponent.h"
 
 
 
@@ -30,11 +28,11 @@ APickupActor::APickupActor()
 	}
 }
 
-
 UPrimitiveComponent* APickupActor::GetCollisionComponent_Implementation() const
 {
 	return SphereCollision;
 }
+
 
 
 ASpawnablePickupActor::ASpawnablePickupActor()
@@ -43,6 +41,19 @@ ASpawnablePickupActor::ASpawnablePickupActor()
 	SetActorHiddenInGame(true);
 
 	TimestampComponent = CreateDefaultSubobject<UTimestampCooldownComponent>(TEXT("TimestampComponent"));
+	if (IsValid(TimestampComponent))
+	{
+		TimestampComponent->bAutoActivate = true;
+	}
+}
+
+void ASpawnablePickupActor::GenerateTimestampId()
+{
+	if (IsValid(TimestampComponent))
+	{
+		FGuid Guid = FGuid::NewGuid();
+		TimestampComponent->TimestampId = FName(*Guid.ToString());
+	}
 }
 
 void ASpawnablePickupActor::BeginPlay()
@@ -70,11 +81,16 @@ void ASpawnablePickupActor::BeginPlay()
 	Super::BeginPlay();
 }
 
+
+
 void AInventoryPickupActor::Interacted()
 {
 	if (TimestampComponent) TimestampComponent->AddTimestamp(false);
 
-	if (bHideAfterPickup)
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
+
+	/*if (bHideAfterPickup)
 	{
 		SetActorEnableCollision(false);
 		SetActorHiddenInGame(true);
@@ -85,7 +101,7 @@ void AInventoryPickupActor::Interacted()
 		{
 			SphereCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		}
-	}
+	}*/
 }
 
 UInventorySubsystem* AInventoryPickupActor::GetInventorySubsystem() const
@@ -98,7 +114,6 @@ UInventorySubsystem* AInventoryPickupActor::GetInventorySubsystem() const
 
 	return GameInstance->GetSubsystem<UInventorySubsystem>();
 }
-
 
 
 
@@ -119,3 +134,4 @@ void AInventoryChestActor::Interacted()
 
 	AInventoryPickupActor::Interacted();
 }
+

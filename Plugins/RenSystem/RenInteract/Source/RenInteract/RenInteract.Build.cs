@@ -43,8 +43,6 @@ public class RenInteract : ModuleRules
 				"Projects",
                 "RenCore",
 				"RenCoreLibrary",
-                "RenCoreInventory",
-                //"RenCoreEventTimestamp",
             }
 			);
 		

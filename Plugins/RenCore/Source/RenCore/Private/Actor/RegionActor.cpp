@@ -16,6 +16,7 @@
 ARegionActor::ARegionActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bStartWithTickEnabled = false;
 }
 
 UPrimitiveComponent* ARegionActor::GetCollisionComponent_Implementation() const
@@ -49,6 +50,16 @@ void ARegionActor::UnregisterCollisionComponent()
 	CollisionComponent->OnComponentEndOverlap.RemoveAll(this);
 }
 
+void ARegionActor::EnableCollision(bool bEnable)
+{
+	UPrimitiveComponent* CollisionComponent = GetCollisionComponent();
+	if (IsValid(CollisionComponent))
+	{
+		ECollisionEnabled::Type Collision = bEnable ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision;
+		CollisionComponent->SetCollisionEnabled(Collision);
+	}
+}
+
 bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor) const
 {
 	if (!IsValid(OtherActor))
@@ -57,20 +68,19 @@ bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor) const
 	}
 	
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	ACharacter* CollidedCharacter = Cast<ACharacter>(OtherActor);
 	
-	return PlayerCharacter == CollidedCharacter;
+	return PlayerCharacter == OtherActor;
 }
 
 
 void ARegionActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	bPlayerInRegion = true;
+
 }
 
 void ARegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
-	bPlayerInRegion = false;
+
 }
 
 

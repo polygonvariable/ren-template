@@ -21,11 +21,13 @@ struct FInteractItem
 
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGuid InteractGuid;
+public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText InteractTitle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSoftObjectPtr<UTexture2D> InteractIcon = nullptr;
 
 	friend inline bool operator == (const FInteractItem& A, const FInteractItem& B)
 	{
@@ -36,6 +38,10 @@ struct FInteractItem
 	{
 		return GetTypeHash(Item.InteractGuid);
 	}
+
+private:
+
+	FGuid InteractGuid = FGuid::NewGuid();
 
 };
 

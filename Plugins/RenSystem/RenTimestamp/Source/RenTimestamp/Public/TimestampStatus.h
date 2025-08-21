@@ -15,6 +15,7 @@ enum ETimestampStatus : uint8
 {
 	Changed UMETA(DisplayName = "Changed"),
 	Unchanged UMETA(DisplayName = "Unchanged"),
+	Invalid UMETA(DisplayName = "Invalid"),
 };
 
 

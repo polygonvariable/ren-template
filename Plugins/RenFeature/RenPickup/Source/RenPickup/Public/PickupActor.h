@@ -44,6 +44,7 @@ protected:
 };
 
 
+
 /**
  *
  */
@@ -64,7 +65,13 @@ protected:
 
 	virtual void BeginPlay() override;
 
+private:
+
+	UFUNCTION(CallInEditor, BlueprintCallable)
+	void GenerateTimestampId();
+
 };
+
 
 
 /**
@@ -114,6 +121,7 @@ public:
 	virtual void Interacted() override;
 
 };
+
 
 
 /**

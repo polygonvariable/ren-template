@@ -32,7 +32,7 @@ public:
 
 	AInteractActor();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ShowOnlyInnerProperties))
 	FInteractItem InteractItem;
 
 protected:
@@ -40,8 +40,13 @@ protected:
 	FOnInteracted OnInteracted;
 	FOnInteractUpdated OnInteractUpdated;
 
+
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_Interacted();
+
+	void StartInteract();
+	void EndInteract();
+	void UpdateInteract();
 
 public:
 
@@ -54,15 +59,6 @@ protected:
 
 	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void StartInteract();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void EndInteract();
-
-	UFUNCTION(BlueprintCallable)
-	virtual void UpdateInteract();
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

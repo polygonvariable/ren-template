@@ -28,14 +28,14 @@ class UTimestampSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	bool AddTimestamp(FName Guid, bool bForceAdd);
-	bool RemoveTimestamp(FName Guid);
-	bool ContainsTimestamp(FName Guid) const;
+	bool AddTimestamp(FName TimestampId, bool bForceAdd);
+	bool RemoveTimestamp(FName TimestampId);
+	bool ContainsTimestamp(FName TimestampId) const;
 
-	const FDateTime* GetTimestamp(FName Guid) const;
+	const FDateTime* GetTimestamp(FName TimestampId) const;
 
-	TEnumAsByte<ETimestampStatus> GetStatus(FName Guid) const;
-	TEnumAsByte<ETimestampCooldownStatus> GetCooldownStatus(FName Guid, bool bOnlyOnce, const FTimespan& CooldownTime) const;
+	TEnumAsByte<ETimestampStatus> GetStatus(FName TimestampId) const;
+	TEnumAsByte<ETimestampCooldownStatus> GetCooldownStatus(FName TimestampId, bool bOnlyOnce, const FTimespan& CooldownTime) const;
 
 protected:
 

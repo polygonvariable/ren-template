@@ -49,26 +49,3 @@ public:
 
 };
 
-
-
-/**
- *
- */
-UCLASS(ClassGroup = (Custom), MinimalAPI)
-class UTimestampCooldownComponent : public UTimestampComponent
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	FTimespan CooldownTime = FTimespan::FromMinutes(1);
-
-	UPROPERTY(EditAnywhere)
-	bool bOnlyOnce = true;
-
-	RENTIMESTAMP_API TEnumAsByte<ETimestampCooldownStatus> GetCooldownStatus() const;
-
-};
-

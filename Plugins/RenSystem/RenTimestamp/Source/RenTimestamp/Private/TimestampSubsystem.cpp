@@ -6,16 +6,17 @@
 // Engine Headers
 
 // Project Headers
-#include "RenCore/Public/Interface/StorageProviderInterface.h"
 #include "RenCore/Public/Delegate/LatentDelegates.h"
-#include "RenCoreLibrary/Public/SubsystemUtils.h"
+#include "RenCore/Public/Interface/StorageProviderInterface.h"
+
 #include "RenCoreLibrary/Public/LogMacro.h"
+#include "RenCoreLibrary/Public/SubsystemUtils.h"
 
 #include "RenCoreTimestamp/Public/TimestampProviderInterface.h"
 
 
 
-bool UTimestampSubsystem::AddTimestamp(FName Guid, bool bForceAdd)
+bool UTimestampSubsystem::AddTimestamp(FName TimestampId, bool bForceAdd)
 {
 	ITimestampProviderInterface* TimestampProvider = TimestampInterface.Get();
 	if (!TimestampProvider)
@@ -24,21 +25,21 @@ bool UTimestampSubsystem::AddTimestamp(FName Guid, bool bForceAdd)
 		return false;
 	}
 
-	if (ContainsTimestamp(Guid) && !bForceAdd)
+	TMap<FName, FDateTime>& Timestamp = TimestampProvider->GetMutableTimestamp();
+	if (Timestamp.Contains(TimestampId) && !bForceAdd)
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT(" already exists and bForceAdd is false"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Timestamp already exists and bForceAdd is false"));
 		return false;
 	}
 
-	TMap<FName, FDateTime>& Timestamp = TimestampProvider->GetMutableTimestamp();
-	Timestamp.Add(Guid, FDateTime::Now());
+	Timestamp.Add(TimestampId, FDateTime::Now());
 
-	PRINT_INFO(LogTemp, 1.0f, TEXT(" added"));
+	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Timestamp added"));
 
 	return true;
 }
 
-bool UTimestampSubsystem::RemoveTimestamp(FName Guid)
+bool UTimestampSubsystem::RemoveTimestamp(FName TimestampId)
 {
 	ITimestampProviderInterface* TimestampProvider = TimestampInterface.Get();
 	if (!TimestampProvider)
@@ -48,26 +49,26 @@ bool UTimestampSubsystem::RemoveTimestamp(FName Guid)
 	}
 
 	TMap<FName, FDateTime>& Timestamp = TimestampProvider->GetMutableTimestamp();
-	if (Timestamp.Remove(Guid) > 0)
+	if (Timestamp.Remove(TimestampId) > 0)
 	{
-		PRINT_INFO(LogTemp, 1.0f, TEXT(" removed"));
+		PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Timestamp removed"));
 		return true;
 	}
 
 	return false;
 }
 
-bool UTimestampSubsystem::ContainsTimestamp(FName Guid) const
+bool UTimestampSubsystem::ContainsTimestamp(FName TimestampId) const
 {
 	ITimestampProviderInterface* TimestampProvider = TimestampInterface.Get();
 	if (TimestampProvider)
 	{
-		return TimestampProvider->GetTimestamp().Contains(Guid);
+		return TimestampProvider->GetTimestamp().Contains(TimestampId);
 	}
 	return false;
 }
 
-const FDateTime* UTimestampSubsystem::GetTimestamp(FName Guid) const
+const FDateTime* UTimestampSubsystem::GetTimestamp(FName TimestampId) const
 {
 	ITimestampProviderInterface* TimestampProvider = TimestampInterface.Get();
 	if (!TimestampProvider)
@@ -76,17 +77,17 @@ const FDateTime* UTimestampSubsystem::GetTimestamp(FName Guid) const
 	}
 	
 	const TMap<FName, FDateTime>& Timestamp = TimestampProvider->GetTimestamp();
-	return Timestamp.Find(Guid);
+	return Timestamp.Find(TimestampId);
 }
 
-TEnumAsByte<ETimestampStatus> UTimestampSubsystem::GetStatus(FName Guid) const
+TEnumAsByte<ETimestampStatus> UTimestampSubsystem::GetStatus(FName TimestampId) const
 {
-	return ContainsTimestamp(Guid) ? ETimestampStatus::Changed : ETimestampStatus::Unchanged;
+	return ContainsTimestamp(TimestampId) ? ETimestampStatus::Changed : ETimestampStatus::Unchanged;
 }
 
-TEnumAsByte<ETimestampCooldownStatus> UTimestampSubsystem::GetCooldownStatus(FName Guid, bool bOnlyOnce, const FTimespan& CooldownTime) const
+TEnumAsByte<ETimestampCooldownStatus> UTimestampSubsystem::GetCooldownStatus(FName TimestampId, bool bOnlyOnce, const FTimespan& CooldownTime) const
 {
-	const FDateTime* Date = GetTimestamp(Guid);
+	const FDateTime* Date = GetTimestamp(TimestampId);
 	if (!Date)
 	{
 		return ETimestampCooldownStatus::NotFound;

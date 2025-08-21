@@ -20,7 +20,7 @@ TEnumAsByte<ETimestampStatus> UTimestampComponent::GetStatus() const
 	UTimestampSubsystem* TimestampSubsystemPtr = TimestampSubsystem.Get();
 	if (!IsValid(TimestampSubsystemPtr))
 	{
-		return ETimestampStatus::Unchanged;
+		return ETimestampStatus::Invalid;
 	}
 
 	return TimestampSubsystemPtr->GetStatus(TimestampId);
@@ -57,17 +57,5 @@ void UTimestampComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	TimestampSubsystem.Reset();
 
 	Super::EndPlay(EndPlayReason);
-}
-
-
-TEnumAsByte<ETimestampCooldownStatus> UTimestampCooldownComponent::GetCooldownStatus() const
-{
-	UTimestampSubsystem* TimestampSubsystemPtr = TimestampSubsystem.Get();
-	if (!IsValid(TimestampSubsystemPtr))
-	{
-		return ETimestampCooldownStatus::NotFound;
-	}
-
-	return TimestampSubsystemPtr->GetCooldownStatus(TimestampId, bOnlyOnce, CooldownTime);
 }
 

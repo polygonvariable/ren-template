@@ -32,7 +32,7 @@ public:
 	
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Category = "Region Actor")
+	UPROPERTY(BlueprintReadOnly)
 	bool bPlayerInRegion = false;
 
 
@@ -40,8 +40,11 @@ protected:
 	UPrimitiveComponent* GetCollisionComponent() const;
 	virtual UPrimitiveComponent* GetCollisionComponent_Implementation() const;
 
-	virtual void RegisterCollisionComponent();
-	virtual void UnregisterCollisionComponent();
+	void RegisterCollisionComponent();
+	void UnregisterCollisionComponent();
+
+	virtual void EnableCollision(bool bEnable);
+
 	virtual bool DoesCollidedWithPlayer(AActor* OtherActor) const;
 
 	UFUNCTION()

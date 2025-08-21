@@ -43,8 +43,11 @@
     REN_LOG(Category, Error, Text, ##__VA_ARGS__)
 
 
-#define PRINT_INFO(Category, Time, Text, ...) \
+#define PRINT_SUCCESS(Category, Time, Text, ...) \
     REN_PRINT_LOG(Category, Log, Time, FColor::Green, Text, ##__VA_ARGS__)
+
+#define PRINT_INFO(Category, Time, Text, ...) \
+    REN_PRINT_LOG(Category, Log, Time, FColor::Magenta, Text, ##__VA_ARGS__)
 
 #define PRINT_WARNING(Category, Time, Text, ...) \
     REN_PRINT_LOG(Category, Warning, Time, FColor::Orange, Text, ##__VA_ARGS__)
