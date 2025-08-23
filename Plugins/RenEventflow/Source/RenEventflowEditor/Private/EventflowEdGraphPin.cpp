@@ -29,7 +29,7 @@ void SEventflowEdGraphFlowPin::Construct(const FArguments& InArgs, UEdGraphPin* 
 
 FSlateColor SEventflowEdGraphFlowPin::GetPinColor() const
 {
-	return FSlateColor(FLinearColor::Green);
+	return FSlateColor(FLinearColor::Red);
 }
 
 
@@ -41,7 +41,16 @@ FEventflowEdPanelPinFactory::~FEventflowEdPanelPinFactory()
 
 TSharedPtr<SGraphPin> FEventflowEdPanelPinFactory::CreatePin(UEdGraphPin* Pin) const
 {
-	if (Pin->PinType.PinCategory == FName(TEXT("CUSTOM_PIN")))
+	if (Pin->PinType.bIsConst)
+	{
+		return SNew(SEventflowEdGraphFlowPin, Pin);
+	}
+	else
+	{
+		return SNew(SEventflowEdGraphPin, Pin);
+	}
+
+	/*if (Pin->PinType.PinCategory == FName(TEXT("CUSTOM_PIN")))
 	{
 		return SNew(SEventflowEdGraphPin, Pin);
 	}
@@ -53,6 +62,6 @@ TSharedPtr<SGraphPin> FEventflowEdPanelPinFactory::CreatePin(UEdGraphPin* Pin) c
 	{
 		return SNew(SEventflowEdGraphFlowPin, Pin);
 	}
-	return nullptr;
+	return nullptr;*/
 }
 

@@ -76,6 +76,9 @@ public:
 		return FLinearColor(0.0f, 1.0f, 0.0f);
 	}
 
+
+	virtual void CreateDefaultPins() override;
+
 };
 
 UCLASS()
@@ -100,6 +103,7 @@ public:
 	{
 		return FLinearColor(0.0f, 0.0f, 1.0f);
 	}
+	virtual void CreateDefaultPins() override;
 
 };
 

@@ -95,7 +95,7 @@ void UEventflowEdGraphNode::SyncOutputPins()
 	while (TotalPins > 0)
 	{
 		UEdGraphPin* Pin = GetPinAt(TotalPins - 1);
-		if (!Pin->PinName.ToString().Contains(TEXT("Input")))
+		if (!Pin->PinType.bIsConst)
 		{
 			RemovePin(Pin);
 		}
@@ -104,14 +104,32 @@ void UEventflowEdGraphNode::SyncOutputPins()
 
 	for (FText Option : AssetNodeData->InputOptions)
 	{
-		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Input, FName(Option.ToString()), TEXT("CUSTOM_PIN"), true);
-		Pin->PinName = FName(Option.ToString());
+		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Input, FName(Option.ToString()), TEXT("CUSTOM_PIN"), false);
+		Pin->PinName = FName(FGuid::NewGuid().ToString());
+		Pin->PinFriendlyName = FText::FromString(Option.ToString());
 	}
 
 	for (FText Option : AssetNodeData->OutputOptions)
 	{
-		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Output, FName(Option.ToString()), TEXT("CUSTOM_PIN"), true);
-		Pin->PinName = FName(Option.ToString());
+		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Output, FName(Option.ToString()), TEXT("CUSTOM_PIN"), false);
+		Pin->PinName = FName(FGuid::NewGuid().ToString());
+		Pin->PinFriendlyName = FText::FromString(Option.ToString());
 	}
+}
+
+
+
+void UEventflowEdGraphBeginNode::CreateDefaultPins()
+{
+	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Output"), TEXT("Exec"));
+	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
+	Pin->PinType.bIsConst = true;
+}
+
+void UEventflowEdGraphEndNode::CreateDefaultPins()
+{
+	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Input"), TEXT("Return"));
+	Pin->PinFriendlyName = FText::FromString(TEXT("Return"));
+	Pin->PinType.bIsConst = true;
 }
 

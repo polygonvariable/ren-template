@@ -71,6 +71,7 @@ UEdGraphNode* FEventflowEdGraphSchemaAction::PerformAction(UEdGraph* ParentGraph
 {
 	UEventflowEdGraphNode* NewNode = NewObject<UEventflowEdGraphNode>(ParentGraph, NodeClass);
 	NewNode->CreateNewGuid();
+	NewNode->CreateDefaultPins();
 	NewNode->NodePosX = Location.X;
 	NewNode->NodePosY = Location.Y;
 	NewNode->SetAssetNodeData(NewObject<UEventflowNodeData>(NewNode));

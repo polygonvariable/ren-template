@@ -165,13 +165,15 @@ void EventflowEdApp::UpdateWorkingAssetFromGraph()
 		AssetNode->NodeGuid = UINode->NodeGuid;
 		AssetNode->Position = FVector2D(UINode->NodePosX, UINode->NodePosY);
 		AssetNode->NodeData = UINodeCast->GetAssetNodeData();
-		AssetNode->NType = UINodeCast->NType;
+		AssetNode->NodeType = UINodeCast->NType;
 
 		for (UEdGraphPin* UIPin : UINode->Pins)
 		{
 			UEventflowPin* AssetPin = NewObject<UEventflowPin>(AssetNode);
-			AssetPin->PinName = UIPin->PinName;
 			AssetPin->PinGuid = UIPin->PinId;
+			AssetPin->PinName = UIPin->PinName;
+			AssetPin->PinFriendlyName = UIPin->PinFriendlyName;
+			AssetPin->bIsConst = UIPin->PinType.bIsConst;
 
 			if (UIPin->HasAnyConnections() && UIPin->Direction == EEdGraphPinDirection::EGPD_Output)
 			{
@@ -223,11 +225,11 @@ void EventflowEdApp::UpdateEditorGraphFromWorkingAsset()
 		if (!AssetNode) continue;
 		UEventflowEdGraphNode* UINode;
 
-		if (AssetNode->NType == TEXT("BEGIN"))
+		if (AssetNode->NodeType == TEXT("BEGIN"))
 		{
 			UINode = NewObject<UEventflowEdGraphBeginNode>(WorkingGraph);
 		}
-		else if (AssetNode->NType == TEXT("END"))
+		else if (AssetNode->NodeType == TEXT("END"))
 		{
 			UINode = NewObject<UEventflowEdGraphEndNode>(WorkingGraph);
 		}
@@ -236,7 +238,6 @@ void EventflowEdApp::UpdateEditorGraphFromWorkingAsset()
 			continue;
 			// UINode = NewObject<UEventflowEdGraphNode>(WorkingGraph);
 		}
-
 
 		UINode->CreateDefaultPins();
 		UINode->NodeGuid = AssetNode->NodeGuid;
@@ -271,27 +272,45 @@ void EventflowEdApp::UpdateEditorGraphFromWorkingAsset()
 
 		for (UEventflowPin* AssetPin : AssetNode->InputPins)
 		{
-			/*UEdGraphPin* UIPin;
+			UEdGraphPin* UIPin;
 
-			if (!AssetPin->bIsConst)
+			if (AssetPin->bIsConst)
 			{
-				UIPin = UINode->CreatePinHelper(EEdGraphPinDirection::EGPD_Input, AssetPin->PinName, TEXT("CUSTOM_PIN"), true);
-				UIPin->PinId = AssetPin->PinGuid;
+				UIPin = UINode->FindPin(AssetPin->PinName);
 			}
 			else
 			{
-				UIPin = UINode->FindPinById(AssetPin->PinGuid);
-			}*/
+				UIPin = UINode->CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Input"), AssetPin->PinName);
+				UIPin->PinFriendlyName = AssetPin->PinFriendlyName;
+				UIPin->PinType.bIsConst = false;
+			}
+			if (!UIPin) continue;
 
-			UEdGraphPin* UIPin = UINode->CreatePinHelper(EEdGraphPinDirection::EGPD_Input, AssetPin->PinName, TEXT("CUSTOM_PIN"), true);
 			UIPin->PinId = AssetPin->PinGuid;
+
+			/*UEdGraphPin* UIPin = UINode->CreatePinHelper(EEdGraphPinDirection::EGPD_Input, AssetPin->PinName, TEXT("CUSTOM_PIN"), false);
+			UIPin->PinId = AssetPin->PinGuid;
+			UIPin->PinFriendlyName = AssetPin->PinFriendlyName;*/
 
 			PinMap.Add(AssetPin->PinGuid, UIPin);
 		}
 
 		for (UEventflowPin* AssetPin : AssetNode->OutputPins)
 		{
-			UEdGraphPin* UIPin = UINode->CreatePinHelper(EEdGraphPinDirection::EGPD_Output, AssetPin->PinName, TEXT("CUSTOM_PIN"), true);
+			UEdGraphPin* UIPin;
+
+			if (AssetPin->bIsConst)
+			{
+				UIPin = UINode->FindPin(AssetPin->PinName);
+			}
+			else
+			{
+				UIPin = UINode->CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Output"), AssetPin->PinName);
+				UIPin->PinFriendlyName = AssetPin->PinFriendlyName;
+				UIPin->PinType.bIsConst = false;
+			}
+			if (!UIPin) continue;
+
 			UIPin->PinId = AssetPin->PinGuid;
 
 			if (AssetPin->NextPin)
@@ -301,6 +320,18 @@ void EventflowEdApp::UpdateEditorGraphFromWorkingAsset()
 				Connection.Value = AssetPin->NextPin->PinGuid;
 				Connections.Add(Connection);
 			}
+
+			/*UEdGraphPin* UIPin = UINode->CreatePinHelper(EEdGraphPinDirection::EGPD_Output, AssetPin->PinName, TEXT("CUSTOM_PIN"), false);
+			UIPin->PinId = AssetPin->PinGuid;
+			UIPin->PinFriendlyName = AssetPin->PinFriendlyName;
+
+			if (AssetPin->NextPin)
+			{
+				TPair<FGuid, FGuid> Connection;
+				Connection.Key = UIPin->PinId;
+				Connection.Value = AssetPin->NextPin->PinGuid;
+				Connections.Add(Connection);
+			}*/
 
 			PinMap.Add(AssetPin->PinGuid, UIPin);
 		}
@@ -312,6 +343,8 @@ void EventflowEdApp::UpdateEditorGraphFromWorkingAsset()
 	{
 		UEdGraphPin* FromPin = PinMap[Connection.Key];
 		UEdGraphPin* ToPin = PinMap[Connection.Value];
+
+		if (!FromPin || !ToPin) continue;
 
 		FromPin->LinkedTo.Add(ToPin);
 		ToPin->LinkedTo.Add(FromPin);

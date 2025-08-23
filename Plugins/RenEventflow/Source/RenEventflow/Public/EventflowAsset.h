@@ -37,13 +37,16 @@ public:
 	FName PinName;
 
 	UPROPERTY()
+	FText PinFriendlyName;
+
+	UPROPERTY()
 	FGuid PinGuid;
 
 	UPROPERTY()
 	bool bIsConst = false;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowPin> NextPin = nullptr;
+	TObjectPtr<class UEventflowPin> NextPin = nullptr;
 
 };
 
@@ -100,13 +103,7 @@ class RENEVENTFLOW_API UEventflowNode : public UObject
 public:
 
 	UPROPERTY()
-	FText NodeId; // Static node id
-
-	UPROPERTY()
 	FGuid NodeGuid; // Runtime node id
-
-	UPROPERTY()
-	FString NType;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UEventflowPin>> InputPins;
@@ -115,10 +112,10 @@ public:
 	TArray<TObjectPtr<UEventflowPin>> OutputPins;
 
 	UPROPERTY()
-	FVector2D Position;
+	FString NodeType;
 
 	UPROPERTY()
-	TEnumAsByte<EEventflowNodeType> NodeType = EEventflowNodeType::Start;
+	FVector2D Position;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowNodeData> NodeData = nullptr;
