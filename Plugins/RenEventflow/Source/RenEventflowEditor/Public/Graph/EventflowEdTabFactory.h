@@ -11,39 +11,39 @@
 // Generated Headers
 
 // Forward Declarations
-class EventflowEdApp;
+class FEventflowEdApp;
 class SWidget;
 
 
-class EventflowEdTabFactory : public FWorkflowTabFactory
+class FEventflowEdTabFactory : public FWorkflowTabFactory
 {
 
 public:
 
-	EventflowEdTabFactory(TSharedPtr<EventflowEdApp> GraphEditorApp);
+	FEventflowEdTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
 
-	TWeakPtr<EventflowEdApp> GraphEditorAppPtr;
+	TWeakPtr<FEventflowEdApp> GraphEditorAppPtr;
 
 };
 
-class EventflowEdPropertyTabFactory : public FWorkflowTabFactory
+class FEventflowEdPropertyTabFactory : public FWorkflowTabFactory
 {
 
 public:
 
-	EventflowEdPropertyTabFactory(TSharedPtr<EventflowEdApp> GraphEditorApp);
+	FEventflowEdPropertyTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
 	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
 
-	TWeakPtr<EventflowEdApp> GraphEditorAppPtr;
+	TWeakPtr<FEventflowEdApp> GraphEditorAppPtr;
 
 };
 

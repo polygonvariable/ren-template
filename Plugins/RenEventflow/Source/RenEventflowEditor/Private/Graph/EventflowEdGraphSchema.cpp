@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EventflowEdGraphSchema.h"
+#include "Graph/EventflowEdGraphSchema.h"
 
 // Engine Headers
 #include "EdGraph/EdGraphNode.h"
@@ -9,8 +9,8 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
-#include "RenEventflowEditor/Public/EventflowEdGraphNode.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraphNode.h"
 
 
 
@@ -46,6 +46,11 @@ const FPinConnectionResponse UEventflowEdGraphSchema::CanCreateConnection(const 
 	{
 		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of same direction"));
 	}
+
+	/*if (A->PinType.PinCategory != B->PinType.PinCategory)
+	{
+		return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Can't connect pins of different category"));
+	}*/
 
 	if (A->GetOwningNode() == B->GetOwningNode())
 	{

@@ -1,24 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EventflowEdAppMode.h"
+#include "App/EventflowEdAppMode.h"
 
 // Engine Headers
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
-#include "RenEventflowEditor/Public/EventflowEdTabFactory.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdTabFactory.h"
 
 
 
-EventflowEdAppMode::EventflowEdAppMode(TSharedPtr<EventflowEdApp> GraphEditorApp) : FApplicationMode(TEXT("RGraphEditorAppMode"))
+FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FApplicationMode(TEXT("RGraphEditorAppMode"))
 {
-	AllowedTabSet.RegisterFactory(MakeShareable(new EventflowEdTabFactory(GraphEditorApp)));
-	AllowedTabSet.RegisterFactory(MakeShareable(new EventflowEdPropertyTabFactory(GraphEditorApp)));
+	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdTabFactory(InEventflowEdApp)));
+	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdPropertyTabFactory(InEventflowEdApp)));
 
-	GraphEditorAppPtr = GraphEditorApp;
+	EventflowEdApp = InEventflowEdApp;
 
 	TabLayout = FTabManager::NewLayout("RGraphEditorAppLayout_v1")
 		->AddArea(
@@ -41,20 +41,20 @@ EventflowEdAppMode::EventflowEdAppMode(TSharedPtr<EventflowEdApp> GraphEditorApp
 		);
 }
 
-void EventflowEdAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabManager)
+void FEventflowEdAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabManager)
 {
-	TSharedPtr<EventflowEdApp> App = GraphEditorAppPtr.Pin();
+	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
 	App->PushTabFactories(AllowedTabSet);
 
 	FApplicationMode::RegisterTabFactories(InTabManager);
 }
 
-void EventflowEdAppMode::PreDeactivateMode()
+void FEventflowEdAppMode::PreDeactivateMode()
 {
 	FApplicationMode::PreDeactivateMode();
 }
 
-void EventflowEdAppMode::PostActivateMode()
+void FEventflowEdAppMode::PostActivateMode()
 {
 	FApplicationMode::PostActivateMode();
 }

@@ -1,14 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EventflowEdGraphPin.h"
+#include "Graph/EventflowEdGraphPin.h"
 
 // Engine Headers
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
 
 
 
@@ -45,10 +45,7 @@ TSharedPtr<SGraphPin> FEventflowEdPanelPinFactory::CreatePin(UEdGraphPin* Pin) c
 	{
 		return SNew(SEventflowEdGraphFlowPin, Pin);
 	}
-	else
-	{
-		return SNew(SEventflowEdGraphPin, Pin);
-	}
+	return nullptr;
 
 	/*if (Pin->PinType.PinCategory == FName(TEXT("CUSTOM_PIN")))
 	{

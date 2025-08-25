@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EventflowEdTabFactory.h"
+#include "Graph/EventflowEdTabFactory.h"
 
 // Engine Headers
 #include "IDetailsView.h"
@@ -13,10 +13,11 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraph.h"
 
 
-EventflowEdTabFactory::EventflowEdTabFactory(TSharedPtr<EventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPrimaryTab"), GraphEditorApp)
+FEventflowEdTabFactory::FEventflowEdTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPrimaryTab"), GraphEditorApp)
 {
 	GraphEditorAppPtr = GraphEditorApp;
 	TabLabel = FText::FromString(TEXT("Primary Tab"));
@@ -24,18 +25,20 @@ EventflowEdTabFactory::EventflowEdTabFactory(TSharedPtr<EventflowEdApp> GraphEdi
 	ViewMenuTooltip = FText::FromString(TEXT("Primary Tab Menu Tooltip"));
 }
 
-TSharedRef<SWidget> EventflowEdTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FEventflowEdTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<EventflowEdApp> App = GraphEditorAppPtr.Pin();
+	TSharedPtr<FEventflowEdApp> App = GraphEditorAppPtr.Pin();
 
 	SGraphEditor::FGraphEditorEvents GraphEditorEvents;
-	GraphEditorEvents.OnSelectionChanged.BindRaw(App.Get(), &EventflowEdApp::OnGraphSelectionChanged);
+	GraphEditorEvents.OnSelectionChanged.BindRaw(App.Get(), &FEventflowEdApp::OnGraphSelectionChanged);
+
+	UEventflowEdGraph* WorkingGraph = App->GetWorkingGraph();
 
 	TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
 			.IsEditable(true)
 			.GraphEvents(GraphEditorEvents)
-			.GraphToEdit(App->GetWorkingGraph());
+			.GraphToEdit(WorkingGraph);
 
 	App->SetWorkingGraphEditor(GraphEditor);
 
@@ -48,14 +51,14 @@ TSharedRef<SWidget> EventflowEdTabFactory::CreateTabBody(const FWorkflowTabSpawn
 		];
 }
 
-FText EventflowEdTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FEventflowEdTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("Primary Tab Tool Tip"));
 }
 
 
 
-EventflowEdPropertyTabFactory::EventflowEdPropertyTabFactory(TSharedPtr<EventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPropertyTab"), GraphEditorApp)
+FEventflowEdPropertyTabFactory::FEventflowEdPropertyTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPropertyTab"), GraphEditorApp)
 {
 	GraphEditorAppPtr = GraphEditorApp;
 	TabLabel = FText::FromString(TEXT("Property Tab"));
@@ -63,9 +66,9 @@ EventflowEdPropertyTabFactory::EventflowEdPropertyTabFactory(TSharedPtr<Eventflo
 	ViewMenuTooltip = FText::FromString(TEXT("Property Tab Menu Tooltip"));
 }
 
-TSharedRef<SWidget> EventflowEdPropertyTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FEventflowEdPropertyTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<EventflowEdApp> GraphEditorApp = GraphEditorAppPtr.Pin();
+	TSharedPtr<FEventflowEdApp> GraphEditorApp = GraphEditorAppPtr.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	
 	FDetailsViewArgs Args;
@@ -104,7 +107,7 @@ TSharedRef<SWidget> EventflowEdPropertyTabFactory::CreateTabBody(const FWorkflow
 		];
 }
 
-FText EventflowEdPropertyTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+FText FEventflowEdPropertyTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
 {
 	return FText::FromString(TEXT("Primary Tab Tool Tip"));
 }

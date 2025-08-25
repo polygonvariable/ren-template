@@ -13,12 +13,12 @@
 // Forward Declarations
 
 
-class EventflowEdAssetTypeAction : public FAssetTypeActions_Base
+class FEventflowEdAssetTypeAction : public FAssetTypeActions_Base
 {
 
 public:
 
-	EventflowEdAssetTypeAction(EAssetTypeCategories::Type InAssetCategory);
+	FEventflowEdAssetTypeAction(EAssetTypeCategories::Type InAssetCategory);
 
 	virtual FText GetName() const override;
 	virtual FColor GetTypeColor() const override;

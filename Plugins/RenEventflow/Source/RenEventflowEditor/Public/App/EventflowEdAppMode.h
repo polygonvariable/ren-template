@@ -12,15 +12,15 @@
 // Generated Headers
 
 // Forward Declarations
-class EventflowEdApp;
+class FEventflowEdApp;
 
 
-class EventflowEdAppMode : public FApplicationMode
+class FEventflowEdAppMode : public FApplicationMode
 {
 
 public:
 
-	EventflowEdAppMode(TSharedPtr<EventflowEdApp> GraphEditorApp);
+	FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
 
 	virtual void RegisterTabFactories(TSharedPtr<FTabManager> InTabManager) override;
 	virtual void PreDeactivateMode() override;
@@ -28,7 +28,7 @@ public:
 
 private:
 
-	TWeakPtr<EventflowEdApp> GraphEditorAppPtr;
+	TWeakPtr<FEventflowEdApp> EventflowEdApp;
 	FWorkflowAllowedTabSet AllowedTabSet;
 
 };

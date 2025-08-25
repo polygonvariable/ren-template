@@ -15,16 +15,6 @@
 
 
 
-
-UENUM(BlueprintType)
-enum EEventflowNodeType
-{
-	Start UMETA(DisplayName = "Start"),
-	Action UMETA(DisplayName = "Action"),
-	End UMETA(DisplayName = "End"),
-};
-
-
 UCLASS()
 class RENEVENTFLOW_API UEventflowPin : public UObject
 {
@@ -37,16 +27,27 @@ public:
 	FName PinName;
 
 	UPROPERTY()
+	FName PinCategory;
+
+	UPROPERTY()
 	FText PinFriendlyName;
 
 	UPROPERTY()
 	FGuid PinGuid;
 
 	UPROPERTY()
-	bool bIsConst = false;
+	bool bPinIsConst = false;
+
+	//UPROPERTY()
+	//UEventflowNode* PinParentNode = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<class UEventflowPin> NextPin = nullptr;
+	TObjectPtr<UEventflowPin> PinLinkedTo = nullptr;
+
+protected:
+
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 
 };
 
@@ -91,6 +92,11 @@ public:
 	UPROPERTY(EditAnywhere, Instanced)
 	TArray<TObjectPtr<UEventflowNodeExternalData>> ExternalData;
 
+protected:
+
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+
 };
 
 
@@ -103,7 +109,7 @@ class RENEVENTFLOW_API UEventflowNode : public UObject
 public:
 
 	UPROPERTY()
-	FGuid NodeGuid; // Runtime node id
+	FGuid NodeGuid;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UEventflowPin>> InputPins;
@@ -112,13 +118,18 @@ public:
 	TArray<TObjectPtr<UEventflowPin>> OutputPins;
 
 	UPROPERTY()
-	FString NodeType;
+	FName NodeType;
 
 	UPROPERTY()
-	FVector2D Position;
+	FVector2D NodePosition;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowNodeData> NodeData = nullptr;
+
+protected:
+
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 
 };
 
@@ -134,21 +145,35 @@ public:
 	UPROPERTY()
 	TArray<TObjectPtr<UEventflowNode>> Nodes;
 
+protected:
+
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+
 };
 
+
 UCLASS(BlueprintType)
-class RENEVENTFLOW_API UEventflowAsset : public UDataAsset
+class RENEVENTFLOW_API UEventflowAsset : public UObject
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	FString SomeString = "";
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UObject> SharedData;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowData> GraphData = nullptr;
+
+	DECLARE_MULTICAST_DELEGATE(FOnEventflowAssetSaved);
+	FOnEventflowAssetSaved OnEventflowAssetSaved;
+
+protected:
+
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 
 };
 

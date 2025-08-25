@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EventflowEdGraphNode.h"
+#include "Graph/EventflowEdGraphNode.h"
 
 // Engine Headers
 #include "Framework/Commands/UIAction.h"
@@ -10,7 +10,7 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
 
 
 
@@ -49,28 +49,18 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 	);
 }
 
-//UEdGraphPin* UEventflowEdGraphNode::CreateCustomPin(EEdGraphPinDirection Direction, FName Title, bool bIsConst)
-//{
-//	FName Catergory = (Direction == EEdGraphPinDirection::EGPD_Output) ? TEXT("Output") : TEXT("Input");
-//	FName SubCatergory = TEXT("CUSTOM_PIN");
-//
-//	UEdGraphPin* Pin = CreatePin(
-//		Direction,
-//		Catergory,
-//		Title
-//	);
-//	Pin->PinType.PinSubCategory = SubCatergory;
-//	Pin->PinType.bIsConst = bIsConst;
-//	return Pin;
-//}
 
-UEdGraphPin* UEventflowEdGraphNode::CreatePinHelper(EEdGraphPinDirection Direction, FName Title, FName Catergory, bool bIsConst)
+bool UEventflowEdGraphNode::CanCreateRuntimeInputPins() const
 {
-	UEdGraphPin* Pin = CreatePin(Direction, Catergory, Title);
-	Pin->PinType.bIsConst = bIsConst;
-
-	return Pin;
+	return false;
 }
+
+bool UEventflowEdGraphNode::CanCreateRuntimeOutputPins() const
+{
+	return false;
+}
+
+
 
 void UEventflowEdGraphNode::SetAssetNodeData(UEventflowNodeData* AssetNodeData)
 {
@@ -86,7 +76,7 @@ void UEventflowEdGraphNode::CreateDefaultPins()
 {
 }
 
-void UEventflowEdGraphNode::SyncOutputPins()
+void UEventflowEdGraphNode::SyncPins()
 {
 	UEventflowNodeData* AssetNodeData = GetAssetNodeData();
 	if (!AssetNodeData) return;
@@ -102,18 +92,30 @@ void UEventflowEdGraphNode::SyncOutputPins()
 		TotalPins--;
 	}
 
-	for (FText Option : AssetNodeData->InputOptions)
+	if (CanCreateRuntimeInputPins())
 	{
-		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Input, FName(Option.ToString()), TEXT("CUSTOM_PIN"), false);
-		Pin->PinName = FName(FGuid::NewGuid().ToString());
-		Pin->PinFriendlyName = FText::FromString(Option.ToString());
+		for (FText Option : AssetNodeData->InputOptions)
+		{
+			FName PinName = Option.IsEmpty() ? FName(TEXT("Input")) : FName(FGuid::NewGuid().ToString());
+			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("In"), PinName);
+			if (!Pin) continue;
+
+			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Input")) : FText::FromString(Option.ToString());
+			Pin->PinType.bIsConst = false;
+		}
 	}
 
-	for (FText Option : AssetNodeData->OutputOptions)
+	if (CanCreateRuntimeOutputPins())
 	{
-		UEdGraphPin* Pin = CreatePinHelper(EEdGraphPinDirection::EGPD_Output, FName(Option.ToString()), TEXT("CUSTOM_PIN"), false);
-		Pin->PinName = FName(FGuid::NewGuid().ToString());
-		Pin->PinFriendlyName = FText::FromString(Option.ToString());
+		for (FText Option : AssetNodeData->OutputOptions)
+		{
+			FName PinName = Option.IsEmpty() ? FName(TEXT("Output")) : FName(FGuid::NewGuid().ToString());
+			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Out"), PinName);
+			if (!Pin) continue;
+
+			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Output")) : FText::FromString(Option.ToString());
+			Pin->PinType.bIsConst = false;
+		}
 	}
 }
 
@@ -121,14 +123,14 @@ void UEventflowEdGraphNode::SyncOutputPins()
 
 void UEventflowEdGraphBeginNode::CreateDefaultPins()
 {
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Output"), TEXT("Exec"));
+	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Exec"), TEXT("Exec"));
 	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
 	Pin->PinType.bIsConst = true;
 }
 
 void UEventflowEdGraphEndNode::CreateDefaultPins()
 {
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Input"), TEXT("Return"));
+	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Exec"), TEXT("Return"));
 	Pin->PinFriendlyName = FText::FromString(TEXT("Return"));
 	Pin->PinType.bIsConst = true;
 }

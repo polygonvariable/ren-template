@@ -9,7 +9,7 @@
 #include "EdGraph/EdGraphPin.h"
 
 #include "RenEventflowEditor/Public/EventflowEdAssetTypeAction.h"
-#include "RenEventflowEditor/Public/EventflowEdGraphPin.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraphPin.h"
 //#include "AssetToolsModules.h"
 
 
@@ -20,9 +20,9 @@ void FRenEventflowEditorModule::StartupModule()
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
 	IAssetTools& AssetTools = IAssetTools::Get();
-	EAssetTypeCategories::Type Category = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("REN_GRAPH")), FText::FromString(TEXT("Ren Classes")));
+	EAssetTypeCategories::Type Category = AssetTools.RegisterAdvancedAssetCategory(FName(TEXT("REN_CLASSES")), FText::FromString(TEXT("Ren Classes")));
 
-	TSharedPtr<EventflowEdAssetTypeAction> Action = MakeShareable(new EventflowEdAssetTypeAction(Category));
+	TSharedPtr<FEventflowEdAssetTypeAction> Action = MakeShareable(new FEventflowEdAssetTypeAction(Category));
 	AssetTools.RegisterAssetTypeActions(Action.ToSharedRef());
 
 	PinFactory = MakeShareable(new FEventflowEdPanelPinFactory());

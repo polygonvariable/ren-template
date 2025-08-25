@@ -15,6 +15,18 @@
 class UEventflowNodeData;
 
 
+#define EVENTFLOW_NODE_TYPE(NodeClass, NodeTypeName) \
+public: \
+	static FName StaticNodeType() \
+	{ \
+		return FName(TEXT(NodeTypeName)); \
+	} \
+protected: \
+	virtual FName GetStaticNodeTypeInternal() const override \
+	{ \
+		return StaticNodeType(); \
+	}
+
 
 UCLASS()
 class UEventflowEdGraphNode : public UEdGraphNode
@@ -24,18 +36,17 @@ class UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	FString NType = TEXT("BASE");
-
-	//UEdGraphPin* CreateCustomPin(EEdGraphPinDirection Direction, FName Title, bool bIsConst);
-
-	UEdGraphPin* CreatePinHelper(EEdGraphPinDirection Direction, FName Title, FName Catergory, bool bIsConst);
+	virtual FName GetNodeType() const
+	{
+		return GetStaticNodeTypeInternal();
+	}
 
 	void SetAssetNodeData(UEventflowNodeData* AssetNodeData);
 	UEventflowNodeData* GetAssetNodeData() const;
 
 	virtual void CreateDefaultPins();
 
-	void SyncOutputPins();
+	void SyncPins();
 
 public:
 
@@ -43,6 +54,13 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual bool CanUserDeleteNode() const override;
 	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+
+protected:
+
+	virtual bool CanCreateRuntimeInputPins() const;
+	virtual bool CanCreateRuntimeOutputPins() const;
+
+	virtual FName GetStaticNodeTypeInternal() const { return NAME_None; };
 
 private:
 
@@ -59,12 +77,10 @@ class UEventflowEdGraphBeginNode : public UEventflowEdGraphNode
 
 	GENERATED_BODY()
 
+	EVENTFLOW_NODE_TYPE(UEventflowEdGraphBeginNode, "REN.EF.DEFAULT.BEGIN")
+
 public:
 
-	UEventflowEdGraphBeginNode()
-	{
-		NType = TEXT("BEGIN");
-	}
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
@@ -76,8 +92,14 @@ public:
 		return FLinearColor(0.0f, 1.0f, 0.0f);
 	}
 
-
 	virtual void CreateDefaultPins() override;
+
+protected:
+
+	virtual bool CanCreateRuntimeOutputPins() const override
+	{
+		return true;
+	}
 
 };
 
@@ -87,12 +109,10 @@ class UEventflowEdGraphEndNode : public UEventflowEdGraphNode
 
 	GENERATED_BODY()
 
+	EVENTFLOW_NODE_TYPE(UEventflowEdGraphEndNode, "REN.EF.DEFAULT.END")
+
 public:
 
-	UEventflowEdGraphEndNode()
-	{
-		NType = TEXT("END");
-	}
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
 	{
@@ -103,7 +123,15 @@ public:
 	{
 		return FLinearColor(0.0f, 0.0f, 1.0f);
 	}
+
 	virtual void CreateDefaultPins() override;
+
+protected:
+
+	virtual bool CanCreateRuntimeInputPins() const  override
+	{
+		return true;
+	}
 
 };
 

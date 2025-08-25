@@ -8,35 +8,35 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 
-#include "RenEventflowEditor/Public/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
 
 
-EventflowEdAssetTypeAction::EventflowEdAssetTypeAction(EAssetTypeCategories::Type InAssetCategory)
+FEventflowEdAssetTypeAction::FEventflowEdAssetTypeAction(EAssetTypeCategories::Type InAssetCategory)
 {
     AssetCategory = InAssetCategory;
 }
 
-FText EventflowEdAssetTypeAction::GetName() const
+FText FEventflowEdAssetTypeAction::GetName() const
 {
     return FText::FromString(TEXT("Eventflow Graph"));
 }
 
-FColor EventflowEdAssetTypeAction::GetTypeColor() const
+FColor FEventflowEdAssetTypeAction::GetTypeColor() const
 {
     return FColor::Orange;
 }
 
-UClass* EventflowEdAssetTypeAction::GetSupportedClass() const
+UClass* FEventflowEdAssetTypeAction::GetSupportedClass() const
 {
     return UEventflowAsset::StaticClass();
 }
 
-uint32 EventflowEdAssetTypeAction::GetCategories()
+uint32 FEventflowEdAssetTypeAction::GetCategories()
 {
     return AssetCategory;
 }
 
-void EventflowEdAssetTypeAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void FEventflowEdAssetTypeAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
     EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
     for (auto Obj : InObjects)
@@ -44,7 +44,7 @@ void EventflowEdAssetTypeAction::OpenAssetEditor(const TArray<UObject*>& InObjec
         UEventflowAsset* Graph = Cast<UEventflowAsset>(Obj);
         if(Graph != nullptr)
 		{
-            TSharedRef<EventflowEdApp> App(new EventflowEdApp());
+            TSharedRef<FEventflowEdApp> App(new FEventflowEdApp());
             App->InitEditor(Mode, EditWithinLevelEditor, Graph);
 		}
 	}
