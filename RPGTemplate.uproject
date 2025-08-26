@@ -15,11 +15,6 @@
 			]
 		},
 		{
-			"Name": "RenDialogue",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RenAbility",
 			"Type": "Runtime",
 			"LoadingPhase": "Default",
