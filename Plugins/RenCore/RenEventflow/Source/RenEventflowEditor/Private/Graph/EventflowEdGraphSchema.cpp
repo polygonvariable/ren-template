@@ -7,27 +7,20 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
+#include "RenEventflow/Public/EventflowNodeData.h"
 
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphNode.h"
 
 
 
-void UEventflowEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
-{
-	// AddGraphNodeActions(ContextMenuBuilder, UEventflowEdGraphNode::StaticClass(), TEXT("Nodes"), TEXT("Begin Node"), TEXT("Make a new begin node"));
-	// AddGraphNodeActions(ContextMenuBuilder, UEventflowEdGraphNode::StaticClass(), TEXT("Nodes"), TEXT("End Node"), TEXT("Make a new end node"));
-}
+const FName UEventflowEdGraphSchema::PC_Exec = FName("REN.EF.PC.EXEC");
+const FName UEventflowEdGraphSchema::PC_Wildcard = FName("REN.EF.PC.WILDCARD");
 
-void UEventflowEdGraphSchema::AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, const FString& InMenuDesc, const FString& InToolTip) const
+
+
+void UEventflowEdGraphSchema::AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const
 {
-	TSharedPtr<FEventflowEdGraphSchemaAction> Action = MakeShareable(new FEventflowEdGraphSchemaAction(
-		NodeClass,
-		FText::FromString(InCategory),
-		FText::FromString(InMenuDesc),
-		FText::FromString(InToolTip),
-		0
-	));
+	TSharedPtr<FEventflowEdGraphSchemaAction> Action = MakeShareable(new FEventflowEdGraphSchemaAction(NodeClass, FText::FromString(InCategory), InMenuDesc, InToolTip, 0));
 	ContextMenuBuilder.AddAction(Action);
 }
 
@@ -66,6 +59,7 @@ UEdGraphNode* FEventflowEdGraphSchemaAction::PerformAction(UEdGraph* ParentGraph
 {
 	UEventflowEdGraphNode* NewNode = NewObject<UEventflowEdGraphNode>(ParentGraph, NodeClass);
 	NewNode->CreateNewGuid();
+	NewNode->AllocateDefaultPins();
 	NewNode->NodePosX = Location.X;
 	NewNode->NodePosY = Location.Y;
 	NewNode->SetAssetNodeData(NewObject<UEventflowNodeData>(NewNode, GetAssetNodeDataClass()));

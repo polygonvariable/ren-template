@@ -9,6 +9,9 @@
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
+#include "RenEventflow/Public/EventflowNodeData.h"
+
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraphSchema.h"
 
 
 
@@ -20,6 +23,11 @@ FName UEventflowEdGraphNode::GetNodeType() const
 FText UEventflowEdGraphNode::GetNodeDescription() const
 {
 	return GetStaticNodeDescriptionInternal();
+}
+
+bool UEventflowEdGraphNode::IsEntryNode() const
+{
+	return false;
 }
 
 void UEventflowEdGraphNode::SetAssetNodeData(UEventflowNodeData* AssetNodeData)
@@ -53,7 +61,7 @@ void UEventflowEdGraphNode::SyncPins()
 		for (FText Option : AssetNodeData->InputOptions)
 		{
 			FName PinName = FName(FGuid::NewGuid().ToString());
-			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("In"), PinName);
+			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Wildcard, PinName);
 			if (!Pin) continue;
 
 			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Input")) : FText::FromString(Option.ToString());
@@ -66,7 +74,7 @@ void UEventflowEdGraphNode::SyncPins()
 		for (FText Option : AssetNodeData->OutputOptions)
 		{
 			FName PinName = FName(FGuid::NewGuid().ToString());
-			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Out"), PinName);
+			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Wildcard, PinName);
 			if (!Pin) continue;
 
 			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Output")) : FText::FromString(Option.ToString());
@@ -138,23 +146,4 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 		))
 	);
 }
-
-
-
-
-
-/*
-void UEventflowEdGraphBeginNode::CreateDefaultPins()
-{
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, TEXT("Exec"), TEXT("Exec"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
-	Pin->PinType.bIsConst = true;
-}
-
-void UEventflowEdGraphEndNode::CreateDefaultPins()
-{
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, TEXT("Exec"), TEXT("Return"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Return"));
-	Pin->PinType.bIsConst = true;
-}*/
 

@@ -6,9 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-
-#include "RenEventflowEditor/Public/App/EventflowEdApp.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraphSchema.h"
 
 
 
@@ -19,7 +17,7 @@ void SEventflowEdGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InPi
 
 FSlateColor SEventflowEdGraphPin::GetPinColor() const
 {
-	return FSlateColor(FLinearColor::White);
+	return FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f));
 }
 
 
@@ -31,7 +29,7 @@ void SEventflowEdGraphFlowPin::Construct(const FArguments& InArgs, UEdGraphPin* 
 
 FSlateColor SEventflowEdGraphFlowPin::GetPinColor() const
 {
-	return FSlateColor(FLinearColor::Red);
+	return FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f));
 }
 
 
@@ -42,9 +40,13 @@ FEventflowEdPanelPinFactory::~FEventflowEdPanelPinFactory()
 
 TSharedPtr<SGraphPin> FEventflowEdPanelPinFactory::CreatePin(UEdGraphPin* Pin) const
 {
-	if (Pin->PinType.bIsConst)
+	if (Pin->PinType.PinCategory == UEventflowEdGraphSchema::PC_Exec)
 	{
 		return SNew(SEventflowEdGraphFlowPin, Pin);
+	}
+	else if (Pin->PinType.PinCategory == UEventflowEdGraphSchema::PC_Wildcard)
+	{
+		return SNew(SEventflowEdGraphPin, Pin);
 	}
 	return nullptr;
 }

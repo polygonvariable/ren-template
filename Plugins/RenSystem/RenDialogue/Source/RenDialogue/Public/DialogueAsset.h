@@ -4,10 +4,10 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "UObject/ObjectSaveContext.h"
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
+#include "RenEventflow/Public/EventflowNodeData.h"
 
 // Generated Headers
 #include "DialogueAsset.generated.h"
@@ -15,6 +15,22 @@
 // Forward Declarations
 
 
+
+UCLASS(BlueprintType)
+class RENDIALOGUE_API UDialogueNodeData : public UEventflowNodeData
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FText Title;
+
+	UPROPERTY(EditAnywhere)
+	FText Content;
+
+};
 
 UCLASS(BlueprintType)
 class RENDIALOGUE_API UDialogueAsset : public UEventflowAsset

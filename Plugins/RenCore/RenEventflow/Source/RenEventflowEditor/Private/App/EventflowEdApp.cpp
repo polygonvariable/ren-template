@@ -5,15 +5,15 @@
 
 // Engine Headers
 #include "Kismet2/BlueprintEditorUtils.h"
-#include "UObject/UObjectBaseUtility.h"
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
+#include "RenEventflow/Public/EventflowData.h"
+#include "RenEventflow/Public/EventflowNodeData.h"
 
 #include "RenEventflowEditor/Public/App/EventflowEdAppMode.h"
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraph.h"
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphNode.h"
-#include "RenEventflowEditor/Public/Graph/EventflowEdGraphPin.h"
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphSchema.h"
 
 
@@ -35,6 +35,7 @@ void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr
 	AddApplicationMode(TEXT("RGraphEditorAppMode"), MakeShareable(new FEventflowEdAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("RGraphEditorAppMode"));
 
+	WorkingGraph->RegisterNodeTypes();
 	UpdateWorkingGraph();
 
 	EventflowAssetSaved = WorkingAsset->OnEventflowAssetSaved.AddSP(this, &FEventflowEdApp::UpdateWorkingAsset);
@@ -89,8 +90,7 @@ void FEventflowEdApp::OnNodeDetailsChanged(const FPropertyChangedEvent& Property
 		UEventflowEdGraphNode* SelectedNode = GetSelectedNode(WorkingGraphEditor->GetSelectedNodes());
 		if (SelectedNode)
 		{
-			// SelectedNode->SyncPins();
-			SelectedNode->ReconstructNode();
+			SelectedNode->SyncPins();
 		}
 		
 		WorkingGraphEditor->NotifyGraphChanged();
@@ -100,6 +100,11 @@ void FEventflowEdApp::OnNodeDetailsChanged(const FPropertyChangedEvent& Property
 void FEventflowEdApp::UpdateWorkingAsset()
 {
 	if (!WorkingAsset || !WorkingGraph)
+	{
+		return;
+	}
+
+	if (!WorkingGraph->ValidateGraphData())
 	{
 		return;
 	}
@@ -120,7 +125,7 @@ void FEventflowEdApp::UpdateWorkingAsset()
 
 void FEventflowEdApp::UpdateWorkingGraph()
 {
-	if (!WorkingAsset->GraphData)
+	if (!WorkingAsset || !WorkingGraph)
 	{
 		return;
 	}

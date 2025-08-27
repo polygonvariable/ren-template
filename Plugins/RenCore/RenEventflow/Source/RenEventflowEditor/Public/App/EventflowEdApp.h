@@ -5,7 +5,6 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
-#include "SGraphPanel.h"
 
 // Project Headers
 

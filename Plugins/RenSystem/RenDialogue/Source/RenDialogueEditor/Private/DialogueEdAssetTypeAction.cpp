@@ -9,6 +9,7 @@
 #include "RenDialogue/Public/DialogueAsset.h"
 
 #include "RenEventflowEditor/Public/App/EventflowEdApp.h"
+#include "RenDialogueEditor/Public/App/DialogueEdApp.h"
 
 
 
@@ -45,7 +46,7 @@ void FDialogueEdAssetTypeAction::OpenAssetEditor(const TArray<UObject*>& InObjec
         UDialogueAsset* Graph = Cast<UDialogueAsset>(Obj);
         if (Graph != nullptr)
         {
-            TSharedRef<FEventflowEdApp> App(new FEventflowEdApp());
+            TSharedRef<FDialogueEdApp> App(new FDialogueEdApp());
 			App->InitEditor(Mode, EditWithinLevelEditor, Graph);
         }
     }

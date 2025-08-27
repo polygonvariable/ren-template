@@ -6,8 +6,7 @@
 #include "CoreMinimal.h"
 
 #include "EdGraphUtilities.h"
-#include "KismetPins/SGraphPinColor.h"
-#include "EdGraph/EdGraphPin.h"
+#include "SGraphPin.h"
 
 // Project Headers
 

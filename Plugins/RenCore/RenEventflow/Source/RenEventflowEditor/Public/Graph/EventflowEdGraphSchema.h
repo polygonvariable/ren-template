@@ -21,16 +21,19 @@ class UEventflowEdGraphNode;
 UCLASS()
 class RENEVENTFLOWEDITOR_API UEventflowEdGraphSchema : public UEdGraphSchema
 {
+
 	GENERATED_BODY()
 
 public:
 
-	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
+	static const FName PC_Exec;
+	static const FName PC_Wildcard;
+
 	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
 
 protected:
 
-	virtual void AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, const FString& InMenuDesc, const FString& InToolTip) const;
+	virtual void AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const;
 
 };
 

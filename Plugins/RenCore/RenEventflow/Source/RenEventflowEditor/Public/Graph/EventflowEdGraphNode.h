@@ -7,7 +7,6 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
-#include "RenEventflowEditor/Public/EventflowEdMacro.h"
 
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"
@@ -27,6 +26,7 @@ public:
 
 	virtual FName GetNodeType() const;
 	virtual FText GetNodeDescription() const;
+	virtual bool IsEntryNode() const;
 
 	void SetAssetNodeData(UEventflowNodeData* AssetNodeData);
 	UEventflowNodeData* GetAssetNodeData() const;
@@ -55,65 +55,4 @@ private:
 	UEventflowNodeData* CachedAssetNodeData = nullptr;
 
 };
-
-
-/*
-UCLASS()
-class UEventflowEdGraphBeginNode : public UEventflowEdGraphNode
-{
-
-	GENERATED_BODY()
-
-	EVENTFLOW_NODE_DECLARE_TYPE("REN.EF.DEFAULT.BEGIN")
-	EVENTFLOW_NODE_DECLARE_TITLE("REN.EF.DEFAULT.BEGIN")
-	EVENTFLOW_NODE_DECLARE_DESCRIPTION("REN.EF.DEFAULT.BEGIN")
-
-public:
-
-	virtual FLinearColor GetNodeTitleColor() const override
-	{
-		return FLinearColor(0.0f, 1.0f, 0.0f);
-	}
-
-protected:
-
-	virtual bool CanCreateRuntimeOutputPins() const override
-	{
-		return true;
-	}
-
-};
-
-UCLASS()
-class UEventflowEdGraphEndNode : public UEventflowEdGraphNode
-{
-
-	GENERATED_BODY()
-
-	EVENTFLOW_NODE_DECLARE(UEventflowEdGraphEndNode, "REN.EF.DEFAULT.END")
-
-public:
-
-
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override
-	{
-		return FText::FromString(TEXT("End"));
-	}
-
-	virtual FLinearColor GetNodeTitleColor() const override
-	{
-		return FLinearColor(0.0f, 0.0f, 1.0f);
-	}
-
-	virtual void CreateDefaultPins() override;
-
-protected:
-
-	virtual bool CanCreateRuntimeInputPins() const  override
-	{
-		return true;
-	}
-
-};
-*/
 

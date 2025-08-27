@@ -45,7 +45,7 @@ public class RenDialogueEditor : ModuleRules
 				"PropertyEditor",
 				"ToolMenus",
 				"GraphEditor",
-				"RenEventflow",
+                "RenEventflow",
                 "RenEventflowEditor",
                 "RenDialogue",
             }

@@ -4,10 +4,8 @@
 #include "Graph/EventflowEdTabFactory.h"
 
 // Engine Headers
-#include "Editor/UnrealEd/Public/Kismet2/BlueprintEditorUtils.h"
 #include "GraphEditor.h"
 #include "IDetailsView.h"
-#include "Kismet2/KismetEditorUtilities.h"
 #include "PropertyEditorModule.h"
 
 // Project Headers

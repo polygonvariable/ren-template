@@ -42,6 +42,7 @@ public class RenEventflowEditor : ModuleRules
 				"AssetTools",
 				"UnrealEd",
 				"PropertyEditor",
+				"EditorScriptingUtilities",
 				"ToolMenus",
 				"GraphEditor",
 				"RenEventflow",
