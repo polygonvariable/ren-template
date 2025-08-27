@@ -86,6 +86,7 @@ protected:
 
 	void ShowOptions();
 
+	UFUNCTION()
 	void NextDialogue();
 
 	void TrySelectOption(int Index);

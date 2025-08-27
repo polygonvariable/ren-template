@@ -13,6 +13,7 @@
 #include "RenEventflow/Public/EventflowData.h"
 #include "RenEventflow/Public/EventflowNode.h"
 #include "RenEventflow/Public/EventflowNodeData.h"
+#include "RenEventflow/Public/EventflowNodeExternalData.h"
 
 #include "RenDialogue/Public/DialogueAsset.h"
 
@@ -50,22 +51,23 @@ void UDialogueWidget::ShowOptions()
 	if (!CurrentNode || !CurrentNode->NodeData || !OptionWidgetClass) return;
 
 	int PinCount = CurrentNode->OutputPins.Num();
-	const TArray<FText>& Options = CurrentNode->NodeData->OutputOptions;
+	const TArray<FText>* Options = CurrentNode->NodeData->GetOutputOptions();
+	if (!Options) return;
 
 	if (NextButton)
 	{
 		NextButton->SetVisibility((PinCount <= 1) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
 	}
 
-	if (PinCount <= 1 || PinCount != Options.Num()) return;
+	if (PinCount <= 1 || PinCount != Options->Num()) return;
 
-	for (int i = 0; i < Options.Num(); i++)
+	for (int i = 0; i < Options->Num(); i++)
 	{
 		UDialogueOptionWidget* OptionWidget = CreateWidget<UDialogueOptionWidget>(this, OptionWidgetClass);
 
 		if (!OptionWidget) continue;
 
-		OptionWidget->InitializeDetails(Options[i], i);
+		OptionWidget->InitializeDetails((*Options)[i], i);
 		OptionWidget->OnOptionSelected.BindUObject(this, &UDialogueWidget::TrySelectOption);
 
 		if (DialogueOptions) DialogueOptions->AddChildToVerticalBox(OptionWidget);
@@ -105,10 +107,33 @@ void UDialogueWidget::SetCurrentNode(UEventflowNode* Node)
 	if (!Node) return;
 
 	CurrentNode = Node;
-	if (UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(CurrentNode->NodeData))
+
+	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(CurrentNode->NodeData);
+	if (NodeData)
 	{
 		if (DialogueTitle) DialogueTitle->SetText(NodeData->Title);
 		if (DialogueContent) DialogueContent->SetText(NodeData->Content);
+
+		TSubclassOf<UEventflowNodeDataController> DataController = NodeData->DataController;
+		if (DataController)
+		{
+			UEventflowNodeDataController* Controller = NewObject<UEventflowNodeDataController>(this, DataController);
+			Controller->StartTask();
+
+			if (Controller->GetWaitForCompletion())
+			{
+				if (DialogueOptions) DialogueOptions->ClearChildren();
+				if (NextButton) NextButton->SetVisibility(ESlateVisibility::Collapsed);
+
+				Controller->OnTaskComplete.AddWeakLambda(this, [this]()
+					{
+						ShowOptions();
+					}
+				);
+				return;
+			}
+		}
+
 		ShowOptions();
 	}
 }

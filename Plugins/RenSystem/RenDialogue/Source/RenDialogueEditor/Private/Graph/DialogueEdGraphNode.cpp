@@ -6,6 +6,8 @@
 // Engine Headers
 
 // Project Headers
+#include "RenDialogue/Public/DialogueAsset.h"
+
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphSchema.h"
 
 
@@ -52,6 +54,16 @@ bool UDialogueEdEndNode::CanCreateRuntimeOutputPins() const
 }
 
 
+
+FText UDialogueEdDialogNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetAssetNodeData());
+	if (!NodeData) return Super::GetNodeTitle(TitleType);
+	
+	FString NodeContent = LimitTextLength(NodeData->Content.ToString(), 15);
+
+	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
+}
 
 FLinearColor UDialogueEdDialogNode::GetNodeTitleColor() const
 {

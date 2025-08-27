@@ -76,6 +76,7 @@ class UDialogueEdDialogNode : public UEventflowEdGraphNode
 
 public:
 
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 

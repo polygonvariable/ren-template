@@ -11,6 +11,8 @@
 #include "EventflowNodeData.generated.h"
 
 // Forward Declarations
+class UEventflowNodeExternalData;
+class UEventflowNodeDataController;
 
 
 
@@ -22,17 +24,14 @@ class RENEVENTFLOW_API UEventflowNodeData : public UObject
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	TArray<FText> InputOptions;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FText> OutputOptions;
-	
 	// UPROPERTY(EditAnywhere, Instanced)
-	// TArray<TObjectPtr<UEventflowNodeExternalData>> ExternalData;
+	// TObjectPtr<UEventflowNodeExternalData> ExternalData;
 
-	const TArray<TPair<FName, FText>>* GetInputOptions() const { return nullptr; };
-	const TArray<TPair<FName, FText>>* GetOutputOptions() const { return nullptr; };
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UEventflowNodeDataController> DataController;
+
+	virtual const TArray<FText>* GetInputOptions() const { return nullptr; };
+	virtual const TArray<FText>* GetOutputOptions() const { return nullptr; };
 
 };
 

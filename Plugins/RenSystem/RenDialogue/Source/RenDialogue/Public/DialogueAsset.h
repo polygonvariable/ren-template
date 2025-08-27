@@ -30,6 +30,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText Content;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FText> InputOptions;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FText> OutputOptions;
+
+	virtual const TArray<FText>* GetInputOptions() const override { return &InputOptions; };
+	virtual const TArray<FText>* GetOutputOptions() const override { return &OutputOptions; };
+
 };
 
 UCLASS(BlueprintType)

@@ -42,6 +42,10 @@ protected:
 	virtual FText GetStaticNodeTitleInternal() const;
 	virtual FText GetStaticNodeDescriptionInternal() const;
 
+	void CreatePinHelper(FText FriendlyName, EEdGraphPinDirection Direction, const TArray<FText>* Options, const TArray<UEdGraphPin*>& CachedLinks);
+
+	FString LimitTextLength(const FString& InText, int MaxCharacters) const;
+
 public:
 
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
