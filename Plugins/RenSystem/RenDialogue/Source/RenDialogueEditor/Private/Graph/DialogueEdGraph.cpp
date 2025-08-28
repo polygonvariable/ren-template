@@ -13,16 +13,3 @@
 #include "RenDialogueEditor/Public/Graph/DialogueEdGraphNode.h"
 
 
-
-void UDialogueEdGraph::RegisterNodeTypes()
-{
-	RegisterNodeType(UDialogueEdBeginNode::StaticNodeType(), UDialogueEdBeginNode::StaticClass());
-	RegisterNodeType(UDialogueEdDialogNode::StaticNodeType(), UDialogueEdDialogNode::StaticClass());
-	RegisterNodeType(UDialogueEdEndNode::StaticNodeType(), UDialogueEdEndNode::StaticClass());
-}
-
-TSubclassOf<UEventflowNodeData> UDialogueEdGraph::GetAssetNodeDataClass() const
-{
-	return UDialogueNodeData::StaticClass();
-}
-

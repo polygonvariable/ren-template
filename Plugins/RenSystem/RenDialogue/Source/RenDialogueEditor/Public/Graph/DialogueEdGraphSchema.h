@@ -24,30 +24,9 @@ class UDialogueEdGraphSchema : public UEventflowEdGraphSchema
 
 public:
 
+	virtual TArray<UClass*> GetNodeClasses() const override;
+
 	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
-
-protected:
-
-	virtual void AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const override;
-
-};
-
-
-
-USTRUCT()
-struct FDialogueEdGraphSchemaAction : public FEventflowEdGraphSchemaAction
-{
-
-	GENERATED_BODY()
-
-public:
-
-	FDialogueEdGraphSchemaAction();
-	FDialogueEdGraphSchemaAction(TSubclassOf<UEventflowEdGraphNode> InNodeClass, FText InCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping);
-
-protected:
-
-	virtual TSubclassOf<UEventflowNodeData> GetAssetNodeDataClass() const;
 
 };
 

@@ -17,7 +17,7 @@ void SEventflowEdGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InPi
 
 FSlateColor SEventflowEdGraphPin::GetPinColor() const
 {
-	return FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f));
+	return FSlateColor(FLinearColor(0.0f, 1.0f, 1.0f));
 }
 
 

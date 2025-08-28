@@ -7,6 +7,8 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Engine/AssetManager.h"
+#include "Engine/StreamableManager.h"
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
@@ -16,7 +18,6 @@
 #include "RenEventflow/Public/EventflowNodeExternalData.h"
 
 #include "RenDialogue/Public/DialogueAsset.h"
-
 
 
 
@@ -33,6 +34,13 @@ void UDialogueOptionWidget::SelectOption()
 
 
 
+void UDialogueWidget::LoadAndShowDialogue()
+{
+	if (DialogueAsset.IsNull()) return;
+
+	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
+	Streamable.RequestAsyncLoad(DialogueAsset.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &UDialogueWidget::ShowDialogue));
+}
 
 void UDialogueWidget::ShowDialogue()
 {
@@ -51,6 +59,7 @@ void UDialogueWidget::ShowOptions()
 	if (!CurrentNode || !CurrentNode->NodeData || !OptionWidgetClass) return;
 
 	int PinCount = CurrentNode->OutputPins.Num();
+
 	const TArray<FText>* Options = CurrentNode->NodeData->GetOutputOptions();
 	if (!Options) return;
 
@@ -87,6 +96,7 @@ void UDialogueWidget::NextDialogue()
 		UE_LOG(LogTemp, Warning, TEXT("Dialogue end"));
 		return;
 	}
+
 	if (CurrentNode->OutputPins.Num() > 1)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Multiple options, waiting for player choice"));
@@ -111,21 +121,21 @@ void UDialogueWidget::SetCurrentNode(UEventflowNode* Node)
 	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(CurrentNode->NodeData);
 	if (NodeData)
 	{
-		if (DialogueTitle) DialogueTitle->SetText(NodeData->Title);
-		if (DialogueContent) DialogueContent->SetText(NodeData->Content);
+		if (DialogueTitle) DialogueTitle->SetText(NodeData->DialogueTitle);
+		if (DialogueContent) DialogueContent->SetText(NodeData->DialogueContent);
 
-		TSubclassOf<UEventflowNodeDataController> DataController = NodeData->DataController;
-		if (DataController)
+		TSubclassOf<UEventflowNodeTask> NodeTask = NodeData->NodeTask;
+		if (NodeTask)
 		{
-			UEventflowNodeDataController* Controller = NewObject<UEventflowNodeDataController>(this, DataController);
-			Controller->StartTask();
+			UEventflowNodeTask* Task = NewObject<UEventflowNodeTask>(this, NodeTask);
+			Task->StartAction();
 
-			if (Controller->GetWaitForCompletion())
+			if (Task->GetWaitForCompletion())
 			{
 				if (DialogueOptions) DialogueOptions->ClearChildren();
 				if (NextButton) NextButton->SetVisibility(ESlateVisibility::Collapsed);
 
-				Controller->OnTaskComplete.AddWeakLambda(this, [this]()
+				Task->OnActionStopped.AddWeakLambda(this, [this]()
 					{
 						ShowOptions();
 					}

@@ -31,6 +31,8 @@ public:
 
 	virtual const FPinConnectionResponse CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const override;
 
+	virtual TArray<UClass*> GetNodeClasses() const;
+
 protected:
 
 	virtual void AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const;
@@ -55,8 +57,6 @@ public:
 protected:
 
 	TSubclassOf<UEventflowEdGraphNode> NodeClass;
-
-	virtual TSubclassOf<UEventflowNodeData> GetAssetNodeDataClass() const;
 
 };
 

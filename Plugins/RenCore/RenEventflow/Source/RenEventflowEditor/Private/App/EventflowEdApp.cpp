@@ -35,7 +35,7 @@ void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr
 	AddApplicationMode(TEXT("RGraphEditorAppMode"), MakeShareable(new FEventflowEdAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("RGraphEditorAppMode"));
 
-	WorkingGraph->RegisterNodeTypes();
+	WorkingGraph->RegisterNodeClasses();
 	UpdateWorkingGraph();
 
 	EventflowAssetSaved = WorkingAsset->OnEventflowAssetSaved.AddSP(this, &FEventflowEdApp::UpdateWorkingAsset);
@@ -69,7 +69,7 @@ void FEventflowEdApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Sel
 	UEventflowEdGraphNode* SelectedNode = GetSelectedNode(SelectedNodes);
 	if (SelectedNode)
 	{
-		SelectedNodeDetail->SetObject(SelectedNode->GetAssetNodeData());
+		SelectedNodeDetail->SetObject(SelectedNode->GetNodeData());
 		return;
 	}
 

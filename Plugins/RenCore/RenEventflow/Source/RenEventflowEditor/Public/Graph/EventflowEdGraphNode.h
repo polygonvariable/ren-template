@@ -26,10 +26,12 @@ public:
 
 	virtual FName GetNodeType() const;
 	virtual FText GetNodeDescription() const;
+	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const;
+
 	virtual bool IsEntryNode() const;
 
-	void SetAssetNodeData(UEventflowNodeData* AssetNodeData);
-	UEventflowNodeData* GetAssetNodeData() const;
+	void SetNodeData(UEventflowNodeData* NodeData);
+	UEventflowNodeData* GetNodeData() const;
 
 	void SyncPins();
 
@@ -37,10 +39,6 @@ protected:
 
 	virtual bool CanCreateRuntimeInputPins() const;
 	virtual bool CanCreateRuntimeOutputPins() const;
-
-	virtual FName GetStaticNodeTypeInternal() const;
-	virtual FText GetStaticNodeTitleInternal() const;
-	virtual FText GetStaticNodeDescriptionInternal() const;
 
 	void CreatePinHelper(FText FriendlyName, EEdGraphPinDirection Direction, const TArray<FText>* Options, const TArray<UEdGraphPin*>& CachedLinks);
 
@@ -56,7 +54,7 @@ public:
 private:
 
 	UPROPERTY()
-	UEventflowNodeData* CachedAssetNodeData = nullptr;
+	UEventflowNodeData* CachedNodeData = nullptr;
 
 };
 

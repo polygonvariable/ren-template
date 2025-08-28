@@ -9,6 +9,7 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowNodeData.h"
 
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraph.h"
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphNode.h"
 
 
@@ -44,6 +45,11 @@ const FPinConnectionResponse UEventflowEdGraphSchema::CanCreateConnection(const 
 	return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT(""));
 }
 
+TArray<UClass*> UEventflowEdGraphSchema::GetNodeClasses() const
+{
+	return TArray<UClass*>();
+}
+
 
 
 FEventflowEdGraphSchemaAction::FEventflowEdGraphSchemaAction()
@@ -57,21 +63,23 @@ FEventflowEdGraphSchemaAction::FEventflowEdGraphSchemaAction(TSubclassOf<UEventf
 
 UEdGraphNode* FEventflowEdGraphSchemaAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
 {
-	UEventflowEdGraphNode* NewNode = NewObject<UEventflowEdGraphNode>(ParentGraph, NodeClass);
+	UEventflowEdGraph* Graph = Cast<UEventflowEdGraph>(ParentGraph);
+	if (!Graph) return nullptr;
+
+	UEventflowEdGraphNode* NewNode = NewObject<UEventflowEdGraphNode>(Graph, NodeClass);
 	NewNode->CreateNewGuid();
 	NewNode->AllocateDefaultPins();
 	NewNode->NodePosX = Location.X;
 	NewNode->NodePosY = Location.Y;
-	NewNode->SetAssetNodeData(NewObject<UEventflowNodeData>(NewNode, GetAssetNodeDataClass()));
 
-	ParentGraph->Modify();
-	ParentGraph->AddNode(NewNode, true, true);
+	TSubclassOf<UEventflowNodeData> NodeDataClass = NewNode->GetNodeDataClass();
+	if (!NodeDataClass) return nullptr;
+
+	NewNode->SetNodeData(NewObject<UEventflowNodeData>(NewNode, NodeDataClass));
+
+	Graph->Modify();
+	Graph->AddNode(NewNode, true, true);
 
 	return NewNode;
-}
-
-TSubclassOf<UEventflowNodeData> FEventflowEdGraphSchemaAction::GetAssetNodeDataClass() const
-{
-	return UEventflowNodeData::StaticClass();
 }
 

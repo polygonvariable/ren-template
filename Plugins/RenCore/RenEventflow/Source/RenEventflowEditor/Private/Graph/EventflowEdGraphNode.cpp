@@ -18,12 +18,17 @@
 
 FName UEventflowEdGraphNode::GetNodeType() const
 {
-	return GetStaticNodeTypeInternal();
+	return FName(TEXT("REN.EF.NODE"));
 }
 
 FText UEventflowEdGraphNode::GetNodeDescription() const
 {
-	return GetStaticNodeDescriptionInternal();
+	return FText::FromString(TEXT("Eventflow Node Description"));
+}
+
+TSubclassOf<UEventflowNodeData> UEventflowEdGraphNode::GetNodeDataClass() const
+{
+	return UEventflowNodeData::StaticClass();
 }
 
 bool UEventflowEdGraphNode::IsEntryNode() const
@@ -31,20 +36,22 @@ bool UEventflowEdGraphNode::IsEntryNode() const
 	return false;
 }
 
-void UEventflowEdGraphNode::SetAssetNodeData(UEventflowNodeData* AssetNodeData)
+void UEventflowEdGraphNode::SetNodeData(UEventflowNodeData* AssetNodeData)
 {
-	CachedAssetNodeData = AssetNodeData;
+	CachedNodeData = AssetNodeData;
 }
 
-UEventflowNodeData* UEventflowEdGraphNode::GetAssetNodeData() const
+UEventflowNodeData* UEventflowEdGraphNode::GetNodeData() const
 {
-	return CachedAssetNodeData;
+	return CachedNodeData;
 }
 
 void UEventflowEdGraphNode::SyncPins()
 {
-	UEventflowNodeData* AssetNodeData = GetAssetNodeData();
-	if (!AssetNodeData) return;
+	if (!CanCreateRuntimeInputPins() && !CanCreateRuntimeOutputPins()) return;
+
+	UEventflowNodeData* NodeData = GetNodeData();
+	if (!NodeData) return;
 
 	TArray<UEdGraphPin*> InputLinks;
 	TArray<UEdGraphPin*> OutputLinks;
@@ -57,7 +64,7 @@ void UEventflowEdGraphNode::SyncPins()
 		{
 			if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
 			{
-				if (Pin->LinkedTo.Num() > 0)
+				if (Pin->LinkedTo.IsValidIndex(0))
 				{
 					InputLinks.Add(Pin->LinkedTo[0]);
 				}
@@ -68,7 +75,7 @@ void UEventflowEdGraphNode::SyncPins()
 			}
 			else
 			{
-				if (Pin->LinkedTo.Num() > 0)
+				if (Pin->LinkedTo.IsValidIndex(0))
 				{
 					OutputLinks.Add(Pin->LinkedTo[0]);
 				}
@@ -87,54 +94,20 @@ void UEventflowEdGraphNode::SyncPins()
 
 	if (CanCreateRuntimeInputPins())
 	{
-		const TArray<FText>* InputOptions = AssetNodeData->GetInputOptions();
+		const TArray<FText>* InputOptions = NodeData->GetInputOptions();
 		if (!InputOptions) return;
 
 		CreatePinHelper(FText::FromString(TEXT("Input")), EEdGraphPinDirection::EGPD_Input, InputOptions, InputLinks);
-
-		/*int Count = InputOptions->Num();
-		for (int i = 0; i < Count; i++)
-		{
-			FText Option = (*InputOptions)[i];
-
-			FName PinName = FName(FGuid::NewGuid().ToString());
-			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Wildcard, PinName);
-			if (!Pin) continue;
-
-			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Input")) : FText::FromString(LimitTextLength(Option.ToString(), 10));
-			Pin->PinType.bIsConst = false;
-
-			if (InputLinks.IsValidIndex(i))
-			{
-				if (InputLinks[i]) Pin->MakeLinkTo(InputLinks[i]);
-			}
-		}*/
+		
 	}
 
 	if (CanCreateRuntimeOutputPins())
 	{
-		const TArray<FText>* OutputOptions = AssetNodeData->GetOutputOptions();
+		const TArray<FText>* OutputOptions = NodeData->GetOutputOptions();
 		if (!OutputOptions) return;
 
 		CreatePinHelper(FText::FromString(TEXT("Output")), EEdGraphPinDirection::EGPD_Output, OutputOptions, OutputLinks);
 
-		/*int Count = OutputOptions->Num();
-		for (int i = 0; i < Count; i++)
-		{
-			FText Option = (*OutputOptions)[i];
-
-			FName PinName = FName(FGuid::NewGuid().ToString());
-			UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Wildcard, PinName);
-			if (!Pin) continue;
-
-			Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Output")) : FText::FromString(LimitTextLength(Option.ToString(), 10));
-			Pin->PinType.bIsConst = false;
-
-			if (OutputLinks.IsValidIndex(i))
-			{
-				if (OutputLinks[i]) Pin->MakeLinkTo(OutputLinks[i]);
-			}
-		}*/
 	}
 }
 
@@ -150,24 +123,11 @@ bool UEventflowEdGraphNode::CanCreateRuntimeOutputPins() const
 	return false;
 }
 
-FName UEventflowEdGraphNode::GetStaticNodeTypeInternal() const
-{
-	return NAME_None;
-}
-
-FText UEventflowEdGraphNode::GetStaticNodeTitleInternal() const
-{
-	return FText::FromString(TEXT("Base Node"));
-}
-
-FText UEventflowEdGraphNode::GetStaticNodeDescriptionInternal() const
-{
-	return FText::FromString(TEXT("Base Node Description"));
-}
-
 void UEventflowEdGraphNode::CreatePinHelper(FText FriendlyName, EEdGraphPinDirection Direction, const TArray<FText>* Options, const TArray<UEdGraphPin*>& CachedLinks)
 {
 	if (!Options) return;
+	
+	const UEdGraphSchema* Schema = GetSchema();
 
 	int Count = Options->Num();
 	for (int i = 0; i < Count; i++)
@@ -178,12 +138,16 @@ void UEventflowEdGraphNode::CreatePinHelper(FText FriendlyName, EEdGraphPinDirec
 		UEdGraphPin* Pin = CreatePin(Direction, UEventflowEdGraphSchema::PC_Wildcard, PinName);
 		if (!Pin) continue;
 
-		Pin->PinFriendlyName = Option.IsEmpty() ? FText::FromString(TEXT("Output")) : FText::FromString(LimitTextLength(Option.ToString(), 10));
+		Pin->PinFriendlyName = Option.IsEmpty() ? FriendlyName : FText::FromString(LimitTextLength(Option.ToString(), 10));
 		Pin->PinType.bIsConst = false;
 
 		if (CachedLinks.IsValidIndex(i))
 		{
-			if (CachedLinks[i]) Pin->MakeLinkTo(CachedLinks[i]);
+			if (CachedLinks[i])
+			{
+				Schema->TryCreateConnection(Pin, CachedLinks[i]);
+				// Pin->MakeLinkTo(CachedLinks[i]);
+			}
 		}
 	}
 }
@@ -201,7 +165,7 @@ FString UEventflowEdGraphNode::LimitTextLength(const FString& InText, int MaxCha
 
 FText UEventflowEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return GetStaticNodeTitleInternal();
+	return FText::FromString(TEXT("Eventflow Node"));
 }
 
 FLinearColor UEventflowEdGraphNode::GetNodeTitleColor() const

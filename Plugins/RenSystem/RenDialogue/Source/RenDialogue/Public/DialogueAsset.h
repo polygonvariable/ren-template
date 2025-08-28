@@ -25,10 +25,16 @@ class RENDIALOGUE_API UDialogueNodeData : public UEventflowNodeData
 public:
 
 	UPROPERTY(EditAnywhere)
-	FText Title;
+	FText DialogueTitle;
 
 	UPROPERTY(EditAnywhere)
-	FText Content;
+	FText DialogueContent;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<UTexture2D> DialogueAvatar;
+
+	UPROPERTY(EditAnywhere)
+	TSoftObjectPtr<USoundBase> DialogueSound;
 
 	UPROPERTY(EditAnywhere)
 	TArray<FText> InputOptions;
@@ -36,10 +42,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<FText> OutputOptions;
 
-	virtual const TArray<FText>* GetInputOptions() const override { return &InputOptions; };
-	virtual const TArray<FText>* GetOutputOptions() const override { return &OutputOptions; };
+public:
+
+	virtual const TArray<FText>* GetInputOptions() const override;
+	virtual const TArray<FText>* GetOutputOptions() const override;
 
 };
+
+
 
 UCLASS(BlueprintType)
 class RENDIALOGUE_API UDialogueAsset : public UEventflowAsset

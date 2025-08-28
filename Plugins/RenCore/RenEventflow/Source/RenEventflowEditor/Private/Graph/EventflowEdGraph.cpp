@@ -14,12 +14,24 @@
 #include "RenEventflow/Public/EventflowPin.h"
 
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraph.h"
+#include "RenEventflowEditor/Public/Graph/EventflowEdGraphSchema.h"
 #include "RenEventflowEditor/Public/Graph/EventflowEdGraphNode.h"
 
 
 
-void UEventflowEdGraph::RegisterNodeTypes()
+void UEventflowEdGraph::RegisterNodeClasses()
 {
+	const UEventflowEdGraphSchema* CurrentSchema = Cast<UEventflowEdGraphSchema>(GetSchema());
+	if (!CurrentSchema) return;
+
+	TArray<UClass*> NodeClasses = CurrentSchema->GetNodeClasses();
+	for (UClass* NodeClass : NodeClasses)
+	{
+		UEventflowEdGraphNode* Node = NodeClass->GetDefaultObject<UEventflowEdGraphNode>();
+		if (!Node) continue;
+
+		NodeTypes.Add(Node->GetNodeType(), NodeClass);
+	}
 }
 
 void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
@@ -43,7 +55,7 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
 
 		UEventflowNode* AssetNode = NewObject<UEventflowNode>(AssetData, GetAssetNodeClass());
 		AssetNode->NodeGuid = UINode->NodeGuid;
-		AssetNode->NodeData = DuplicateObject(UINode->GetAssetNodeData(), AssetNode);
+		AssetNode->NodeData = DuplicateObject(UINode->GetNodeData(), AssetNode);
 		AssetNode->NodeType = UINode->GetNodeType();
 		AssetNode->NodePosition = FVector2D(UINode->NodePosX, UINode->NodePosY);
 
@@ -108,7 +120,10 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowData* AssetData)
 
 		UEventflowEdGraphNode* UINode = NewObject<UEventflowEdGraphNode>(this, NodeClass);
 		if (!UINode) continue;
-		
+
+		TSubclassOf<UEventflowNodeData> NodeDataClass = UINode->GetNodeDataClass();
+		if (!NodeDataClass) continue;
+
 		UINode->AllocateDefaultPins();
 		UINode->NodeGuid = AssetNode->NodeGuid;
 		UINode->NodePosX = AssetNode->NodePosition.X;
@@ -116,18 +131,18 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowData* AssetData)
 
 		if (AssetNode->NodeData)
 		{
-			UINode->SetAssetNodeData(DuplicateObject(AssetNode->NodeData, UINode));
+			UINode->SetNodeData(DuplicateObject(AssetNode->NodeData, UINode));
 		}
 		else
 		{
-			UINode->SetAssetNodeData(NewObject<UEventflowNodeData>(UINode, GetAssetNodeDataClass()));
+			UINode->SetNodeData(NewObject<UEventflowNodeData>(UINode, NodeDataClass));
 		}
 
 		for (UEventflowPin* AssetPin : AssetNode->InputPins)
 		{
 			AddNodePin(EEdGraphPinDirection::EGPD_Input, AssetPin, UINode, PinMap);
 		}
-
+		
 		for (UEventflowPin* AssetPin : AssetNode->OutputPins)
 		{
 			if (AddNodePin(EEdGraphPinDirection::EGPD_Output, AssetPin, UINode, PinMap) && AssetPin->PinLinkedTo)
@@ -149,10 +164,10 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowData* AssetData)
 
 		if (!FromPin || !ToPin) continue;
 
-		FromPin->LinkedTo.Add(ToPin);
-		ToPin->LinkedTo.Add(FromPin);
+		GetSchema()->TryCreateConnection(FromPin, ToPin);
 	}
 }
+
 
 bool UEventflowEdGraph::ValidateGraphData()
 {
@@ -191,19 +206,6 @@ bool UEventflowEdGraph::ValidateGraphData()
 
 
 
-
-void UEventflowEdGraph::RegisterNodeType(FName NodeType, TSubclassOf<UEventflowEdGraphNode> NodeClass)
-{
-	if (!NodeType.IsValid() || !NodeClass) return;
-
-	NodeTypes.Add(NodeType, NodeClass);
-}
-
-void UEventflowEdGraph::UnregisterNodeType(FName NodeType)
-{
-	NodeTypes.Remove(NodeType);
-}
-
 bool UEventflowEdGraph::AddNodePin(EEdGraphPinDirection Direction, UEventflowPin* AssetPin, UEventflowEdGraphNode* UINode, TMap<FGuid, UEdGraphPin*>& PinMap)
 {
 	if (!AssetPin) return false;
@@ -237,11 +239,6 @@ TSubclassOf<UEventflowEdGraphNode> UEventflowEdGraph::GetRegisteredNodeClass(FNa
 TSubclassOf<UEventflowNode> UEventflowEdGraph::GetAssetNodeClass() const
 {
 	return UEventflowNode::StaticClass();
-}
-
-TSubclassOf<UEventflowNodeData> UEventflowEdGraph::GetAssetNodeDataClass() const
-{
-	return UEventflowNodeData::StaticClass();
 }
 
 TSubclassOf<UEventflowPin> UEventflowEdGraph::GetAssetPinClass() const

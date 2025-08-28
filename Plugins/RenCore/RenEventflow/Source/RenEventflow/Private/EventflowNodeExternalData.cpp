@@ -9,30 +9,30 @@
 
 
 
-bool UEventflowNodeDataController::GetWaitForCompletion() const
+bool UEventflowNodeTask::GetWaitForCompletion() const
 {
 	return bWaitForCompletion;
 }
 
-void UEventflowNodeDataController::StartTask()
+void UEventflowNodeTask::StartAction()
 {
-	BP_StartTask();
+	OnActionStarted();
 }
 
-void UEventflowNodeDataController::StopTask()
+void UEventflowNodeTask::StopAction()
 {
-	OnTaskComplete.Broadcast();
-	OnTaskComplete.Clear();
+	OnActionStopped.Broadcast();
+	OnActionStopped.Clear();
 }
 
-UWorld* UEventflowNodeDataController::BP_GetWorld() const
-{
-	return GetWorld();
-}
-
-UWorld* UEventflowNodeDataController::GetWorld() const
+UWorld* UEventflowNodeTask::GetWorld() const
 {
 	return GetOuter()->GetWorld();
+}
+
+bool UEventflowNodeTask::ImplementsGetWorld() const
+{
+	return true;
 }
 
 

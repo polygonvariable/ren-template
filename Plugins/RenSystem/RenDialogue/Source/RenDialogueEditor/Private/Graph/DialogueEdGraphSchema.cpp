@@ -14,49 +14,31 @@
 
 
 
+TArray<UClass*> UDialogueEdGraphSchema::GetNodeClasses() const
+{
+	return {
+		UDialogueEdBeginNode::StaticClass(),
+		UDialogueEdDialogNode::StaticClass(),
+		UDialogueEdEndNode::StaticClass()
+	};
+}
+
 void UDialogueEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	AddGraphNodeActions(
-		ContextMenuBuilder,
-		UDialogueEdBeginNode::StaticClass(),
-		TEXT("Nodes"),
-		UDialogueEdBeginNode::StaticNodeTitle(),
-		UDialogueEdBeginNode::StaticNodeDescription()
-	);
-	AddGraphNodeActions(
-		ContextMenuBuilder,
-		UDialogueEdDialogNode::StaticClass(),
-		TEXT("Nodes"),
-		UDialogueEdDialogNode::StaticNodeTitle(),
-		UDialogueEdDialogNode::StaticNodeDescription()
-	);
-	AddGraphNodeActions(
-		ContextMenuBuilder,
-		UDialogueEdEndNode::StaticClass(),
-		TEXT("Nodes"),
-		UDialogueEdEndNode::StaticNodeTitle(),
-		UDialogueEdEndNode::StaticNodeDescription()
-	);
-}
+	const TArray<UClass*> NodeClasses = GetNodeClasses();
 
-void UDialogueEdGraphSchema::AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const
-{
-	TSharedPtr<FDialogueEdGraphSchemaAction> Action = MakeShareable(new FDialogueEdGraphSchemaAction(NodeClass, FText::FromString(InCategory), InMenuDesc, InToolTip, 0));
-	ContextMenuBuilder.AddAction(Action);
-}
+	for (UClass* NodeClass : NodeClasses)
+	{
+		UEventflowEdGraphNode* Node = NodeClass->GetDefaultObject<UEventflowEdGraphNode>();
+		if (!Node) continue;
 
-
-
-FDialogueEdGraphSchemaAction::FDialogueEdGraphSchemaAction()
-{
-}
-
-FDialogueEdGraphSchemaAction::FDialogueEdGraphSchemaAction(TSubclassOf<UEventflowEdGraphNode> InNodeClass, FText InCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping) : FEventflowEdGraphSchemaAction(InNodeClass, InCategory, InMenuDesc, InToolTip, InGrouping)
-{
-}
-
-TSubclassOf<UEventflowNodeData> FDialogueEdGraphSchemaAction::GetAssetNodeDataClass() const
-{
-	return UDialogueNodeData::StaticClass();
+		AddGraphNodeActions(
+			ContextMenuBuilder,
+		    NodeClass,
+			TEXT("Nodes"),
+			Node->GetNodeTitle(ENodeTitleType::FullTitle),
+			Node->GetNodeDescription()
+		);
+	}
 }
 

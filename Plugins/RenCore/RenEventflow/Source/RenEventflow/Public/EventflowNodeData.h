@@ -12,7 +12,7 @@
 
 // Forward Declarations
 class UEventflowNodeExternalData;
-class UEventflowNodeDataController;
+class UEventflowNodeTask;
 
 
 
@@ -28,7 +28,7 @@ public:
 	// TObjectPtr<UEventflowNodeExternalData> ExternalData;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UEventflowNodeDataController> DataController;
+	TSubclassOf<UEventflowNodeTask> NodeTask;
 
 	virtual const TArray<FText>* GetInputOptions() const { return nullptr; };
 	virtual const TArray<FText>* GetOutputOptions() const { return nullptr; };

@@ -57,22 +57,28 @@ class UDialogueWidget : public UUserWidget
 
 	GENERATED_BODY()
 
-protected:
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UButton> NextButton;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> DialogueTitle;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> DialogueContent;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UVerticalBox> DialogueOptions;
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UDialogueAsset> DialogueAsset;
+	TSoftObjectPtr<UDialogueAsset> DialogueAsset;
+
+
+	UFUNCTION(BlueprintCallable)
+	void LoadAndShowDialogue();
+
+protected:
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UButton> NextButton;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UTextBlock> DialogueTitle;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UTextBlock> DialogueContent;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UVerticalBox> DialogueOptions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<UDialogueOptionWidget> OptionWidgetClass;
@@ -81,7 +87,6 @@ protected:
 	TObjectPtr<UEventflowNode> CurrentNode;
 
 
-	UFUNCTION(BlueprintCallable)
 	void ShowDialogue();
 
 	void ShowOptions();

@@ -12,6 +12,33 @@
 
 
 
+FName UDialogueEdBeginNode::GetNodeType() const
+{
+	return FName(TEXT("REN.EF.DIA.BEGIN"));
+}
+
+FText UDialogueEdBeginNode::GetNodeDescription() const
+{
+	return FText::FromString(TEXT("Starts a conversation."));
+}
+
+FText UDialogueEdBeginNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetNodeData());
+	if (!NodeData)
+	{
+		return FText::FromString(TEXT("Begin"));
+	}
+
+	FString NodeContent = LimitTextLength(NodeData->DialogueContent.ToString(), 15);
+	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
+}
+
+TSubclassOf<UEventflowNodeData> UDialogueEdBeginNode::GetNodeDataClass() const
+{
+	return UDialogueNodeData::StaticClass();
+}
+
 FLinearColor UDialogueEdBeginNode::GetNodeTitleColor() const
 {
 	return FLinearColor(0.0f, 1.0f, 0.25f);
@@ -36,6 +63,26 @@ bool UDialogueEdBeginNode::CanCreateRuntimeOutputPins() const
 
 
 
+FName UDialogueEdEndNode::GetNodeType() const
+{
+	return FName(TEXT("REN.EF.DIA.END"));
+}
+
+FText UDialogueEdEndNode::GetNodeDescription() const
+{
+	return FText::FromString(TEXT("Ends a conversation."));
+}
+
+FText UDialogueEdEndNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	return FText::FromString(TEXT("End"));
+}
+
+TSubclassOf<UEventflowNodeData> UDialogueEdEndNode::GetNodeDataClass() const
+{
+	return UDialogueNodeData::StaticClass();
+}
+
 FLinearColor UDialogueEdEndNode::GetNodeTitleColor() const
 {
 	return FLinearColor(1.0f, 0.0f, 0.0f);
@@ -55,19 +102,36 @@ bool UDialogueEdEndNode::CanCreateRuntimeOutputPins() const
 
 
 
+FName UDialogueEdDialogNode::GetNodeType() const
+{
+	return FName(TEXT("REN.EF.DIA.DIALOG"));
+}
+
+FText UDialogueEdDialogNode::GetNodeDescription() const
+{
+	return FText::FromString(TEXT("Conversation node."));
+}
+
 FText UDialogueEdDialogNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetAssetNodeData());
-	if (!NodeData) return Super::GetNodeTitle(TitleType);
+	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetNodeData());
+	if (!NodeData)
+	{
+		return FText::FromString(TEXT("Dialogue"));
+	}
 	
-	FString NodeContent = LimitTextLength(NodeData->Content.ToString(), 15);
-
+	FString NodeContent = LimitTextLength(NodeData->DialogueContent.ToString(), 15);
 	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
+}
+
+TSubclassOf<UEventflowNodeData> UDialogueEdDialogNode::GetNodeDataClass() const
+{
+	return UDialogueNodeData::StaticClass();
 }
 
 FLinearColor UDialogueEdDialogNode::GetNodeTitleColor() const
 {
-	return FLinearColor(1.0f, 1.0f, 1.0f);
+	return FLinearColor(0.0f, 1.0f, 1.0f);
 }
 
 void UDialogueEdDialogNode::AllocateDefaultPins()

@@ -29,7 +29,7 @@ class RENEVENTFLOWEDITOR_API UEventflowEdGraph : public UEdGraph
 
 public:
 
-	virtual void RegisterNodeTypes();
+	void RegisterNodeClasses();
 
 	void UpdateAssetData(UEventflowData* AssetData);
 	void UpdateGraphData(UEventflowData* AssetData);
@@ -38,15 +38,11 @@ public:
 
 protected:
 
-	void RegisterNodeType(FName NodeType, TSubclassOf<UEventflowEdGraphNode> NodeClass);
-	void UnregisterNodeType(FName NodeType);
-
 	bool AddNodePin(EEdGraphPinDirection Direction, UEventflowPin* AssetPin, UEventflowEdGraphNode* UINode, TMap<FGuid, UEdGraphPin*>& PinMap);
 
 	virtual TSubclassOf<UEventflowEdGraphNode> GetRegisteredNodeClass(FName NodeType) const;
 	virtual TSubclassOf<UEventflowNode> GetAssetNodeClass() const;
 	virtual TSubclassOf<UEventflowPin> GetAssetPinClass() const;
-	virtual TSubclassOf<UEventflowNodeData> GetAssetNodeDataClass() const;
 
 private:
 

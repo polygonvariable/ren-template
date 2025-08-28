@@ -27,13 +27,5 @@ class UDialogueEdGraph : public UEventflowEdGraph
 
 	GENERATED_BODY()
 
-public:
-
-	virtual void RegisterNodeTypes() override;
-
-protected:
-
-	virtual TSubclassOf<UEventflowNodeData> GetAssetNodeDataClass() const;
-
 };
 

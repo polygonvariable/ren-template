@@ -23,11 +23,12 @@ class UDialogueEdBeginNode : public UEventflowEdGraphNode
 
 	GENERATED_BODY()
 
-	EVENTFLOW_NODE_DECLARE_TYPE("REN.EF.DIA.BEGIN")
-	EVENTFLOW_NODE_DECLARE_TITLE("Begin")
-	EVENTFLOW_NODE_DECLARE_DESCRIPTION("Starts a conversation")
-
 public:
+
+	virtual FName GetNodeType() const override;
+	virtual FText GetNodeDescription() const override;
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
 
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
@@ -47,11 +48,12 @@ class UDialogueEdEndNode : public UEventflowEdGraphNode
 
 	GENERATED_BODY()
 
-	EVENTFLOW_NODE_DECLARE_TYPE("REN.EF.DIA.END")
-	EVENTFLOW_NODE_DECLARE_TITLE("End")
-	EVENTFLOW_NODE_DECLARE_DESCRIPTION("Ends a conversation")
-
 public:
+
+	virtual FName GetNodeType() const override;
+	virtual FText GetNodeDescription() const override;
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
 
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
@@ -70,13 +72,13 @@ class UDialogueEdDialogNode : public UEventflowEdGraphNode
 
 	GENERATED_BODY()
 
-	EVENTFLOW_NODE_DECLARE_TYPE("REN.EF.DIA.DIALOG")
-	EVENTFLOW_NODE_DECLARE_TITLE("Dialog")
-	EVENTFLOW_NODE_DECLARE_DESCRIPTION("Conversation dialog")
-
 public:
 
+	virtual FName GetNodeType() const override;
+	virtual FText GetNodeDescription() const override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
+
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 

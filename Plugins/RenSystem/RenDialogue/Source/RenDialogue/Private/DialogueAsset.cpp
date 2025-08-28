@@ -8,3 +8,14 @@
 // Project Headers
 
 
+
+const TArray<FText>* UDialogueNodeData::GetInputOptions() const
+{
+	return &InputOptions;
+}
+
+const TArray<FText>* UDialogueNodeData::GetOutputOptions() const
+{
+	return &OutputOptions;
+}
+

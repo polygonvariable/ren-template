@@ -14,8 +14,8 @@
 
 
 
-UCLASS(Abstract, Blueprintable, Meta = (ShowWorldContextPin))
-class RENEVENTFLOW_API UEventflowNodeDataController : public UObject
+UCLASS(Abstract, Blueprintable)
+class RENEVENTFLOW_API UEventflowNodeTask : public UObject
 {
 
 	GENERATED_BODY()
@@ -24,13 +24,10 @@ public:
 
 	bool GetWaitForCompletion() const;
 
-	void StartTask();
+	void StartAction();
 
 	UFUNCTION(BlueprintCallable)
-	void StopTask();
-
-	DECLARE_MULTICAST_DELEGATE(FOnTaskComplete);
-	FOnTaskComplete OnTaskComplete;
+	void StopAction();
 
 protected:
 
@@ -38,14 +35,26 @@ protected:
 	bool bWaitForCompletion = false;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_StartTask();
+	void OnActionStarted();
 
-	UFUNCTION(BlueprintCallable)
-	virtual UWorld* BP_GetWorld() const;
-
-protected:
+public:
 
 	virtual UWorld* GetWorld() const override;
+
+#if WITH_EDITOR
+
+	/*
+	 * Allow editor to display world related nodes such as SpawnActor etc. for this class.
+	 * Found this in thread: https://forums.unrealengine.com/t/how-to-make-a-blueprint-derived-from-a-uobject-class-access-world/366934/7
+	 */
+	virtual bool ImplementsGetWorld() const override;
+
+#endif
+
+public:
+
+	DECLARE_MULTICAST_DELEGATE(FOnActionStopped);
+	FOnActionStopped OnActionStopped;
 
 };
 
