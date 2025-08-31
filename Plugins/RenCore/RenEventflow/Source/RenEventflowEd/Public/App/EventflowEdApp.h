@@ -29,19 +29,24 @@ public:
 	UEventflowAsset* GetWorkingAsset() const;
 	UEventflowEdGraph* GetWorkingGraph() const;
 
-	void SetWorkingGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor);
-	void SetSelectedNodeDetail(TSharedPtr<IDetailsView> InDetailsView);
+	void SetGraphEditorSlate(TSharedPtr<SGraphEditor> InGraphEditor);
+	void SetGraphPropertySlate(TSharedPtr<IDetailsView> InDetailsView);
+	void SetNodePropertySlate(TSharedPtr<IDetailsView> InDetailsView);
+
+	virtual void RegisterGraphEditorEvents(SGraphEditor::FGraphEditorEvents& GraphEvents);
+
+protected:
 
 	virtual void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectedNodes);
 	virtual void OnGraphNodeDoubleClicked(UEdGraphNode* Node);
 
-protected:
+	virtual void OnGraphPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
+	virtual void OnNodePropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
 
-	void OnGraphChanged(const FEdGraphEditAction& InAction);
-	void OnNodeDetailsChanged(const FPropertyChangedEvent& PropertyChangedEvent);
+	virtual TArray<FName> GetTriggerGraphProperties() const;
+	virtual TArray<FName> GetTriggerNodeProperties() const;
 
 	void UpdateWorkingAsset();
-	void UpdateWorkingGraph();
 
 	UEventflowEdGraphNode* GetFirstSelectedNode(const FGraphPanelSelectionSet& SelectedNodes) const;
 
@@ -67,8 +72,9 @@ protected:
 	UPROPERTY()
 	UEventflowEdGraph* WorkingGraph = nullptr;
 
-	TSharedPtr<SGraphEditor> WorkingGraphEditor;
-	TSharedPtr<IDetailsView> SelectedNodeDetail;
+	TSharedPtr<SGraphEditor> GraphEditorSlate;
+	TSharedPtr<IDetailsView> GraphPropertySlate;
+	TSharedPtr<IDetailsView> NodePropertySlate;
 
 	FDelegateHandle EventflowAssetSaved;
 	FDelegateHandle GraphChangedHandle;

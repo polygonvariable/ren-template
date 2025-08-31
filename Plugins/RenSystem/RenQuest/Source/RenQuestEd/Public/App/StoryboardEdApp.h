@@ -4,6 +4,10 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "BlueprintEditor.h"
+#include "BlueprintEditorModes.h"
+#include "WorkflowOrientedApp/ApplicationMode.h"
+#include "WorkflowOrientedApp/WorkflowTabManager.h"
 
 // Project Headers
 #include "RenEventflowEd/Public/App/EventflowEdApp.h"
@@ -18,10 +22,6 @@ class UEventflowEdGraphSchema;
 class FStoryboardEdApp : public FEventflowEdApp
 {
 
-protected:
-
-	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const override;
-
 public:
 
 	virtual FName GetToolkitFName() const override;
@@ -29,7 +29,13 @@ public:
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
 
+protected:
+
 	virtual void OnGraphNodeDoubleClicked(UEdGraphNode* Node) override;
+
+	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const override;
+	virtual TArray<FName> GetTriggerNodeProperties() const override;
+
 
 };
 

@@ -29,9 +29,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText QuestTitle;
 
-	//UPROPERTY(EditAnywhere)
-	//TSoftObjectPtr<UQuestAsset> QuestAsset;
-
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UQuestGraph> QuestGraph;
 
@@ -51,3 +48,4 @@ class RENQUEST_API UStoryboardGraph : public UEventflowAsset
 	GENERATED_BODY()
 
 };
+

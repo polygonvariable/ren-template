@@ -16,7 +16,11 @@ class UButton;
 class UTextBlock;
 class UVerticalBox;
 
+class UEventflowAsset;
 class UEventflowNode;
+class UEventflowEngine;
+class UEventflowBlueprint;
+
 class UDialogueAsset;
 
 
@@ -62,11 +66,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UDialogueAsset> DialogueAsset;
 
-
-	UFUNCTION(BlueprintCallable)
-	void LoadAndShowDialogue();
-
 protected:
+
+	UPROPERTY()
+	TObjectPtr<UEventflowEngine> EventflowEngine;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UButton> NextButton;
@@ -83,20 +86,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<UDialogueOptionWidget> OptionWidgetClass;
 
-	UPROPERTY()
-	TObjectPtr<UEventflowNode> CurrentNode;
 
+	UFUNCTION(BlueprintCallable)
+	void LoadDialogue();
 
-	void ShowDialogue();
+	void UnloadDialogue();
 
-	void ShowOptions();
+	void ShowOptions(UEventflowNode* Node);
 
 	UFUNCTION()
 	void NextDialogue();
 
 	void TrySelectOption(int Index);
 
-	void SetCurrentNode(UEventflowNode* Node);
+	//void SetCurrentNode(UEventflowNode* Node);
 
 protected:
 

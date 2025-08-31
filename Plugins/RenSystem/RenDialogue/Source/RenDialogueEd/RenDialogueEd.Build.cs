@@ -27,7 +27,6 @@ public class RenDialogueEd : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"UMG",
 			}
 			);
 			
@@ -41,10 +40,22 @@ public class RenDialogueEd : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"AssetTools",
-				"UnrealEd",
-				"PropertyEditor",
-				"ToolMenus",
-				"GraphEditor",
+                "UnrealEd",
+                "PropertyEditor",
+                "EditorScriptingUtilities",
+                "ToolMenus",
+                "GraphEditor",
+
+                "BlueprintGraph",
+                "Kismet",
+                "KismetCompiler",
+                "MainFrame",
+                "EditorFramework",
+                "WorkspaceMenuStructure",
+                "EditorWidgets",
+                "SourceControl",
+                "ApplicationCore",
+
                 "RenEventflow",
                 "RenEventflowEd",
                 "RenDialogue",

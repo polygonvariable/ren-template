@@ -4,6 +4,7 @@
 #include "QuestEdAction.h"
 
 // Engine Headers
+#include "BlueprintEditor.h"
 
 // Project Headers
 #include "RenQuest/Public/QuestAsset.h"

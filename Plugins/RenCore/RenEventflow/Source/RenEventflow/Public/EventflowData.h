@@ -29,5 +29,19 @@ public:
 	UPROPERTY()
 	int EntryNodeIndex = -1;
 
+	UEventflowNode* GetNodeAt(int Index)
+	{
+		if (Nodes.IsValidIndex(Index))
+		{
+			return Nodes[Index];
+		}
+		return nullptr;
+	}
+
+	UEventflowNode* GetEntryNode()
+	{
+		return GetNodeAt(EntryNodeIndex);
+	}
+
 };
 

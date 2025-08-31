@@ -13,8 +13,9 @@
 
 FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FApplicationMode(TEXT("RGraphEditorAppMode"))
 {
-	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTabFactory(InEventflowEdApp)));
-	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdPropertyTabFactory(InEventflowEdApp)));
+	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTab(InEventflowEdApp)));
+	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdNodePropertyTab(InEventflowEdApp)));
+	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphPropertyTab(InEventflowEdApp)));
 
 	EventflowEdApp = InEventflowEdApp;
 
@@ -27,13 +28,18 @@ FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflow
 				->SetOrientation(Orient_Horizontal)
 				->Split(
 					FTabManager::NewStack()
-					->SetSizeCoefficient(0.75)
-					->AddTab(FName(TEXT("RGraphPrimaryTab")), ETabState::OpenedTab)
+					->SetSizeCoefficient(0.25)
+					->AddTab(FName(TEXT("EventflowEdGraphPropertyTab")), ETabState::OpenedTab)
+				)
+				->Split(
+					FTabManager::NewStack()
+					->SetSizeCoefficient(0.5)
+					->AddTab(FName(TEXT("EventflowEdGraphTab")), ETabState::OpenedTab)
 				)
 				->Split(
 					FTabManager::NewStack()
 					->SetSizeCoefficient(0.25)
-					->AddTab(FName(TEXT("RGraphPropertyTab")), ETabState::OpenedTab)
+					->AddTab(FName(TEXT("EventflowEdNodePropertyTab")), ETabState::OpenedTab)
 				)
 			)
 		);

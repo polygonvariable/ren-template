@@ -23,6 +23,8 @@ class RENEVENTFLOW_API UEventflowPin : public UObject
 
 public:
 
+#if WITH_EDITORONLY_DATA
+
 	UPROPERTY()
 	FName PinName;
 
@@ -40,6 +42,8 @@ public:
 
 	// UPROPERTY()
 	// UEventflowNode* PinParentNode = nullptr;
+
+#endif
 
 	UPROPERTY()
 	TObjectPtr<UEventflowPin> PinLinkedTo = nullptr;

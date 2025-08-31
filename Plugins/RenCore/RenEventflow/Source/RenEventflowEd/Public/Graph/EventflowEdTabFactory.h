@@ -17,37 +17,53 @@ class FEventflowEdApp;
 
 
 
-class FEventflowEdGraphTabFactory : public FWorkflowTabFactory
+class FEventflowEdGraphTab : public FWorkflowTabFactory
 {
 
 public:
 
-	FEventflowEdGraphTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp);
+	FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
-	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
 
-	TWeakPtr<FEventflowEdApp> GraphEditorAppPtr;
+	TWeakPtr<FEventflowEdApp> EventflowEdApp;
 
 };
 
 
 
-class FEventflowEdPropertyTabFactory : public FWorkflowTabFactory
+class FEventflowEdGraphPropertyTab : public FWorkflowTabFactory
 {
 
 public:
 
-	FEventflowEdPropertyTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp);
+	FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
 
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
-	virtual FText GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const override;
 
 private:
 
-	TWeakPtr<FEventflowEdApp> GraphEditorAppPtr;
+	TWeakPtr<FEventflowEdApp> EventflowEdApp;
+
+};
+
+
+
+
+class FEventflowEdNodePropertyTab : public FWorkflowTabFactory
+{
+
+public:
+
+	FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
+
+	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
+
+private:
+
+	TWeakPtr<FEventflowEdApp> EventflowEdApp;
 
 };
 

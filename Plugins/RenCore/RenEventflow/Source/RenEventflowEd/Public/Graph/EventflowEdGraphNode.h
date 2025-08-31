@@ -12,6 +12,8 @@
 #include "EventflowEdGraphNode.generated.h"
 
 // Forward Declarations
+class UEventflowBlueprint;
+
 class UEventflowNodeData;
 
 
@@ -34,6 +36,7 @@ public:
 	UEventflowNodeData* GetNodeData() const;
 
 	void SyncPins();
+	void SyncBlueprintGraph(TSubclassOf<UEventflowBlueprint> BlueprintClass);
 
 protected:
 

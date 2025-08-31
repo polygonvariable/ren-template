@@ -67,9 +67,10 @@ bool ARegionActor::DoesCollidedWithPlayer(AActor* OtherActor) const
 		return false;
 	}
 	
+	ACharacter* OtherCharacter = Cast<ACharacter>(OtherActor);
 	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	
-	return PlayerCharacter == OtherActor;
+	return PlayerCharacter == OtherCharacter;
 }
 
 

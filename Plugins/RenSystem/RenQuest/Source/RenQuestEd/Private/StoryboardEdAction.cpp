@@ -4,6 +4,7 @@
 #include "StoryboardEdAction.h"
 
 // Engine Headers
+#include "BlueprintEditor.h"
 
 // Project Headers
 #include "RenQuest/Public/StoryboardAsset.h"

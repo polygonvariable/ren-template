@@ -16,32 +16,32 @@
 
 
 
-FEventflowEdGraphTabFactory::FEventflowEdGraphTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPrimaryTab"), GraphEditorApp)
+FEventflowEdGraphTab::FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdGraphTab"), InEventflowEdApp)
 {
-	GraphEditorAppPtr = GraphEditorApp;
-	TabLabel = FText::FromString(TEXT("Eventflow Tab"));
-	ViewMenuDescription = FText::FromString(TEXT("Primary Tab Menu Description"));
-	ViewMenuTooltip = FText::FromString(TEXT("Primary Tab Menu Tooltip"));
+	EventflowEdApp = InEventflowEdApp;
+
+	TabLabel = FText::FromString(TEXT("Editor Graph"));
+	ViewMenuDescription = FText::FromString(TEXT("Editor Graph"));
+	ViewMenuTooltip = FText::FromString(TEXT("Editor Graph"));
 }
 
-TSharedRef<SWidget> FEventflowEdGraphTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FEventflowEdGraphTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<FEventflowEdApp> App = GraphEditorAppPtr.Pin();
-
-	SGraphEditor::FGraphEditorEvents GraphEditorEvents;
-	GraphEditorEvents.OnSelectionChanged.BindRaw(App.Get(), &FEventflowEdApp::OnGraphSelectionChanged);
-	GraphEditorEvents.OnNodeDoubleClicked.BindRaw(App.Get(), &FEventflowEdApp::OnGraphNodeDoubleClicked);
+	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
 
 	UEventflowEdGraph* WorkingGraph = App->GetWorkingGraph();
+
+	SGraphEditor::FGraphEditorEvents GraphEvents;
+	App->RegisterGraphEditorEvents(GraphEvents);
 
 	TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
 			.IsEditable(true)
-			.GraphEvents(GraphEditorEvents)
+			.GraphEvents(GraphEvents)
 			.GraphToEdit(WorkingGraph);
 
-	App->SetWorkingGraphEditor(GraphEditor);
-
+	App->SetGraphEditorSlate(GraphEditor);
+	
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
@@ -51,24 +51,62 @@ TSharedRef<SWidget> FEventflowEdGraphTabFactory::CreateTabBody(const FWorkflowTa
 		];
 }
 
-FText FEventflowEdGraphTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
+
+
+FEventflowEdGraphPropertyTab::FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdGraphPropertyTab"), InEventflowEdApp)
 {
-	return FText::FromString(TEXT("Primary Tab Tool Tip"));
+	EventflowEdApp = InEventflowEdApp;
+
+	TabLabel = FText::FromString(TEXT("Graph Property"));
+	ViewMenuDescription = FText::FromString(TEXT("Graph Property"));
+	ViewMenuTooltip = FText::FromString(TEXT("Graph Property"));
+}
+
+TSharedRef<SWidget> FEventflowEdGraphPropertyTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+{
+	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+
+	FDetailsViewArgs Args;
+	{
+		Args.bAllowSearch = false;
+		Args.bHideSelectionTip = true;
+		Args.bLockable = false;
+		Args.bSearchInitialKeyFocus = true;
+		Args.bUpdatesFromSelection = false;
+		Args.NotifyHook = nullptr;
+		Args.bShowOptions = true;
+		Args.bShowModifiedPropertiesOption = false;
+		Args.bShowScrollBar = false;
+	}
+
+	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(Args);
+	DetailsView->SetObject(App->GetWorkingAsset());
+	App->SetGraphPropertySlate(DetailsView);
+
+	return SNew(SVerticalBox)
+		+ SVerticalBox::Slot()
+		.FillHeight(1.0f)
+		.HAlign(HAlign_Fill)
+		[
+			DetailsView.ToSharedRef()
+		];
 }
 
 
 
-FEventflowEdPropertyTabFactory::FEventflowEdPropertyTabFactory(TSharedPtr<FEventflowEdApp> GraphEditorApp) : FWorkflowTabFactory(FName("RGraphPropertyTab"), GraphEditorApp)
+FEventflowEdNodePropertyTab::FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdNodePropertyTab"), InEventflowEdApp)
 {
-	GraphEditorAppPtr = GraphEditorApp;
-	TabLabel = FText::FromString(TEXT("Property Tab"));
-	ViewMenuDescription = FText::FromString(TEXT("Property Tab Menu Description"));
-	ViewMenuTooltip = FText::FromString(TEXT("Property Tab Menu Tooltip"));
+	EventflowEdApp = InEventflowEdApp;
+
+	TabLabel = FText::FromString(TEXT("Node Property"));
+	ViewMenuDescription = FText::FromString(TEXT("Node Property"));
+	ViewMenuTooltip = FText::FromString(TEXT("Node Property"));
 }
 
-TSharedRef<SWidget> FEventflowEdPropertyTabFactory::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
+TSharedRef<SWidget> FEventflowEdNodePropertyTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<FEventflowEdApp> GraphEditorApp = GraphEditorAppPtr.Pin();
+	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	
 	FDetailsViewArgs Args;
@@ -85,12 +123,8 @@ TSharedRef<SWidget> FEventflowEdPropertyTabFactory::CreateTabBody(const FWorkflo
 	}
 
 	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(Args);
-	DetailsView->SetObject(GraphEditorApp->GetWorkingAsset());
-
-	TSharedPtr<IDetailsView> SelectedNodeDetail = PropertyEditorModule.CreateDetailView(Args);
-	SelectedNodeDetail->SetObject(nullptr);
-
-	GraphEditorApp->SetSelectedNodeDetail(SelectedNodeDetail);
+	DetailsView->SetObject(nullptr);
+	App->SetNodePropertySlate(DetailsView);
 
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
@@ -98,17 +132,6 @@ TSharedRef<SWidget> FEventflowEdPropertyTabFactory::CreateTabBody(const FWorkflo
 		.HAlign(HAlign_Fill)
 		[
 			DetailsView.ToSharedRef()
-		]
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			SelectedNodeDetail.ToSharedRef()
 		];
-}
-
-FText FEventflowEdPropertyTabFactory::GetTabToolTipText(const FWorkflowTabSpawnInfo& Info) const
-{
-	return FText::FromString(TEXT("Primary Tab Tool Tip"));
 }
 

@@ -4,6 +4,7 @@
 #include "StoryboardEdFactory.h"
 
 // Engine Headers
+#include "Kismet2/KismetEditorUtilities.h"
 
 // Project Headers
 #include "RenQuest/Public/StoryboardAsset.h"

@@ -21,18 +21,18 @@ class UEventflowEdGraphSchema;
 
 class FDialogueEdApp : public FEventflowEdApp
 {
-
-protected:
-
-	virtual TSubclassOf<UEventflowEdGraph> GetGraphClass() const override;
-	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const override;
-
 public:
 
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
+
+protected:
+
+	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const override;
+	virtual TArray<FName> GetTriggerNodeProperties() const override;
+
 
 };
 

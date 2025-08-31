@@ -4,6 +4,7 @@
 #include "QuestEdFactory.h"
 
 // Engine Headers
+#include "Kismet2/KismetEditorUtilities.h"
 
 // Project Headers
 #include "RenQuest/Public/QuestAsset.h"
@@ -12,7 +13,7 @@
 
 UQuestEdFactory::UQuestEdFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-    SupportedClass = UQuestGraph::StaticClass();
+    SupportedClass = UQuestGraphBlueprint::StaticClass();
 }
 
 UObject* UQuestEdFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)

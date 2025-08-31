@@ -11,7 +11,9 @@
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
 #include "RenEventflow/Public/EventflowNodeData.h"
+#include "RenEventflow/Public/EventflowBlueprint.h"
 
+#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
 
 
@@ -98,7 +100,6 @@ void UEventflowEdGraphNode::SyncPins()
 		if (!InputOptions) return;
 
 		CreatePinHelper(FText::FromString(TEXT("Input")), EEdGraphPinDirection::EGPD_Input, InputOptions, InputLinks);
-		
 	}
 
 	if (CanCreateRuntimeOutputPins())
@@ -107,8 +108,15 @@ void UEventflowEdGraphNode::SyncPins()
 		if (!OutputOptions) return;
 
 		CreatePinHelper(FText::FromString(TEXT("Output")), EEdGraphPinDirection::EGPD_Output, OutputOptions, OutputLinks);
-
+		
 	}
+}
+
+void UEventflowEdGraphNode::SyncBlueprintGraph(TSubclassOf<UEventflowBlueprint> BlueprintClass)
+{
+	if (!CachedNodeData) return;
+
+	CachedNodeData->GraphBlueprint = BlueprintClass;
 }
 
 

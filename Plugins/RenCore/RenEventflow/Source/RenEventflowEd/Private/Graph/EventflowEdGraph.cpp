@@ -12,6 +12,7 @@
 #include "RenEventflow/Public/EventflowNode.h"
 #include "RenEventflow/Public/EventflowNodeData.h"
 #include "RenEventflow/Public/EventflowPin.h"
+#include "RenEventflow/Public/EventflowBlueprint.h"
 
 #include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
@@ -34,9 +35,22 @@ void UEventflowEdGraph::RegisterNodeClasses()
 	}
 }
 
-void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
+void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
 {
-	if (!AssetData) return;
+	if (!GraphAsset || !ValidateGraphData())
+	{
+		return;
+	}
+
+	if (GraphAsset->GraphData)
+	{
+		GraphAsset->GraphData->MarkAsGarbage();
+		GraphAsset->GraphData = nullptr;
+	}
+	GEngine->ForceGarbageCollection(true);
+
+	UEventflowData* GraphData = NewObject<UEventflowData>(GraphAsset);
+	if (!GraphData) return;
 
 	// TArray of TPair<From, To> Output->Input Pin Connections
 	TArray<TPair<FGuid, FGuid>> Connections;
@@ -50,10 +64,10 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
 
 		if (UINode->IsEntryNode())
 		{
-			AssetData->EntryNodeIndex = i;
+			GraphData->EntryNodeIndex = i;
 		}
 
-		UEventflowNode* AssetNode = NewObject<UEventflowNode>(AssetData, GetAssetNodeClass());
+		UEventflowNode* AssetNode = NewObject<UEventflowNode>(GraphData, GetAssetNodeClass());
 		AssetNode->NodeGuid = UINode->NodeGuid;
 		AssetNode->NodeData = DuplicateObject(UINode->GetNodeData(), AssetNode);
 		AssetNode->NodeType = UINode->GetNodeType();
@@ -89,7 +103,7 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
 			}
 		}
 
-		AssetData->Nodes.Add(AssetNode);
+		GraphData->Nodes.Add(AssetNode);
 	}
 
 	for (TPair<FGuid, FGuid> Connection : Connections)
@@ -99,13 +113,24 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowData* AssetData)
 
 		FromPin->PinLinkedTo = ToPin;
 	}
+
+	GraphAsset->GraphData = GraphData;
 }
 
-void UEventflowEdGraph::UpdateGraphData(UEventflowData* AssetData)
+void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 {
-	if (!AssetData) return;
+	if (!GraphAsset)
+	{
+		return;
+	}
 
-	const TArray<UEventflowNode*>& AssetNodes = AssetData->Nodes;
+	UEventflowData* GraphData = GraphAsset->GraphData;
+	if (!GraphData)
+	{
+		return;
+	}
+
+	const TArray<UEventflowNode*>& AssetNodes = GraphData->Nodes;
 
 	// TArray of TPair<From, To> Output->Input Pin Connections
 	TArray<TPair<FGuid, FGuid>> Connections;
@@ -153,6 +178,7 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowData* AssetData)
 				Connections.Add(Connection);
 			}
 		}
+
 
 		AddNode(UINode, false, false);
 	}
@@ -204,6 +230,20 @@ bool UEventflowEdGraph::ValidateGraphData()
 	return true;
 }
 
+void UEventflowEdGraph::SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint)
+{
+	GraphBlueprint = InGraphBlueprint;
+
+	for (UEdGraphNode* Node : Nodes)
+	{
+		UEventflowEdGraphNode* UINode = Cast<UEventflowEdGraphNode>(Node);
+		if (UINode)
+		{
+			UINode->SyncBlueprintGraph(InGraphBlueprint);
+		}
+	}
+}
+
 
 
 bool UEventflowEdGraph::AddNodePin(EEdGraphPinDirection Direction, UEventflowPin* AssetPin, UEventflowEdGraphNode* UINode, TMap<FGuid, UEdGraphPin*>& PinMap)
@@ -244,5 +284,15 @@ TSubclassOf<UEventflowNode> UEventflowEdGraph::GetAssetNodeClass() const
 TSubclassOf<UEventflowPin> UEventflowEdGraph::GetAssetPinClass() const
 {
 	return UEventflowPin::StaticClass();
+}
+
+void UEventflowEdGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode)
+{
+	UEventflowEdGraphNode* Node = Cast<UEventflowEdGraphNode>(NodeToAdd);
+	if (Node)
+	{
+		Node->SyncBlueprintGraph(GraphBlueprint);
+	}
+	Super::AddNode(NodeToAdd, bUserAction, bSelectNewNode);
 }
 

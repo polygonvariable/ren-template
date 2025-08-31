@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "Kismet2/BlueprintEditorUtils.h"
+#include "GraphEditor.h"
 
 // Project Headers
 #include "RenEventflow/Public/EventflowAsset.h"
@@ -36,10 +37,10 @@ void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr
 	SetCurrentMode(TEXT("RGraphEditorAppMode"));
 
 	WorkingGraph->RegisterNodeClasses();
-	UpdateWorkingGraph();
+	WorkingGraph->UpdateGraphData(WorkingAsset);
+	WorkingGraph->SyncGraphBlueprint(WorkingAsset->GraphBlueprint);
 
 	EventflowAssetSaved = WorkingAsset->OnEventflowAssetSaved.AddSP(this, &FEventflowEdApp::UpdateWorkingAsset);
-	GraphChangedHandle = WorkingGraph->AddOnGraphChangedHandler(FOnGraphChanged::FDelegate::CreateSP(this, &FEventflowEdApp::OnGraphChanged));
 }
 
 UEventflowAsset* FEventflowEdApp::GetWorkingAsset() const
@@ -52,28 +53,43 @@ UEventflowEdGraph* FEventflowEdApp::GetWorkingGraph() const
 	return WorkingGraph;
 }
 
-void FEventflowEdApp::SetWorkingGraphEditor(TSharedPtr<SGraphEditor> InGraphEditor)
+void FEventflowEdApp::SetGraphEditorSlate(TSharedPtr<SGraphEditor> InGraphEditor)
 {
-	WorkingGraphEditor = InGraphEditor;
+	GraphEditorSlate = InGraphEditor;
 }
 
-void FEventflowEdApp::SetSelectedNodeDetail(TSharedPtr<IDetailsView> InDetailsView)
+void FEventflowEdApp::SetGraphPropertySlate(TSharedPtr<IDetailsView> InDetailsView)
 {
-	SelectedNodeDetail = InDetailsView;
-	SelectedNodeDetail->OnFinishedChangingProperties().Clear();
-	SelectedNodeDetail->OnFinishedChangingProperties().AddRaw(this, &FEventflowEdApp::OnNodeDetailsChanged);
+	GraphPropertySlate = InDetailsView;
+	GraphPropertySlate->OnFinishedChangingProperties().Clear();
+	GraphPropertySlate->OnFinishedChangingProperties().AddRaw(this, &FEventflowEdApp::OnGraphPropertyChanged);
 }
+
+void FEventflowEdApp::SetNodePropertySlate(TSharedPtr<IDetailsView> InDetailsView)
+{
+	NodePropertySlate = InDetailsView;
+	NodePropertySlate->OnFinishedChangingProperties().Clear();
+	NodePropertySlate->OnFinishedChangingProperties().AddRaw(this, &FEventflowEdApp::OnNodePropertyChanged);
+}
+
+void FEventflowEdApp::RegisterGraphEditorEvents(SGraphEditor::FGraphEditorEvents& GraphEvents)
+{
+	GraphEvents.OnSelectionChanged.BindSP(this, &FEventflowEdApp::OnGraphSelectionChanged);
+	GraphEvents.OnNodeDoubleClicked.BindSP(this, &FEventflowEdApp::OnGraphNodeDoubleClicked);
+}
+
+
 
 void FEventflowEdApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectedNodes)
 {
 	UEventflowEdGraphNode* SelectedNode = GetFirstSelectedNode(SelectedNodes);
 	if (SelectedNode)
 	{
-		SelectedNodeDetail->SetObject(SelectedNode->GetNodeData());
+		NodePropertySlate->SetObject(SelectedNode->GetNodeData());
 		return;
 	}
 
-	SelectedNodeDetail->SetObject(nullptr);
+	NodePropertySlate->SetObject(nullptr);
 }
 
 void FEventflowEdApp::OnGraphNodeDoubleClicked(UEdGraphNode* Node)
@@ -81,25 +97,39 @@ void FEventflowEdApp::OnGraphNodeDoubleClicked(UEdGraphNode* Node)
 
 }
 
-
-
-void FEventflowEdApp::OnGraphChanged(const FEdGraphEditAction& InAction)
+void FEventflowEdApp::OnGraphPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent)
 {
-	UpdateWorkingAsset();
+	FName PropertyName = PropertyChangedEvent.GetPropertyName();
+	if (WorkingAsset && WorkingGraph && GetTriggerGraphProperties().Contains(PropertyName))
+	{
+		WorkingGraph->SyncGraphBlueprint(WorkingAsset->GraphBlueprint);
+	}
 }
 
-void FEventflowEdApp::OnNodeDetailsChanged(const FPropertyChangedEvent& PropertyChangedEvent)
+void FEventflowEdApp::OnNodePropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent)
 {
-	if (WorkingGraphEditor)
+	if (GraphEditorSlate && GetTriggerNodeProperties().Contains(PropertyChangedEvent.GetPropertyName()))
 	{
-		UEventflowEdGraphNode* SelectedNode = GetFirstSelectedNode(WorkingGraphEditor->GetSelectedNodes());
+		UEventflowEdGraphNode* SelectedNode = GetFirstSelectedNode(GraphEditorSlate->GetSelectedNodes());
 		if (SelectedNode)
 		{
 			SelectedNode->SyncPins();
 		}
-		
-		WorkingGraphEditor->NotifyGraphChanged();
+
+		GraphEditorSlate->NotifyGraphChanged();
 	}
+}
+
+TArray<FName> FEventflowEdApp::GetTriggerGraphProperties() const
+{
+	return {
+		FName(TEXT("GraphBlueprint"))
+	};
+}
+
+TArray<FName> FEventflowEdApp::GetTriggerNodeProperties() const
+{
+	return TArray<FName>();
 }
 
 void FEventflowEdApp::UpdateWorkingAsset()
@@ -109,33 +139,9 @@ void FEventflowEdApp::UpdateWorkingAsset()
 		return;
 	}
 
-	if (!WorkingGraph->ValidateGraphData())
-	{
-		return;
-	}
-
-	if (WorkingAsset->GraphData)
-	{
-		WorkingAsset->GraphData->MarkAsGarbage();
-		WorkingAsset->GraphData = nullptr;
-	}
-	GEngine->ForceGarbageCollection(true);
-
-	UEventflowData* AssetData = NewObject<UEventflowData>(WorkingAsset);
-	WorkingGraph->UpdateAssetData(AssetData);
-	WorkingAsset->GraphData = AssetData;
+	WorkingGraph->UpdateAssetData(WorkingAsset);
 
 	UE_LOG(LogTemp, Warning, TEXT("FEventflowEdApp::UpdateWorkingAsset"));
-}
-
-void FEventflowEdApp::UpdateWorkingGraph()
-{
-	if (!WorkingAsset || !WorkingGraph)
-	{
-		return;
-	}
-
-	WorkingGraph->UpdateGraphData(WorkingAsset->GraphData);
 }
 
 UEventflowEdGraphNode* FEventflowEdApp::GetFirstSelectedNode(const FGraphPanelSelectionSet& SelectedNodes) const
@@ -193,13 +199,16 @@ void FEventflowEdApp::OnClose()
 {
 	if (WorkingAsset) WorkingAsset->OnEventflowAssetSaved.Remove(EventflowAssetSaved);
 	if (WorkingGraph) WorkingGraph->RemoveOnGraphChangedHandler(GraphChangedHandle);
-	if (SelectedNodeDetail) SelectedNodeDetail->OnFinishedChangingProperties().Clear();
+
+	if (GraphPropertySlate) GraphPropertySlate->OnFinishedChangingProperties().Clear();
+	if (NodePropertySlate) NodePropertySlate->OnFinishedChangingProperties().Clear();
 	
 	WorkingAsset = nullptr;
 	WorkingGraph = nullptr;
 
-	SelectedNodeDetail.Reset();
-	WorkingGraphEditor.Reset();
+	GraphEditorSlate.Reset();
+	GraphPropertySlate.Reset();
+	NodePropertySlate.Reset();
 
 	GEngine->ForceGarbageCollection(true);
 

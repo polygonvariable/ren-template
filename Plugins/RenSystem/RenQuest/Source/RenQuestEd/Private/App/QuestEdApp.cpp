@@ -32,10 +32,15 @@ FLinearColor FQuestEdApp::GetWorldCentricTabColorScale() const
 	return FLinearColor::Red;
 }
 
-
-
 TSubclassOf<UEventflowEdGraphSchema> FQuestEdApp::GetGraphSchemaClass() const
 {
 	return UQuestEdGraphSchema::StaticClass();
+}
+
+TArray<FName> FQuestEdApp::GetTriggerNodeProperties() const
+{
+	return {
+		FName(TEXT("QuestTask"))
+	};
 }
 

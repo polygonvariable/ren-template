@@ -4,6 +4,9 @@
 #include "DialogueEdFactory.h"
 
 // Engine Headers
+#include "AssetRegistry/AssetRegistryModule.h"
+#include "Kismet2/BlueprintEditorUtils.h"
+#include "Kismet2/KismetEditorUtilities.h"
 
 // Project Headers
 #include "RenDialogue/Public/DialogueAsset.h"
@@ -15,10 +18,10 @@ UDialogueEdFactory::UDialogueEdFactory(const FObjectInitializer& ObjectInitializ
     SupportedClass = UDialogueAsset::StaticClass();
 }
 
-UObject* UDialogueEdFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
+UObject* UDialogueEdFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn, FName CallingContext)
 {
-    UDialogueAsset* NewAsset = NewObject<UDialogueAsset>(InParent, Class, Name, Flags);
-	return NewAsset;
+    UDialogueAsset* NewAsset = NewObject<UDialogueAsset>(InParent, InClass, InName, Flags);
+    return NewAsset;
 }
 
 bool UDialogueEdFactory::CanCreateNew() const

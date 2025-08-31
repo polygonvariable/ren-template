@@ -24,6 +24,11 @@ struct FInventoryContainer
 
 public:
 
+	FInventoryContainer()
+	{
+		Guid = FGuid::NewGuid();
+	}
+
 	UPROPERTY()
 	TMap<FName, FInventoryRecord> Items;
 	

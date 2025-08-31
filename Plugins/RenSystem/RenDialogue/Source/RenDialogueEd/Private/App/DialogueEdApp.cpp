@@ -6,10 +6,12 @@
 // Engine Headers
 
 // Project Headers
+#include "RenEventflow/Public/EventflowAsset.h"
+#include "RenEventflow/Public/EventflowBlueprint.h"
+
 #include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
 
-#include "RenDialogueEd/Public/Graph/DialogueEdGraph.h"
 #include "RenDialogueEd/Public/Graph/DialogueEdGraphSchema.h"
 
 
@@ -34,15 +36,16 @@ FLinearColor FDialogueEdApp::GetWorldCentricTabColorScale() const
 	return FLinearColor::Red;
 }
 
-
-
-TSubclassOf<UEventflowEdGraph> FDialogueEdApp::GetGraphClass() const
-{
-	return UDialogueEdGraph::StaticClass();
-}
-
 TSubclassOf<UEventflowEdGraphSchema> FDialogueEdApp::GetGraphSchemaClass() const
 {
 	return UDialogueEdGraphSchema::StaticClass();
+}
+
+TArray<FName> FDialogueEdApp::GetTriggerNodeProperties() const
+{
+	return {
+		FName(TEXT("OutputOptions")),
+		FName(TEXT("DialogueTitle"))
+	};
 }
 

@@ -56,10 +56,15 @@ void FStoryboardEdApp::OnGraphNodeDoubleClicked(UEdGraphNode* Node)
 	AssetEditorSubsystem->OpenEditorForAsset(QuestGraph, EAssetTypeActivationOpenedMethod::Edit);
 }
 
-
-
 TSubclassOf<UEventflowEdGraphSchema> FStoryboardEdApp::GetGraphSchemaClass() const
 {
 	return UStoryboardEdGraphSchema::StaticClass();
+}
+
+TArray<FName> FStoryboardEdApp::GetTriggerNodeProperties() const
+{
+	return {
+		FName(TEXT("ExtraQuests"))
+	};
 }
 

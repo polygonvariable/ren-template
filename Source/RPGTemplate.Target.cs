@@ -23,7 +23,7 @@ public class RPGTemplateTarget : TargetRules
                 //"RenWidget",
                 //"RenCore",
                 //"RenAsset",
-                //"RenStorage",
+                //"RenEventflow",
                 //"RenDialogue",
                 //"RenGameplay",
                 "RenAbility",

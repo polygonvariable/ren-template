@@ -30,7 +30,7 @@ FText UDialogueEdBeginNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 		return FText::FromString(TEXT("Begin"));
 	}
 
-	FString NodeContent = LimitTextLength(NodeData->DialogueContent.ToString(), 15);
+	FString NodeContent = LimitTextLength(NodeData->DialogueTitle.ToString(), 15);
 	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
 }
 

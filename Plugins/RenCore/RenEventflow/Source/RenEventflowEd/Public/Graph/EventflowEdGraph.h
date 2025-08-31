@@ -12,10 +12,12 @@
 #include "EventflowEdGraph.generated.h"
 
 // Forward Declarations
+class UEventflowAsset;
 class UEventflowData;
 class UEventflowNode;
 class UEventflowPin;
 class UEventflowNodeData;
+class UEventflowBlueprint;
 
 class UEventflowEdGraphNode;
 
@@ -31,10 +33,12 @@ public:
 
 	void RegisterNodeClasses();
 
-	void UpdateAssetData(UEventflowData* AssetData);
-	void UpdateGraphData(UEventflowData* AssetData);
+	void UpdateAssetData(UEventflowAsset* GraphAsset);
+	void UpdateGraphData(UEventflowAsset* GraphAsset);
 
 	virtual bool ValidateGraphData();
+
+	void SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint);
 
 protected:
 
@@ -44,8 +48,13 @@ protected:
 	virtual TSubclassOf<UEventflowNode> GetAssetNodeClass() const;
 	virtual TSubclassOf<UEventflowPin> GetAssetPinClass() const;
 
+public:
+
+	virtual void AddNode(UEdGraphNode* NodeToAdd, bool bUserAction = false, bool bSelectNewNode = true) override;
+
 private:
 
+	TSubclassOf<UEventflowBlueprint> GraphBlueprint;
 	TMap<FName, TSubclassOf<UEventflowEdGraphNode>> NodeTypes;
 
 };
