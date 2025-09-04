@@ -56,7 +56,7 @@ void UDialogueWidget::LoadDialogue()
 				// Here we currently for testing purposes assume that if a node have an event
 				// then it must have a dialogue options.
 				// the ideal way would be to create an interface.
-				if (!EventflowEngine->StartNodeExecution(Node))
+				if (!EventflowEngine->ExecuteNode(Node))
 				{
 					ShowOptions(Node);
 				}
@@ -84,11 +84,13 @@ void UDialogueWidget::UnloadDialogue()
 {
 	if (IsValid(EventflowEngine))
 	{
+		EventflowEngine->UnloadAsset();
+
 		EventflowEngine->OnNodeReached.Unbind();
 		EventflowEngine->OnNodeExited.Unbind();
 		EventflowEngine->OnGraphEnded.Unbind();
+		EventflowEngine->OnEngineInitialized.Unbind();
 
-		EventflowEngine->UnloadAsset();
 		EventflowEngine->MarkAsGarbage();
 	}
 	EventflowEngine = nullptr;

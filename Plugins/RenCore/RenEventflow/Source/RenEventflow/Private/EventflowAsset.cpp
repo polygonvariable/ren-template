@@ -35,6 +35,12 @@ void UEventflowAsset::PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext)
 
 EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Context) const
 {
+	if (!GraphData)
+	{
+		Context.AddError(FText::FromString(TEXT("Graph data is missing, try resaving the asset.")));
+		return EDataValidationResult::Invalid;
+	}
+
 	if (!GraphData->Nodes.IsValidIndex(GraphData->EntryNodeIndex))
 	{
 		Context.AddError(FText::FromString(TEXT("Entry node index is invalid.")));

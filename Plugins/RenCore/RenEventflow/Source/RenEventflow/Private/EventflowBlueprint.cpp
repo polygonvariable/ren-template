@@ -6,6 +6,7 @@
 // Engine Headers
 
 // Project Headers
+#include "RenEventflow/Public/EventflowAsset.h"
 #include "RenEventflow/Public/EventflowNode.h"
 #include "RenEventflow/Public/EventflowNodeData.h"
 
@@ -37,13 +38,14 @@ bool UEventflowBlueprint::StartNodeExecution(UEventflowNode* Node)
 	return true;
 }
 
-void UEventflowBlueprint::RegisterGraph(UEventflowAsset* Asset)
+void UEventflowBlueprint::RegisterBlueprint(UEventflowAsset* Asset)
 {
+	EventflowAsset = Asset;
 }
 
-void UEventflowBlueprint::UnregisterGraph()
+void UEventflowBlueprint::UnregisterBlueprint()
 {
-	OnNodeExecuteFinished.Unbind();
+	EventflowAsset.Reset();
 }
 
 UWorld* UEventflowBlueprint::GetWorld() const

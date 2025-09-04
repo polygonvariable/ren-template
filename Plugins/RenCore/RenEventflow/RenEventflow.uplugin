@@ -28,6 +28,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "RenCore",
+			"Enabled": true
+		},
+		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
 		}

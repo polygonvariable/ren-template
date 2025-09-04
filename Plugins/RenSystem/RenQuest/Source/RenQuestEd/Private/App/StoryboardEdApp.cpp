@@ -9,7 +9,7 @@
 // Project Headers
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
 
-#include "RenQuest/Public/QuestAsset.h"
+#include "RenQuest/Public/Quest/QuestAsset.h"
 #include "RenQuest/Public/StoryboardAsset.h"
 
 #include "RenQuestEd/Public/Graph/StoryboardEdGraphNode.h"
@@ -47,7 +47,7 @@ void FStoryboardEdApp::OnGraphNodeDoubleClicked(UEdGraphNode* Node)
 	UStoryboardQuestData* NodeData = Cast<UStoryboardQuestData>(QuestNode->GetNodeData());
 	if (!NodeData) return;
 
-	UQuestGraph* QuestGraph = NodeData->QuestGraph.LoadSynchronous();
+	UQuestAsset* QuestGraph = NodeData->QuestGraph.LoadSynchronous();
 	if (!QuestGraph) return;
 
 	UAssetEditorSubsystem* AssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
@@ -64,7 +64,8 @@ TSubclassOf<UEventflowEdGraphSchema> FStoryboardEdApp::GetGraphSchemaClass() con
 TArray<FName> FStoryboardEdApp::GetTriggerNodeProperties() const
 {
 	return {
-		FName(TEXT("ExtraQuests"))
+		FName(TEXT("ObjectiveTitle")),
+		FName(TEXT("ExtraObjectives"))
 	};
 }
 

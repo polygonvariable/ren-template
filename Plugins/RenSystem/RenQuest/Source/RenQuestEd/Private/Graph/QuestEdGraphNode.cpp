@@ -6,7 +6,8 @@
 // Engine Headers
 
 // Project Headers
-#include "RenQuest/Public/QuestAsset.h"
+#include "RenQuest/Public/Quest/QuestAsset.h"
+#include "RenQuest/Public/Quest/QuestNodeData.h"
 
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
 

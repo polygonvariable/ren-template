@@ -19,7 +19,6 @@ class UVerticalBox;
 class UEventflowAsset;
 class UEventflowNode;
 class UEventflowEngine;
-class UEventflowBlueprint;
 
 class UDialogueAsset;
 

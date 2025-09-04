@@ -13,7 +13,7 @@
 #include "StoryboardAsset.generated.h"
 
 // Forward Declarations
-class UQuestGraph;
+class UQuestAsset;
 
 
 
@@ -30,7 +30,7 @@ public:
 	FText QuestTitle;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UQuestGraph> QuestGraph;
+	TSoftObjectPtr<UQuestAsset> QuestGraph;
 
 	UPROPERTY(EditAnywhere)
 	TArray<FText> ExtraQuests;

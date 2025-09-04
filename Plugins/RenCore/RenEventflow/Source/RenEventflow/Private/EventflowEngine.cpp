@@ -8,6 +8,8 @@
 #include "Engine/StreamableManager.h"
 
 // Project Headers
+#include "RenCoreLibrary/Public/LogMacro.h"
+
 #include "RenEventflow/Public/EventflowAsset.h"
 #include "RenEventflow/Public/EventflowBlueprint.h"
 #include "RenEventflow/Public/EventflowData.h"
@@ -17,129 +19,158 @@
 
 
 
+UEventflowAsset* UEventflowEngine::GetOwningAsset() const
+{
+	return CurrentAsset;
+}
+
 void UEventflowEngine::LoadAsset(TSoftObjectPtr<UEventflowAsset> InEventflowAsset)
 {
 	if (InEventflowAsset.IsNull())
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::LoadAsset: InEventflowAsset is null"));
+		LOG_ERROR(LogTemp, TEXT("InEventflowAsset is null"));
 		return;
 	}
 
-	CurrentAsset = InEventflowAsset;
+	CurrentAssetPath = InEventflowAsset;
 
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
 	Streamable.RequestAsyncLoad(InEventflowAsset.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &UEventflowEngine::HandleAssetLoaded));
 }
 
+void UEventflowEngine::LoadAsset(UEventflowAsset* InEventflowAsset)
+{
+	if (!IsValid(InEventflowAsset))
+	{
+		LOG_ERROR(LogTemp, TEXT("InEventflowAsset is null"));
+		return;
+	}
+
+	CurrentAsset = InEventflowAsset;
+
+	InitializeEngine();
+	OnEngineInitialized.ExecuteIfBound();
+}
+
 void UEventflowEngine::UnloadAsset()
 {
-	if (IsValid(CurrentBlueprint))
-	{
-		CurrentBlueprint->UnregisterGraph();
-		CurrentBlueprint->MarkAsGarbage();
-	}
-	CurrentBlueprint = nullptr;
-	CurrentNode = nullptr;
+	DestructBlueprint();
 
-	if (CurrentAsset.IsNull())
+	CurrentAsset = nullptr;
+
+	if (CurrentAssetPath.IsNull())
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::UnloadAsset: CurrentAsset is null"));
+		LOG_ERROR(LogTemp, TEXT("CurrentAssetPath is null"));
 		return;
 	}
 
 	FStreamableManager& Streamable = UAssetManager::GetStreamableManager();
-	Streamable.Unload(CurrentAsset.ToSoftObjectPath());
+	Streamable.Unload(CurrentAssetPath.ToSoftObjectPath());
 }
 
 void UEventflowEngine::InitializeEngine()
 {
-	UEventflowAsset* Asset = CurrentAsset.Get();
-	if (!IsValid(Asset) || !Asset->GraphBlueprint)
+	if (!IsValid(CurrentAsset) || !CurrentAsset->GraphBlueprint)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::InitializeEngine: Asset or GraphBlueprint is null"));
+		LOG_ERROR(LogTemp, TEXT("Asset or GraphBlueprint is null"));
 		return;
 	}
 
-	UEventflowBlueprint* GraphBlueprint = NewObject<UEventflowBlueprint>(this, Asset->GraphBlueprint);
-	if (!IsValid(GraphBlueprint))
-	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::InitializeEngine: GraphBlueprint is null"));
-		return;
-	}
-
-	CurrentBlueprint = GraphBlueprint;
-	CurrentBlueprint->RegisterGraph(Asset);
-	CurrentBlueprint->OnNodeExecuteFinished.BindWeakLambda(this, [this](UEventflowNode* Node, bool bSuccess)
-		{
-			OnNodeExited.ExecuteIfBound(Node, bSuccess);
-		}
-	);
+	ConstructBlueprint(CurrentAsset->GraphBlueprint);
 }
 
 void UEventflowEngine::ReachEntryNode()
 {
-	UEventflowAsset* Asset = CurrentAsset.Get();
-	if (!IsValid(Asset))
+	if (!IsValid(CurrentAsset))
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachEntryNode: Asset is null"));
+		LOG_ERROR(LogTemp, TEXT("Asset is null"));
 		return;
 	};
 
-	bool bAssetValid = Asset && Asset->GraphData;
+	bool bAssetValid = CurrentAsset && CurrentAsset->GraphData;
 	if (!bAssetValid)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachEntryNode: GraphData is null"));
+		LOG_ERROR(LogTemp, TEXT("GraphData is null"));
 		return;
 	}
 
-	UEventflowData* GraphData = Asset->GraphData;
+	UEventflowData* GraphData = CurrentAsset->GraphData;
 	ReachNodeAt(GraphData->EntryNodeIndex);
 }
 
-void UEventflowEngine::ReachNodeAt(int Index)
+void UEventflowEngine::ReachNodeAt(int NodeIndex)
 {
-	UEventflowAsset* Asset = CurrentAsset.Get();
-	if (!IsValid(Asset))
+	if (!IsValid(CurrentAsset))
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachEntryNode: Asset is null"));
+		LOG_ERROR(LogTemp, TEXT("Asset is null"));
 		return;
 	};
 
-	bool bAssetValid = Asset && Asset->GraphData;
+	bool bAssetValid = CurrentAsset && CurrentAsset->GraphData;
 	if (!bAssetValid)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachEntryNode: GraphData is null"));
+		LOG_ERROR(LogTemp, TEXT("GraphData is null"));
 		return;
 	}
 
-	UEventflowData* GraphData = Asset->GraphData;
+	UEventflowData* GraphData = CurrentAsset->GraphData;
 
-	bool bDataValid = GraphData->Nodes.IsValidIndex(Index);
+	bool bDataValid = GraphData->Nodes.IsValidIndex(NodeIndex);
 	if (!bDataValid)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachEntryNode: Index is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Node index is invalid"));
 		return;
 	}
 
-	UEventflowNode* Node = GraphData->Nodes[Index];
+	UEventflowNode* Node = GraphData->Nodes[NodeIndex];
 	SetCurrentNode(Node);
 }
 
-void UEventflowEngine::ReachNextNode(int Index)
+void UEventflowEngine::ReachNextNode(int NextIndex)
 {
 	if (!IsValid(CurrentNode))
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::ReachNextNode: CurrentNode is null"));
+		LOG_ERROR(LogTemp, TEXT("CurrentNode is null"));
 		return;
 	}
 
-	UEventflowNode* Node = CurrentNode->GetNextNodeAt(Index);
+	UEventflowNode* Node = CurrentNode->GetNextNodeAt(NextIndex);
 	SetCurrentNode(Node);
 }
 
 void UEventflowEngine::ReachImmediateNextNode()
 {
 	ReachNextNode(0);
+}
+
+void UEventflowEngine::ConstructBlueprint(TSubclassOf<UObject> InClass)
+{
+	UEventflowBlueprint* GraphBlueprint = NewObject<UEventflowBlueprint>(this, InClass);
+	if (!IsValid(GraphBlueprint))
+	{
+		LOG_ERROR(LogTemp, TEXT("GraphBlueprint is null"));
+		return;
+	}
+
+	CurrentBlueprint = GraphBlueprint;
+
+	GraphBlueprint->OnNodeExecuteFinished.BindWeakLambda(this, [this](UEventflowNode* Node, bool bSuccess)
+		{
+			OnNodeExited.ExecuteIfBound(Node, bSuccess);
+		}
+	);
+	GraphBlueprint->RegisterBlueprint(CurrentAsset);
+}
+
+void UEventflowEngine::DestructBlueprint()
+{
+	if (IsValid(CurrentBlueprint))
+	{
+		CurrentBlueprint->OnNodeExecuteFinished.Unbind();
+		CurrentBlueprint->UnregisterBlueprint();
+		CurrentBlueprint->MarkAsGarbage();
+	}
+	CurrentBlueprint = nullptr;
 }
 
 UEventflowNode* UEventflowEngine::GetCurrentNode()
@@ -156,7 +187,7 @@ void UEventflowEngine::SetCurrentNode(UEventflowNode* Node)
 {
 	if (!IsValid(Node) || (CurrentNode == Node))
 	{
-		UE_LOG(LogTemp, Error, TEXT("UEventflowEngine::SetCurrentNode: Node is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Node is null or already current node"));
 		OnGraphEnded.ExecuteIfBound();
 		return;
 	}
@@ -165,15 +196,19 @@ void UEventflowEngine::SetCurrentNode(UEventflowNode* Node)
 	OnNodeReached.ExecuteIfBound(Node);
 }
 
-bool UEventflowEngine::StartNodeExecution(UEventflowNode* Node)
+bool UEventflowEngine::ExecuteNode(UEventflowNode* Node)
 {
+	if (!IsValid(CurrentBlueprint))
+	{
+		return false;
+	}
 	return CurrentBlueprint->StartNodeExecution(Node);
 }
 
 void UEventflowEngine::HandleAssetLoaded()
 {
-	UEventflowAsset* Asset = CurrentAsset.Get();
-	if (IsValid(Asset))
+	CurrentAsset = CurrentAssetPath.Get();
+	if (IsValid(CurrentAsset))
 	{
 		InitializeEngine();
 

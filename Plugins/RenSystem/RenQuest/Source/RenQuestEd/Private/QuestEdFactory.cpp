@@ -7,18 +7,18 @@
 #include "Kismet2/KismetEditorUtilities.h"
 
 // Project Headers
-#include "RenQuest/Public/QuestAsset.h"
+#include "RenQuest/Public/Quest/QuestAsset.h"
 
 
 
 UQuestEdFactory::UQuestEdFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-    SupportedClass = UQuestGraphBlueprint::StaticClass();
+    SupportedClass = UQuestAsset::StaticClass();
 }
 
 UObject* UQuestEdFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
-    UQuestGraph* NewAsset = NewObject<UQuestGraph>(InParent, Class, Name, Flags);
+    UQuestAsset* NewAsset = NewObject<UQuestAsset>(InParent, Class, Name, Flags);
     return NewAsset;
 }
 

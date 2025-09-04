@@ -7,7 +7,7 @@
 #include "BlueprintEditor.h"
 
 // Project Headers
-#include "RenQuest/Public/QuestAsset.h"
+#include "RenQuest/Public/Quest/QuestAsset.h"
 
 #include "RenQuestEd/Public/App/QuestEdApp.h"
 
@@ -30,7 +30,7 @@ FColor FQuestEdAction::GetTypeColor() const
 
 UClass* FQuestEdAction::GetSupportedClass() const
 {
-    return UQuestGraph::StaticClass();
+    return UQuestAsset::StaticClass();
 }
 
 uint32 FQuestEdAction::GetCategories()
@@ -43,11 +43,11 @@ void FQuestEdAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedP
     EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
     for (auto Obj : InObjects)
     {
-        UQuestGraph* Graph = Cast<UQuestGraph>(Obj);
-        if (Graph != nullptr)
+        UQuestAsset* Asset = Cast<UQuestAsset>(Obj);
+        if (Asset)
         {
             TSharedRef<FQuestEdApp> App(new FQuestEdApp());
-            App->InitEditor(Mode, EditWithinLevelEditor, Graph);
+            App->InitEditor(Mode, EditWithinLevelEditor, Asset);
         }
     }
 }

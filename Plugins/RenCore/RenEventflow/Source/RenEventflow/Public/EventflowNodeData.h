@@ -45,8 +45,8 @@ public:
 	UPROPERTY(EditAnywhere, NonTransactional, Meta = (GetOptions = "GetBlueprintMethods"))
 	FName NodeEvent;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UEventflowNodeTask> NodeTask;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<UEventflowNodeTask> NodeTask;
 	
 	virtual const TArray<FText>* GetInputOptions() const { return nullptr; };
 	virtual const TArray<FText>* GetOutputOptions() const { return nullptr; };

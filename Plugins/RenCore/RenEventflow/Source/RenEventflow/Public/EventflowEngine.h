@@ -25,7 +25,10 @@ class RENEVENTFLOW_API UEventflowEngine : public UObject
 
 public:
 
+	UEventflowAsset* GetOwningAsset() const;
+
 	void LoadAsset(TSoftObjectPtr<UEventflowAsset> InEventflowAsset);
+	void LoadAsset(UEventflowAsset* InEventflowAsset);
 
 	void UnloadAsset();
 
@@ -37,17 +40,15 @@ public:
 
 	void ReachImmediateNextNode();
 
+	virtual void ConstructBlueprint(TSubclassOf<UObject> InClass);
+
+	virtual void DestructBlueprint();
+
 	UEventflowNode* GetCurrentNode();
 
 	UEventflowBlueprint* GetCurrentBlueprint();
 
-	template<typename T>
-	T* GetCurrentBlueprint()
-	{
-		return Cast<T>(CurrentBlueprint);
-	}
-
-	bool StartNodeExecution(UEventflowNode* Node);
+	bool ExecuteNode(UEventflowNode* Node);
 
 	DECLARE_DELEGATE_OneParam(FOnNodeReached, UEventflowNode*);
 	FOnNodeReached OnNodeReached;
@@ -63,11 +64,13 @@ public:
 
 protected:
 
-	UPROPERTY()
-	TSoftObjectPtr<UEventflowAsset> CurrentAsset;
+	UEventflowBlueprint* CurrentBlueprint;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowBlueprint> CurrentBlueprint;
+	TSoftObjectPtr<UEventflowAsset> CurrentAssetPath;
+
+	UPROPERTY()
+	TObjectPtr<UEventflowAsset> CurrentAsset;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowNode> CurrentNode;
@@ -77,7 +80,6 @@ protected:
 	void SetCurrentNode(UEventflowNode* Node);
 
 	void InitializeEngine();
-
 
 };
 
