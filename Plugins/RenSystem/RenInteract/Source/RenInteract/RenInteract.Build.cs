@@ -42,7 +42,7 @@ public class RenInteract : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"Projects",
                 "RenCore",
-				"RenCoreLibrary",
+				"RCoreLibrary",
             }
 			);
 		

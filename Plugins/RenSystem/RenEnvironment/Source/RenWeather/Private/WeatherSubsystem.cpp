@@ -8,8 +8,8 @@
 // Project Header
 #include "RenCore/Public/WorldConfigSettings.h"
 
-#include "RenCoreLibrary/Public/LogMacro.h"
-#include "RenCoreLibrary/Public/TimerUtils.h"
+#include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/TimerUtils.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 

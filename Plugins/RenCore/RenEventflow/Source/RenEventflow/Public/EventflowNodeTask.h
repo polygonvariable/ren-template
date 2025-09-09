@@ -15,6 +15,10 @@ class UEventflowAsset;
 class UEventflowNode;
 
 
+/**
+ *
+ *
+ */
 UCLASS(Abstract, Blueprintable, MinimalAPI)
 class UEventflowNodeTask : public UObject
 {

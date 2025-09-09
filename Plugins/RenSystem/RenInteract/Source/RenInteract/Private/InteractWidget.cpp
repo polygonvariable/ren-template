@@ -8,7 +8,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenInteract/Public/InteractInterface.h"
 #include "RenInteract/Public/InteractItem.h"

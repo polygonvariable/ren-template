@@ -41,7 +41,7 @@ FLinearColor UQuestEdBeginNode::GetNodeTitleColor() const
 void UQuestEdBeginNode::AllocateDefaultPins()
 {
 	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecOut"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
+	Pin->PinFriendlyName = FText::FromString(TEXT("out"));
 	Pin->PinType.bIsConst = true;
 }
 
@@ -87,12 +87,16 @@ FLinearColor UQuestEdObjectiveNode::GetNodeTitleColor() const
 void UQuestEdObjectiveNode::AllocateDefaultPins()
 {
 	UEdGraphPin* InPin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecIn"));
-	InPin->PinFriendlyName = FText::FromString(TEXT("Exec"));
+	InPin->PinFriendlyName = FText::FromString(TEXT("in"));
 	InPin->PinType.bIsConst = true;
 
-	UEdGraphPin* OutPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecOut"));
-	OutPin->PinFriendlyName = FText::FromString(TEXT("Exec"));
-	OutPin->PinType.bIsConst = true;
+	UEdGraphPin* SuccessPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecSuccess"));
+	SuccessPin->PinFriendlyName = FText::FromString(TEXT("next"));
+	SuccessPin->PinType.bIsConst = true;
+
+	UEdGraphPin* FailPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecFail"));
+	FailPin->PinFriendlyName = FText::FromString(TEXT("fail"));
+	FailPin->PinType.bIsConst = true;
 }
 
 bool UQuestEdObjectiveNode::CanCreateRuntimeOutputPins() const
@@ -130,7 +134,7 @@ FLinearColor UQuestEdEndNode::GetNodeTitleColor() const
 void UQuestEdEndNode::AllocateDefaultPins()
 {
 	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecIn"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
+	Pin->PinFriendlyName = FText::FromString(TEXT("in"));
 	Pin->PinType.bIsConst = true;
 }
 

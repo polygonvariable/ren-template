@@ -28,7 +28,7 @@ public class RenSeason : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "RenCore",
-				"RenCoreLibrary",
+				"RCoreLibrary",
 				"RenAsset",
 				"RenEnvironment",
             }

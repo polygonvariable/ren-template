@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryAsset.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
 
 // Generated Headers
 #include "PurchasableAsset.generated.h"

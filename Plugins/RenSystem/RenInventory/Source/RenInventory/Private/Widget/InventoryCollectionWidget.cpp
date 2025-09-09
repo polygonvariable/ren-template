@@ -7,10 +7,10 @@
 #include "Components/ListView.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
-#include "RenCoreInventory/Public/InventoryAsset.h"
-#include "RenCoreInventory/Public/InventoryRecord.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
+#include "RCoreInventory/Public/InventoryRecord.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryEntryObject.h"

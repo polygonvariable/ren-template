@@ -15,6 +15,10 @@ class UEventflowNode;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS()
 class RENEVENTFLOW_API UEventflowData : public UObject
 {
@@ -24,24 +28,12 @@ class RENEVENTFLOW_API UEventflowData : public UObject
 public:
 
 	UPROPERTY()
-	TArray<TObjectPtr<UEventflowNode>> Nodes;
+	TMap<FGuid, TObjectPtr<UEventflowNode>> NodeList;
 
 	UPROPERTY()
-	int EntryNodeIndex = -1;
+	FGuid NodeEntry = FGuid();
 
-	UEventflowNode* GetNodeAt(int Index)
-	{
-		if (Nodes.IsValidIndex(Index))
-		{
-			return Nodes[Index];
-		}
-		return nullptr;
-	}
-
-	UEventflowNode* GetEntryNode()
-	{
-		return GetNodeAt(EntryNodeIndex);
-	}
+	const UEventflowNode* GetEntryNode() const;
 
 };
 

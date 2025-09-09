@@ -42,9 +42,10 @@ public class RenInventory : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"RenCore",
-				"RenCoreLibrary",
+                "RCoreStorage",
+                "RCoreLibrary",
                 "RenAsset",
-                "RenCoreInventory",
+                "RCoreInventory",
             }
             );
 		

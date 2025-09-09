@@ -9,9 +9,9 @@
 // Project Headers
 #include "RenCore/Public/Interface/ClockProviderInterface.h"
 
-#include "RenCoreLibrary/Public/LogMacro.h"
-#include "RenCoreLibrary/Public/SubsystemUtils.h"
-#include "RenCoreLibrary/Public/TimerUtils.h"
+#include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/SubsystemUtils.h"
+#include "RCoreLibrary/Public/TimerUtils.h"
 
 #include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 

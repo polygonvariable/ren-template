@@ -12,6 +12,7 @@
 #include "QuestAsset.generated.h"
 
 // Forward Declarations
+class UEventflowNode;
 
 
 
@@ -38,6 +39,17 @@ public:
 
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	// bool bIsNetworkReplicated = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsResumable = false;
+
+#if WITH_EDITOR
+
+	// ~ UEventflowAsset
+	virtual void PostPropertyUpdate() override;
+	// ~ End of UEventflowAsset
+
+#endif
 
 };
 

@@ -18,6 +18,10 @@
 
 #if WITH_EDITOR
 
+void UEventflowAsset::PostPropertyUpdate()
+{
+}
+
 void UEventflowAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 	Super::PreSave(ObjectSaveContext);
@@ -35,27 +39,52 @@ void UEventflowAsset::PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext)
 
 EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Context) const
 {
+	FString Message;
+
+	if (!ValidateGraphData(Message) || !ValidateGraphNodes(Message))
+	{
+		Context.AddError(FText::FromString(Message));
+		return EDataValidationResult::Invalid;
+	}
+
+	return EDataValidationResult::Valid;
+}
+
+bool UEventflowAsset::ValidateGraphData(FString& Message) const
+{
 	if (!GraphData)
 	{
-		Context.AddError(FText::FromString(TEXT("Graph data is missing, try resaving the asset.")));
-		return EDataValidationResult::Invalid;
+		Message = TEXT("Graph data is missing, try resaving the asset.");
+		return false;
 	}
 
-	if (!GraphData->Nodes.IsValidIndex(GraphData->EntryNodeIndex))
+	return true;
+}
+
+bool UEventflowAsset::ValidateGraphNodes(FString& Message) const
+{
+	if (!GraphData->NodeList.Contains(GraphData->NodeEntry))
 	{
-		Context.AddError(FText::FromString(TEXT("Entry node index is invalid.")));
-		return EDataValidationResult::Invalid;
+		Message = TEXT("Entry node is invalid.");
+		return false;
 	}
 
-	bool bHasGraphBlueprint = (GraphBlueprint != nullptr);
+	bool bHasBlueprint = (GraphBlueprint != nullptr);
 
-	const TArray<UEventflowNode*>& GraphNodes = GraphData->Nodes;
-	for (UEventflowNode* Node : GraphNodes)
+	const TMap<FGuid, TObjectPtr<UEventflowNode>>& GraphNodes = GraphData->NodeList;
+	for (const auto& Kv : GraphNodes)
 	{
+		UEventflowNode* Node = Kv.Value.Get();
+		if (!Node)
+		{
+			Message = TEXT("Node is missing, try resaving the asset.");
+			return false;
+		}
+
 		if (!Node->NodeData)
 		{
-			Context.AddError(FText::FromString(TEXT("Node data is missing, try resaving the asset.")));
-			return EDataValidationResult::Invalid;
+			Message = TEXT("Node data is missing, try resaving the asset.");
+			return false;
 		}
 
 		const FName& NodeEvent = Node->NodeData->NodeEvent;
@@ -64,13 +93,13 @@ EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Conte
 			continue;
 		}
 
-		if (bHasGraphBlueprint)
+		if (bHasBlueprint)
 		{
 			UFunction* Function = GraphBlueprint->FindFunctionByName(NodeEvent);
 			if (!Function)
 			{
-				Context.AddError(FText::FromString(TEXT("Node event '" + NodeEvent.ToString() + "' doesn't exist in graph blueprint.")));
-				return EDataValidationResult::Invalid;
+				Message = TEXT("Node event '" + NodeEvent.ToString() + "' doesn't exist in graph blueprint, try re-assigning the event.");
+				return false;
 			}
 
 			TArray<FFieldClass*> ExpectedTypes;
@@ -79,21 +108,21 @@ EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Conte
 			bool bMatches = UEventflowBlueprint::HasValidSignature(Function, ExpectedTypes);
 			if (!bMatches)
 			{
-				Context.AddError(FText::FromString(TEXT("Node event '" + NodeEvent.ToString() + "' has invalid signature.")));
-				return EDataValidationResult::Invalid;
+				Message = TEXT("Node event '" + NodeEvent.ToString() + "' has invalid signature, expected: (UEventflowNode* TargetNode).");
+				return false;
 			}
 		}
 		else
 		{
 			if (NodeEvent.IsValid())
 			{
-				Context.AddError(FText::FromString(TEXT("Graph blueprint is missing but node has event.")));
-				return EDataValidationResult::Invalid;
+				Message = TEXT("Graph blueprint is missing but node has event.");
+				return false;
 			}
 		}
 	}
 
-	return EDataValidationResult::Valid;
+	return true;
 }
 
 #endif

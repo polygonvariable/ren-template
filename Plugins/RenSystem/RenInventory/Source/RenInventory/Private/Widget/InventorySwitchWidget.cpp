@@ -8,9 +8,9 @@
 #include "Components/WidgetSwitcher.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryAsset.h"
-#include "RenCoreInventory/Public/InventoryRecord.h"
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
+#include "RCoreInventory/Public/InventoryRecord.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 
 

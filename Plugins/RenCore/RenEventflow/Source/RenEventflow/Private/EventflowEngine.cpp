@@ -8,7 +8,7 @@
 #include "Engine/StreamableManager.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEventflow/Public/EventflowAsset.h"
 #include "RenEventflow/Public/EventflowBlueprint.h"
@@ -49,7 +49,7 @@ void UEventflowEngine::LoadAsset(UEventflowAsset* InEventflowAsset)
 	CurrentAsset = InEventflowAsset;
 
 	InitializeEngine();
-	OnEngineInitialized.ExecuteIfBound();
+	HandleOnEngineInitialized();
 }
 
 void UEventflowEngine::UnloadAsset()
@@ -95,10 +95,10 @@ void UEventflowEngine::ReachEntryNode()
 	}
 
 	UEventflowData* GraphData = CurrentAsset->GraphData;
-	ReachNodeAt(GraphData->EntryNodeIndex);
+	ReachNode(GraphData->NodeEntry);
 }
 
-void UEventflowEngine::ReachNodeAt(int NodeIndex)
+void UEventflowEngine::ReachNode(FGuid NodeID)
 {
 	if (!IsValid(CurrentAsset))
 	{
@@ -113,16 +113,17 @@ void UEventflowEngine::ReachNodeAt(int NodeIndex)
 		return;
 	}
 
-	UEventflowData* GraphData = CurrentAsset->GraphData;
+	TMap<FGuid, TObjectPtr<UEventflowNode>>& NodeList = CurrentAsset->GraphData->NodeList;
+	const TObjectPtr<UEventflowNode>* NodePtr = NodeList.Find(NodeID);
 
-	bool bDataValid = GraphData->Nodes.IsValidIndex(NodeIndex);
-	if (!bDataValid)
+	if (!NodePtr)
 	{
-		LOG_ERROR(LogTemp, TEXT("Node index is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Node is invalid"));
 		return;
 	}
 
-	UEventflowNode* Node = GraphData->Nodes[NodeIndex];
+	UEventflowNode* Node = NodePtr->Get();
+
 	SetCurrentNode(Node);
 }
 
@@ -154,11 +155,7 @@ void UEventflowEngine::ConstructBlueprint(TSubclassOf<UObject> InClass)
 
 	CurrentBlueprint = GraphBlueprint;
 
-	GraphBlueprint->OnNodeExecuteFinished.BindWeakLambda(this, [this](UEventflowNode* Node, bool bSuccess)
-		{
-			OnNodeExited.ExecuteIfBound(Node, bSuccess);
-		}
-	);
+	GraphBlueprint->OnNodeExecuteFinished.BindUObject(this, &UEventflowEngine::HandleOnNodeExited);
 	GraphBlueprint->RegisterBlueprint(CurrentAsset);
 }
 
@@ -188,12 +185,12 @@ void UEventflowEngine::SetCurrentNode(UEventflowNode* Node)
 	if (!IsValid(Node) || (CurrentNode == Node))
 	{
 		LOG_ERROR(LogTemp, TEXT("Node is null or already current node"));
-		OnGraphEnded.ExecuteIfBound();
+		HandleOnGraphEnded();
 		return;
 	}
 
 	CurrentNode = Node;
-	OnNodeReached.ExecuteIfBound(Node);
+	HandleOnNodeReached(Node);
 }
 
 bool UEventflowEngine::ExecuteNode(UEventflowNode* Node)
@@ -211,8 +208,30 @@ void UEventflowEngine::HandleAssetLoaded()
 	if (IsValid(CurrentAsset))
 	{
 		InitializeEngine();
-
-		OnEngineInitialized.ExecuteIfBound();
+		HandleOnEngineInitialized();
 	}
 }
+
+
+
+void UEventflowEngine::HandleOnNodeReached(UEventflowNode* Node)
+{
+	OnNodeReached.ExecuteIfBound(Node);
+}
+
+void UEventflowEngine::HandleOnNodeExited(UEventflowNode* Node, bool bSuccess)
+{
+	OnNodeExited.ExecuteIfBound(Node, bSuccess);
+}
+
+void UEventflowEngine::HandleOnGraphEnded()
+{
+	OnGraphEnded.ExecuteIfBound();
+}
+
+void UEventflowEngine::HandleOnEngineInitialized()
+{
+	OnEngineInitialized.ExecuteIfBound();
+}
+
 

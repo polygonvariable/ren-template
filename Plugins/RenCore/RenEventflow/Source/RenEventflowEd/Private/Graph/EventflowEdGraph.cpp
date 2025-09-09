@@ -37,7 +37,7 @@ void UEventflowEdGraph::RegisterNodeClasses()
 
 void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
 {
-	if (!GraphAsset || !ValidateGraphData())
+	if (!GraphAsset)
 	{
 		return;
 	}
@@ -62,13 +62,15 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
 		UEventflowEdGraphNode* UINode = Cast<UEventflowEdGraphNode>(Nodes[i]);
 		if (!UINode) continue;
 
+		FGuid NodeGuid = (UINode->NodeGuid.IsValid()) ? UINode->NodeGuid : FGuid::NewGuid();
+
 		if (UINode->IsEntryNode())
 		{
-			GraphData->EntryNodeIndex = i;
+			GraphData->NodeEntry = NodeGuid;
 		}
 
 		UEventflowNode* AssetNode = NewObject<UEventflowNode>(GraphData, GetAssetNodeClass());
-		AssetNode->NodeGuid = UINode->NodeGuid;
+		AssetNode->NodeId = NodeGuid;
 		AssetNode->NodeData = DuplicateObject(UINode->GetNodeData(), AssetNode);
 		AssetNode->NodeType = UINode->GetNodeType();
 		AssetNode->NodePosition = FVector2D(UINode->NodePosX, UINode->NodePosY);
@@ -95,15 +97,15 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
 			PinMap.Add(UIPin->PinId, AssetPin);
 			if (UIPin->Direction == EEdGraphPinDirection::EGPD_Input)
 			{
-				AssetNode->InputPins.Add(AssetPin);
+				AssetNode->NodeInputs.Add(AssetPin);
 			}
 			else
 			{
-				AssetNode->OutputPins.Add(AssetPin);
+				AssetNode->NodeOutputs.Add(AssetPin);
 			}
 		}
 
-		GraphData->Nodes.Add(AssetNode);
+		GraphData->NodeList.Add(NodeGuid, AssetNode);
 	}
 
 	for (TPair<FGuid, FGuid> Connection : Connections)
@@ -129,15 +131,17 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 	{
 		return;
 	}
-
-	const TArray<UEventflowNode*>& AssetNodes = GraphData->Nodes;
-
 	// TArray of TPair<From, To> Output->Input Pin Connections
 	TArray<TPair<FGuid, FGuid>> Connections;
 	TMap<FGuid, UEdGraphPin*> PinMap;
 
-	for (UEventflowNode* AssetNode : AssetNodes)
+	const TMap<FGuid, TObjectPtr<UEventflowNode>>& NodeList = GraphData->NodeList;
+
+	for (const TTuple<FGuid, TObjectPtr<UEventflowNode>>& Kv : NodeList)
 	{
+		FGuid NodeGuid = (Kv.Key.IsValid()) ? Kv.Key : FGuid::NewGuid();
+		UEventflowNode* AssetNode = Kv.Value.Get();
+
 		if (!AssetNode) continue;
 
 		TSubclassOf<UEventflowEdGraphNode> NodeClass = GetRegisteredNodeClass(AssetNode->NodeType);
@@ -150,7 +154,7 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 		if (!NodeDataClass) continue;
 
 		UINode->AllocateDefaultPins();
-		UINode->NodeGuid = AssetNode->NodeGuid;
+		UINode->NodeGuid = NodeGuid;
 		UINode->NodePosX = AssetNode->NodePosition.X;
 		UINode->NodePosY = AssetNode->NodePosition.Y;
 
@@ -163,12 +167,12 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 			UINode->SetNodeData(NewObject<UEventflowNodeData>(UINode, NodeDataClass));
 		}
 
-		for (UEventflowPin* AssetPin : AssetNode->InputPins)
+		for (UEventflowPin* AssetPin : AssetNode->NodeInputs)
 		{
 			AddNodePin(EEdGraphPinDirection::EGPD_Input, AssetPin, UINode, PinMap);
 		}
 		
-		for (UEventflowPin* AssetPin : AssetNode->OutputPins)
+		for (UEventflowPin* AssetPin : AssetNode->NodeOutputs)
 		{
 			if (AddNodePin(EEdGraphPinDirection::EGPD_Output, AssetPin, UINode, PinMap) && AssetPin->PinLinkedTo)
 			{
@@ -178,7 +182,6 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 				Connections.Add(Connection);
 			}
 		}
-
 
 		AddNode(UINode, false, false);
 	}
@@ -194,7 +197,7 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 	}
 }
 
-
+/*
 bool UEventflowEdGraph::ValidateGraphData()
 {
 	int EntryNodes = 0;
@@ -228,7 +231,7 @@ bool UEventflowEdGraph::ValidateGraphData()
 	}
 
 	return true;
-}
+}*/
 
 void UEventflowEdGraph::SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint)
 {
@@ -255,16 +258,16 @@ bool UEventflowEdGraph::AddNodePin(EEdGraphPinDirection Direction, UEventflowPin
 	if (AssetPin->bPinIsConst)
 	{
 		UIPin = UINode->FindPin(AssetPin->PinName);
-		UIPin->PinId = AssetPin->PinGuid;
 	}
 	else
 	{
 		UIPin = UINode->CreatePin(Direction, AssetPin->PinCategory, AssetPin->PinName);
-		UIPin->PinId = AssetPin->PinGuid;
 		UIPin->PinFriendlyName = AssetPin->PinFriendlyName;
 		UIPin->PinType.bIsConst = false;
 	}
 	if (!UIPin) return false;
+
+	UIPin->PinId = AssetPin->PinGuid;
 
 	PinMap.Add(AssetPin->PinGuid, UIPin);
 

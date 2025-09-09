@@ -6,8 +6,8 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryItemRarity.h"
-#include "RenCoreInventory/Public/InventoryItemType.h"
+#include "RCoreInventory/Public/InventoryItemRarity.h"
+#include "RCoreInventory/Public/InventoryItemType.h"
 
 #include "RenAsset/Public/Inventory/Asset/Category/CraftableAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"

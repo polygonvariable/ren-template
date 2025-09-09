@@ -7,7 +7,7 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryFilterRule.h"
+#include "RCoreInventory/Public/InventoryFilterRule.h"
 
 // Generated Headers
 #include "InventorySwitchWidget.generated.h"

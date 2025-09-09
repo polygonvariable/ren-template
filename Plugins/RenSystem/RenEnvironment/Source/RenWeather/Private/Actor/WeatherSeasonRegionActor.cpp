@@ -6,8 +6,8 @@
 // Engine Headers
 
 // Project Header
-#include "RenCoreLibrary/Public/LogMacro.h"
-#include "RenCoreLibrary/Public/SubsystemUtils.h"
+#include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/SubsystemUtils.h"
 
 #include "RenEnvironment/Public/Interface/SeasonProviderInterface.h"
 

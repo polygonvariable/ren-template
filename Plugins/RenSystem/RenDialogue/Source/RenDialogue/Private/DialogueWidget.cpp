@@ -9,9 +9,9 @@
 #include "Components/VerticalBox.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
-
+#include "Kismet2/BlueprintEditorUtils.h"
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEventflow/Public/EventflowAsset.h"
 #include "RenEventflow/Public/EventflowBlueprint.h"
@@ -104,7 +104,7 @@ void UDialogueWidget::ShowOptions(UEventflowNode* Node)
 
 	if (!Node || !Node->NodeData || !OptionWidgetClass) return;
 
-	int PinCount = Node->OutputPins.Num();
+	int PinCount = Node->NodeOutputs.Num();
 
 	const TArray<FText>* Options = Node->NodeData->GetOutputOptions();
 	if (!Options) return;

@@ -7,7 +7,7 @@
 #include "Components/PrimitiveComponent.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
 

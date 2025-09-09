@@ -4,7 +4,7 @@
 #include "Inventory/Type/InventoryAssetQuantity.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryAsset.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
 
 
 

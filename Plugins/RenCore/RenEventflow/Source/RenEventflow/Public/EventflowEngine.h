@@ -17,6 +17,10 @@ class UEventflowBlueprint;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS()
 class RENEVENTFLOW_API UEventflowEngine : public UObject
 {
@@ -33,19 +37,14 @@ public:
 	void UnloadAsset();
 
 	void ReachEntryNode();
-
-	void ReachNodeAt(int Index);
-
+	void ReachNode(FGuid NodeID);
 	void ReachNextNode(int Index);
-
 	void ReachImmediateNextNode();
 
 	virtual void ConstructBlueprint(TSubclassOf<UObject> InClass);
-
 	virtual void DestructBlueprint();
 
 	UEventflowNode* GetCurrentNode();
-
 	UEventflowBlueprint* GetCurrentBlueprint();
 
 	bool ExecuteNode(UEventflowNode* Node);
@@ -75,11 +74,17 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UEventflowNode> CurrentNode;
 
-	virtual void HandleAssetLoaded();
+
+	void InitializeEngine();
 
 	void SetCurrentNode(UEventflowNode* Node);
 
-	void InitializeEngine();
+	virtual void HandleAssetLoaded();
+
+	virtual void HandleOnNodeReached(UEventflowNode* Node);
+	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess);
+	virtual void HandleOnGraphEnded();
+	virtual void HandleOnEngineInitialized();
 
 };
 

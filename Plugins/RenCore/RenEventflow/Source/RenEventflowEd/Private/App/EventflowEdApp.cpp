@@ -140,6 +140,7 @@ void FEventflowEdApp::UpdateWorkingAsset()
 	}
 
 	WorkingGraph->UpdateAssetData(WorkingAsset);
+	WorkingAsset->PostPropertyUpdate();
 
 	UE_LOG(LogTemp, Warning, TEXT("FEventflowEdApp::UpdateWorkingAsset"));
 }

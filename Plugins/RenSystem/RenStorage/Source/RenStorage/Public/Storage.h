@@ -9,9 +9,13 @@
 // Project Headers
 #include "RenCore/Public/Interface/ClockProviderInterface.h"
 
-#include "RenCoreInventory/Public/InventoryContainer.h"
-#include "RenCoreInventory/Public/InventoryProviderInterface.h"
-#include "RenCoreTimestamp/Public/TimestampProviderInterface.h"
+#include "RCoreInventory/Public/InventoryContainer.h"
+#include "RCoreInventory/Public/InventoryProviderInterface.h"
+
+#include "RCoreTimestamp/Public/TimestampProviderInterface.h"
+
+#include "RCoreQuest/Public/QuestProviderInterface.h"
+#include "RCoreQuest/Public/QuestRecord.h"
 
 #include "RenCore/Public/Record/ClockRecord.h"
 
@@ -24,7 +28,7 @@
  *
  */
 UCLASS()
-class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public ITimestampProviderInterface
+class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public ITimestampProviderInterface, public IQuestProviderInterface
 {
 
 	GENERATED_BODY()
@@ -52,14 +56,41 @@ public:
 	UPROPERTY()
 	TMap<FName, FClockRecord> ClockRecords;
 
+	/**
+	 * TMap<FGuid, FQuestRecord>
+	 */
+	UPROPERTY()
+	TMap<FGuid, FQuestRecord> ActiveQuests;
+
+	/**
+	 * TMap<FGuid, FDateTime>
+	 */
+	UPROPERTY()
+	TMap<FGuid, FDateTime> CompletedQuests;
+
+
+	// ~ IInventoryProviderInterface
 	virtual const TMap<FName, FInventoryContainer>& GetInventoryContainer() const override { return InventoryContainers; }
 	virtual TMap<FName, FInventoryContainer>& GetMutableInventoryContainer() override { return InventoryContainers; }
+	// ~ End of IInventoryProviderInterface
 
+	// ~ IClockRecordProviderInterface
 	virtual const TMap<FName, FClockRecord>& GetClockRecords() const override { return ClockRecords; }
 	virtual TMap<FName, FClockRecord>& GetMutableClockRecords() override { return ClockRecords; }
+	// ~ End of IClockRecordProviderInterface
 
+	// ~ ITimestampProviderInterface
 	virtual const TMap<FName, FDateTime>& GetTimestamp() const override { return Timestamps; }
 	virtual TMap<FName, FDateTime>& GetMutableTimestamp() override { return Timestamps; }
+	// ~ End of ITimestampProviderInterface
+
+	// ~ IQuestProviderInterface
+	virtual const TMap<FGuid, FQuestRecord>& GetActiveQuests() const override { return ActiveQuests; }
+	virtual TMap<FGuid, FQuestRecord>& GetMutableActiveQuests() override { return ActiveQuests; }
+
+	virtual const TMap<FGuid, FDateTime>& GetCompletedQuests() const override { return CompletedQuests; }
+	virtual TMap<FGuid, FDateTime>& GetMutableCompletedQuests() override { return CompletedQuests; }
+	// ~ End of IQuestProviderInterface
 
 };
 

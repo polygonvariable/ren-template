@@ -16,4 +16,5 @@ class UQuestGraph;
 
 DECLARE_DELEGATE(FOnQuestObjectiveCompleted);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnQuestStarted, UQuestGraph*);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnQuestResumed, UQuestGraph*);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnQuestCompleted, UQuestGraph*);

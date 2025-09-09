@@ -42,8 +42,8 @@ public class RenPickup : ModuleRules
                 "Projects",
 
                 "RenCore",
-                "RenCoreLibrary",
-                "RenCoreInventory",
+                "RCoreLibrary",
+                "RCoreInventory",
 
                 "RenTimestamp",
                 "RenInventory",

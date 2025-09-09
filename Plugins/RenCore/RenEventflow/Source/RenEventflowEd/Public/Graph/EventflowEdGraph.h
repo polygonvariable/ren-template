@@ -36,7 +36,7 @@ public:
 	void UpdateAssetData(UEventflowAsset* GraphAsset);
 	void UpdateGraphData(UEventflowAsset* GraphAsset);
 
-	virtual bool ValidateGraphData();
+	//virtual bool ValidateGraphData();
 
 	void SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint);
 

@@ -15,6 +15,10 @@ class UEventflowNode;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS()
 class RENEVENTFLOW_API UEventflowPin : public UObject
 {

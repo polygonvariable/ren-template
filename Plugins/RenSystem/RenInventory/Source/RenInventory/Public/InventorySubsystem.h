@@ -7,9 +7,9 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "RenCoreInventory/Public/InventoryFilterRule.h"
-#include "RenCoreInventory/Public/InventoryItemType.h"
-#include "RenCoreInventory/Public/InventoryManagerInterface.h"
+#include "RCoreInventory/Public/InventoryFilterRule.h"
+#include "RCoreInventory/Public/InventoryItemType.h"
+#include "RCoreInventory/Public/InventoryManagerInterface.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 

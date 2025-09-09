@@ -11,15 +11,16 @@
 
 #include "RenCore/Public/Delegate/LatentDelegates.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenCore/Public/Interface/StorageProviderInterface.h"
 
-#include "RenCoreInventory/Public/InventoryAsset.h"
-#include "RenCoreInventory/Public/InventoryItemType.h"
-#include "RenCoreInventory/Public/InventoryProviderInterface.h"
-#include "RenCoreInventory/Public/InventoryRecord.h"
+#include "RCoreStorage/Public/StorageProviderInterface.h"
 
-#include "RenCoreLibrary/Public/SubsystemUtils.h"
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
+#include "RCoreInventory/Public/InventoryItemType.h"
+#include "RCoreInventory/Public/InventoryProviderInterface.h"
+#include "RCoreInventory/Public/InventoryRecord.h"
+
+#include "RCoreLibrary/Public/SubsystemUtils.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 
 

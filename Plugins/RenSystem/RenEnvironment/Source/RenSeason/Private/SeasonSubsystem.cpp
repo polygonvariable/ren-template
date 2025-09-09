@@ -11,8 +11,8 @@
 #include "RenCore/Public/Interface/ClockProviderInterface.h"
 #include "RenAsset/Public/Game/ClockAsset.h"
 #include "RenCore/Public/Developer/GameMetadataSettings.h"
-#include "RenCoreLibrary/Public/LogMacro.h"
-#include "RenCoreLibrary/Public/SubsystemUtils.h"
+#include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/SubsystemUtils.h"
 #include "RenCore/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"

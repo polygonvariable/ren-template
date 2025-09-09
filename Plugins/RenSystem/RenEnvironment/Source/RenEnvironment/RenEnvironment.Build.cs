@@ -29,7 +29,7 @@ public class RenEnvironment : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "SunPosition",
 				"RenCore",
-				"RenCoreLibrary",
+				"RCoreLibrary",
 				"RenAsset",
             }
 			);

@@ -41,7 +41,7 @@ public class RenDialogue : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"UMG",
 
-                "RenCoreLibrary",
+                "RCoreLibrary",
                 "RenEventflow",
             }
 			);

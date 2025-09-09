@@ -21,17 +21,27 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenCoreInventory",
+			"Name": "RCoreInventory",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenCoreEnhance",
+			"Name": "RCoreEnhance",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenCoreTimestamp",
+			"Name": "RCoreTimestamp",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreQuest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreStorage",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

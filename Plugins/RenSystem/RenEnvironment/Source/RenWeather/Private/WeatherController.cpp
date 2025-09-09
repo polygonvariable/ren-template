@@ -7,7 +7,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"

@@ -17,6 +17,10 @@ class UEventflowBlueprint;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS(BlueprintType)
 class RENEVENTFLOW_API UEventflowAsset : public UDataAsset
 {
@@ -43,6 +47,8 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnEventflowAssetSaved);
 	FOnEventflowAssetSaved OnEventflowAssetSaved;
 
+	virtual void PostPropertyUpdate();
+
 protected:
 
 	// ~ UObject
@@ -55,6 +61,9 @@ public:
 	// ~ UObject
 	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const;
 	// ~ End of UObject
+
+	bool ValidateGraphData(FString& Message) const;
+	bool ValidateGraphNodes(FString& Message) const;
 
 #endif
 

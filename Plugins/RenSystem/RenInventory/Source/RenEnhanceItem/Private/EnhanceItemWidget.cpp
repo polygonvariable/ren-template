@@ -8,8 +8,8 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RenCoreEnhance/Public/EnhanceLibrary.h"
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreEnhance/Public/EnhanceLibrary.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"

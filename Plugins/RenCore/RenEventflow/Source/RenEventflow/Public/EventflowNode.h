@@ -16,6 +16,10 @@ class UEventflowPin;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS(BlueprintType)
 class RENEVENTFLOW_API UEventflowNode : public UObject
 {
@@ -25,15 +29,15 @@ class RENEVENTFLOW_API UEventflowNode : public UObject
 public:
 
 	UPROPERTY()
-	TArray<TObjectPtr<UEventflowPin>> InputPins;
+	FGuid NodeId;
 
 	UPROPERTY()
-	TArray<TObjectPtr<UEventflowPin>> OutputPins;
+	TArray<TObjectPtr<UEventflowPin>> NodeInputs;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UEventflowPin>> NodeOutputs;
 
 #if WITH_EDITORONLY_DATA
-
-	UPROPERTY()
-	FGuid NodeGuid;
 
 	UPROPERTY()
 	FName NodeType;

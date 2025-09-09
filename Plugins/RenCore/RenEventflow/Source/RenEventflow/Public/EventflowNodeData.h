@@ -17,6 +17,10 @@ class UEventflowBlueprint;
 
 
 
+/**
+ *
+ *
+ */
 UCLASS(BlueprintType)
 class RENEVENTFLOW_API UEventflowNodeData : public UObject
 {

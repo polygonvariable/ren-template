@@ -4,7 +4,7 @@
 #include "Timer/Timer.h"
 
 // Project Headers
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 
 void UTimer::StartTimer(const float InTickInterval, const int InTickLimit, const bool bPreserveTime)

@@ -18,10 +18,14 @@
 class UEventflowEngine;
 
 class UQuestAsset;
+class UQuestEngine;
+
+class IQuestProviderInterface;
+struct FQuestRecord;
 
 
 
-/*
+/**
  *
  *
  */
@@ -33,23 +37,58 @@ class UQuestSubsystem : public UWorldSubsystem
 
 public:
 
+	FOnQuestStarted OnQuestStarted;
+	FOnQuestResumed OnQuestResumed;
+	FOnQuestCompleted OnQuestCompleted;
+
+
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(UQuestAsset* QuestAsset);
+	void StartQuest(FGuid QuestId);
+
+	void ResumeQuest(UQuestAsset* QuestAsset, FGuid EntryId);
+
+	bool SetObjectiveToCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId);
+	bool SetObjectiveToActive(UQuestAsset* QuestAsset, FGuid ObjectiveId);
 
 	void EndQuest(UQuestAsset* QuestAsset);
 
-	FOnQuestStarted OnQuestStarted;
-	FOnQuestCompleted OnQuestCompleted;
 
 	bool IsQuestActive(UQuestAsset* QuestAsset) const;
 	bool IsQuestCompleted(UQuestAsset* QuestAsset) const;
 
-	TMap<TObjectPtr<UQuestAsset>, TObjectPtr<UEventflowEngine>> ActiveQuests;
-	TObjectPtr<UQuestAsset> FocusedQuest;
+	UFUNCTION(BlueprintCallable)
+	void AddAvailableQuest(UQuestAsset* QuestAsset);
 
+
+	FQuestRecord* GetActiveQuest(UQuestAsset* QuestAsset) const;
+	FDateTime* GetCompletedQuest(UQuestAsset* QuestAsset) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsObjectiveCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsObjectiveActive(UQuestAsset* QuestAsset, FGuid ObjectiveId) const;
+	//TObjectPtr<UQuestAsset> FocusedQuest;
+
+	const TMap<FGuid, FQuestRecord>* GetActiveQuests() const;
+	const TMap<FGuid, FDateTime>* GetCompletedQuests() const;
+	
 protected:
 
-protected:
+	TMap<TObjectPtr<UQuestAsset>, TObjectPtr<UQuestEngine>> QuestEngines;
+
+	TWeakInterfacePtr<IQuestProviderInterface> QuestProvider;
+
+	TMap<FGuid, TObjectPtr<UQuestAsset>> AvailableQuests;
+
+	UQuestAsset* GetQuestAsset(FGuid QuestId) const;
+
+	TMap<FGuid, FQuestRecord>* GetMutableActiveQuests() const;
+	TMap<FGuid, FDateTime>* GetMutableCompletedQuests() const;
+
+	UFUNCTION(BlueprintCallable)
+	void HandleStorageLoaded();
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

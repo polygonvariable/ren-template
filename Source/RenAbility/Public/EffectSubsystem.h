@@ -9,7 +9,7 @@
 #include "InstancedStruct.h"
 #include "UObject/Interface.h"
 
-#include "RenCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 // Generated Headers
 #include "EffectSubsystem.generated.h"

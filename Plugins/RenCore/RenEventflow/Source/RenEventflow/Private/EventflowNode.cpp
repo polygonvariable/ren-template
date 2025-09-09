@@ -12,12 +12,12 @@
 
 UEventflowNode* UEventflowNode::GetNextNodeAt(int Index) const
 {
-	if (!OutputPins.IsValidIndex(Index))
+	if (!NodeOutputs.IsValidIndex(Index))
 	{
 		return nullptr;
 	}
 
-	UEventflowPin* Pin = OutputPins[Index];
+	UEventflowPin* Pin = NodeOutputs[Index];
 	if (!Pin)
 	{
 		return nullptr;
