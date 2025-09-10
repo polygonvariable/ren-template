@@ -1,0 +1,33 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "CoreMinimal.h"
+#include "NativeGameplayTags.h"
+
+
+
+// Gameplay Tags
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack01_End);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack02_End);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack03_End);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack04_End);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack05_End);
+
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_State_Ready);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_State_Aim);
+
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Attack_Basic_01);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Attack_Basic_02);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Attack_Basic_03);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Attack_Basic_04);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Attack_Basic_05);
+
+
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_01);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_02);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_03);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_04);
+RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_05);
+

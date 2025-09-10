@@ -7,7 +7,8 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "RenCore/Public/Interface/ClockProviderInterface.h"
+#include "RCoreClock/Public/ClockProviderInterface.h"
+#include "RCoreClock/Public/ClockRecord.h"
 
 #include "RCoreInventory/Public/InventoryContainer.h"
 #include "RCoreInventory/Public/InventoryProviderInterface.h"
@@ -17,7 +18,6 @@
 #include "RCoreQuest/Public/QuestProviderInterface.h"
 #include "RCoreQuest/Public/QuestRecord.h"
 
-#include "RenCore/Public/Record/ClockRecord.h"
 
 // Generated Headers
 #include "Storage.generated.h"
@@ -28,7 +28,7 @@
  *
  */
 UCLASS()
-class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockRecordProviderInterface, public ITimestampProviderInterface, public IQuestProviderInterface
+class UStorage : public USaveGame, public IInventoryProviderInterface, public IClockProviderInterface, public ITimestampProviderInterface, public IQuestProviderInterface
 {
 
 	GENERATED_BODY()

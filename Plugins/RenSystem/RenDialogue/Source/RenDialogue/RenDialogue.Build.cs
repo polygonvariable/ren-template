@@ -27,7 +27,9 @@ public class RenDialogue : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+				"UMG",
+                "RenEventflow",
+            }
 			);
 			
 		
@@ -39,10 +41,7 @@ public class RenDialogue : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"UMG",
-
                 "RCoreLibrary",
-                "RenEventflow",
             }
 			);
 		

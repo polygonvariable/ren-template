@@ -28,10 +28,7 @@ public class RenGameplay : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"UMG",
-				"RenCore",
-                "RCoreStorage",
-                "RCoreLibrary",
-				"RenAsset",
+                "RCoreClock",
             }
 			);
 			
@@ -44,6 +41,9 @@ public class RenGameplay : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "RCoreStorage",
+                "RCoreLibrary",
+                "RCoreSettings",
             }
 			);
 		

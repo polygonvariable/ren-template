@@ -6,16 +6,17 @@
 // Engine Headers
 
 // Project Headers
-#include "RenAsset/Public/Game/ClockAsset.h"
-
 #include "RCoreStorage/Public/StorageProviderInterface.h"
 
+#include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/SubsystemUtils.h"
 #include "RCoreLibrary/Public/TimerUtils.h"
-#include "RCoreLibrary/Public/LogMacro.h"
 
-#include "RenCore/Public/Record/ClockRecord.h"
-#include "RenCore/Public/WorldConfigSettings.h"
+#include "RCoreClock/Public/ClockAsset.h"
+#include "RCoreClock/Public/ClockProviderInterface.h"
+#include "RCoreClock/Public/ClockRecord.h"
+
+#include "RCoreSettings/Public/WorldConfigSettings.h"
 
 
 
@@ -27,7 +28,7 @@ bool UClockSubsystem::StartClock()
 		return false;
 	}
 
-	OnGameClockStarted.Broadcast();
+	ClockDelegates.OnClockStarted.Broadcast();
 	return true;
 }
 
@@ -35,7 +36,7 @@ bool UClockSubsystem::StopClock()
 {
 	if (TimerUtils::PauseTimer(ClockTimerHandle, this))
 	{
-		OnGameClockStopped.Broadcast();
+		ClockDelegates.OnClockStopped.Broadcast();
 		return true;
 	}
 
@@ -106,6 +107,11 @@ int UClockSubsystem::GetCurrentYear() const
 
 
 
+FClockDelegates& UClockSubsystem::GetClockDelegates()
+{
+	return ClockDelegates;
+}
+
 float UClockSubsystem::GetSmoothNormalizedTime() const
 {
 	float CurrentSeconds = GetWorld()->GetTimeSeconds();
@@ -130,15 +136,15 @@ bool UClockSubsystem::IsClockActive() const
 
 void UClockSubsystem::LoadStoredTime()
 {
-	IClockRecordProviderInterface* ClockRecordInterfacePtr = ClockRecordInterface.Get();
-	if (!ClockRecordInterfacePtr)
+	IClockProviderInterface* ClockProviderInterface = ClockProvider.Get();
+	if (!ClockProviderInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("ClockRecordInterface is not valid"));
 		return;
 	}
 
 	FName MapName = FName(GetWorld()->GetMapName());
-	const TMap<FName, FClockRecord>& Records = ClockRecordInterfacePtr->GetClockRecords();
+	const TMap<FName, FClockRecord>& Records = ClockProviderInterface->GetClockRecords();
 
 	if (const FClockRecord* ClockRecord = Records.Find(MapName))
 	{
@@ -146,9 +152,9 @@ void UClockSubsystem::LoadStoredTime()
 		CurrentDay = FMath::Clamp(ClockRecord->Day, 1, TotalDaysInAYear);
 		CurrentYear = FMath::Max(ClockRecord->Year, 1);
 
-		OnGameDayChanged.Broadcast(CurrentDay);
-		OnGameYearChanged.Broadcast(CurrentYear);
-		OnGameTimeChanged.Broadcast(CurrentTime);
+		ClockDelegates.OnDayChanged.Broadcast(CurrentDay);
+		ClockDelegates.OnYearChanged.Broadcast(CurrentYear);
+		ClockDelegates.OnTimeChanged.Broadcast(CurrentTime);
 
 		LOG_INFO(LogTemp, TEXT("Clock day & time loaded"));
 	}
@@ -160,15 +166,15 @@ void UClockSubsystem::LoadStoredTime()
 
 void UClockSubsystem::UpdateStoredTime()
 {
-	IClockRecordProviderInterface* ClockRecordInterfacePtr = ClockRecordInterface.Get();
-	if (!ClockRecordInterfacePtr)
+	IClockProviderInterface* ClockProviderInterface = ClockProvider.Get();
+	if (!ClockProviderInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("ClockRecordInterface is not valid"));
 		return;
 	}
 
 	FName MapName = FName(GetWorld()->GetMapName());
-	TMap<FName, FClockRecord>& Records = ClockRecordInterfacePtr->GetMutableClockRecords();
+	TMap<FName, FClockRecord>& Records = ClockProviderInterface->GetMutableClockRecords();
 
 	if (FClockRecord* ClockRecord = Records.Find(MapName))
 	{
@@ -201,14 +207,14 @@ void UClockSubsystem::HandleClockTick()
 			CurrentDay = 1;
 			CurrentYear++;
 
-			OnGameYearChanged.Broadcast(CurrentYear);
+			ClockDelegates.OnYearChanged.Broadcast(CurrentYear);
 		}
 
-		OnGameDayChanged.Broadcast(CurrentDay);
+		ClockDelegates.OnDayChanged.Broadcast(CurrentDay);
 	}
 
 	LastTickAt = GetWorld()->GetTimeSeconds();
-	OnGameTimeChanged.Broadcast(CurrentTime);
+	ClockDelegates.OnTimeChanged.Broadcast(CurrentTime);
 }
 
 void UClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
@@ -220,12 +226,6 @@ void UClockSubsystem::HandleWorldBeginTearDown(UWorld* World)
 void UClockSubsystem::LoadClockRecord(UWorld& InWorld)
 {
 	UGameInstance* GameInstance = InWorld.GetGameInstance();
-	if (!IsValid(GameInstance))
-	{
-		LOG_ERROR(LogTemp, TEXT("GameInstance is invalid"));
-		return;
-	}
-
 	IStorageProviderInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GameInstance);
 	if (!StorageInterface)
 	{
@@ -234,23 +234,15 @@ void UClockSubsystem::LoadClockRecord(UWorld& InWorld)
 	}
 
 	UObject* SaveGame = StorageInterface->GetLocalStorage();
-	if (IsValid(SaveGame) && SaveGame->Implements<UClockRecordProviderInterface>())
+	IClockProviderInterface* ClockProviderInterface = Cast<IClockProviderInterface>(SaveGame);
+	if (!ClockProviderInterface)
 	{
-		IClockRecordProviderInterface* ClockRecordInterfacePtr = Cast<IClockRecordProviderInterface>(SaveGame);
-		if (ClockRecordInterfacePtr)
-		{
-			ClockRecordInterface = TWeakInterfacePtr<IClockRecordProviderInterface>(ClockRecordInterfacePtr);
-			LoadStoredTime();
-		}
-		else
-		{
-			LOG_ERROR(LogTemp, TEXT("ClockRecordInterface cast failed"));
-		}
+		LOG_ERROR(LogTemp, TEXT("ClockRecordInterface cast failed"));
+		return;
 	}
-	else
-	{
-		LOG_ERROR(LogTemp, TEXT("SaveGame is invalid or does not implement ClockRecordProviderInterface"));
-	}
+
+	ClockProvider = TWeakInterfacePtr<IClockProviderInterface>(ClockProviderInterface);
+	LoadStoredTime();
 }
 
 

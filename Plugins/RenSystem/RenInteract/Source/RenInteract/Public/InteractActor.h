@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCore/Public/Actor/RegionActor.h"
+#include "RCoreCommon/Public/Actor/RegionActor.h"
 
 #include "RenInteract/Public/InteractInterface.h"
 #include "RenInteract/Public/InteractItem.h"

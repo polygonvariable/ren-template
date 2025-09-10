@@ -7,7 +7,7 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RenCore/Public/Interface/ObjectPoolInterface.h"
+#include "RCorePool/Public/ObjectPoolInterface.h"
 
 // Generated Headers
 #include "InventoryEntryObject.generated.h"

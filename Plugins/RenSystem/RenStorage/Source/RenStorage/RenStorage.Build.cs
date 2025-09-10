@@ -27,6 +27,10 @@ public class RenStorage : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+                "RCoreClock",
+                "RCoreInventory",
+                "RCoreTimestamp",
+                "RCoreQuest",
             }
 		);
 			
@@ -39,12 +43,9 @@ public class RenStorage : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RenCore",
-				"RCoreLibrary",
+                "RCoreDelegate",
+                "RCoreLibrary",
                 "RCoreStorage",
-                "RCoreInventory",
-                "RCoreTimestamp",
-                "RCoreQuest",
             }
 		);
 		

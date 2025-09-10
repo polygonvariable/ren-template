@@ -9,12 +9,11 @@
 // #include "GameFramework/GameModeBase.h"
 
 // Project Headers
-#include "RenCore/Public/Delegate/LatentDelegates.h"
-
 #include "RCoreStorage/Public/StorageProviderInterface.h"
 
 #include "RCoreLibrary/Public/SubsystemUtils.h"
 #include "RCoreLibrary/Public/LogMacro.h"
+
 #include "RCoreQuest/Public/QuestProviderInterface.h"
 #include "RCoreQuest/Public/QuestRecord.h"
 
@@ -26,7 +25,6 @@
 
 #include "RenQuest/Public/Quest/QuestAsset.h"
 #include "RenQuest/Public/Quest/QuestEngine.h"
-
 #include "RenQuest/Public/StoryboardAsset.h"
 
 

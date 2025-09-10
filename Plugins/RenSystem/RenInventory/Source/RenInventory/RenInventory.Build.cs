@@ -29,6 +29,8 @@ public class RenInventory : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
 				"StructUtils",
+                "RCorePool",
+                "RCoreInventory",
             }
 			);
 			
@@ -41,11 +43,11 @@ public class RenInventory : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RenCore",
+                "RCoreSettings",
+                "RCoreDelegate",
                 "RCoreStorage",
                 "RCoreLibrary",
                 "RenAsset",
-                "RCoreInventory",
             }
             );
 		

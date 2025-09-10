@@ -14,7 +14,6 @@
 //RENCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTemp, Log, All);
 
 
-
 #define REN_LOG(Category, Verbosity, Text, ...) \
     { \
         const FString __InternalName__ = this ? this->GetClass()->GetName() : TEXT("Static"); \
@@ -65,3 +64,4 @@
         double __##Name##_Duration__ = __##Name##_EndTime__ - __##Name##_StartTime__; \
         PRINT_WARNING(LogTemp, Time, TEXT("%s: %f"), Message, __##Name##_Duration__); \
     }
+

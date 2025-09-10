@@ -27,6 +27,7 @@ public class RenPickup : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+                "RenInteract",
             }
 			);
 			
@@ -41,13 +42,12 @@ public class RenPickup : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "Projects",
 
-                "RenCore",
+                "RCoreCommon",
                 "RCoreLibrary",
                 "RCoreInventory",
 
                 "RenTimestamp",
                 "RenInventory",
-                "RenInteract",
             }
 			);
 		

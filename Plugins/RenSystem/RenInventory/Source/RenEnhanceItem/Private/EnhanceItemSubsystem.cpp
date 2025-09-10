@@ -10,10 +10,10 @@
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 
-#include "RenCore/Public/Delegate/LatentDelegates.h"
+#include "RCoreDelegate/Public/LatentDelegates.h"
 #include "RCoreEnhance/Public/EnhanceLibrary.h"
-#include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
+#include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 

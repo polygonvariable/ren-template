@@ -6,10 +6,9 @@
 // Engine Header
 
 // Project Header
-#include "RenCore/Public/WorldConfigSettings.h"
-
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/TimerUtils.h"
+#include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 

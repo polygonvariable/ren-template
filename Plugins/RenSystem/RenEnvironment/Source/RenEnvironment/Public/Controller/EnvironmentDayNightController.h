@@ -15,6 +15,7 @@
 // Forward Declarations
 class UOrbitalLightComponent;
 class IClockProviderInterface;
+class IClockManagerInterface;
 
 
 
@@ -41,7 +42,7 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
-	TWeakInterfacePtr<IClockProviderInterface> ClockInterface;
+	TWeakInterfacePtr<IClockManagerInterface> ClockManager;
 	FTimerHandle DayTimerHandle;
 
 

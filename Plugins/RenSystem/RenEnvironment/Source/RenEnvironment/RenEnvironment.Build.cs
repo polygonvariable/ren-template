@@ -27,10 +27,7 @@ public class RenEnvironment : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "SunPosition",
-				"RenCore",
-				"RCoreLibrary",
-				"RenAsset",
+				"RCoreCommon",
             }
 			);
 			
@@ -43,6 +40,10 @@ public class RenEnvironment : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "SunPosition",
+                "RCoreClock",
+                "RCoreSettings",
+                "RCoreLibrary",
             }
 			);
 		

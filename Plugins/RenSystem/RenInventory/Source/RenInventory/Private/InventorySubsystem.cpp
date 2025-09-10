@@ -9,8 +9,8 @@
 // Project Headers
 #include "RenAsset/Public/PrimaryAssetMap.h"
 
-#include "RenCore/Public/Delegate/LatentDelegates.h"
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
+#include "RCoreDelegate/Public/LatentDelegates.h"
+#include "RCoreSettings/Public/GameMetadataSettings.h"
 
 #include "RCoreStorage/Public/StorageProviderInterface.h"
 

@@ -16,7 +16,7 @@
 class UMaterialParameterCollectionInstance;
 class USeasonAsset;
 class UEnvironmentAsset;
-class IClockProviderInterface;
+class IClockManagerInterface;
 
 
 
@@ -37,7 +37,7 @@ protected:
 
 	FOnSeasonChanged OnSeasonChanged;
 	UMaterialParameterCollectionInstance* SeasonPrameterInstance;
-	TWeakInterfacePtr<IClockProviderInterface> ClockInterface;
+	TWeakInterfacePtr<IClockManagerInterface> ClockManager;
 	int TotalDaysInAYear = 0;
 
 	UPROPERTY()

@@ -16,12 +16,17 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreClock",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RCoreInventory",
+			"Name": "RCoreCommon",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreDelegate",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
@@ -31,7 +36,27 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RCoreTimestamp",
+			"Name": "RCoreEntity",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreInventory",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCorePool",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
@@ -41,7 +66,22 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RCoreSettings",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RCoreStorage",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreTag",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreTimestamp",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

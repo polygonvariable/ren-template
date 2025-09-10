@@ -6,8 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCore/Public/Filter/FilterRule.h"
-#include "RCoreEnhance/Public/EnhanceRecord.h"
+#include "RCoreCommon/Public/Filter/FilterRule.h"
 
 // Generated Headers
 #include "InventoryFilterRule.generated.h"

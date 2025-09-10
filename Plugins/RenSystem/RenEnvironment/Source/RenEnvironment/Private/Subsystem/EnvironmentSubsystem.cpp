@@ -7,7 +7,7 @@
 
 // Project Header
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RenCore/Public/WorldConfigSettings.h"
+#include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"

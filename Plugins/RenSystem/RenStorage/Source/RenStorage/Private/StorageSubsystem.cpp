@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RenCore/Public/Delegate/LatentDelegates.h"
+#include "RCoreDelegate/Public/LatentDelegates.h"
 
 #include "RenStorage/Public/Storage.h"
 

@@ -27,7 +27,10 @@ public class RenQuest : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+				"UMG",
+
+                "RenEventflow",
+            }
 			);
 			
 		
@@ -39,12 +42,9 @@ public class RenQuest : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"UMG",
-                "RenCore",
                 "RCoreLibrary",
                 "RCoreStorage",
                 "RCoreQuest",
-                "RenEventflow",
             }
 			);
 		

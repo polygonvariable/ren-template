@@ -27,7 +27,7 @@ void UClockWidget::NativeConstruct()
 		if (IsValid(ClockSubsystemPtr) && IsValid(TimeTextBlock))
 		{
 			ClockSubsystem = ClockSubsystemPtr;
-			ClockSubsystem->OnGameTimeChanged.AddUObject(this, &UClockWidget::HandleTimeChanged);
+			ClockSubsystem->GetClockDelegates().OnTimeChanged.AddUObject(this, &UClockWidget::HandleTimeChanged);
 
 			HandleTimeChanged(0.0f);
 		}
@@ -38,7 +38,7 @@ void UClockWidget::NativeDestruct()
 {
 	if (IsValid(ClockSubsystem))
 	{
-		ClockSubsystem->OnGameTimeChanged.RemoveAll(this);
+		ClockSubsystem->GetClockDelegates().OnTimeChanged.RemoveAll(this);
 	}
 	ClockSubsystem = nullptr;
 

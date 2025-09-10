@@ -9,7 +9,6 @@
 
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RenCore/Public/Tag/GameTags.h"
 
 #include "Attributes/DefenceAttributeSet.h"
 #include "Attributes/DamageAttributeSet.h"

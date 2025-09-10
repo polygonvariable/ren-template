@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenCore/Public/Priority/PrioritySystem.h"
+#include "RCoreCommon/Public/Priority/PrioritySystem.h"
 #include "RenEnvironment/Public/Profile/EnvironmentProfileType.h"
 
 // Generated Headers

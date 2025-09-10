@@ -27,9 +27,7 @@ public class RenWeather : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "RenCore",
-				"RCoreLibrary",
-				"RenAsset",
+                "RCoreCommon",
 				"RenEnvironment",
             }
 			);
@@ -43,6 +41,9 @@ public class RenWeather : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "RCoreClock",
+                "RCoreSettings",
+                "RCoreLibrary",
             }
 			);
 		

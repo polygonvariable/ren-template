@@ -7,13 +7,15 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "RenCore/Public/Interface/ClockProviderInterface.h"
+#include "RCoreClock/Public/ClockDelegates.h"
+#include "RCoreClock/Public/ClockManagerInterface.h"
 
 // Generated Headers
 #include "ClockSubsystem.generated.h"
 
 // Forward Declarations
 class UClockAsset;
+class IClockProviderInterface;
 
 
 
@@ -21,18 +23,12 @@ class UClockAsset;
  *
  */
 UCLASS()
-class UClockSubsystem : public UWorldSubsystem, public IClockProviderInterface
+class UClockSubsystem : public UWorldSubsystem, public IClockManagerInterface
 {
 
 	GENERATED_BODY()
 
 public:
-
-	FOnGameDayChanged OnGameDayChanged;
-	FOnGameYearChanged OnGameYearChanged;
-	FOnGameTimeChanged OnGameTimeChanged;
-	FOnGameClockStarted OnGameClockStarted;
-	FOnGameClockStopped OnGameClockStopped;
 
 	float TotalSecondsInADay = 60.0f;
 	int TotalDaysInAYear = 30;
@@ -55,7 +51,7 @@ public:
 protected:
 
 	FDelegateHandle OnWorldBeginTearDownHandle;
-	TWeakInterfacePtr<IClockRecordProviderInterface> ClockRecordInterface;
+	TWeakInterfacePtr<IClockProviderInterface> ClockProvider;
 
 	UPROPERTY()
 	TObjectPtr<UClockAsset> ClockAsset;
@@ -91,16 +87,14 @@ protected:
 
 public:
 
+	virtual FClockDelegates& GetClockDelegates() override;
+
 	float GetSmoothNormalizedTime() const override;
 	bool IsClockActive() const override;
 
-	virtual FOnGameDayChanged& GetOnGameDayChanged() override { return OnGameDayChanged; }
-	virtual FOnGameYearChanged& GetOnGameYearChanged() override { return OnGameYearChanged; }
-	virtual FOnGameTimeChanged& GetOnGameTimeChanged() override { return OnGameTimeChanged; }
-	virtual FOnGameClockStarted& GetOnGameClockStarted() override { return OnGameClockStarted; }
-	virtual FOnGameClockStopped& GetOnGameClockStopped() override { return OnGameClockStopped; }
-
 protected:
+
+	FClockDelegates ClockDelegates;
 
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;

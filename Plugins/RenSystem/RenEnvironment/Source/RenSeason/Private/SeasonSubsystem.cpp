@@ -8,12 +8,11 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
-#include "RenCore/Public/Interface/ClockProviderInterface.h"
-#include "RenAsset/Public/Game/ClockAsset.h"
-#include "RenCore/Public/Developer/GameMetadataSettings.h"
+#include "RCoreClock/Public/ClockAsset.h"
+#include "RCoreClock/Public/ClockManagerInterface.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/SubsystemUtils.h"
-#include "RenCore/Public/WorldConfigSettings.h"
+#include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 
@@ -227,20 +226,20 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	}
 	TotalDaysInAYear = ClockAsset->TotalDaysInAYear;
 
-	if (IClockProviderInterface* ClockInterfacePtr = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockProviderInterface>(GetWorld()))
+	if (IClockManagerInterface* ClockManagerInterface = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld()))
 	{
-		ClockInterfacePtr->GetOnGameDayChanged().AddUObject(this, &USeasonSubsystem::HandleDayChange);
-		ClockInterface = TWeakInterfacePtr<IClockProviderInterface>(ClockInterfacePtr);
+		ClockManagerInterface->GetClockDelegates().OnDayChanged.AddUObject(this, &USeasonSubsystem::HandleDayChange);
+		ClockManager = TWeakInterfacePtr<IClockManagerInterface>(ClockManagerInterface);
 	}
 }
 
 void USeasonSubsystem::Deinitialize()
 {
-	if (IClockProviderInterface* ClockInterfacePtr = ClockInterface.Get())
+	if (IClockManagerInterface* ClockManagerInterface = ClockManager.Get())
 	{
-		ClockInterface->GetOnGameDayChanged().RemoveAll(this);
+		ClockManagerInterface->GetClockDelegates().OnDayChanged.RemoveAll(this);
 	}
-	ClockInterface.Reset();
+	ClockManager.Reset();
 
 	SeasonAssets.Empty();
 

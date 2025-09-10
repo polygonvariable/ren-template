@@ -10,7 +10,7 @@
 
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RenCore/Public/Tag/GameTags.h"
+#include "RCoreTag/Public/AttributeTags.h"
 
 
 

@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "RenCore/Public/Delegate/LatentDelegates.h"
+#include "RCoreDelegate/Public/LatentDelegates.h"
 
 #include "RCoreStorage/Public/StorageProviderInterface.h"
 

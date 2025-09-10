@@ -27,7 +27,7 @@ public class RenAsset : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RenCore",
+				"RCoreCommon",
                 "RCoreInventory",
             }
 			);
