@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "RenDialogue/Public/DialogueAsset.h"
+#include "RenDialogue/Public/DialogueNodeData.h"
 
 #include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
 

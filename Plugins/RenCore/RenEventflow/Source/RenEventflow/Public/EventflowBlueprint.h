@@ -7,6 +7,7 @@
 #include "UObject/Interface.h"
 
 // Project Headers
+#include "RenEventflow/Public/EventflowDelegates.h"
 
 // Generated Headers
 #include "EventflowBlueprint.generated.h"
@@ -15,39 +16,6 @@
 class UEventflowAsset;
 class UEventflowNode;
 
-
-
-DECLARE_DELEGATE_TwoParams(FOnNodeExecuteFinished, UEventflowNode*, bool);
-
-
-
-/*
-UINTERFACE(MinimalAPI)
-class UEventflowBlueprintInterface : public UInterface
-{
-
-	GENERATED_BODY()
-
-};
-class IEventflowBlueprintInterface
-{
-
-	GENERATED_BODY()
-
-public:
-
-	virtual bool StartNodeExecution(UEventflowNode* Node) = 0;
-	virtual void RegisterBlueprint(UEventflowAsset* Asset) = 0;
-	virtual void UnregisterBlueprint() = 0;
-
-	virtual FOnNodeExecuteFinished& GetOnNodeExecuteFinished() = 0;
-
-protected:
-
-	virtual void FinishNodeExecution(UEventflowNode* Node, bool bSuccess) = 0;
-
-};
-*/
 
 
 /**
@@ -67,7 +35,7 @@ public:
 	virtual void RegisterBlueprint(UEventflowAsset* Asset);
 	virtual void UnregisterBlueprint();
 
-	FOnNodeExecuteFinished OnNodeExecuteFinished;
+	FOnNodeExited OnNodeExited;
 
 public:
 
@@ -91,7 +59,7 @@ protected:
 	TWeakObjectPtr<UEventflowAsset> EventflowAsset;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void FinishNodeExecution(UEventflowNode* Node, bool bSuccess);
+	virtual void FinishNodeExecution(UEventflowNode* Node, bool bSuccess, int NextNodeIndex);
 
 #if WITH_EDITOR
 

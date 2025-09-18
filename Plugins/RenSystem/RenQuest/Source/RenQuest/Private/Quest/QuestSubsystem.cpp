@@ -4,15 +4,14 @@
 #include "Quest/QuestSubsystem.h"
 
 // Engine Headers
-#include "EngineUtils.h"
-// #include "Kismet/GameplayStatics.h"
-// #include "GameFramework/GameModeBase.h"
+#include "Engine/AssetManager.h"
 
 // Project Headers
 #include "RCoreStorage/Public/StorageProviderInterface.h"
 
-#include "RCoreLibrary/Public/SubsystemUtils.h"
+#include "RCoreLibrary/Public/AssetManagerUtils.h"
 #include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/SubsystemUtils.h"
 
 #include "RCoreQuest/Public/QuestProviderInterface.h"
 #include "RCoreQuest/Public/QuestRecord.h"
@@ -31,27 +30,24 @@
 
 
 
-void UQuestSubsystem::StartQuest(UQuestAsset* QuestAsset)
+void UQuestSubsystem::StartQuest(FPrimaryAssetId QuestId)
 {
-	if (!IsValid(QuestAsset))
+	if (!QuestId.IsValid())
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestAsset is invalid"));
-		return;
-	}
-
-	TMap<FGuid, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
-	if (!ActiveQuests)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ActiveQuests is invalid"));
-		return;
-	}
-
-	if (ActiveQuests->Contains(QuestAsset->QuestId))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Quest is already active"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestId is invalid"));
 		return;
 	}
 	
+	FName QuestName = QuestId.PrimaryAssetName;
+	if (AssetManagerUtils::GetAssetTagValue<bool>(AssetManager, QuestId, TEXT("bIsResumable")))
+	{
+		if (!AddQuest(QuestName))
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to add quest"));
+			return;
+		}
+	}
+
 	UQuestEngine* QuestEngine = NewObject<UQuestEngine>(this);
 	if (!IsValid(QuestEngine))
 	{
@@ -59,41 +55,28 @@ void UQuestSubsystem::StartQuest(UQuestAsset* QuestAsset)
 		return;
 	}
 
-	FQuestRecord QuestRecord;
-	QuestRecord.ActiveObjectives.Add(QuestAsset->GraphData->NodeEntry);
+	QuestEngines.Add(QuestName, QuestEngine);
 
-	ActiveQuests->Add(QuestAsset->QuestId, QuestRecord);
-
-	QuestEngines.Add(QuestAsset, QuestEngine);
-	QuestEngine->LoadAsset(QuestAsset);
+	QuestEngine->LoadAsset(QuestId);
 }
 
-void UQuestSubsystem::StartQuest(FGuid QuestId)
+void UQuestSubsystem::ResumeQuest(const FPrimaryAssetId& QuestId, const TArray<FGuid>& EntryIds)
 {
-	UQuestAsset* QuestAsset = GetQuestAsset(QuestId);
-	if (IsValid(QuestAsset))
+	if (!QuestId.IsValid())
 	{
-		StartQuest(QuestAsset);
-	}
-}
-
-void UQuestSubsystem::ResumeQuest(UQuestAsset* QuestAsset, FGuid EntryId)
-{
-	if (!IsValid(QuestAsset))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestAsset is invalid"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestId is invalid"));
 		return;
 	}
 
-	TMap<FGuid, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
+	const TMap<FName, FQuestRecord>* ActiveQuests = GetActiveQuests();
 	if (!ActiveQuests)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("ActiveQuests is invalid"));
 		return;
 	}
 
-	FQuestRecord* QuestRecord = ActiveQuests->Find(QuestAsset->QuestId);
-	if (!QuestRecord)
+	FName QuestName = QuestId.PrimaryAssetName;
+	if (!ActiveQuests->Contains(QuestName))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Quest is not active to resume"));
 		return;
@@ -106,16 +89,18 @@ void UQuestSubsystem::ResumeQuest(UQuestAsset* QuestAsset, FGuid EntryId)
 		return;
 	}
 
-	QuestEngines.Add(QuestAsset, QuestEngine);
+	QuestEngines.Add(QuestName, QuestEngine);
 
-	QuestEngine->SetEntryId(EntryId);
-	QuestEngine->LoadAsset(QuestAsset);
+	QuestEngine->SetEntryIds(EntryIds);
+	QuestEngine->LoadAsset(QuestId);
 }
 
 
-bool UQuestSubsystem::SetObjectiveToCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId)
+
+
+bool UQuestSubsystem::SetObjectiveToCompleted(const FPrimaryAssetId& QuestId, FGuid ObjectiveId)
 {
-	FQuestRecord* QuestRecord = GetActiveQuest(QuestAsset);
+	FQuestRecord* QuestRecord = GetActiveQuest(QuestId);
 	if (!QuestRecord)
 	{
 		return false;
@@ -127,9 +112,9 @@ bool UQuestSubsystem::SetObjectiveToCompleted(UQuestAsset* QuestAsset, FGuid Obj
 	return true;
 }
 
-bool UQuestSubsystem::SetObjectiveToActive(UQuestAsset* QuestAsset, FGuid ObjectiveId)
+bool UQuestSubsystem::SetObjectiveToActive(const FPrimaryAssetId& QuestId, FGuid ObjectiveId)
 {
-	FQuestRecord* QuestRecord = GetActiveQuest(QuestAsset);
+	FQuestRecord* QuestRecord = GetActiveQuest(QuestId);
 	if (!QuestRecord)
 	{
 		return false;
@@ -141,99 +126,86 @@ bool UQuestSubsystem::SetObjectiveToActive(UQuestAsset* QuestAsset, FGuid Object
 	return true;
 }
 
-void UQuestSubsystem::EndQuest(UQuestAsset* QuestAsset)
+
+
+
+
+
+
+void UQuestSubsystem::EndQuest(FPrimaryAssetId QuestId)
 {
-	if (!IsValid(QuestAsset))
+	if (!QuestId.IsValid())
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestAsset is invalid"));
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestId is invalid"));
 		return;
 	}
 
-	TMap<FGuid, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
-	if (!ActiveQuests)
+	FName QuestName = QuestId.PrimaryAssetName;
+	if (AssetManagerUtils::GetAssetTagValue<bool>(AssetManager, QuestId, TEXT("bIsResumable")))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ActiveQuests is invalid"));
+		if (!RemoveQuest(QuestName))
+		{
+			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to remove quest"));
+			return;
+		}
+	}
+
+	TObjectPtr<UQuestEngine>* FoundEngine = QuestEngines.Find(QuestName);
+	if (FoundEngine)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestEngine is not found"));
 		return;
 	}
 
-	if (!ActiveQuests->Contains(QuestAsset->QuestId))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Quest is not active to end"));
-		return;
-	}
-
-	UQuestEngine* QuestEngine = QuestEngines.FindRef(QuestAsset);
-	if (!QuestEngine)
-	{
-		PRINT_WARNING(LogTemp, 1.0f, TEXT("Quest is not active"));
-		return;
-	}
-
+	UQuestEngine* QuestEngine = FoundEngine->Get();
 	if (IsValid(QuestEngine))
 	{
 		QuestEngine->UnloadAsset();
 		QuestEngine->MarkAsGarbage();
 	}
 
-	QuestEngines.Remove(QuestAsset);
-	ActiveQuests->Remove(QuestAsset->QuestId);
+	QuestEngines.Remove(QuestName);
 }
 
 
-bool UQuestSubsystem::IsQuestActive(UQuestAsset* QuestAsset) const
+bool UQuestSubsystem::IsQuestActive(const FPrimaryAssetId& QuestId) const
 {
-	return (GetActiveQuest(QuestAsset) != nullptr && GetCompletedQuest(QuestAsset) == nullptr);
+	return (GetActiveQuest(QuestId) != nullptr && GetCompletedQuest(QuestId) == nullptr);
 }
 
-bool UQuestSubsystem::IsQuestCompleted(UQuestAsset* QuestAsset) const
+bool UQuestSubsystem::IsQuestCompleted(const FPrimaryAssetId& QuestId) const
 {
-	return (GetCompletedQuest(QuestAsset) != nullptr && GetActiveQuest(QuestAsset) == nullptr);
+	return (GetCompletedQuest(QuestId) != nullptr && GetActiveQuest(QuestId) == nullptr);
 }
 
 
-void UQuestSubsystem::AddAvailableQuest(UQuestAsset* QuestAsset)
+
+
+FQuestRecord* UQuestSubsystem::GetActiveQuest(const FPrimaryAssetId& QuestId) const
 {
-	if (!QuestAsset) return;
-	if (AvailableQuests.Contains(QuestAsset->QuestId)) return;
-
-	AvailableQuests.Add(QuestAsset->QuestId, QuestAsset);
-}
-
-FQuestRecord* UQuestSubsystem::GetActiveQuest(UQuestAsset* QuestAsset) const
-{
-	if (!IsValid(QuestAsset))
-	{
-		return nullptr;
-	}
-
-	TMap<FGuid, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
+	TMap<FName, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
 	if (!ActiveQuests)
 	{
 		return nullptr;
 	}
 
-	return ActiveQuests->Find(QuestAsset->QuestId);
+	return ActiveQuests->Find(QuestId.PrimaryAssetName);
 }
 
-FDateTime* UQuestSubsystem::GetCompletedQuest(UQuestAsset* QuestAsset) const
+FDateTime* UQuestSubsystem::GetCompletedQuest(const FPrimaryAssetId& QuestId) const
 {
-	if (!IsValid(QuestAsset))
-	{
-		return nullptr;
-	}
-
-	TMap<FGuid, FDateTime>* CompletedQuests = GetMutableCompletedQuests();
+	TMap<FName, FDateTime>* CompletedQuests = GetMutableCompletedQuests();
 	if (!CompletedQuests)
 	{
 		return nullptr;
 	}
 
-	return CompletedQuests->Find(QuestAsset->QuestId);
+	return CompletedQuests->Find(QuestId.PrimaryAssetName);
 }
 
-bool UQuestSubsystem::IsObjectiveCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId) const
+bool UQuestSubsystem::IsObjectiveCompleted(const FPrimaryAssetId& QuestId, FGuid ObjectiveId) const
 {
-	FQuestRecord* QuestRecord = GetActiveQuest(QuestAsset);
+	FQuestRecord* QuestRecord = GetActiveQuest(QuestId);
 	if (!QuestRecord)
 	{
 		return false;
@@ -242,9 +214,9 @@ bool UQuestSubsystem::IsObjectiveCompleted(UQuestAsset* QuestAsset, FGuid Object
 	return QuestRecord->CompletedObjectives.Contains(ObjectiveId);
 }
 
-bool UQuestSubsystem::IsObjectiveActive(UQuestAsset* QuestAsset, FGuid ObjectiveId) const
+bool UQuestSubsystem::IsObjectiveActive(const FPrimaryAssetId& QuestId, FGuid ObjectiveId) const
 {
-	FQuestRecord* QuestRecord = GetActiveQuest(QuestAsset);
+	FQuestRecord* QuestRecord = GetActiveQuest(QuestId);
 	if (!QuestRecord)
 	{
 		return false;
@@ -254,67 +226,99 @@ bool UQuestSubsystem::IsObjectiveActive(UQuestAsset* QuestAsset, FGuid Objective
 }
 
 
-const TMap<FGuid, FQuestRecord>* UQuestSubsystem::GetActiveQuests() const
+const TMap<FName, FQuestRecord>* UQuestSubsystem::GetActiveQuests() const
 {
-	IQuestProviderInterface* QuestInterface = QuestProvider.Get();
-	if (!QuestInterface)
+	IQuestProviderInterface* QuestProviderInterface = QuestProvider.Get();
+	if (!QuestProviderInterface)
 	{
 		return nullptr;
 	}
 
-	return &QuestInterface->GetActiveQuests();
+	return &QuestProviderInterface->GetActiveQuests();
 }
 
-TMap<FGuid, FQuestRecord>* UQuestSubsystem::GetMutableActiveQuests() const
+TMap<FName, FQuestRecord>* UQuestSubsystem::GetMutableActiveQuests() const
 {
-	IQuestProviderInterface* QuestInterface = QuestProvider.Get();
-	if (!QuestInterface)
+	IQuestProviderInterface* QuestProviderInterface = QuestProvider.Get();
+	if (!QuestProviderInterface)
 	{
 		return nullptr;
 	}
 
-	return &QuestInterface->GetMutableActiveQuests();
+	return &QuestProviderInterface->GetMutableActiveQuests();
 }
 
-const TMap<FGuid, FDateTime>* UQuestSubsystem::GetCompletedQuests() const
+const TMap<FName, FDateTime>* UQuestSubsystem::GetCompletedQuests() const
 {
-	IQuestProviderInterface* QuestInterface = QuestProvider.Get();
-	if (!QuestInterface)
+	IQuestProviderInterface* QuestProviderInterface = QuestProvider.Get();
+	if (!QuestProviderInterface)
 	{
 		return nullptr;
 	}
 
-	return &QuestInterface->GetCompletedQuests();
+	return &QuestProviderInterface->GetCompletedQuests();
 }
 
-TMap<FGuid, FDateTime>* UQuestSubsystem::GetMutableCompletedQuests() const
+
+bool UQuestSubsystem::AddQuest(FName QuestName)
 {
-	IQuestProviderInterface* QuestInterface = QuestProvider.Get();
-	if (!QuestInterface)
+	TMap<FName, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
+	if (!ActiveQuests)
+	{
+		LOG_ERROR(LogTemp, TEXT("ActiveQuests is invalid"));
+		return false;
+	}
+
+	if (ActiveQuests->Contains(QuestName))
+	{
+		LOG_ERROR(LogTemp, TEXT("Quest is already active"));
+		return false;
+	}
+
+	ActiveQuests->Add(QuestName, FQuestRecord());
+	return true;
+}
+
+bool UQuestSubsystem::RemoveQuest(FName QuestName)
+{
+	TMap<FName, FQuestRecord>* ActiveQuests = GetMutableActiveQuests();
+	if (!ActiveQuests)
+	{
+		LOG_ERROR(LogTemp, TEXT("ActiveQuests is invalid"));
+		return false;
+	}
+	ActiveQuests->Remove(QuestName);
+
+	TMap<FName, FDateTime>* CompletedQuests = GetMutableCompletedQuests();
+	if (!CompletedQuests)
+	{
+		LOG_ERROR(LogTemp, TEXT("CompletedQuests is invalid"));
+		return false;
+	}
+	CompletedQuests->Add(QuestName, FDateTime::Now());
+
+	return true;
+}
+
+
+TMap<FName, FDateTime>* UQuestSubsystem::GetMutableCompletedQuests() const
+{
+	IQuestProviderInterface* QuestProviderInterface = QuestProvider.Get();
+	if (!QuestProviderInterface)
 	{
 		return nullptr;
 	}
 
-	return &QuestInterface->GetMutableCompletedQuests();
+	return &QuestProviderInterface->GetMutableCompletedQuests();
 }
 
 
-UQuestAsset* UQuestSubsystem::GetQuestAsset(FGuid QuestId) const
-{
-	const TObjectPtr<UQuestAsset>* FoundQuest = AvailableQuests.Find(QuestId);
-	if (!FoundQuest)
-	{
-		return nullptr;
-	}
 
-	return FoundQuest->Get();
-}
-
-void UQuestSubsystem::HandleStorageLoaded()
+void UQuestSubsystem::LoadQuestProvider(UWorld& InWorld)
 {
 	LOG_INFO(LogTemp, TEXT("QuestSubsystem storage load started"));
 
-	IStorageProviderInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GetWorld()->GetGameInstance());
+	IStorageProviderInterface* StorageInterface = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(InWorld.GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogTemp, TEXT("StorageInterface is invalid"));
@@ -331,14 +335,24 @@ void UQuestSubsystem::HandleStorageLoaded()
 
 	QuestProvider = TWeakInterfacePtr<IQuestProviderInterface>(QuestInterface);
 	LOG_INFO(LogTemp, TEXT("QuestSubsystem storage loaded"));
+}
 
-	const TMap<FGuid, FQuestRecord>& ActiveQuests = QuestInterface->GetActiveQuests();
+void UQuestSubsystem::ResumeSavedQuests()
+{
+	IQuestProviderInterface* QuestProviderInterface = QuestProvider.Get();
+	if (!QuestProviderInterface)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("QuestProvider is invalid"));
+		return;
+	}
+
+	const TMap<FName, FQuestRecord>& ActiveQuests = QuestProviderInterface->GetActiveQuests();
 	for (const auto& Kv : ActiveQuests)
 	{
-		UQuestAsset* QuestAsset = GetQuestAsset(Kv.Key);
 		const FQuestRecord& QuestRecord = Kv.Value;
+		FPrimaryAssetId QuestId = FPrimaryAssetId("Quest", Kv.Key);
 
-		ResumeQuest(QuestAsset, QuestRecord.ActiveObjectives[0]);
+		ResumeQuest(QuestId, QuestRecord.ActiveObjectives);
 	}
 }
 
@@ -352,12 +366,16 @@ void UQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("QuestSubsystem initialized"));
 
-	//HandleStorageLoaded();
+	AssetManager = UAssetManager::GetIfInitialized();
 }
 
 void UQuestSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
 	Super::OnWorldComponentsUpdated(InWorld);
+	LOG_WARNING(LogTemp, TEXT("QuestSubsystem world components updated"));
+
+	LoadQuestProvider(InWorld);
+	ResumeSavedQuests();
 }
 
 void UQuestSubsystem::Deinitialize()

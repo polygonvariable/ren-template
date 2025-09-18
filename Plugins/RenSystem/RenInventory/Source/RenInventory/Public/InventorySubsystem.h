@@ -17,6 +17,8 @@
 #include "InventorySubsystem.generated.h"
 
 // Forward Declarations
+class UAssetManager;
+
 class UPrimaryAssetMap;
 class UInventoryAsset;
 class UGameMetadataSettings;
@@ -31,7 +33,7 @@ class UCraftableAsset;
  *
  */
 UCLASS(MinimalAPI)
-class UInventorySubsystem : public UGameInstanceSubsystem, public IInventoryManagerInterface
+class UInventorySubsystem : public UGameInstanceSubsystem
 {
 
 	GENERATED_BODY()
@@ -39,47 +41,43 @@ class UInventorySubsystem : public UGameInstanceSubsystem, public IInventoryMana
 public:
 
 	UFUNCTION(BlueprintCallable)
-	bool BP_AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity);
+	RENINVENTORY_API bool AddItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity);
 
 	UFUNCTION(BlueprintCallable)
-	bool BP_AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities);
-
-
-	RENINVENTORY_API virtual bool AddItem(FName ContainerId, UInventoryAsset* ItemAsset, int Quantity) override;
-	RENINVENTORY_API virtual bool AddItems(FName ContainerId, const TMap<UInventoryAsset*, int>& ItemQuantities) override;
+	RENINVENTORY_API bool AddItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items);
 
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool RemoveItem(FName ContainerId, FName ItemGuid, int Quantity);
+	RENINVENTORY_API bool RemoveItem(FName ContainerId, FName RecordId, int Quantity);
 
 	UFUNCTION(BlueprintCallable)
 	RENINVENTORY_API bool RemoveItems(FName ContainerId, const TMap<FName, int>& ItemQuantities);
 
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool DeleteItem(FName ContainerId, FName ItemGuid);
+	RENINVENTORY_API bool DeleteItem(FName ContainerId, FName RecordId);
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool DeleteItems(FName ContainerId, const TSet<FName>& ItemGuids);
+	RENINVENTORY_API int DeleteItems(FName ContainerId, const TArray<FName>& RecordIds);
 
 
 	UFUNCTION(BlueprintCallable)
 	RENINVENTORY_API bool ClearItems(FName ContainerId);
 
 	UFUNCTION(BlueprintCallable)
-	bool ReplaceItem(FName ContainerId, FName ItemGuid, FInventoryRecord Record);
+	bool ReplaceItem(FName ContainerId, FName RecordId, FInventoryRecord Record);
 
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool ContainsItem(FName ContainerId, FName ItemGuid, int Quantity) const;
+	RENINVENTORY_API bool ContainsItem(FName ContainerId, FName RecordId, int Quantity) const;
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API bool ContainsItems(FName ContainerId, const TMap<FName, int>& ItemQuantities) const;
+	RENINVENTORY_API bool ContainsItems(FName ContainerId, const TMap<FName, int>& Items) const;
 
 
 	RENINVENTORY_API int CountItem(FName ContainerId, FName ItemId) const;
 
-	RENINVENTORY_API bool UpdateItem(FName ContainerId, FName ItemGuid, TFunctionRef<bool(FInventoryRecord*)> InCallback);
+	RENINVENTORY_API bool UpdateItem(FName ContainerId, FName RecordId, TFunctionRef<bool(FInventoryRecord*)> InCallback);
 
 
 	UFUNCTION(BlueprintCallable)
@@ -89,43 +87,39 @@ public:
 	bool RemoveContainer(FName ContainerId);
 
 
+
 	RENINVENTORY_API const TMap<FName, FInventoryRecord>* GetRecords(FName ContainerId) const;
+	RENINVENTORY_API const FInventoryRecord* GetItemRecord(FName ContainerId, FName RecordId) const;
 
-	RENINVENTORY_API const FInventoryRecord* GetItemRecord(FName ContainerId, FName ItemGuid) const;
 
-	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API UInventoryAsset* GetItemAsset(FName ItemId) const;
 
-	template <class T>
-	T* GetItemAsset(FName ItemId) const
-	{
-		return Cast<T>(GetItemAsset(ItemId));
-	}
 
-	RENINVENTORY_API void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
+
+	RENINVENTORY_API void QueryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FPrimaryAssetId&, const FName&, const FInventoryRecord*)> InCallback) const;
 
 protected:
 
-	TWeakInterfacePtr<IInventoryProviderInterface> InventoryInterface;
-
-	UPROPERTY()
-	TObjectPtr<UPrimaryAssetMap> InventoryAssetMap;
+	TWeakInterfacePtr<IInventoryProviderInterface> InventoryProvider;
 
 
-	virtual void HandleGlossaryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
-	virtual void HandleInventoryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FName&, const FInventoryRecord*, UInventoryAsset*)> InCallback) const;
+	virtual void HandleGlossaryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FPrimaryAssetId&, const FName&, const FInventoryRecord*)> InCallback) const;
+	virtual void HandleInventoryItems(const FInventoryFilterRule& FilterRule, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FPrimaryAssetId&, const FName&, const FInventoryRecord*)> InCallback) const;
 	virtual void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
 
 
-	bool AddItemRecord_Internal(FName ContainerId, FName ItemId, EInventoryItemType ItemType, bool bIsStackable, int Quantity, TMap<FName, FInventoryRecord>* Records);
-	bool RemoveItemRecord_Internal(FName ItemGuid, int Quantity, TMap<FName, FInventoryRecord>* Records);
-
+	const FInventoryRecord* AddItemRecord(const FPrimaryAssetId& InAssetId, int InQuantity, TMap<FName, FInventoryRecord>* InRecords, FName& OutRecordId);
+	const FInventoryRecord* RemoveItemRecord(FName RecordId, int Quantity, TMap<FName, FInventoryRecord>* Records, bool bOutRemoved);
 
 	virtual void HandleStorageLoaded();
 
-	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
 
-	FInventoryRecord* GetMutableItemRecord(FName ContainerId, FName ItemGuid) const;
+
+	virtual TMap<FName, FInventoryRecord>* GetMutableRecords(FName ContainerId) const;
+	FInventoryRecord* GetMutableItemRecord(FName ContainerId, FName RecordId) const;
+
+private:
+
+	UAssetManager* AssetManager;
 
 protected:
 
@@ -135,13 +129,13 @@ protected:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemAdded, FName /* ContainerId */, FName /* ItemGuid */, const FInventoryRecord* /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemAdded, FName /* ContainerId */, FName /* RecordId */, const FInventoryRecord* /* ItemRecord */);
 	FOnInventoryItemAdded OnItemAdded;
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemRemoved, FName /* ContainerId */, FName /* ItemGuid */, FInventoryRecord /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemRemoved, FName /* ContainerId */, FName /* RecordId */, const FInventoryRecord* /* ItemRecord */);
 	FOnInventoryItemRemoved OnItemRemoved;
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemUpdated, FName /* ContainerId */, FName /* ItemGuid */, const FInventoryRecord* /* ItemRecord */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemUpdated, FName /* ContainerId */, FName /* RecordId */, const FInventoryRecord* /* ItemRecord */);
 	FOnInventoryItemUpdated OnItemUpdated;
 
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnContainerAdded, FName /* ContainerId */);

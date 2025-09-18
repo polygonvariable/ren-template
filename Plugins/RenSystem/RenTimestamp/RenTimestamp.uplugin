@@ -23,7 +23,19 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreTimestamp",
 			"Enabled": true
 		}
 	]

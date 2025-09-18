@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
+#include "RenEventflow/Public/EventflowDelegates.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"
@@ -13,6 +14,7 @@
 // Forward Declarations
 class UEventflowAsset;
 class UEventflowNode;
+class UEventflowData;
 class UEventflowBlueprint;
 
 
@@ -29,62 +31,53 @@ class RENEVENTFLOW_API UEventflowEngine : public UObject
 
 public:
 
-	UEventflowAsset* GetOwningAsset() const;
-
-	void LoadAsset(TSoftObjectPtr<UEventflowAsset> InEventflowAsset);
-	void LoadAsset(UEventflowAsset* InEventflowAsset);
+	void LoadAsset(const FPrimaryAssetId& AssetId);
+	void LoadAsset(UEventflowAsset* Asset);
 
 	void UnloadAsset();
 
-	void ReachEntryNode();
-	void ReachNode(FGuid NodeID);
-	void ReachNextNode(int Index);
-	void ReachImmediateNextNode();
+	UEventflowNode* GetNodeById(FGuid NodeId) const;
 
-	virtual void ConstructBlueprint(TSubclassOf<UObject> InClass);
-	virtual void DestructBlueprint();
-
-	UEventflowNode* GetCurrentNode();
-	UEventflowBlueprint* GetCurrentBlueprint();
+	bool ReachEntryNode();
+	bool ReachNode(UEventflowNode* Node);
+	bool ReachNodeById(FGuid NodeId);
+	bool ReachNextNode(UEventflowNode* Node, int Index);
+	bool ReachImmediateNextNode(UEventflowNode* Node);
 
 	bool ExecuteNode(UEventflowNode* Node);
 
-	DECLARE_DELEGATE_OneParam(FOnNodeReached, UEventflowNode*);
-	FOnNodeReached OnNodeReached;
+	FPrimaryAssetId GetOwningAssetId() const;
+	UEventflowAsset* GetOwningAsset() const;
+	UEventflowBlueprint* GetCurrentBlueprint() const;
 
-	DECLARE_DELEGATE_TwoParams(FOnNodeExited, UEventflowNode*, bool);
-	FOnNodeExited OnNodeExited;
-
-	DECLARE_DELEGATE(FOnGraphEnded);
+	FOnGraphStarted OnGraphStarted;
 	FOnGraphEnded OnGraphEnded;
-
-	DECLARE_DELEGATE(FOnEngineInitialized);
-	FOnEngineInitialized OnEngineInitialized;
 
 protected:
 
-	UEventflowBlueprint* CurrentBlueprint;
+	UPROPERTY()
+	FPrimaryAssetId CurrentAssetId;
 
 	UPROPERTY()
-	TSoftObjectPtr<UEventflowAsset> CurrentAssetPath;
+	TObjectPtr<UEventflowBlueprint> CurrentBlueprint;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowAsset> CurrentAsset;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowNode> CurrentNode;
-
+	TObjectPtr<UEventflowData> CachedGraphData;
 
 	void InitializeEngine();
 
-	void SetCurrentNode(UEventflowNode* Node);
+	virtual void ConstructBlueprint(TSubclassOf<UObject> InClass);
+	virtual void DestructBlueprint();
 
 	virtual void HandleAssetLoaded();
 
 	virtual void HandleOnNodeReached(UEventflowNode* Node);
-	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess);
+	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess, int NextNodeIndex);
+	virtual void HandleOnGraphStarted();
 	virtual void HandleOnGraphEnded();
-	virtual void HandleOnEngineInitialized();
 
 };
 

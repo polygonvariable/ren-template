@@ -23,7 +23,31 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreClock",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreTimestamp",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreQuest",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
 			"Enabled": true
 		}
 	]

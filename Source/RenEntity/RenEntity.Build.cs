@@ -33,6 +33,7 @@ public class RenEntity : ModuleRules
                 "GameplayAbilities",
                 "GameplayTags",
                 "GameplayTasks",
+                "RCoreLibrary",
             }
         );
 

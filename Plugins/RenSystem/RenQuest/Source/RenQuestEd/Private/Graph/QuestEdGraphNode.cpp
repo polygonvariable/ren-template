@@ -90,13 +90,9 @@ void UQuestEdObjectiveNode::AllocateDefaultPins()
 	InPin->PinFriendlyName = FText::FromString(TEXT("in"));
 	InPin->PinType.bIsConst = true;
 
-	UEdGraphPin* SuccessPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecSuccess"));
-	SuccessPin->PinFriendlyName = FText::FromString(TEXT("next"));
-	SuccessPin->PinType.bIsConst = true;
-
-	UEdGraphPin* FailPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecFail"));
-	FailPin->PinFriendlyName = FText::FromString(TEXT("fail"));
-	FailPin->PinType.bIsConst = true;
+	UEdGraphPin* NextPin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("ExecNext"));
+	NextPin->PinFriendlyName = FText::FromString(TEXT("next"));
+	NextPin->PinType.bIsConst = true;
 }
 
 bool UQuestEdObjectiveNode::CanCreateRuntimeOutputPins() const

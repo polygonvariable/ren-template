@@ -6,10 +6,6 @@
 // Engine Headers
 
 // Project Headers
-#include "RenEventflow/Public/EventflowData.h"
-#include "RenEventflow/Public/EventflowNode.h"
-
-#include "RenQuest/Public/Quest/QuestNodeData.h"
 
 
 
@@ -20,4 +16,9 @@ void UQuestAsset::PostPropertyUpdate()
 }
 
 #endif
+
+FPrimaryAssetId UQuestAsset::GetPrimaryAssetId() const
+{
+	return FPrimaryAssetId(TEXT("Quest"), GetFName());
+}
 

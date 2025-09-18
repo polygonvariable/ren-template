@@ -32,7 +32,35 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RenCore",
+			"Name": "RCorePool",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreDelegate",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreAsset",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreEnhance",
 			"Enabled": true
 		}
 	]

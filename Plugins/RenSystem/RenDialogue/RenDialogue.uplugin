@@ -28,7 +28,7 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreLibrary",
 			"Enabled": true
 		},
 		{

@@ -29,9 +29,6 @@ class UQuestAsset : public UEventflowAsset
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGuid QuestId = FGuid::NewGuid();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FText QuestTitle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -40,7 +37,7 @@ public:
 	// UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	// bool bIsNetworkReplicated = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, AssetRegistrySearchable)
 	bool bIsResumable = false;
 
 #if WITH_EDITOR
@@ -50,6 +47,12 @@ public:
 	// ~ End of UEventflowAsset
 
 #endif
+
+public:
+
+	// ~ UDataAsset
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	// ~ End of UDataAsset
 
 };
 

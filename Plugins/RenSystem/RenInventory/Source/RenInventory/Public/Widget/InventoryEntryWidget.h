@@ -4,8 +4,9 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+
 #include "Blueprint/IUserObjectListEntry.h"
+#include "Blueprint/UserWidget.h"
 
 // Project Headers
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
@@ -22,6 +23,7 @@ class UInventorySubsystem;
 class UInventoryEntryObject;
 
 struct FInventoryRecord;
+struct FStreamableHandle;
 
 
 
@@ -36,8 +38,10 @@ class UInventoryEntryWidget : public UInventoryBaseWidget, public IUserObjectLis
 
 public:
 
-	virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
+	// ~ UInventoryBaseWidget
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record) override;
 	virtual void ResetDetails() override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 
@@ -45,7 +49,7 @@ protected:
 	TObjectPtr<UImage> ItemIconImage = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> ItemGuidText = nullptr;
+	TObjectPtr<UTextBlock> RecordIdText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ItemTitleText = nullptr;
@@ -67,17 +71,21 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleDetailsValidity(bool bIsValid);
 
-
-	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image) override;
-	virtual void SetSecondaryDetails(const FText& Guid, int Quantity) override;
+	// ~ UInventoryBaseWidget
+	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
+	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity) override;
 	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 
+	// ~ IUserObjectListEntry
 	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
 	virtual void NativeOnItemSelectionChanged(bool bSelected) override;
+	// ~ End of IUserObjectListEntry
 
 };
+
 
 
 /**
@@ -94,7 +102,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ItemRequiredText = nullptr;
 
+	// ~ UInventoryBaseWidget
 	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) override;
+	// ~ End of UInventoryBaseWidget
 
 };
 

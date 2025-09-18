@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
+#include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 
 // Generated Headers
 #include "InventoryWidget.generated.h"
@@ -36,6 +37,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DisplayEnhanceItem();
 
+	void SetContainerId(FName ContainerId);
+
 protected:
 
 	UPROPERTY()
@@ -53,7 +56,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventorySwitchWidget> InventorySwitch = nullptr;
 
-	void HandleItemSelected(FName Guid, const FInventoryRecord* Record, UInventoryAsset* Asset);
+	void HandleItemSelected(const FPrimaryAssetId& AssetId, FName RecordId, const FInventoryRecord* Record);
 
 protected:
 

@@ -12,39 +12,50 @@
 #include "InventoryBaseWidget.generated.h"
 
 // Forward Declarations
+class UAssetManager;
 class UTexture2D;
 
 class UInventoryAsset;
 class UInventoryEntryObject;
 
 struct FInventoryRecord;
+struct FStreamableHandle;
 
 
 
 /**
  *
  */
-UCLASS(MinimalAPI, Abstract)
-class UInventoryBaseWidget : public UUserWidget
+UCLASS(Abstract)
+class RENINVENTORY_API UInventoryBaseWidget : public UUserWidget
 {
 
 	GENERATED_BODY()
 
 public:
 
-	RENINVENTORY_API virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) {};
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record);
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API virtual void RefreshDetails() {};
+	virtual void RefreshDetails();
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API virtual void ResetDetails() {};
+	virtual void ResetDetails();
 
 protected:
 
-	RENINVENTORY_API virtual void SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image) {};
-	RENINVENTORY_API virtual void SetSecondaryDetails(const FText& Guid, int Quantity) {};
-	RENINVENTORY_API virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) {};
+	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image);
+	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity);
+	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry);
+
+protected:
+
+	TObjectPtr<UAssetManager> AssetManager;
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

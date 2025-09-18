@@ -62,9 +62,9 @@ bool UEventflowBlueprint::ImplementsGetWorld() const
 
 #endif
 
-void UEventflowBlueprint::FinishNodeExecution(UEventflowNode* Node, bool bSuccess)
+void UEventflowBlueprint::FinishNodeExecution(UEventflowNode* Node, bool bSuccess, int NextNodeIndex)
 {
-	OnNodeExecuteFinished.ExecuteIfBound(Node, bSuccess);
+	OnNodeExited.ExecuteIfBound(Node, bSuccess, NextNodeIndex);
 }
 
 #if WITH_EDITOR

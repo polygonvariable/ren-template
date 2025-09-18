@@ -23,34 +23,30 @@ struct FInventoryRecord;
  *
  */
 UCLASS()
-class UInventoryEntryObject : public UObject, public IObjectPoolInterface
+class UInventoryEntryObject : public UObject
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FName ItemGuid = NAME_None;
-	TObjectPtr<UInventoryAsset> InventoryAsset = nullptr;
-	const FInventoryRecord* InventoryRecord = nullptr;
+	FPrimaryAssetId AssetId = FPrimaryAssetId();
+	FName RecordId = NAME_None;
+	const FInventoryRecord* Record = nullptr;
 
-	bool bEnablePayload = false;
-	FInstancedStruct InventoryPayload;
+	bool bHasPayload = false;
+	FInstancedStruct Payload;
 
 	void ResetData()
 	{
-		ItemGuid = NAME_None;
-		InventoryAsset = nullptr;
-		InventoryRecord = nullptr;
-		bEnablePayload = false;
-		InventoryPayload.Reset();
+		AssetId = FPrimaryAssetId();
+		RecordId = NAME_None;
+		Record = nullptr;
+
+		bHasPayload = false;
+		Payload.Reset();
 	}
 	
-	virtual void ReturnToPool() override
-	{
-		ResetData();
-	}
-
 	virtual void BeginDestroy() override
 	{
 		ResetData();

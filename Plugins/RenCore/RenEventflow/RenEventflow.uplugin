@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": true,
+	"CanContainContent": false,
 	"IsBetaVersion": true,
 	"IsExperimentalVersion": false,
 	"Installed": false,
@@ -28,7 +28,7 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreLibrary",
 			"Enabled": true
 		},
 		{

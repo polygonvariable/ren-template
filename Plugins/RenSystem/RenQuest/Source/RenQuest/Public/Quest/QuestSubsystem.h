@@ -43,57 +43,63 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	void StartQuest(UQuestAsset* QuestAsset);
-	void StartQuest(FGuid QuestId);
-
-	void ResumeQuest(UQuestAsset* QuestAsset, FGuid EntryId);
-
-	bool SetObjectiveToCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId);
-	bool SetObjectiveToActive(UQuestAsset* QuestAsset, FGuid ObjectiveId);
-
-	void EndQuest(UQuestAsset* QuestAsset);
-
-
-	bool IsQuestActive(UQuestAsset* QuestAsset) const;
-	bool IsQuestCompleted(UQuestAsset* QuestAsset) const;
+	void StartQuest(UPARAM(Meta = (AllowedTypes = "Quest")) FPrimaryAssetId QuestId);
 
 	UFUNCTION(BlueprintCallable)
-	void AddAvailableQuest(UQuestAsset* QuestAsset);
+	void EndQuest(FPrimaryAssetId QuestId);
 
 
-	FQuestRecord* GetActiveQuest(UQuestAsset* QuestAsset) const;
-	FDateTime* GetCompletedQuest(UQuestAsset* QuestAsset) const;
+	void ResumeQuest(const FPrimaryAssetId& QuestId, const TArray<FGuid>& EntryIds);
+
+	bool SetObjectiveToCompleted(const FPrimaryAssetId& QuestId, FGuid ObjectiveId);
+	bool SetObjectiveToActive(const FPrimaryAssetId& QuestId, FGuid ObjectiveId);
+
 
 	UFUNCTION(BlueprintCallable)
-	bool IsObjectiveCompleted(UQuestAsset* QuestAsset, FGuid ObjectiveId) const;
+	bool IsQuestActive(const FPrimaryAssetId& QuestId) const;
 
 	UFUNCTION(BlueprintCallable)
-	bool IsObjectiveActive(UQuestAsset* QuestAsset, FGuid ObjectiveId) const;
-	//TObjectPtr<UQuestAsset> FocusedQuest;
+	bool IsQuestCompleted(const FPrimaryAssetId& QuestId) const;
 
-	const TMap<FGuid, FQuestRecord>* GetActiveQuests() const;
-	const TMap<FGuid, FDateTime>* GetCompletedQuests() const;
+
+	FQuestRecord* GetActiveQuest(const FPrimaryAssetId& QuestId) const;
+	FDateTime* GetCompletedQuest(const FPrimaryAssetId& QuestId) const;
+
+
+	UFUNCTION(BlueprintCallable)
+	bool IsObjectiveCompleted(const FPrimaryAssetId& QuestId, FGuid ObjectiveId) const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsObjectiveActive(const FPrimaryAssetId& QuestId, FGuid ObjectiveId) const;
+
+
+
+	const TMap<FName, FQuestRecord>* GetActiveQuests() const;
+	const TMap<FName, FDateTime>* GetCompletedQuests() const;
 	
 protected:
 
-	TMap<TObjectPtr<UQuestAsset>, TObjectPtr<UQuestEngine>> QuestEngines;
+	bool AddQuest(FName QuestName);
+	bool RemoveQuest(FName QuestName);
 
+	TMap<FName, TObjectPtr<UQuestEngine>> QuestEngines;
+	UAssetManager* AssetManager;
 	TWeakInterfacePtr<IQuestProviderInterface> QuestProvider;
 
-	TMap<FGuid, TObjectPtr<UQuestAsset>> AvailableQuests;
 
-	UQuestAsset* GetQuestAsset(FGuid QuestId) const;
+	TMap<FName, FQuestRecord>* GetMutableActiveQuests() const;
+	TMap<FName, FDateTime>* GetMutableCompletedQuests() const;
 
-	TMap<FGuid, FQuestRecord>* GetMutableActiveQuests() const;
-	TMap<FGuid, FDateTime>* GetMutableCompletedQuests() const;
 
-	UFUNCTION(BlueprintCallable)
-	void HandleStorageLoaded();
+	void LoadQuestProvider(UWorld& InWorld);
+	void ResumeSavedQuests();
 
+	// ~ UWorldSubsystem Interface
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
+	// ~ End of UWorldSubsystem Interface
 
 };
 

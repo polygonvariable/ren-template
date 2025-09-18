@@ -23,7 +23,15 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RenCore",
+			"Name": "RCoreCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreInventory",
 			"Enabled": true
 		},
 		{

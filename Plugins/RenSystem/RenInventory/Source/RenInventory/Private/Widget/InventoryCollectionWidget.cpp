@@ -37,9 +37,9 @@ void UInventoryCollectionWidget::DisplayItems()
 #endif
 	
 	Subsystem->QueryItems(FilterRule, QueryRule,
-		[this](const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+		[this](const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
 		{
-			ConstructEntry(Guid, Record, Asset);
+			ConstructEntry(AssetId, RecordId, Record);
 		}
 	);
 
@@ -55,10 +55,10 @@ void UInventoryCollectionWidget::ClearItems()
 		const TArray<UObject*> Items = InventoryContainer->GetListItems();
 		for (UObject* Item : Items)
 		{
-			IObjectPoolInterface* EntryInterface = Cast<IObjectPoolInterface>(Item);
-			if (EntryInterface)
+			UInventoryEntryObject* EntryObject = Cast<UInventoryEntryObject>(Item);
+			if (EntryObject)
 			{
-				EntryInterface->ReturnToPool();
+				EntryObject->ResetData();
 			}
 		}
 		InventoryContainer->ClearListItems();
@@ -86,7 +86,7 @@ void UInventoryCollectionWidget::AddPayload(FName ItemId, FInstancedStruct Paylo
 	InventoryPayloads.Add(ItemId, Payload);
 }
 
-void UInventoryCollectionWidget::SetPayloads(TMap<FName, FInstancedStruct> Payloads)
+void UInventoryCollectionWidget::SetPayloads(const TMap<FName, FInstancedStruct>& Payloads)
 {
 	InventoryPayloads = Payloads;
 }
@@ -97,7 +97,8 @@ void UInventoryCollectionWidget::ClearPayloads()
 }
 
 
-void UInventoryCollectionWidget::ConstructEntry(const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+
+void UInventoryCollectionWidget::ConstructEntry(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
 {
 	// man i give up on the implementation of object pooling for now.
 	// 
@@ -116,15 +117,15 @@ void UInventoryCollectionWidget::ConstructEntry(const FName& Guid, const FInvent
 		LOG_ERROR(LogTemp, TEXT("Failed to create entry object"));
 		return;
 	}
-	Entry->ItemGuid = Guid;
-	Entry->InventoryAsset = Asset;
-	Entry->InventoryRecord = Record;
+	Entry->AssetId = AssetId;
+	Entry->RecordId = RecordId;
+	Entry->Record = Record;
 
-	if (bEnablePayloads && Asset)
+	/*if (bEnablePayloads)
 	{
 		Entry->bEnablePayload = true;
-		Entry->InventoryPayload = InventoryPayloads.FindRef(Asset->ItemId);
-	}
+		Entry->InventoryPayload = InventoryPayloads.FindRef(AssetId.PrimaryAssetName);
+	}*/
 
 	// Updating the data doesnt update the UI
 	// as the NativeOnListItemObjectSet in UInventoryEntryWidget
@@ -148,7 +149,7 @@ void UInventoryCollectionWidget::HandleSelectedEntry(UObject* Object)
 	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(Object);
 	if (IsValid(Entry))
 	{
-		OnItemSelected.Broadcast(Entry->ItemGuid, Entry->InventoryRecord, Entry->InventoryAsset);
+		OnItemSelected.Broadcast(Entry->AssetId, Entry->RecordId, Entry->Record);
 	}
 }
 
@@ -174,9 +175,9 @@ void UInventoryCollectionWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
-			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
-			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
 		}
 
 		InventorySubsystem = Subsystem;

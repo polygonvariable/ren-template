@@ -41,7 +41,19 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RenCore",
+			"Name": "RCoreCommon",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreClock",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
 			"Enabled": true
 		}
 	]

@@ -25,24 +25,24 @@
 
 
 
-void UEnhanceItemWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
-{
-	ActiveItemGuid = ItemGuid;
-
-	UEnhanceableAsset* ItemAsset = Cast<UEnhanceableAsset>(Asset);
-	if (ItemAsset)
-	{
-		ActiveAsset = ItemAsset;
-
-		HandleLevelUpDisplay();
-		HandleRankUpDisplay(Record);
-	}
-
-	if (InventoryDetail)
-	{
-		InventoryDetail->InitializeDetails(ItemGuid, Record, Asset);
-	}
-}
+//void UEnhanceItemWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+//{
+//	ActiveItemGuid = ItemGuid;
+//
+//	UEnhanceableAsset* ItemAsset = Cast<UEnhanceableAsset>(Asset);
+//	if (ItemAsset)
+//	{
+//		ActiveAsset = ItemAsset;
+//
+//		HandleLevelUpDisplay();
+//		HandleRankUpDisplay(Record);
+//	}
+//
+//	if (InventoryDetail)
+//	{
+//		InventoryDetail->InitializeDetails(ItemGuid, Record, Asset);
+//	}
+//}
 
 void UEnhanceItemWidget::ResetDetails()
 {
@@ -168,9 +168,9 @@ void UEnhanceItemWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			InventorySubsystemPtr->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			InventorySubsystemPtr->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			InventorySubsystemPtr->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			//InventorySubsystemPtr->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			//InventorySubsystemPtr->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			//InventorySubsystemPtr->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
 		}
 
 		InventorySubsystem = InventorySubsystemPtr;
@@ -178,7 +178,7 @@ void UEnhanceItemWidget::NativeConstruct()
 
 	if (LevelUpCollection)
 	{
-		LevelUpCollection->OnItemSelected.AddUObject(this, &UEnhanceItemWidget::HandleItemSelected);
+		//LevelUpCollection->OnItemSelected.AddUObject(this, &UEnhanceItemWidget::HandleItemSelected);
 	}
 
 	Super::NativeConstruct();

@@ -24,6 +24,9 @@ class UDialogueAsset;
 
 
 
+/**
+ * 
+ */
 UCLASS(Abstract)
 class UDialogueOptionWidget : public UUserWidget
 {
@@ -37,6 +40,7 @@ public:
 
 protected:
 
+	UEventflowNode* OptionNode = nullptr;
 	int OptionIndex = -1;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
@@ -53,7 +57,9 @@ public:
 };
 
 
-
+/**
+ * 
+ */
 UCLASS(Abstract)
 class UDialogueWidget : public UUserWidget
 {
@@ -63,15 +69,14 @@ class UDialogueWidget : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSoftObjectPtr<UDialogueAsset> DialogueAsset;
+	FPrimaryAssetId DialogueId;
+
+	void SetDialogueContent(UEventflowNode* Node);
 
 protected:
 
 	UPROPERTY()
 	TObjectPtr<UEventflowEngine> EventflowEngine;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UButton> NextButton;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueTitle;

@@ -6,8 +6,9 @@
 // Engine Headers
 
 // Project Headers
-#include "RenEventflow/Public/EventflowNode.h"
 #include "RenEventflow/Public/EventflowData.h"
+#include "RenEventflow/Public/EventflowNode.h"
+#include "RenEventflow/Public/EventflowNodeData.h"
 
 #include "RenQuest/Public/Quest/QuestAsset.h"
 #include "RenQuest/Public/Quest/QuestSubsystem.h"
@@ -15,9 +16,9 @@
 
 
 
-void UQuestEngine::SetEntryId(FGuid NodeId)
+void UQuestEngine::SetEntryIds(const TArray<FGuid>& NodeIds)
 {
-	EntryId = NodeId;
+	EntryIds = NodeIds;
 }
 
 UQuestAsset* UQuestEngine::GetQuestAsset() const
@@ -32,22 +33,49 @@ UQuestSubsystem* UQuestEngine::GetQuestSubsystem() const
 
 void UQuestEngine::HandleOnNodeReached(UEventflowNode* Node)
 {
+	UQuestAsset* QuestAsset = GetQuestAsset();
+	if (!IsValid(QuestAsset))
+	{
+		return;
+	}
+
+	if (!QuestAsset->bIsResumable)
+	{
+		ExecuteNode(Node);
+		return;
+	}
+
 	UQuestSubsystem* QuestSubsystem = GetQuestSubsystem();
 	if (!IsValid(QuestSubsystem) || !Node->NodeId.IsValid())
 	{
 		return;
 	}
 
-	if (QuestSubsystem->SetObjectiveToActive(GetQuestAsset(), Node->NodeId))
+	if (QuestSubsystem->SetObjectiveToActive(CurrentAssetId, Node->NodeId))
 	{
 		ExecuteNode(Node);
 	}
 }
 
-void UQuestEngine::HandleOnNodeExited(UEventflowNode* Node, bool bSuccess)
+void UQuestEngine::HandleOnNodeExited(UEventflowNode* Node, bool bSuccess, int NextNodeIndex)
 {
-	if (!bSuccess)
+	UEventflowNodeData* NodeData = Node->NodeData;
+	if (NodeData->NodeTags.Contains(TEXT("End")))
 	{
+		HandleOnGraphEnded();
+		return;
+	}
+
+	UQuestAsset* QuestAsset = GetQuestAsset();
+	if (!bSuccess || !IsValid(QuestAsset))
+	{
+		HandleOnGraphEnded();
+		return;
+	}
+
+	if (!QuestAsset->bIsResumable)
+	{
+		ReachNextNode(Node, NextNodeIndex);
 		return;
 	}
 
@@ -57,9 +85,24 @@ void UQuestEngine::HandleOnNodeExited(UEventflowNode* Node, bool bSuccess)
 		return;
 	}
 
-	if (QuestSubsystem->SetObjectiveToCompleted(GetQuestAsset(), Node->NodeId))
+	if (QuestSubsystem->SetObjectiveToCompleted(CurrentAssetId, Node->NodeId))
 	{
-		ReachImmediateNextNode();
+		ReachNextNode(Node, NextNodeIndex);
+	}
+}
+
+void UQuestEngine::HandleOnGraphStarted()
+{
+	if (EntryIds.Num() > 0)
+	{
+		for (const FGuid& EntryId : EntryIds)
+		{
+			ReachNodeById(EntryId);
+		}
+	}
+	else
+	{
+		ReachEntryNode();
 	}
 }
 
@@ -68,18 +111,7 @@ void UQuestEngine::HandleOnGraphEnded()
 	UQuestSubsystem* QuestSubsystem = GetQuestSubsystem();
 	if (IsValid(QuestSubsystem))
 	{
-		QuestSubsystem->EndQuest(GetQuestAsset());
+		QuestSubsystem->EndQuest(CurrentAssetId);
 	}
 }
 
-void UQuestEngine::HandleOnEngineInitialized()
-{
-	if (EntryId.IsValid())
-	{
-		ReachNode(EntryId);
-	}
-	else
-	{
-		ReachEntryNode();
-	}
-}

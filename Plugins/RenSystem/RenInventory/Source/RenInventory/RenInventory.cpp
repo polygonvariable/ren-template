@@ -76,7 +76,7 @@ void FRenInventoryModule::AddItem(const TArray<FString>& Args, UWorld* World)
 			FName ItemId = FName(*Args[1]);
 			int Quantity = FCString::Atoi(*Args[2]);
 
-			UInventoryAsset* InventoryAsset = InventorySubsystem->GetItemAsset(ItemId);
+			//UInventoryAsset* InventoryAsset = InventorySubsystem->GetItemAsset(ItemId);
 			//InventorySubsystem->AddItem(ContainerId, InventoryAsset, Quantity);
 		}
 	}

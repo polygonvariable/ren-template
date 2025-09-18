@@ -13,22 +13,18 @@
 // Project Headers
 #include "RCoreInventory/Public/InventoryAsset.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
+
+#include "RCoreLibrary/Public/AssetManagerUtils.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 
 
 
-void UInventoryDetailWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+void UInventoryDetailWidget::InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
 {
-	if (!Asset)
-	{
-		LOG_ERROR(LogTemp, "Asset is invalid");
-		return;
-	}
-
-	ActiveAsset = Asset;
-	ActiveItemGuid = ItemGuid;
+	ActiveAssetId = AssetId;
+	ActiveRecordId = RecordId;
 
 	HandleDetails(Record);
 }
@@ -42,7 +38,7 @@ void UInventoryDetailWidget::RefreshDetails()
 		return;
 	}
 
-	const FInventoryRecord* Record = Subsystem->GetItemRecord(ContainerId, ActiveItemGuid);
+	const FInventoryRecord* Record = Subsystem->GetItemRecord(ContainerId, ActiveRecordId);
 	if (!Record)
 	{
 		ResetDetails();
@@ -55,36 +51,37 @@ void UInventoryDetailWidget::RefreshDetails()
 
 void UInventoryDetailWidget::ResetDetails()
 {
-	ActiveItemGuid = NAME_None;
-	ActiveAsset = nullptr;
+	ActiveAssetId = FPrimaryAssetId();
+	ActiveRecordId = NAME_None;
 
-	FText Empty = FText::GetEmpty();
+	FText EmptyText = FText::GetEmpty();
 
-	SetPrimaryDetails(Empty, Empty, nullptr);
-	SetSecondaryDetails(Empty, 0, 0, 0, 0);
+	SetPrimaryDetails(EmptyText, EmptyText, nullptr);
+	SetSecondaryDetails(EmptyText, 0, 0, 0, 0);
 
 	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(0);
 }
 
 void UInventoryDetailWidget::HandleDetails(const FInventoryRecord* Record)
 {
-	if (!ActiveAsset)
-	{
-		ResetDetails();
-		LOG_ERROR(LogTemp, "ActiveAsset is invalid");
-		return;
-	}
-
-	SetPrimaryDetails(
-		ActiveAsset->ItemName,
-		ActiveAsset->ItemDescription,
-		ActiveAsset->ItemIcon
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, ActiveAssetId, [this](FPrimaryAssetId AssetId, UObject* LoadedAsset)
+		{
+			UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(LoadedAsset);
+			if (IsValid(InventoryAsset))
+			{
+				SetPrimaryDetails(
+					InventoryAsset->ItemName,
+					InventoryAsset->ItemDescription,
+					InventoryAsset->ItemIcon
+				);
+			}
+		}
 	);
 
 	if (Record)
 	{
 		SetSecondaryDetails(
-			FText::FromName(ActiveItemGuid),
+			FText::FromName(ActiveRecordId),
 			Record->ItemQuantity,
 			Record->EnhanceRecord.Rank,
 			Record->EnhanceRecord.Level,
@@ -99,22 +96,22 @@ void UInventoryDetailWidget::HandleDetails(const FInventoryRecord* Record)
 	if (DetailSwitcher) DetailSwitcher->SetActiveWidgetIndex(1);
 }
 
-void UInventoryDetailWidget::SetPrimaryDetails(const FText& Title, const FText& Description, TSoftObjectPtr<UTexture2D> Image)
+void UInventoryDetailWidget::SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image)
 {
 	if (ItemNameText) ItemNameText->SetText(Title);
 	if (ItemDescriptionText) ItemDescriptionText->SetText(Description);
 	if (ItemImage) ItemImage->SetBrushFromSoftTexture(Image);
 }
 
-void UInventoryDetailWidget::SetSecondaryDetails(const FText& Guid, int Quantity)
+void UInventoryDetailWidget::SetSecondaryDetails(const FText& RecordId, int Quantity)
 {
-	if (ItemGuidText) ItemGuidText->SetText(Guid);
+	if (RecordIdText) RecordIdText->SetText(RecordId);
 	if (ItemQuantityText) ItemQuantityText->SetText(FText::FromString(FString::FromInt(Quantity)));
 }
 
-void UInventoryDetailWidget::SetSecondaryDetails(const FText& Guid, int Quantity, int Rank, int Level, int Experience)
+void UInventoryDetailWidget::SetSecondaryDetails(const FText& RecordId, int Quantity, int Rank, int Level, int Experience)
 {
-	SetSecondaryDetails(Guid, Quantity);
+	SetSecondaryDetails(RecordId, Quantity);
 	if (ItemRankText) ItemRankText->SetText(FText::FromString(FString::FromInt(Rank)));
 	if (ItemLevelText) ItemLevelText->SetText(FText::FromString(FString::FromInt(Level)));
 	if (ItemExperienceText) ItemExperienceText->SetText(FText::FromString(FString::FromInt(Experience)));
@@ -134,9 +131,9 @@ void UInventoryDetailWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
 		}
 
 		InventorySubsystem = Subsystem;
@@ -147,8 +144,6 @@ void UInventoryDetailWidget::NativeConstruct()
 
 void UInventoryDetailWidget::NativeDestruct()
 {
-	ActiveAsset = nullptr;
-
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
 	if (IsValid(Subsystem)) {
 		Subsystem->OnItemAdded.RemoveAll(this);

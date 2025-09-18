@@ -40,7 +40,8 @@ public class RenAbility : ModuleRules
 			{
 				"GameplayAbilities",
 				"GameplayTags",
-				"GameplayTasks"
+				"GameplayTasks",
+                "RCoreLibrary",
             }
 		);
 

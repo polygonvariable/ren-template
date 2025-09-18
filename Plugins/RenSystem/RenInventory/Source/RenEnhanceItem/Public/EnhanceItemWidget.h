@@ -46,7 +46,7 @@ public:
 	bool bAutoRefresh = false;
 
 
-	virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
+	//virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
 	virtual void ResetDetails() override;
 	virtual void RefreshDetails() override;
 

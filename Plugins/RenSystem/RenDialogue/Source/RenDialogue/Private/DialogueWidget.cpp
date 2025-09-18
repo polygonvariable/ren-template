@@ -9,7 +9,7 @@
 #include "Components/VerticalBox.h"
 #include "Engine/AssetManager.h"
 #include "Engine/StreamableManager.h"
-#include "Kismet2/BlueprintEditorUtils.h"
+
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
 
@@ -22,6 +22,7 @@
 #include "RenEventflow/Public/EventflowNodeTask.h"
 
 #include "RenDialogue/Public/DialogueAsset.h"
+#include "RenDialogue/Public/DialogueNodeData.h"
 
 
 
@@ -38,46 +39,29 @@ void UDialogueOptionWidget::SelectOption()
 
 
 
+void UDialogueWidget::SetDialogueContent(UEventflowNode* Node)
+{
+	if (!Node) return;
+
+	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(Node->NodeData);
+	if (!NodeData) return;
+
+	if (DialogueTitle) DialogueTitle->SetText(NodeData->DialogueTitle);
+	if (DialogueContent) DialogueContent->SetText(NodeData->DialogueContent);
+
+	ShowOptions(Node);
+}
+
 void UDialogueWidget::LoadDialogue()
 {
-	if (DialogueAsset.IsNull()) return;
+	if (!DialogueId.IsValid())
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("DialogueId is invalid"));
+		return;
+	}
 
 	EventflowEngine = NewObject<UEventflowEngine>(this);
-	EventflowEngine->LoadAsset(DialogueAsset);
-	EventflowEngine->OnNodeReached.BindWeakLambda(this, [this](UEventflowNode* Node)
-		{
-			UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(Node->NodeData);
-			if (NodeData)
-			{
-				if (DialogueTitle) DialogueTitle->SetText(NodeData->DialogueTitle);
-				if (DialogueContent) DialogueContent->SetText(NodeData->DialogueContent);
-				if (NextButton) NextButton->SetVisibility(ESlateVisibility::Collapsed);
-
-				// Here we currently for testing purposes assume that if a node have an event
-				// then it must have a dialogue options.
-				// the ideal way would be to create an interface.
-				if (!EventflowEngine->ExecuteNode(Node))
-				{
-					ShowOptions(Node);
-				}
-			}
-		}
-	);
-	EventflowEngine->OnNodeExited.BindWeakLambda(this, [this](UEventflowNode* Node, bool bSuccess)
-		{
-			ShowOptions(Node);
-		}
-	);
-	EventflowEngine->OnGraphEnded.BindWeakLambda(this, [this]()
-		{
-			UnloadDialogue();
-		}
-	);
-	EventflowEngine->OnEngineInitialized.BindWeakLambda(this, [this]()
-		{
-			EventflowEngine->ReachEntryNode();
-		}
-	);
+	EventflowEngine->LoadAsset(DialogueId);
 }
 
 void UDialogueWidget::UnloadDialogue()
@@ -85,12 +69,6 @@ void UDialogueWidget::UnloadDialogue()
 	if (IsValid(EventflowEngine))
 	{
 		EventflowEngine->UnloadAsset();
-
-		EventflowEngine->OnNodeReached.Unbind();
-		EventflowEngine->OnNodeExited.Unbind();
-		EventflowEngine->OnGraphEnded.Unbind();
-		EventflowEngine->OnEngineInitialized.Unbind();
-
 		EventflowEngine->MarkAsGarbage();
 	}
 	EventflowEngine = nullptr;
@@ -109,11 +87,6 @@ void UDialogueWidget::ShowOptions(UEventflowNode* Node)
 	const TArray<FText>* Options = Node->NodeData->GetOutputOptions();
 	if (!Options) return;
 
-	if (NextButton)
-	{
-		NextButton->SetVisibility((PinCount <= 1) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	}
-
 	if (PinCount <= 1 || PinCount != Options->Num()) return;
 
 	for (int i = 0; i < Options->Num(); i++)
@@ -131,34 +104,24 @@ void UDialogueWidget::ShowOptions(UEventflowNode* Node)
 
 void UDialogueWidget::NextDialogue()
 {
-	EventflowEngine->ReachImmediateNextNode();
+	// EventflowEngine->ReachImmediateNextNode();
 }
 
 void UDialogueWidget::TrySelectOption(int Index)
 {
-	EventflowEngine->ReachNextNode(Index);
+	// EventflowEngine->ReachNextNode(Index);
 }
 
 void UDialogueWidget::NativeConstruct()
 {
-	if (NextButton)
-	{
-		NextButton->OnClicked.AddDynamic(this, &UDialogueWidget::NextDialogue);
-	}
-
 	Super::NativeConstruct();
 }
 
 void UDialogueWidget::NativeDestruct()
 {
-	if (NextButton)
-	{
-		NextButton->OnClicked.RemoveAll(this);
-	}
-
 	if (EventflowEngine)
 	{
-		EventflowEngine->OnNodeReached.Unbind();
+		//EventflowEngine->OnNodeReached.Unbind();
 	}
 	EventflowEngine = nullptr;
 

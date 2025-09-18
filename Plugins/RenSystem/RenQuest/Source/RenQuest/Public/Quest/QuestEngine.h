@@ -29,20 +29,20 @@ class UQuestEngine : public UEventflowEngine
 
 public:
 
-	void SetEntryId(FGuid NodeId);
+	void SetEntryIds(const TArray<FGuid>& NodeIds);
 
 protected:
 
-	FGuid EntryId;
+	TArray<FGuid> EntryIds;
 
 	UQuestAsset* GetQuestAsset() const;
 	UQuestSubsystem* GetQuestSubsystem() const;
 
 	// ~ UEventflowEngine
 	virtual void HandleOnNodeReached(UEventflowNode* Node) override;
-	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess) override;
+	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess, int NextNodeIndex) override;
+	virtual void HandleOnGraphStarted() override;
 	virtual void HandleOnGraphEnded() override;
-	virtual void HandleOnEngineInitialized() override;
 	// ~ End of UEventflowEngine
 
 };

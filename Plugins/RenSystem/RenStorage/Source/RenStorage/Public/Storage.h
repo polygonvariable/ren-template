@@ -60,13 +60,13 @@ public:
 	 * TMap<FGuid, FQuestRecord>
 	 */
 	UPROPERTY()
-	TMap<FGuid, FQuestRecord> ActiveQuests;
+	TMap<FName, FQuestRecord> ActiveQuests;
 
 	/**
 	 * TMap<FGuid, FDateTime>
 	 */
 	UPROPERTY()
-	TMap<FGuid, FDateTime> CompletedQuests;
+	TMap<FName, FDateTime> CompletedQuests;
 
 
 	// ~ IInventoryProviderInterface
@@ -85,11 +85,11 @@ public:
 	// ~ End of ITimestampProviderInterface
 
 	// ~ IQuestProviderInterface
-	virtual const TMap<FGuid, FQuestRecord>& GetActiveQuests() const override { return ActiveQuests; }
-	virtual TMap<FGuid, FQuestRecord>& GetMutableActiveQuests() override { return ActiveQuests; }
+	virtual const TMap<FName, FQuestRecord>& GetActiveQuests() const override { return ActiveQuests; }
+	virtual TMap<FName, FQuestRecord>& GetMutableActiveQuests() override { return ActiveQuests; }
 
-	virtual const TMap<FGuid, FDateTime>& GetCompletedQuests() const override { return CompletedQuests; }
-	virtual TMap<FGuid, FDateTime>& GetMutableCompletedQuests() override { return CompletedQuests; }
+	virtual const TMap<FName, FDateTime>& GetCompletedQuests() const override { return CompletedQuests; }
+	virtual TMap<FName, FDateTime>& GetMutableCompletedQuests() override { return CompletedQuests; }
 	// ~ End of IQuestProviderInterface
 
 };

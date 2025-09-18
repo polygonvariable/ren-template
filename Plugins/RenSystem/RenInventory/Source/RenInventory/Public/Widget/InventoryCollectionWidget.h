@@ -4,6 +4,7 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+
 #include "Blueprint/UserWidget.h"
 #include "InstancedStruct.h"
 
@@ -70,7 +71,7 @@ public:
 	RENINVENTORY_API void AddPayload(FName ItemId, FInstancedStruct Payload);
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API void SetPayloads(TMap<FName, FInstancedStruct> Payloads);
+	RENINVENTORY_API void SetPayloads(const TMap<FName, FInstancedStruct>& Payloads);
 
 	UFUNCTION(BlueprintCallable)
 	RENINVENTORY_API void ClearPayloads();
@@ -87,19 +88,22 @@ protected:
 	TMap<FName, FInstancedStruct> InventoryPayloads;
 
 
-	virtual void ConstructEntry(const FName& Guid, const FInventoryRecord* Record, UInventoryAsset* Asset);
+	virtual void ConstructEntry(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record);
+
 	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
 	virtual void HandleSelectedEntry(UObject* Object);
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, FName /* ItemGuid */, const FInventoryRecord* /* Record */, UInventoryAsset* /* Asset */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, const FPrimaryAssetId& /* AssetId */, FName /* RecordId */, const FInventoryRecord* /* Record */);
 	FOnInventoryItemSelected OnItemSelected;
 
 protected:
 
+	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

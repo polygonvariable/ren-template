@@ -49,6 +49,9 @@ public:
 	UPROPERTY(EditAnywhere, NonTransactional, Meta = (GetOptions = "GetBlueprintMethods"))
 	FName NodeEvent;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FName> NodeTags;
+
 	// UPROPERTY(EditAnywhere)
 	// TSubclassOf<UEventflowNodeTask> NodeTask;
 	

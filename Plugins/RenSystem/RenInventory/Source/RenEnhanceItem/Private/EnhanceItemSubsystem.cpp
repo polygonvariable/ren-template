@@ -20,7 +20,7 @@
 
 
 bool UEnhanceItemSubsystem::LevelUpItem(FName ContainerId, FName ItemGuid, FName EnhanceGuid)
-{
+{/*
 	if (ItemGuid == EnhanceGuid)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item and enhance are the same"));
@@ -88,11 +88,12 @@ bool UEnhanceItemSubsystem::LevelUpItem(FName ContainerId, FName ItemGuid, FName
 		ItemRecord,
 		ItemAsset,
 		*EnhancePoints
-	);
+	);*/
+	return false;
 }
 
 bool UEnhanceItemSubsystem::RankUpItem(FName ContainerId, FName ItemGuid)
-{
+{/*
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
 	if (!IsValid(Subsystem))
 	{
@@ -130,12 +131,13 @@ bool UEnhanceItemSubsystem::RankUpItem(FName ContainerId, FName ItemGuid)
 		return false;
 	}
 	
-	return HandleRankUp(Subsystem, ContainerId, ItemGuid, ItemRecord, ItemAsset, ItemQuantities);
+	return HandleRankUp(Subsystem, ContainerId, ItemGuid, ItemRecord, ItemAsset, ItemQuantities);*/
+	return false;
 }
 
 
 bool UEnhanceItemSubsystem::CanRankUp(FName ContainerId, FName ItemGuid) const
-{
+{/*
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
 	if (!IsValid(Subsystem))
 	{
@@ -162,12 +164,13 @@ bool UEnhanceItemSubsystem::CanRankUp(FName ContainerId, FName ItemGuid) const
 	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
 	int LevelInterval = ItemAsset->GetLevelInterval(CurrentRank);
 
-	return UEnhanceLibrary::CanRankUp(CurrentXp, CurrentLevel, LevelInterval, CurrentRank);
+	return UEnhanceLibrary::CanRankUp(CurrentXp, CurrentLevel, LevelInterval, CurrentRank);*/
+	return false;
 }
 
 
 bool UEnhanceItemSubsystem::HandleLevelUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, FName EnhanceGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, int EnhancePoint)
-{
+{/*
 	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
 	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
 	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
@@ -222,12 +225,12 @@ bool UEnhanceItemSubsystem::HandleLevelUp(UInventorySubsystem* Subsystem, FName 
 		return false;
 	}
 
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Level up successful"));
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Level up successful"));*/
 	return true;
 }
 
 bool UEnhanceItemSubsystem::HandleRankUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, const TMap<FName, int>& ItemQuantities)
-{
+{/*
 	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
 	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
 	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
@@ -262,7 +265,7 @@ bool UEnhanceItemSubsystem::HandleRankUp(UInventorySubsystem* Subsystem, FName C
 		return false;
 	}
 
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Rank up successful"));
+	PRINT_INFO(LogTemp, 1.0f, TEXT("Rank up successful"));*/
 	return true;
 }
 

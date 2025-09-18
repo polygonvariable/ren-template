@@ -7,6 +7,8 @@
 #include "Components/Button.h"
 
 // Project Headers
+#include "RCoreLibrary/Public/LogMacro.h"
+
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 #include "RenInventory/Public/Widget/InventoryCollectionWidget.h"
 #include "RenInventory/Public/Widget/InventoryDetailWidget.h"
@@ -43,21 +45,27 @@ void UInventoryWidget::DisplayEnhanceItem()
 			return;
 		}
 		Widget->AddToViewport();
-		Widget->InitializeDetails(Entry->ItemGuid, Entry->InventoryRecord, Entry->InventoryAsset);
+		// Widget->InitializeDetails(Entry->ItemGuid, Entry->InventoryRecord, Entry->InventoryAsset);
 
 		EnhanceItemWidget = Widget;
 	}
 }
 
-void UInventoryWidget::HandleItemSelected(FName Guid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+void UInventoryWidget::SetContainerId(FName ContainerId)
+{
+	InventoryDetail->ContainerId = ContainerId;
+	InventoryCollection->QueryRule.ContainerId = ContainerId;
+}
+
+void UInventoryWidget::HandleItemSelected(const FPrimaryAssetId& AssetId, FName RecordId, const FInventoryRecord* Record)
 {
 	if (InventoryDetail)
 	{
-		InventoryDetail->InitializeDetails(Guid, Record, Asset);
+		InventoryDetail->InitializeDetails(AssetId, RecordId, Record);
 	}
 	if (InventorySwitch)
 	{
-		InventorySwitch->InitializeDetails(Guid, Record, Asset);
+		InventorySwitch->InitializeDetails(AssetId, RecordId, Record);
 	}
 }
 

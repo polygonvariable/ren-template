@@ -121,7 +121,7 @@ void AInventoryItemActor::Interacted()
 {
 	UInventorySubsystem* InventorySubsystem = GetInventorySubsystem();
 	if (!InventorySubsystem) return;
-	if (!InventorySubsystem->AddItem(ContainerId, InventoryAsset, ItemQuantity)) return;
+	//if (!InventorySubsystem->AddItem(ContainerId, InventoryAsset, ItemQuantity)) return;
 
 	AInventoryPickupActor::Interacted();
 }
@@ -130,7 +130,7 @@ void AInventoryChestActor::Interacted()
 {
 	UInventorySubsystem* InventorySubsystem = GetInventorySubsystem();
 	if (!InventorySubsystem) return;
-	if (!InventorySubsystem->AddItems(ContainerId, InventoryAssets)) return;
+	//if (!InventorySubsystem->AddItems(ContainerId, InventoryAssets)) return;
 
 	AInventoryPickupActor::Interacted();
 }

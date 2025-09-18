@@ -6,6 +6,8 @@
 #include "CoreMinimal.h"
 
 // Project Headers
+#include "RCoreInventory/Public/InventoryItemRarity.h"
+#include "RCoreInventory/Public/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryDefinition.generated.h"
@@ -83,11 +85,18 @@ struct FInventoryQueryRule
 struct FInventorySortEntry
 {
 
-	FName Guid = NAME_None;
-	const FInventoryRecord* Record = nullptr;
-	UInventoryAsset* Asset = nullptr;
+	FPrimaryAssetId AssetId = FPrimaryAssetId();
+	FText ItemName = FText::GetEmpty();
 
-	FInventorySortEntry(FName InGuid, const FInventoryRecord* InRecord, UInventoryAsset* InAsset) : Guid(InGuid), Record(InRecord), Asset(InAsset) {}
+	FName RecordId = NAME_None;
+	const FInventoryRecord* Record = nullptr;
+
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, FName InRecordId, const FInventoryRecord* InRecord) :
+		AssetId(InAssetId),
+		ItemName(InItemName),
+		RecordId(InRecordId),
+		Record(InRecord)
+	{}
 
 };
 

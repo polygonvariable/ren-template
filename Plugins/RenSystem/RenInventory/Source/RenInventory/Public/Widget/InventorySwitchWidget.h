@@ -9,6 +9,8 @@
 // Project Headers
 #include "RCoreInventory/Public/InventoryFilterRule.h"
 
+#include "RenInventory/Public/Widget/InventoryBaseWidget.h"
+
 // Generated Headers
 #include "InventorySwitchWidget.generated.h"
 
@@ -25,7 +27,7 @@ struct FInventoryRecord;
  *
  */
 UCLASS(Blueprintable)
-class UInventorySwitchWidget : public UUserWidget
+class UInventorySwitchWidget : public UInventoryBaseWidget
 {
 
 	GENERATED_BODY()
@@ -35,7 +37,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FInventoryFilterRule FilterRule;
 
-	RENINVENTORY_API void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset);
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record) override;
 	RENINVENTORY_API void ResetDetails();
 
 protected:
@@ -51,8 +53,8 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool BP_HandleSwitch(FInventoryRecord Record, UInventoryAsset* Asset);
-	virtual bool BP_HandleSwitch_Implementation(FInventoryRecord Record, UInventoryAsset* Asset);
+	bool BP_HandleSwitch(const FPrimaryAssetId& AssetId, FInventoryRecord Record);
+	virtual bool BP_HandleSwitch_Implementation(const FPrimaryAssetId& AssetId, FInventoryRecord Record);
 
 };
 
