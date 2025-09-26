@@ -34,8 +34,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	EInventoryItemType ItemType = EInventoryItemType::Default;
 
-	// TODO:
-	// Rename this from ItemQuantity to Quantity
+	/*
+	 * TODO:
+	 * Rename this from ItemQuantity to Quantity
+	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int ItemQuantity = 0;
 
@@ -45,10 +47,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FTimespan ExpireTime = FTimespan::Zero();
 
-
 	bool IsValid() const
 	{
-		return ItemId.IsValid() && ItemQuantity > 0 && !IsExpired();
+		return ItemId.IsValid() && ItemQuantity > 0 && ItemType != EInventoryItemType::Default && !IsExpired();
 	}
 
 	bool CanExpire() const

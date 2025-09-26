@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenAsset : ModuleRules
+public class RCoreExchange : ModuleRules
 {
-	public RenAsset(ReadOnlyTargetRules Target) : base(Target)
+	public RCoreExchange(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -28,8 +28,6 @@ public class RenAsset : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"RCoreCommon",
-                "RCoreInventory",
-                "RCoreExchange",
             }
 			);
 			
@@ -42,9 +40,9 @@ public class RenAsset : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"Projects",
+				"StructUtils",
             }
-			);
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

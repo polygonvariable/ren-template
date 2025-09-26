@@ -43,9 +43,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bAutoRefresh = false;
 
-	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record) override;
+	// ~ UInventoryBaseWidget
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	RENINVENTORY_API virtual void RefreshDetails() override;
 	RENINVENTORY_API virtual void ResetDetails() override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 
@@ -57,9 +59,6 @@ protected:
 
 	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UEditableTextBox> RecordIdText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UWidgetSwitcher> DetailSwitcher = nullptr;
@@ -88,9 +87,11 @@ protected:
 
 	void HandleDetails(const FInventoryRecord* Record);
 
+	// ~ UInventoryBaseWidget
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
-	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity) override;
-	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity, int Rank, int Level, int Experience);
+	virtual void SetSecondaryDetails(int Quantity) override;
+	virtual void SetSecondaryDetails(int Quantity, int Rank, int Level, int Experience);
+	// ~ End of UInventoryBaseWidget
 
 protected:
 

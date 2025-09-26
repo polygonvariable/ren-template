@@ -11,7 +11,7 @@
 
 
 
-void UInventoryBaseWidget::InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
+void UInventoryBaseWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
 
 }
@@ -31,9 +31,8 @@ void UInventoryBaseWidget::SetPrimaryDetails(const FText& Title, const FText& De
 
 }
 
-void UInventoryBaseWidget::SetSecondaryDetails(const FText& RecordId, int Quantity)
+void UInventoryBaseWidget::SetSecondaryDetails(int Quantity)
 {
-
 }
 
 void UInventoryBaseWidget::SetTertiaryDetails(UInventoryEntryObject* Entry)

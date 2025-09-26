@@ -12,12 +12,9 @@
 
 
 
-bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FName& ItemId, const uint8& ItemType, const uint8& ItemRarity) const
+bool FInventoryFilterRule::Match(const FInventoryRecord* Record) const
 {
 	TArray<bool> Results;
-	Results.Add(FilterId.Matches(ItemId));
-	Results.Add(FilterType.Matches(ItemType));
-	Results.Add(FilterRarity.Matches(ItemRarity));
 
 	if (Record)
 	{
@@ -27,6 +24,26 @@ bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FName& It
 		Results.Add(FilterQuantity.Matches(Record->ItemQuantity));
 	}
 
+	return MatchInternal(Results);
+}
+
+bool FInventoryFilterRule::Match(const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const
+{
+	TArray<bool> Results;
+	Results.Add(FilterId.Matches(ItemId));
+	Results.Add(FilterType.Matches(ItemType));
+	Results.Add(FilterRarity.Matches(ItemRarity));
+
+	return MatchInternal(Results);
+}
+
+bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const
+{
+	return Match(Record) && Match(ItemId, ItemType, ItemRarity);
+}
+
+bool FInventoryFilterRule::MatchInternal(const TArray<bool>& Results) const
+{
 	if (FilterCombination == EFilterCombination::And)
 	{
 		for (bool Result : Results)

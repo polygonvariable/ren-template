@@ -4,7 +4,6 @@
 #include "AssetManagerUtils.h"
 
 // Engine Headers
-#include "Engine/AssetManager.h"
 
 // Project Headers
 
@@ -33,6 +32,12 @@ template RCORELIBRARY_API FText		AssetManagerUtils::GetAssetTagValue<FText>(UAss
 template RCORELIBRARY_API int32		AssetManagerUtils::GetAssetTagValue<int32>(UAssetManager*, const FPrimaryAssetId&, FName);
 template RCORELIBRARY_API float		AssetManagerUtils::GetAssetTagValue<float>(UAssetManager*, const FPrimaryAssetId&, FName);
 template RCORELIBRARY_API bool		AssetManagerUtils::GetAssetTagValue<bool>(UAssetManager*, const FPrimaryAssetId&, FName);
+
+void AssetManagerUtils::LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(FPrimaryAssetId, UObject*)> OnLoaded)
+{
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	LoadPrimaryAsset(Outer, AssetManager, AssetId, MoveTemp(OnLoaded));
+}
 
 void AssetManagerUtils::LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(FPrimaryAssetId, UObject*)> OnLoaded)
 {

@@ -88,14 +88,14 @@ protected:
 	TMap<FName, FInstancedStruct> InventoryPayloads;
 
 
-	virtual void ConstructEntry(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record);
+	virtual void ConstructEntry(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
 
 	virtual void HandleDisplayOfEntry(UInventoryEntryObject* EntryObject);
 	virtual void HandleSelectedEntry(UObject* Object);
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, const FPrimaryAssetId& /* AssetId */, FName /* RecordId */, const FInventoryRecord* /* Record */);
+	DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnInventoryItemSelected, const FPrimaryAssetId& /* AssetId */, int /* Quantity */, const FInventoryRecord* /* Record */);
 	FOnInventoryItemSelected OnItemSelected;
 
 protected:

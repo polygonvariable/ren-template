@@ -31,16 +31,19 @@ class UInventoryEntryObject : public UObject
 public:
 
 	FPrimaryAssetId AssetId = FPrimaryAssetId();
-	FName RecordId = NAME_None;
+
+	int Quantity = 0;
+
 	const FInventoryRecord* Record = nullptr;
 
 	bool bHasPayload = false;
+
 	FInstancedStruct Payload;
 
 	void ResetData()
 	{
 		AssetId = FPrimaryAssetId();
-		RecordId = NAME_None;
+		Quantity = 0;
 		Record = nullptr;
 
 		bHasPayload = false;
@@ -50,7 +53,6 @@ public:
 	virtual void BeginDestroy() override
 	{
 		ResetData();
-		UE_LOG(LogTemp, Warning, TEXT("Object Destroyed"));
 		Super::BeginDestroy();
 	}
 

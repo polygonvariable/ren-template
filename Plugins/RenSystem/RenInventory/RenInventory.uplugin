@@ -62,6 +62,10 @@
 		{
 			"Name": "RCoreEnhance",
 			"Enabled": true
+		},
+		{
+			"Name": "RCoreExchange",
+			"Enabled": true
 		}
 	]
 }

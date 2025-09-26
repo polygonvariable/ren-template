@@ -15,9 +15,9 @@ FPrimaryAssetType InventoryPrimaryAsset::GetAssetType()
 	return FPrimaryAssetType(TEXT("Inventory"));
 }
 
-FPrimaryAssetId InventoryPrimaryAsset::GetPrimaryAssetId(const FName& ItemId)
+FPrimaryAssetId InventoryPrimaryAsset::GetPrimaryAssetId(const FName& AssetName)
 {
-	return FPrimaryAssetId(InventoryPrimaryAsset::GetAssetType(), ItemId);
+	return FPrimaryAssetId(InventoryPrimaryAsset::GetAssetType(), AssetName);
 }
 
 bool InventoryPrimaryAsset::IsValid(const FPrimaryAssetId& AssetId)
@@ -25,10 +25,15 @@ bool InventoryPrimaryAsset::IsValid(const FPrimaryAssetId& AssetId)
 	return AssetId.PrimaryAssetType == InventoryPrimaryAsset::GetAssetType();
 }
 
+bool InventoryPrimaryAsset::GetItemType(const FAssetData& AssetData, FName& ItemType)
+{
+	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemType), ItemType);
+}
+
 bool InventoryPrimaryAsset::GetItemType(const FAssetData& AssetData, EInventoryItemType& ItemType)
 {
 	FName TypeText;
-	AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemType), TypeText);
+	GetItemType(AssetData, TypeText);
 
 	const UEnum* Enum = StaticEnum<EInventoryItemType>();
 	int64 EnumValue = Enum->GetValueByName(TypeText);
@@ -42,10 +47,15 @@ bool InventoryPrimaryAsset::GetItemType(const FAssetData& AssetData, EInventoryI
 	return true;
 }
 
+bool InventoryPrimaryAsset::GetItemRarity(const FAssetData& AssetData, FName& ItemRarity)
+{
+	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemRarity), ItemRarity);
+}
+
 bool InventoryPrimaryAsset::GetItemRarity(const FAssetData& AssetData, EInventoryItemRarity& ItemRarity)
 {
 	FName RarityText;
-	AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemRarity), RarityText);
+	GetItemRarity(AssetData, RarityText);
 
 	const UEnum* Enum = StaticEnum<EInventoryItemType>();
 	int64 EnumValue = Enum->GetValueByName(RarityText);

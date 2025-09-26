@@ -87,14 +87,19 @@ struct FInventorySortEntry
 
 	FPrimaryAssetId AssetId = FPrimaryAssetId();
 	FText ItemName = FText::GetEmpty();
-
-	FName RecordId = NAME_None;
+	int ItemQuantity = 0;
 	const FInventoryRecord* Record = nullptr;
 
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, FName InRecordId, const FInventoryRecord* InRecord) :
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InItemQuantity) :
 		AssetId(InAssetId),
 		ItemName(InItemName),
-		RecordId(InRecordId),
+		ItemQuantity(InItemQuantity)
+	{}
+
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InItemQuantity, const FInventoryRecord* InRecord) :
+		AssetId(InAssetId),
+		ItemName(InItemName),
+		ItemQuantity(InItemQuantity),
 		Record(InRecord)
 	{}
 
@@ -126,4 +131,6 @@ public:
 	int Quantity = 0;
 
 };
+
+
 

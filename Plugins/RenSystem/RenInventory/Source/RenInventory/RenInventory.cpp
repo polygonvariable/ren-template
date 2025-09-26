@@ -100,7 +100,7 @@ void FRenInventoryModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 			FName ItemGuid = FName(*Args[1]);
 			int Quantity = FCString::Atoi(*Args[2]);
 
-			InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
+			//InventorySubsystem->RemoveItem(ContainerId, ItemGuid, Quantity);
 		}
 	}
 }

@@ -3,217 +3,206 @@
 // Parent Header
 #include "EnhanceItemSubsystem.h"
 
+// Engine Headers
+#include "Engine/AssetManager.h"
+#include "InstancedStruct.h"
+
 // Project Headers
 #include "RenAsset/Public/AssetMetadata.h"
-
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
 #include "RenAsset/Public/Inventory/Asset/Type/EnhanceAsset.h"
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 
 #include "RCoreDelegate/Public/LatentDelegates.h"
 #include "RCoreEnhance/Public/EnhanceLibrary.h"
+#include "RCoreExchange/Public/ExchangeInterface.h"
+#include "RCoreExchange/Public/ExchangeRule.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
+#include "RCoreLibrary/Public/AssetManagerUtils.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
+#include "RenInventory/Public/InventoryPrimaryAsset.h"
 #include "RenInventory/Public/InventorySubsystem.h"
 
 
 
-bool UEnhanceItemSubsystem::LevelUpItem(FName ContainerId, FName ItemGuid, FName EnhanceGuid)
-{/*
-	if (ItemGuid == EnhanceGuid)
+void UEnhanceItemSubsystem::LevelUpItem(FName ContainerId, FName TargetId, FName MaterialId)
+{
+	/*if (TargetId == MaterialId)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item and enhance are the same"));
-		return false;
+		OnItemLevelUp.Broadcast(TargetId, false);
+		return;
 	}
 
 	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
-	if (!IsValid(Subsystem))
+	if (!IsValid(Subsystem) || !IsValid(AssetManager))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
-		return false;
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem or AssetManager is invalid"));
+		OnItemLevelUp.Broadcast(TargetId, false);
+		return;
 	}
 
-	const FInventoryRecord* ItemRecord = Subsystem->GetItemRecord(ContainerId, ItemGuid);
-	if (!ItemRecord)
+	const FInventoryRecord* TargetRecord = Subsystem->GetItemRecord(ContainerId, TargetId);
+	if (!TargetRecord)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
-		return false;
+		OnItemLevelUp.Broadcast(TargetId, false);
+		return;
 	}
 
-	UEnhanceableAsset* ItemAsset = Subsystem->GetItemAsset<UEnhanceableAsset>(ItemRecord->ItemId);
-	if (!ItemAsset)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item asset is invalid"));
-		return false;
-	}
-	
-	const FInventoryRecord* EnhanceRecord = Subsystem->GetItemRecord(ContainerId, EnhanceGuid);
-	if (!EnhanceRecord)
+	const FInventoryRecord* MaterialRecord = Subsystem->GetItemRecord(ContainerId, MaterialId);
+	if (!MaterialRecord)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Enhance record is invalid"));
-		return false;
+		OnItemLevelUp.Broadcast(TargetId, false);
+		return;
 	}
 
-	UEnhanceAsset* EnhanceAsset = Subsystem->GetItemAsset<UEnhanceAsset>(EnhanceRecord->ItemId);
-	if (EnhanceAsset)
-	{
-		if (ItemAsset->EnhanceCosts.Contains(EnhanceAsset))
-		{
-			return HandleLevelUp(
-				Subsystem,
-				ContainerId,
-				ItemGuid,
-				EnhanceGuid,
-				ItemRecord,
-				ItemAsset,
-				EnhanceAsset->ExchangePoints
-			);
-		}
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Internal enhance not found, trying to check for external enhance"));
-	}
-
-	int* EnhancePoints = ItemAsset->ExternalCosts.Find(EnhanceAsset->ItemType);
-	if (!EnhancePoints)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("External enhance failed and no points found"));
-		return false;
-	}
-
-	return HandleLevelUp(
-		Subsystem,
-		ContainerId,
-		ItemGuid,
-		EnhanceGuid,
-		ItemRecord,
-		ItemAsset,
-		*EnhancePoints
-	);*/
-	return false;
-}
-
-bool UEnhanceItemSubsystem::RankUpItem(FName ContainerId, FName ItemGuid)
-{/*
-	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
-	if (!IsValid(Subsystem))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
-		return false;
-	}
-
-	const FInventoryRecord* ItemRecord = Subsystem->GetItemRecord(ContainerId, ItemGuid);
-	if (!ItemRecord)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
-		return false;
-	}
-
-	UEnhanceableAsset* ItemAsset = Subsystem->GetItemAsset<UEnhanceableAsset>(ItemRecord->ItemId);
-	if (!ItemAsset)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item asset is invalid"));
-		return false;
-	}
-
-	int NextRank = ItemRecord->EnhanceRecord.Rank;
-	const TArray<FInventoryAssetQuantity>& RankingCosts = ItemAsset->RankingCosts;
-	if (!RankingCosts.IsValidIndex(NextRank))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Ranking cost is invalid"));
-		return false;
-	}
-
-	const FInventoryAssetQuantity& CostItem = RankingCosts[NextRank];
-	const TMap<FName, int>& ItemQuantities = CostItem.GetItemIds();
-	if (!Subsystem->ContainsItems(ContainerId, ItemQuantities))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Not enough items to rank up"));
-		return false;
-	}
+	FEnhanceRecord TargetEnhance = TargetRecord->EnhanceRecord;
+	TWeakObjectPtr<UEnhanceItemSubsystem> WeakThis(this);
 	
-	return HandleRankUp(Subsystem, ContainerId, ItemGuid, ItemRecord, ItemAsset, ItemQuantities);*/
-	return false;
+	TFunction<void(bool, UObject*, UObject*)> AsyncCallback = [WeakThis, ContainerId, TargetId, TargetEnhance, MaterialId](bool bSuccess, UObject* TargetObject, UObject* MaterialObject)
+	{
+		UEnhanceableAsset* TargetAsset = Cast<UEnhanceableAsset>(TargetObject);
+		UInventoryAsset* MaterialAsset = Cast<UInventoryAsset>(MaterialObject);
+		UEnhanceItemSubsystem* Owner = WeakThis.Get();
+
+		if (!IsValid(TargetAsset) || !IsValid(MaterialAsset) || !IsValid(Owner))
+		{
+			Owner->OnItemLevelUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		UEnum* Enum = StaticEnum<EInventoryItemType>();
+		FName ItemType = Enum->GetNameByValue(static_cast<int64>(MaterialAsset->ItemType));
+		if (ItemType == NAME_None)
+		{
+			Owner->OnItemLevelUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		if (!TargetAsset->EnhanceRules.ContainsAny(MaterialAsset->GetPrimaryAssetId(), ItemType))
+		{
+			Owner->OnItemLevelUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		IExchangeInterface* ExchangeInterface = Cast<IExchangeInterface>(MaterialAsset);
+		if (!ExchangeInterface)
+		{
+			Owner->OnItemLevelUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		FInstancedStruct Context = FInstancedStruct::Make(TargetEnhance);
+		int Point = ExchangeInterface->GetExchangedNumber(Context);
+		if (Point <= 0)
+		{
+			Owner->OnItemLevelUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		bool bResult = Owner->HandleLevelUp(ContainerId, TargetId, TargetEnhance, TargetAsset, MaterialId, Point);
+		Owner->OnItemLevelUp.Broadcast(TargetId, bResult);
+	};
+
+	FPrimaryAssetId TargetAssetId = InventoryPrimaryAsset::GetPrimaryAssetId(TargetRecord->ItemId);
+	FPrimaryAssetId MaterialAssetId = InventoryPrimaryAsset::GetPrimaryAssetId(MaterialRecord->ItemId);
+
+	AssetManagerUtils::LoadPrimaryAssets(this, AssetManager, AsyncCallback, TargetAssetId, MaterialAssetId);*/
+}
+
+void UEnhanceItemSubsystem::RankUpItem(FName ContainerId, FName TargetId)
+{
+	/*UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (!IsValid(Subsystem))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
+		OnItemRankUp.Broadcast(TargetId, false);
+		return;
+	}
+
+	const FInventoryRecord* TargetRecord = Subsystem->GetItemRecord(ContainerId, TargetId);
+	if (!TargetRecord)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
+		OnItemRankUp.Broadcast(TargetId, false);
+		return;
+	}
+
+	FEnhanceRecord TargetEnhance = TargetRecord->EnhanceRecord;
+	TWeakObjectPtr<UEnhanceItemSubsystem> WeakThis(this);
+
+	TFunction<void(FPrimaryAssetId, UObject*)> AsyncCallback = [WeakThis, ContainerId, TargetId, TargetEnhance](FPrimaryAssetId AssetId, UObject* TargetObject)
+	{
+		UEnhanceableAsset* TargetAsset = Cast<UEnhanceableAsset>(TargetObject);
+		UEnhanceItemSubsystem* Owner = WeakThis.Get();
+
+		if (!IsValid(TargetAsset) || !IsValid(Owner))
+		{
+			Owner->OnItemRankUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		int NextRank = TargetEnhance.Rank;
+		const TArray<FExchangeRule>& RankingRules = TargetAsset->RankingRules;
+		if (!RankingRules.IsValidIndex(NextRank))
+		{
+			Owner->OnItemRankUp.Broadcast(TargetId, false);
+			return;
+		}
+
+		const FExchangeRule& CostItem = RankingRules[NextRank];
+		const TMap<FPrimaryAssetId, int>& ItemQuantities = CostItem.RequiredAssets;
+
+		bool bResult = Owner->HandleRankUp(ContainerId, TargetId, TargetEnhance, TargetAsset, ItemQuantities);
+		Owner->OnItemRankUp.Broadcast(TargetId, bResult);
+	};
+
+	FPrimaryAssetId TargetAssetId = InventoryPrimaryAsset::GetPrimaryAssetId(TargetRecord->ItemId);
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, TargetAssetId, AsyncCallback);*/
 }
 
 
-bool UEnhanceItemSubsystem::CanRankUp(FName ContainerId, FName ItemGuid) const
-{/*
-	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
-	if (!IsValid(Subsystem))
+bool UEnhanceItemSubsystem::HandleLevelUp(FName ContainerId, FName EnhanceableId, FEnhanceRecord EnhanceableRecord, UEnhanceableAsset* EnhanceableAsset, FName EnhanceId, int EnhancePoint)
+{
+	/*UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (!IsValid(Subsystem) || !IsValid(EnhanceableAsset))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
 		return false;
 	}
 
-	const FInventoryRecord* ItemRecord = Subsystem->GetItemRecord(ContainerId, ItemGuid);
-	if (!ItemRecord)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
-		return false;
-	}
+	int CurrentExperience = EnhanceableRecord.Experience;
+	int CurrentLevel = EnhanceableRecord.Level;
+	int CurrentRank = EnhanceableRecord.Rank;
 
-	UEnhanceableAsset* ItemAsset = Subsystem->GetItemAsset<UEnhanceableAsset>(ItemRecord->ItemId);
-	if (!ItemAsset)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item asset is invalid"));
-		return false;
-	}
+	int ExperienceInterval = EnhanceableAsset->GetExperienceInterval(CurrentLevel);
+	int LevelInterval = EnhanceableAsset->GetLevelInterval(CurrentRank);
+	int MaxLevel = EnhanceableAsset->MaxLevel;
 
-	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
-	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
-	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
-	int LevelInterval = ItemAsset->GetLevelInterval(CurrentRank);
-
-	return UEnhanceLibrary::CanRankUp(CurrentXp, CurrentLevel, LevelInterval, CurrentRank);*/
-	return false;
-}
-
-
-bool UEnhanceItemSubsystem::HandleLevelUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, FName EnhanceGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, int EnhancePoint)
-{/*
-	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
-	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
-	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
-
-	int NewXp = 0;
+	int NewExperience = 0;
 	int NewLevel = 0;
 
-	bool bDoesLevelUpdated = false;
-	bool bDoesRankShouldUpdate = false;
-	bool bDoesMaxLevelReached = false;
-
-	bool bCanLevelUp = UEnhanceLibrary::CalculateLevelUp(
-		EnhancePoint,
-		CurrentXp,
-		CurrentLevel,
-		CurrentRank,
-		ItemAsset->GetXpInterval(CurrentLevel),
-		ItemAsset->GetLevelInterval(CurrentRank),
-		ItemAsset->MaxLevel,
-		NewXp,
-		NewLevel,
-		bDoesLevelUpdated,
-		bDoesRankShouldUpdate,
-		bDoesMaxLevelReached
-	);
-
+	bool bCanLevelUp = UEnhanceLibrary::CalculateLevelUp(EnhancePoint, CurrentExperience, CurrentLevel, CurrentRank, ExperienceInterval, LevelInterval, MaxLevel, NewExperience, NewLevel);
 	if (!bCanLevelUp)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Level up cancelled"));
 		return false;
 	}
 
-	if (!Subsystem->RemoveItem(ContainerId, EnhanceGuid, 1))
+	if (!Subsystem->RemoveItem(ContainerId, EnhanceId, 1))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to remove enhance record"));
 		return false;
 	}
 
-	bool bResult = Subsystem->UpdateItem(ContainerId, ItemGuid,
-		[this, NewXp, NewLevel](FInventoryRecord* Record)
+	bool bResult = Subsystem->UpdateItem(ContainerId, EnhanceableId,
+		[NewExperience, NewLevel](FInventoryRecord* Record)
 		{
 			if (!Record) return false;
-			Record->EnhanceRecord.Experience = NewXp;
+			Record->EnhanceRecord.Experience = NewExperience;
 			Record->EnhanceRecord.Level = NewLevel;
 			return true;
 		}
@@ -229,16 +218,30 @@ bool UEnhanceItemSubsystem::HandleLevelUp(UInventorySubsystem* Subsystem, FName 
 	return true;
 }
 
-bool UEnhanceItemSubsystem::HandleRankUp(UInventorySubsystem* Subsystem, FName ContainerId, FName ItemGuid, const FInventoryRecord* ItemRecord, UEnhanceableAsset* ItemAsset, const TMap<FName, int>& ItemQuantities)
-{/*
-	int CurrentXp = ItemRecord->EnhanceRecord.Experience;
-	int CurrentLevel = ItemRecord->EnhanceRecord.Level;
-	int CurrentRank = ItemRecord->EnhanceRecord.Rank;
-	int LevelInterval = ItemAsset->GetLevelInterval(CurrentRank);
+bool UEnhanceItemSubsystem::HandleRankUp(FName ContainerId, FName TargetId, FEnhanceRecord TargetEnhance, UEnhanceableAsset* TargetAsset, const TMap<FPrimaryAssetId, int>& ItemQuantities)
+{
+	/*UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (!IsValid(Subsystem) || !IsValid(TargetAsset))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem, TargetAsset is invalid"));
+		return false;
+	}
 
-	PRINT_INFO(LogTemp, 5.0f, TEXT("Level Interval: %d"), LevelInterval);
+	if (!Subsystem->ContainsItems(ContainerId, ItemQuantities))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Not enough rank costs"));
+		return false;
+	}
+	
+	int CurrentExperience = TargetEnhance.Experience;
+	int CurrentLevel = TargetEnhance.Level;
+	int CurrentRank = TargetEnhance.Rank;
 
-	if (!UEnhanceLibrary::CanRankUp(CurrentXp, CurrentLevel, LevelInterval, CurrentRank))
+	int LevelInterval = TargetAsset->GetLevelInterval(CurrentRank);
+	int MaxRank = TargetAsset->MaxRank;
+
+	bool bCanRankUp = UEnhanceLibrary::CanRankUp(CurrentExperience, CurrentLevel, CurrentRank, LevelInterval, MaxRank);
+	if (!bCanRankUp)
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Cannot rank up"));
 		return false;
@@ -250,8 +253,8 @@ bool UEnhanceItemSubsystem::HandleRankUp(UInventorySubsystem* Subsystem, FName C
 		return false;
 	}
 
-	bool bResult = Subsystem->UpdateItem(ContainerId, ItemGuid,
-		[this](FInventoryRecord* Record)
+	bool bResult = Subsystem->UpdateItem(ContainerId, TargetId,
+		[](FInventoryRecord* Record)
 		{
 			if (!Record) return false;
 			Record->EnhanceRecord.Rank++;
@@ -269,11 +272,54 @@ bool UEnhanceItemSubsystem::HandleRankUp(UInventorySubsystem* Subsystem, FName C
 	return true;
 }
 
+void UEnhanceItemSubsystem::CanRankUp(FName ContainerId, FName TargetId, TFunction<void(bool)> Callback)
+{
+	/*UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	if (!IsValid(Subsystem))
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventorySubsystem is invalid"));
+		Callback(false);
+		return;
+	}
+
+	const FInventoryRecord* TargetRecord = Subsystem->GetItemRecord(ContainerId, TargetId);
+	if (!TargetRecord)
+	{
+		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item record is invalid"));
+		Callback(false);
+		return;
+	}
+
+	FEnhanceRecord TargetEnhance = TargetRecord->EnhanceRecord;
+
+	TFunction<void(FPrimaryAssetId, UObject*)> AsyncCallback = [TargetEnhance, InCallback = MoveTemp(Callback)](FPrimaryAssetId AssetId, UObject* TargetObject)
+	{
+		UEnhanceableAsset* TargetAsset = Cast<UEnhanceableAsset>(TargetObject);
+		if (!IsValid(TargetAsset))
+		{
+			InCallback(false);
+			return;
+		}
+
+		int CurrentExperience = TargetEnhance.Experience;
+		int CurrentLevel = TargetEnhance.Level;
+		int CurrentRank = TargetEnhance.Rank;
+
+		int LevelInterval = TargetAsset->GetLevelInterval(CurrentRank);
+		int MaxRank = TargetAsset->MaxRank;
+
+		bool bResult = UEnhanceLibrary::CanRankUp(CurrentExperience, CurrentLevel, CurrentRank, LevelInterval, MaxRank);
+		InCallback(bResult);
+	};
+
+	FPrimaryAssetId TargetAssetId = InventoryPrimaryAsset::GetPrimaryAssetId(TargetRecord->ItemId);
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, TargetAssetId, AsyncCallback);*/
+}
 
 
 void UEnhanceItemSubsystem::HandleGameInitialized()
 {
-	FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
+	/*FLatentDelegates::OnPreGameInitialized.RemoveAll(this);
 
 	UInventorySubsystem* Subsystem = GetGameInstance()->GetSubsystem<UInventorySubsystem>();
 	if (!IsValid(Subsystem))
@@ -283,7 +329,9 @@ void UEnhanceItemSubsystem::HandleGameInitialized()
 	}
 
 	InventorySubsystem = Subsystem;
+	AssetManager = UAssetManager::GetIfInitialized();*/
 }
+
 
 bool UEnhanceItemSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {

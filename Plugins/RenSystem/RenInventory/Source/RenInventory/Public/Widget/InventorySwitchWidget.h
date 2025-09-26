@@ -18,9 +18,8 @@
 class UNamedSlot;
 class UWidgetSwitcher;
 
-class UInventoryAsset;
-
 struct FInventoryRecord;
+
 
 
 /**
@@ -37,8 +36,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FInventoryFilterRule FilterRule;
 
-	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record) override;
-	RENINVENTORY_API void ResetDetails();
+	// ~ UInventoryBaseWidget
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
+	RENINVENTORY_API virtual void ResetDetails() override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 

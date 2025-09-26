@@ -27,7 +27,7 @@ struct FInventoryRecord;
  *
  */
 UCLASS(Abstract)
-class UInventoryWidget : public UUserWidget
+class UInventoryWidget : public UInventoryBaseWidget
 {
 
 	GENERATED_BODY()
@@ -56,7 +56,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventorySwitchWidget> InventorySwitch = nullptr;
 
-	void HandleItemSelected(const FPrimaryAssetId& AssetId, FName RecordId, const FInventoryRecord* Record);
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 
 protected:
 

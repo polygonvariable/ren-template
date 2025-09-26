@@ -17,6 +17,39 @@
  *
  */
 USTRUCT(BlueprintType)
+struct FInventoryStack
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TArray<FInventoryRecord> Records;
+
+	UPROPERTY()
+	FGuid StackId;
+
+	FInventoryStack() {}
+	FInventoryStack(FGuid InStackId) : StackId(InStackId) {}
+
+	friend inline bool operator == (const FInventoryStack& A, const FInventoryStack& B)
+	{
+		return A.StackId == B.StackId;
+	}
+
+	friend inline uint32 GetTypeHash(const FInventoryStack& A)
+	{
+		return GetTypeHash(A.StackId.ToString());
+	}
+
+};
+
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
 struct FInventoryContainer
 {
 
@@ -24,28 +57,27 @@ struct FInventoryContainer
 
 public:
 
-	FInventoryContainer()
-	{
-		Guid = FGuid::NewGuid();
-	}
-
+	UE_DEPRECATED(5.4, "Use ItemStacks instead")
 	UPROPERTY()
 	TMap<FName, FInventoryRecord> Items;
-	
-private:
 
 	UPROPERTY()
-	FGuid Guid = FGuid::NewGuid();
+	TMap<FName, FInventoryStack> ItemStacks;
+
+	UPROPERTY()
+	FGuid ContainerId;
+
+	FInventoryContainer() {}
+	FInventoryContainer(const FGuid& InContainerId) : ContainerId(InContainerId) {}
 
 	friend inline bool operator == (const FInventoryContainer& A, const FInventoryContainer& B)
 	{
-		return A.Guid == B.Guid;
+		return A.ContainerId == B.ContainerId;
 	}
 
-	friend inline uint32 GetTypeHash(const FInventoryContainer& Container)
+	friend inline uint32 GetTypeHash(const FInventoryContainer& A)
 	{
-		return GetTypeHash(Container.Guid.ToString());
+		return GetTypeHash(A.ContainerId.ToString());
 	}
-
 };
 

@@ -57,26 +57,27 @@ void UInventoryWidget::SetContainerId(FName ContainerId)
 	InventoryCollection->QueryRule.ContainerId = ContainerId;
 }
 
-void UInventoryWidget::HandleItemSelected(const FPrimaryAssetId& AssetId, FName RecordId, const FInventoryRecord* Record)
+void UInventoryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
 	if (InventoryDetail)
 	{
-		InventoryDetail->InitializeDetails(AssetId, RecordId, Record);
+		InventoryDetail->InitializeDetails(AssetId, Quantity, Record);
 	}
 	if (InventorySwitch)
 	{
-		InventorySwitch->InitializeDetails(AssetId, RecordId, Record);
+		InventorySwitch->InitializeDetails(AssetId, Quantity, Record);
 	}
 }
+
 
 void UInventoryWidget::NativeConstruct()
 {
 	if (InventoryCollection)
 	{
-		InventoryCollection->OnItemSelected.AddUObject(this, &UInventoryWidget::HandleItemSelected);
+		InventoryCollection->OnItemSelected.AddUObject(this, &UInventoryWidget::InitializeDetails);
 	}
 
-	Super::NativeConstruct();
+	UUserWidget::NativeConstruct();
 }
 
 void UInventoryWidget::NativeDestruct()
@@ -86,6 +87,6 @@ void UInventoryWidget::NativeDestruct()
 		InventoryCollection->OnItemSelected.RemoveAll(this);
 	}
 
-	Super::NativeDestruct();
+	UUserWidget::NativeDestruct();
 }
 

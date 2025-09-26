@@ -33,19 +33,20 @@ void UInventoryCollectionWidget::DisplayItems()
 	}
 
 #if WITH_EDITOR
-	TIMER_START(Inventory);
+	TIMER_START(Nested);
 #endif
-	
-	Subsystem->QueryItems(FilterRule, QueryRule,
-		[this](const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
+
+	Subsystem->HandleInventoryItems2(FilterRule, QueryRule,
+		[this](const FInventorySortEntry& SortEntry)
 		{
-			ConstructEntry(AssetId, RecordId, Record);
+			ConstructEntry(SortEntry.AssetId, SortEntry.ItemQuantity, SortEntry.Record);
 		}
 	);
 
 #if WITH_EDITOR
-	TIMER_END(Inventory, 5.0f, TEXT("Inventory rendered in"));
+	TIMER_END(Nested, 5.0f, TEXT("Nested"));
 #endif
+
 }
 
 void UInventoryCollectionWidget::ClearItems()
@@ -96,9 +97,7 @@ void UInventoryCollectionWidget::ClearPayloads()
 	InventoryPayloads.Empty();
 }
 
-
-
-void UInventoryCollectionWidget::ConstructEntry(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
+void UInventoryCollectionWidget::ConstructEntry(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
 	// man i give up on the implementation of object pooling for now.
 	// 
@@ -118,7 +117,7 @@ void UInventoryCollectionWidget::ConstructEntry(const FPrimaryAssetId& AssetId, 
 		return;
 	}
 	Entry->AssetId = AssetId;
-	Entry->RecordId = RecordId;
+	Entry->Quantity = Quantity;
 	Entry->Record = Record;
 
 	/*if (bEnablePayloads)
@@ -149,7 +148,7 @@ void UInventoryCollectionWidget::HandleSelectedEntry(UObject* Object)
 	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(Object);
 	if (IsValid(Entry))
 	{
-		OnItemSelected.Broadcast(Entry->AssetId, Entry->RecordId, Entry->Record);
+		OnItemSelected.Broadcast(Entry->AssetId, Entry->Quantity, Entry->Record);
 	}
 }
 
@@ -175,9 +174,9 @@ void UInventoryCollectionWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
-			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
-			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName RecordId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
+			Subsystem->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (QueryRule.ContainerId == ContainerId && bAutoRefresh) RefreshItems(); });
 		}
 
 		InventorySubsystem = Subsystem;

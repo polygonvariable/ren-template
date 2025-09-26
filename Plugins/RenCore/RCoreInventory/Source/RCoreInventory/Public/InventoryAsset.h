@@ -7,6 +7,8 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
+#include "RCoreExchange/Public/ExchangeInterface.h"
+
 #include "RCoreInventory/Public/InventoryItemRarity.h"
 #include "RCoreInventory/Public/InventoryItemType.h"
 
@@ -21,7 +23,7 @@
  *
  */
 UCLASS(MinimalAPI)
-class UInventoryAsset : public UPrimaryDataAsset
+class UInventoryAsset : public UPrimaryDataAsset, public IExchangeInterface
 {
 
 	GENERATED_BODY()
@@ -59,10 +61,14 @@ public:
 
 public:
 
-	virtual FPrimaryAssetId GetPrimaryAssetId() const override
-	{
-		return FPrimaryAssetId(TEXT("Inventory"), GetFName());
-	}
+	// ~ UPrimaryDataAsset
+	RCOREINVENTORY_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	// ~ End of UPrimaryDataAsset
+
+	// ~ IExchangeInterface
+	RCOREINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override;
+	RCOREINVENTORY_API virtual FName GetExchangedText(FInstancedStruct& Context) const override;
+	// ~ End of IExchangeInterface
 
 };
 

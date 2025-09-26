@@ -4,8 +4,10 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "UObject/FrameworkObjectVersion.h"
 
 // Project Headers
+#include "RCoreExchange/Public/ExchangeRule.h"
 #include "RCoreInventory/Public/InventoryItemRarity.h"
 #include "RCoreInventory/Public/InventoryItemType.h"
 
@@ -20,6 +22,9 @@ class UEnhanceAsset;
 
 
 
+
+
+
 /**
  * 
  */
@@ -31,8 +36,14 @@ class UEnhanceableAsset : public UCraftableAsset
 
 public:
 
+	
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
+	TMap<FName, int> TestMap;
+
+	TMultiMap<FName, int> TestMultiMap;
+
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
-	int XpInterval = 5000;
+	int ExperienceInterval = 5000;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item", Meta = (ClampMin = 1))
 	int LevelInterval = 10;
@@ -44,36 +55,44 @@ public:
 	int MaxRank = 100;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
-	TSet<TObjectPtr<UEnhanceAsset>> EnhanceCosts;
+	FExchangeRule EnhanceRules;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
-	TMap<EInventoryItemType, int> ExternalCosts;
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
-	TArray<FInventoryAssetQuantity> RankingCosts;
+	TArray<FExchangeRule> RankingRules;
 
 protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
-	FCurveTableRowHandle XpCurveInterval;
+	FCurveTableRowHandle ExperienceCurve;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
-	FCurveTableRowHandle LevelCurveInterval;
+	FCurveTableRowHandle LevelCurve;
 
 public:
 
-	int GetXpInterval(int Level) const
+	int GetExperienceInterval(int Level) const
 	{
-		FString Context = XpCurveInterval.RowName.ToString();
-		int Value = XpCurveInterval.IsValid(Context) ? XpCurveInterval.GetCurve(Context)->Eval(Level) : XpInterval;
+		FString Context = ExperienceCurve.RowName.ToString();
+		int Value = ExperienceCurve.IsValid(Context) ? ExperienceCurve.GetCurve(Context)->Eval(Level) : ExperienceInterval;
 		return FMath::Max(1, Value);
 	}
 
 	int GetLevelInterval(int Rank) const
 	{
-		FString Context = LevelCurveInterval.RowName.ToString();
-		int Value = LevelCurveInterval.IsValid(Context) ? LevelCurveInterval.GetCurve(Context)->Eval(Rank) : LevelInterval;
+		FString Context = LevelCurve.RowName.ToString();
+		int Value = LevelCurve.IsValid(Context) ? LevelCurve.GetCurve(Context)->Eval(Rank) : LevelInterval;
 		return FMath::Max(1, Value);
+	}
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhanceable Item")
+	int TestIntUI = 0;
+
+	int TestInt = 0;
+
+	virtual void Serialize(FArchive& Ar) override
+	{
+		Super::Serialize(Ar);
+		Ar.UsingCustomVersion(FFrameworkObjectVersion::GUID);
 	}
 
 };

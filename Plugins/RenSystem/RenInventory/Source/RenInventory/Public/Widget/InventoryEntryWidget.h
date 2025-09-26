@@ -39,7 +39,7 @@ class UInventoryEntryWidget : public UInventoryBaseWidget, public IUserObjectLis
 public:
 
 	// ~ UInventoryBaseWidget
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record) override;
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	virtual void ResetDetails() override;
 	// ~ End of UInventoryBaseWidget
 
@@ -47,9 +47,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UImage> ItemIconImage = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> RecordIdText = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ItemTitleText = nullptr;
@@ -73,7 +70,7 @@ protected:
 
 	// ~ UInventoryBaseWidget
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
-	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity) override;
+	virtual void SetSecondaryDetails(int Quantity) override;
 	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry) override;
 	// ~ End of UInventoryBaseWidget
 

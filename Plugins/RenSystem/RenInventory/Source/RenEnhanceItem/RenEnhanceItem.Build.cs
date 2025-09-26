@@ -27,7 +27,6 @@ public class RenEnhanceItem : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-
                 "RCoreInventory",
                 "RenInventory",
             }
@@ -44,7 +43,7 @@ public class RenEnhanceItem : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "UMG",
                 "StructUtils",
-
+                "RCoreExchange",
                 "RCoreDelegate",
                 "RCoreStorage",
                 "RCoreLibrary",

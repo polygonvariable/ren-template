@@ -34,12 +34,12 @@ void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 
 	InitializeDetails(
 		EntryObject->AssetId,
-		EntryObject->RecordId,
+		EntryObject->Quantity,
 		EntryObject->Record
 	);
 }
 
-void UInventoryEntryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record)
+void UInventoryEntryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
 	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, AssetId, [this](FPrimaryAssetId AssetId, UObject* LoadedAsset)
 		{
@@ -55,8 +55,7 @@ void UInventoryEntryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, co
 		}
 	);
 
-	int Quantity = Record ? Record->ItemQuantity : 0;
-	SetSecondaryDetails(FText::FromName(RecordId), Quantity);
+	SetSecondaryDetails(Quantity);
 }
 
 void UInventoryEntryWidget::SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image)
@@ -65,9 +64,8 @@ void UInventoryEntryWidget::SetPrimaryDetails(const FText& Title, const FText& D
 	if (ItemIconImage) ItemIconImage->SetBrushFromSoftTexture(Image);
 }
 
-void UInventoryEntryWidget::SetSecondaryDetails(const FText& RecordId, int Quantity)
+void UInventoryEntryWidget::SetSecondaryDetails(int Quantity)
 {
-	if (RecordIdText) RecordIdText->SetText(RecordId);
 	if (ItemQuantityText) ItemQuantityText->SetText(FText::AsNumber(Quantity));
 }
 
@@ -81,7 +79,7 @@ void UInventoryEntryWidget::ResetDetails()
 	FText EmptyText = FText::GetEmpty();
 
 	SetPrimaryDetails(EmptyText, EmptyText, nullptr);
-	SetSecondaryDetails(EmptyText, 0);
+	SetSecondaryDetails(0);
 }
 
 

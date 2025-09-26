@@ -34,7 +34,7 @@ class RENINVENTORY_API UInventoryBaseWidget : public UUserWidget
 
 public:
 
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, const FName& RecordId, const FInventoryRecord* Record);
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void RefreshDetails();
@@ -45,7 +45,7 @@ public:
 protected:
 
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image);
-	virtual void SetSecondaryDetails(const FText& RecordId, int Quantity);
+	virtual void SetSecondaryDetails(int Quantity);
 	virtual void SetTertiaryDetails(UInventoryEntryObject* Entry);
 
 protected:

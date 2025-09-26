@@ -30,10 +30,10 @@ struct FInventoryFilterRule
 	FFilterNameRule FilterId = FFilterNameRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FFilterUInt8Rule FilterType = FFilterUInt8Rule();
+	FFilterNameRule FilterType = FFilterNameRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FFilterUInt8Rule FilterRarity = FFilterUInt8Rule();
+	FFilterNameRule FilterRarity = FFilterNameRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterRank = FFilterIntegerRule();
@@ -51,7 +51,13 @@ struct FInventoryFilterRule
 	EFilterCombination FilterCombination = EFilterCombination::And;
 
 
-	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record, const FName& ItemId, const uint8& ItemType, const uint8& ItemRarity) const;
+	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record) const;
+	RCOREINVENTORY_API bool Match(const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const;
+	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record, const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const;
+
+protected:
+
+	bool MatchInternal(const TArray<bool>& Results) const;
 
 };
 
