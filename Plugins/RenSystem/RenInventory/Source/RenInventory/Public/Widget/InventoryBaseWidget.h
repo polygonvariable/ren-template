@@ -4,6 +4,7 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
@@ -15,11 +16,9 @@
 class UAssetManager;
 class UTexture2D;
 
-class UInventoryAsset;
 class UInventoryEntryObject;
 
 struct FInventoryRecord;
-struct FStreamableHandle;
 
 
 

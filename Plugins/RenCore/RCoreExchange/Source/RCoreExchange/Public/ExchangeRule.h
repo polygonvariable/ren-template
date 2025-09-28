@@ -27,7 +27,24 @@ public:
 	TMap<FPrimaryAssetId, int> RequiredAssets;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FName> RequiredArbitrary;
+	TMap<FName, int> RequiredArbitrary;
+
+	int FindAny(const FPrimaryAssetId& AssetId, const FName& AssetType)
+	{
+		const int* AssetCount = RequiredAssets.Find(AssetId);
+		if (AssetCount)
+		{
+			return *AssetCount;
+		}
+
+		const int* ArbitraryCount = RequiredArbitrary.Find(AssetType);
+		if (ArbitraryCount)
+		{
+			return *ArbitraryCount;
+		}
+
+		return -1;
+	}
 
 	bool Contains(const FPrimaryAssetId& AssetId, const FName& AssetType)
 	{

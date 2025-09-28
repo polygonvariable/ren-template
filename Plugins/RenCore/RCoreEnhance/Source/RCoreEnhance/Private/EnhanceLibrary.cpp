@@ -6,6 +6,7 @@
 // Engine Headers
 
 // Project Headers
+#include "RCoreEnhance/Public/EnhanceRecord.h"
 
 
 
@@ -38,15 +39,13 @@ int UEnhanceLibrary::CalculateRequiredItemsForRankCap(int CurrentLevel, int Curr
     return (TotalRequiredExperience + Points - 1) / Points;
 }
 
-bool UEnhanceLibrary::CalculateLevelUp(
-    int InPoints, int InExperience, int InLevel, int InRank, int InExperienceInterval, int InLevelInterval, int InMaxLevel,
-    int& OutExperience, int& OutLevel, bool& bOutDoesLevelUpdated, bool& bOutDoesRankShouldUpdate, bool& bOutDoesMaxLevelReached)
+bool UEnhanceLibrary::CalculateLevelUp(int InPoints, int InExperience, int InLevel, int InRank, int InExperienceInterval, int InLevelInterval, int InMaxLevel, int& OutExperience, int& OutLevel, bool& bOutLevelUpdated, bool& bOutRankShouldUpdate, bool& bOutMaxLevelReached)
 {
     int LocalNewExperience = InExperience + InPoints;
     int LocalNewLevel = InLevel;
-    bOutDoesLevelUpdated = false;
-    bOutDoesRankShouldUpdate = false;
-    bOutDoesMaxLevelReached = false;
+    bOutLevelUpdated = false;
+    bOutRankShouldUpdate = false;
+    bOutMaxLevelReached = false;
 
     const int LocalLevelCapForRank = InRank * InLevelInterval;
 
@@ -54,7 +53,7 @@ bool UEnhanceLibrary::CalculateLevelUp(
     {
         OutExperience = 0;
         OutLevel = InLevel;
-        bOutDoesRankShouldUpdate = true;
+        bOutRankShouldUpdate = true;
         return false;
     }
 
@@ -66,13 +65,13 @@ bool UEnhanceLibrary::CalculateLevelUp(
         int AppliedLevels = FMath::Min(GainedLevels, MaxGainableLevels);
         LocalNewLevel += AppliedLevels;
         LocalNewExperience -= AppliedLevels * InExperienceInterval;
-        bOutDoesLevelUpdated = true;
+        bOutLevelUpdated = true;
 
         if (LocalNewLevel >= LocalLevelCapForRank)
         {
             LocalNewLevel = LocalLevelCapForRank;
             LocalNewExperience = 0;
-            bOutDoesRankShouldUpdate = true;
+            bOutRankShouldUpdate = true;
         }
     }
 
@@ -80,7 +79,7 @@ bool UEnhanceLibrary::CalculateLevelUp(
     {
         LocalNewLevel = InMaxLevel;
         LocalNewExperience = 0;
-        bOutDoesMaxLevelReached = true;
+        bOutMaxLevelReached = true;
     }
 
     OutExperience = LocalNewExperience;
@@ -90,13 +89,28 @@ bool UEnhanceLibrary::CalculateLevelUp(
 
 bool UEnhanceLibrary::CalculateLevelUp(int InPoints, int InExperience, int InLevel, int InRank, int InExperienceInterval, int InLevelInterval, int InMaxLevel, int& OutExperience, int& OutLevel)
 {
-    bool bDoesLevelUpdated = false;
-    bool bDoesRankShouldUpdate = false;
-    bool bDoesMaxLevelReached = false;
+    bool bLevelUpdated = false;
+    bool bRankShouldUpdate = false;
+    bool bMaxLevelReached = false;
 
     return CalculateLevelUp(
-        InPoints, InExperience, InLevel, InRank, InExperienceInterval, InLevelInterval, InMaxLevel, OutExperience, OutLevel,
-        bDoesLevelUpdated, bDoesRankShouldUpdate, bDoesMaxLevelReached
+        InPoints, InExperience, InLevel, InRank, InExperienceInterval, InLevelInterval, InMaxLevel,
+        OutExperience, OutLevel, bLevelUpdated, bRankShouldUpdate, bMaxLevelReached
+    );
+}
+
+bool UEnhanceLibrary::CalculateLevelUp(int InPoints, const FEnhanceRecord& InEnhanceRecord, int InExperienceInterval, int InLevelInterval, int InMaxLevel, int& OutExperience, int& OutLevel)
+{
+    return CalculateLevelUp(
+        InPoints,
+        InEnhanceRecord.Experience,
+        InEnhanceRecord.Level,
+        InEnhanceRecord.Rank,
+        InExperienceInterval,
+        InLevelInterval,
+        InMaxLevel,
+        OutExperience,
+        OutLevel
     );
 }
 
@@ -121,8 +135,31 @@ bool UEnhanceLibrary::CanLevelUp(int Experience, int Level, int Rank, int Experi
     return Experience >= ExperienceInterval;
 }
 
+bool UEnhanceLibrary::CanLevelUp(const FEnhanceRecord& EnhanceRecord, int ExperienceInterval, int LevelInterval, int MaxLevel)
+{
+    return CanLevelUp(
+        EnhanceRecord.Experience,
+        EnhanceRecord.Level,
+        EnhanceRecord.Rank,
+        ExperienceInterval,
+        LevelInterval,
+        MaxLevel
+    );
+}
+
 bool UEnhanceLibrary::CanRankUp(int Experience, int Level, int Rank, int LevelInterval, int MaxRank)
 {
     return Experience == 0 && Level % LevelInterval == 0 && Level / LevelInterval == Rank && Rank < MaxRank;
+}
+
+bool UEnhanceLibrary::CanRankUp(const FEnhanceRecord& EnhanceRecord, int LevelInterval, int MaxRank)
+{
+    return CanRankUp(
+        EnhanceRecord.Experience,
+        EnhanceRecord.Level,
+        EnhanceRecord.Rank,
+        LevelInterval,
+        MaxRank
+    );
 }
 

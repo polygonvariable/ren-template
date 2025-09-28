@@ -6,8 +6,13 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 
+// Project Headers
+
 // Generated Headers
 #include "EnhanceLibrary.generated.h"
+
+//
+struct FEnhanceRecord;
 
 
 
@@ -28,7 +33,7 @@ public:
 	
 	RCOREENHANCE_API static bool CalculateLevelUp(
         int InPoints, int InExperience, int InLevel, int InRank, int InExperienceInterval, int InLevelInterval, int InMaxLevel,
-        int& OutExperience, int& OutLevel, bool& bOutDoesLevelUpdated, bool& bOutDoesRankShouldUpdate, bool& bOutDoesMaxLevelReached
+        int& OutExperience, int& OutLevel, bool& bOutLevelUpdated, bool& bOutRankShouldUpdate, bool& bOutMaxLevelReached
 	);
 
 	RCOREENHANCE_API static bool CalculateLevelUp(
@@ -36,8 +41,16 @@ public:
 		int& OutExperience, int& OutLevel
 	);
 
+	RCOREENHANCE_API static bool CalculateLevelUp(
+		int InPoints, const FEnhanceRecord& InEnhanceRecord, int InExperienceInterval, int InLevelInterval, int InMaxLevel,
+		int& OutExperience, int& OutLevel
+	);
+
 	RCOREENHANCE_API static bool CanLevelUp(int Experience, int Level, int Rank, int ExperienceInterval, int LevelInterval, int MaxLevel);
+	RCOREENHANCE_API static bool CanLevelUp(const FEnhanceRecord& EnhanceRecord, int ExperienceInterval, int LevelInterval, int MaxLevel);
+
 	RCOREENHANCE_API static bool CanRankUp(int Experience, int Level, int Rank, int LevelInterval, int MaxRank);
+	RCOREENHANCE_API static bool CanRankUp(const FEnhanceRecord& EnhanceRecord, int LevelInterval, int MaxRank);
 	
 };
 

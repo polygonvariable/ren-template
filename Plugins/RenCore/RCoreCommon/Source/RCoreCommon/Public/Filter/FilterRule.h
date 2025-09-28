@@ -20,6 +20,8 @@ struct FFilterRule
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
 	bool bEnable = false;
 
@@ -33,10 +35,46 @@ struct FFilterRule
  *
  */
 USTRUCT(BlueprintType)
+struct FFilterAssetRule : public FFilterRule
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	TArray<FPrimaryAssetId> Included;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
+	TArray<FPrimaryAssetId> Excluded;
+
+	bool Matches(const FPrimaryAssetId& Value) const
+	{
+		int Count = Included.Num();
+		UE_LOG(LogTemp, Warning, TEXT("Count: %d"), Count);
+
+		bool bStrictMode = bEnableStrictMode && Count == 0;
+
+		if (!bEnable) return true;
+		if (Excluded.Contains(Value)) return false;
+		if (bEnableStrictMode && Count == 0) return false;
+		if (Count > 0) return Included.Contains(Value);
+		return true;
+	}
+
+};
+
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
 struct FFilterNameRule : public FFilterRule
 {
 
 	GENERATED_BODY()
+
+public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
 	TArray<FName> Included;
@@ -65,6 +103,8 @@ struct FFilterUInt8Rule : public FFilterRule
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
 	TArray<uint8> Included;
 
@@ -92,6 +132,8 @@ struct FFilterIntegerRule : public FFilterRule
 
 	GENERATED_BODY()
 
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Filter Rule")
 	int Min = 0;
 
@@ -114,13 +156,4 @@ struct FFilterIntegerRule : public FFilterRule
 };
 
 
-/**
- *
- */
-UENUM(BlueprintType)
-enum class EFilterCombination : uint8
-{
-	And UMETA(DisplayName = "And"),
-	Or UMETA(DisplayName = "Or")
-};
 

@@ -4,7 +4,6 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
@@ -13,7 +12,6 @@
 #include "InventoryWidget.generated.h"
 
 // Forward Declarations
-class UInventoryAsset;
 class UInventoryCollectionWidget;
 class UInventoryDetailWidget;
 class UInventorySwitchWidget;
@@ -56,12 +54,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventorySwitchWidget> InventorySwitch = nullptr;
 
+	// ~ UInventoryBaseWidget
 	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 
+	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

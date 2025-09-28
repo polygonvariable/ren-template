@@ -4,11 +4,8 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryFilterRule.h"
-
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 
 // Generated Headers
@@ -17,6 +14,8 @@
 // Forward Declarations
 class UNamedSlot;
 class UWidgetSwitcher;
+
+class UFilterGroup;
 
 struct FInventoryRecord;
 
@@ -33,8 +32,8 @@ class UInventorySwitchWidget : public UInventoryBaseWidget
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FInventoryFilterRule FilterRule;
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
 	// ~ UInventoryBaseWidget
 	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;

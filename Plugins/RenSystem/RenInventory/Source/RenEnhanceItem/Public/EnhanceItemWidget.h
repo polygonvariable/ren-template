@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
+#include "RCoreEnhance/Public/EnhanceRecord.h"
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
 
 // Generated Headers
@@ -45,24 +46,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bAutoRefresh = false;
 
-
-	//virtual void InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset) override;
+	// ~ UInventoryBaseWidget
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	virtual void ResetDetails() override;
 	virtual void RefreshDetails() override;
+	// ~ End of UInventoryBaseWidget
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
-	FName ActiveItemGuid = NAME_None;
+	FPrimaryAssetId ActiveAssetId = FPrimaryAssetId();
+	FName ActiveItemId = NAME_None;
+	FEnhanceRecord ActiveEnhanceRecord;
 
 	UPROPERTY(BlueprintReadOnly)
 	TObjectPtr<UEnhanceableAsset> ActiveAsset = nullptr;
 
-	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
-
-	UPROPERTY();
 	TWeakObjectPtr<UEnhanceItemSubsystem> EnhanceItemSubsystem;
+
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> EnhanceSwitcher = nullptr;
@@ -75,23 +76,29 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventoryDetailWidget> InventoryDetail = nullptr;
-
+	
 
 	UFUNCTION(BlueprintCallable)
-	void TryLevelUp(FName ItemGuid);
+	void TryLevelUp(const FPrimaryAssetId& AssetId, FName ItemId);
 
 	UFUNCTION(BlueprintCallable)
 	void TryRankUp();
 
-	void HandleLevelUpDisplay();
-	void HandleRankUpDisplay(const FInventoryRecord* Record);
 
-	void HandleItemSelected(FName ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset);
+	void HandleAssetLoaded(FPrimaryAssetId AssetId, UObject* LoadedAsset);
+
+	void HandleLevelUpDisplay();
+	void HandleRankUpDisplay();
+
+	void HandleItemSelected(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
+
 
 protected:
 
+	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

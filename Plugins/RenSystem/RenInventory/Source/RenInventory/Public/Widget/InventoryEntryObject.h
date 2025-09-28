@@ -7,14 +7,11 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RCorePool/Public/ObjectPoolInterface.h"
 
 // Generated Headers
 #include "InventoryEntryObject.generated.h"
 
 // Forward Declarations
-class UInventoryAsset;
-
 struct FInventoryRecord;
 
 
@@ -49,12 +46,14 @@ public:
 		bHasPayload = false;
 		Payload.Reset();
 	}
-	
+
+	// ~ UObject
 	virtual void BeginDestroy() override
 	{
 		ResetData();
 		Super::BeginDestroy();
 	}
+	// ~ End of UObject
 
 };
 

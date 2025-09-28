@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
 #include "InventoryFilterRule.h"
@@ -18,6 +18,7 @@ bool FInventoryFilterRule::Match(const FInventoryRecord* Record) const
 
 	if (Record)
 	{
+		Results.Add(FilterId.Matches(Record->ItemId));
 		Results.Add(FilterRank.Matches(Record->EnhanceRecord.Rank));
 		Results.Add(FilterLevel.Matches(Record->EnhanceRecord.Level));
 		Results.Add(FilterExperience.Matches(Record->EnhanceRecord.Experience));
@@ -27,24 +28,51 @@ bool FInventoryFilterRule::Match(const FInventoryRecord* Record) const
 	return MatchInternal(Results);
 }
 
-bool FInventoryFilterRule::Match(const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const
+bool FInventoryFilterRule::Match(const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const
 {
 	TArray<bool> Results;
-	Results.Add(FilterId.Matches(ItemId));
-	Results.Add(FilterType.Matches(ItemType));
-	Results.Add(FilterRarity.Matches(ItemRarity));
+
+	auto AddIfEnabled = [&](const FFilterRule& Rule, bool bMatch)
+		{
+			if (Rule.bEnable) Results.Add(bMatch);
+		};
+
+	AddIfEnabled(FilterAsset, FilterAsset.Matches(AssetId));
+	AddIfEnabled(FilterType, FilterType.Matches(AssetType));
+	AddIfEnabled(FilterRarity, FilterRarity.Matches(AssetRarity));
+
+	// If no filter is enabled, treat as "match everything".
+	if (Results.Num() == 0)
+	{
+		return true;
+	}
 
 	return MatchInternal(Results);
 }
 
-bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const
+bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const
 {
-	return Match(Record) && Match(ItemId, ItemType, ItemRarity);
+	TArray<bool> Results;
+
+	if (Record)
+	{
+		Results.Add(FilterId.Matches(Record->ItemId));
+		Results.Add(FilterRank.Matches(Record->EnhanceRecord.Rank));
+		Results.Add(FilterLevel.Matches(Record->EnhanceRecord.Level));
+		Results.Add(FilterExperience.Matches(Record->EnhanceRecord.Experience));
+		Results.Add(FilterQuantity.Matches(Record->ItemQuantity));
+	}
+
+	Results.Add(FilterAsset.Matches(AssetId));
+	Results.Add(FilterType.Matches(AssetType));
+	Results.Add(FilterRarity.Matches(AssetRarity));
+
+	return MatchInternal(Results);
 }
 
 bool FInventoryFilterRule::MatchInternal(const TArray<bool>& Results) const
 {
-	if (FilterCombination == EFilterCombination::And)
+	/*if (FilterCombination == EFilterCombination::And)
 	{
 		for (bool Result : Results)
 		{
@@ -65,7 +93,8 @@ bool FInventoryFilterRule::MatchInternal(const TArray<bool>& Results) const
 			}
 		}
 		return false;
-	}
+	}*/
 
 	return false;
 }
+

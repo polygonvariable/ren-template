@@ -9,8 +9,6 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryFilterRule.h"
-
 #include "RenInventory/Public/InventoryDefinition.h"
 
 // Generated Headers
@@ -19,7 +17,7 @@
 // Forward Declarations
 class UListView;
 
-class UPersistentObjectPool;
+class UFilterGroup;
 class UInventorySubsystem;
 class UInventoryEntryObject;
 
@@ -47,12 +45,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bEnablePayloads = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-	FInventoryFilterRule FilterRule = FInventoryFilterRule();
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FInventoryQueryRule QueryRule = FInventoryQueryRule();
-
+	
 
 	UFUNCTION(BlueprintCallable)
 	RENINVENTORY_API void DisplayItems();
@@ -68,24 +66,23 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API void AddPayload(FName ItemId, FInstancedStruct Payload);
+	RENINVENTORY_API void AddPayload(const FPrimaryAssetId& AssetId, FInstancedStruct Payload);
 
 	UFUNCTION(BlueprintCallable)
-	RENINVENTORY_API void SetPayloads(const TMap<FName, FInstancedStruct>& Payloads);
+	RENINVENTORY_API void SetPayloads(const TMap<FPrimaryAssetId, FInstancedStruct>& Payloads);
 
 	UFUNCTION(BlueprintCallable)
 	RENINVENTORY_API void ClearPayloads();
 
 protected:
 
-	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UListView> InventoryContainer = nullptr;
 
 	UPROPERTY(BlueprintReadOnly)
-	TMap<FName, FInstancedStruct> InventoryPayloads;
+	TMap<FPrimaryAssetId, FInstancedStruct> InventoryPayloads;
 
 
 	virtual void ConstructEntry(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);

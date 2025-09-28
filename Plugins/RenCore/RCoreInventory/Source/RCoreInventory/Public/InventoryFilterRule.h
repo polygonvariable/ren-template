@@ -1,12 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "UObject/ObjectSaveContext.h"
 
 // Project Headers
 #include "RCoreCommon/Public/Filter/FilterRule.h"
+#include "RCoreInventory/Public/InventoryRecord.h"
 
 // Generated Headers
 #include "InventoryFilterRule.generated.h"
@@ -25,6 +27,8 @@ struct FInventoryFilterRule
 
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FFilterAssetRule FilterAsset = FFilterAssetRule();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterNameRule FilterId = FFilterNameRule();
@@ -47,13 +51,13 @@ struct FInventoryFilterRule
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FFilterIntegerRule FilterQuantity = FFilterIntegerRule();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	EFilterCombination FilterCombination = EFilterCombination::And;
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//EFilterCombination FilterCombination = EFilterCombination::And;
 
 
 	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record) const;
-	RCOREINVENTORY_API bool Match(const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const;
-	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record, const FName& ItemId, const FName& ItemType, const FName& ItemRarity) const;
+	RCOREINVENTORY_API bool Match(const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const;
+	RCOREINVENTORY_API bool Match(const FInventoryRecord* Record, const FPrimaryAssetId& AssetId, const FName& AssetType, const FName& AssetRarity) const;
 
 protected:
 

@@ -9,7 +9,10 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryAsset.h"
+#include "RCoreFilter/Public/FilterContext.h"
+#include "RCoreFilter/Public/FilterCriterion.h"
+#include "RCoreFilter/Public/FilterGroup.h"
+
 #include "RCoreInventory/Public/InventoryRecord.h"
 
 #include "RenInventory/Public/InventoryPrimaryAsset.h"
@@ -36,8 +39,13 @@ void UInventorySwitchWidget::InitializeDetails(const FPrimaryAssetId& AssetId, i
 
 	FName ItemRarity = TEXT_EMPTY;
 	InventoryPrimaryAsset::GetItemRarity(AssetData, ItemRarity);
+
+	FFilterContext Context;
+	Context.SetValue(InventoryFilterProperty::AssetId, AssetId);
+	Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
+	Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
 	
-	if (FilterRule.Match(Record, AssetId.PrimaryAssetName, ItemType, ItemRarity))
+	if (FilterRule->CriterionRoot->Evaluate(Context))
 	{
 		if (DetailSwitcher)
 		{

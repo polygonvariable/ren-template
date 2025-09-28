@@ -18,13 +18,13 @@
 /**
  *
  */
-class InventoryPrimaryAsset
+class RENINVENTORY_API InventoryPrimaryAsset
 {
 
 public:
 
 	static FPrimaryAssetType GetAssetType();
-	RENINVENTORY_API static FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
+	static FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
 
 	static bool IsValid(const FPrimaryAssetId& AssetId);
 
@@ -37,6 +37,27 @@ public:
 	static bool GetItemName(const FAssetData& AssetData, FText& ItemName);
 	static bool GetItemIsStackable(const FAssetData& AssetData, bool& bIsStackable);
 	static bool GetItemAllowEmptyData(const FAssetData& AssetData, bool& bOutAllowEmptyData);
+
+};
+
+
+/**
+ *
+ */
+class RENINVENTORY_API InventoryFilterProperty
+{
+
+public:
+
+	static const FName AssetId;
+	static const FName AssetType;
+	static const FName AssetRarity;
+
+	static const FName ItemId;
+	static const FName ItemQuantity;
+	static const FName ItemExperience;
+	static const FName ItemLevel;
+	static const FName ItemRank;
 
 };
 

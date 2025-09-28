@@ -6,15 +6,11 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryItemRarity.h"
-#include "RCoreInventory/Public/InventoryItemType.h"
 
 // Generated Headers
 #include "InventoryDefinition.generated.h"
 
 // Forward Declarations
-class UInventoryAsset;
-
 struct FInventoryRecord;
 
 

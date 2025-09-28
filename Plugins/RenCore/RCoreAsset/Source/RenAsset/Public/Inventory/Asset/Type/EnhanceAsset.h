@@ -27,5 +27,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhancement")
 	int ExchangePoints = 500;
 
+public:
+
+	// ~ IExchangeInterface
+	RENASSET_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override
+	{
+		return ExchangePoints;
+	}
+	// ~ End of IExchangeInterface
+
 };
 

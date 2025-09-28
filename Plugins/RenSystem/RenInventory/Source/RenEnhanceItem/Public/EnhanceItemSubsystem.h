@@ -7,7 +7,6 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryRecord.h"
 
 // Generated Headers
 #include "EnhanceItemSubsystem.generated.h"
@@ -17,6 +16,8 @@ class UEnhanceableAsset;
 class UInventorySubsystem;
 
 class UAssetManager;
+
+struct FEnhanceRecord;
 
 
 
@@ -31,27 +32,22 @@ class UEnhanceItemSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemEnhance, FName /* TargetId */, bool /* bSuccess */);
+	void LevelUpItem(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FPrimaryAssetId& MaterialAssetId, FName MaterialId);
+	
+	void RankUpItem(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId);
 
-	FOnItemEnhance OnItemLevelUp;
-	FOnItemEnhance OnItemRankUp;
-
-	UPROPERTY()
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
-
-	void LevelUpItem(FName ContainerId, FName TargetId, FName MaterialId);
-	void RankUpItem(FName ContainerId, FName TargetId);
-
-	void CanRankUp(FName ContainerId, FName TargetId, TFunction<void(bool)> Callback);
+	void CanRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, TFunction<void(bool)> Callback);
 
 protected:
 
 	UAssetManager* AssetManager;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
 	void HandleGameInitialized();
 
-	bool HandleLevelUp(FName ContainerId, FName EnhanceableId, FEnhanceRecord EnhanceableRecord, UEnhanceableAsset* EnhanceableAsset, FName EnhanceId, int EnhancePoint);
-	bool HandleRankUp(FName ContainerId, FName TargetId, FEnhanceRecord TargetEnhance, UEnhanceableAsset* TargetAsset, const TMap<FPrimaryAssetId, int>& ItemQuantities);
+	bool HandleLevelUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, UEnhanceableAsset* TargetAsset, const FPrimaryAssetId& MaterialAssetId, FName MaterialId, int MaterialQuantity, int Point);
+	
+	bool HandleRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, UEnhanceableAsset* TargetAsset, const TMap<FPrimaryAssetId, int>& ItemQuantities);
 
 protected:
 
@@ -60,6 +56,12 @@ protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
+
+public:
+
+	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnItemEnhance, FName /* TargetId */, bool /* bSuccess */);
+	FOnItemEnhance OnItemLevelUp;
+	FOnItemEnhance OnItemRankUp;
 
 };
 

@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 
 #include "Blueprint/IUserObjectListEntry.h"
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
@@ -18,12 +17,9 @@
 class UImage;
 class UTextBlock;
 
-class UInventoryAsset;
-class UInventorySubsystem;
 class UInventoryEntryObject;
 
 struct FInventoryRecord;
-struct FStreamableHandle;
 
 
 
@@ -55,7 +51,6 @@ protected:
 	TObjectPtr<UTextBlock> ItemQuantityText = nullptr;
 
 
-
 	UFUNCTION(BlueprintCallable)
 	void RemoveEntry();
 
@@ -67,6 +62,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void HandleDetailsValidity(bool bIsValid);
+
 
 	// ~ UInventoryBaseWidget
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;

@@ -9,8 +9,9 @@
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
 
-#include "RCoreInventory/Public/InventoryAsset.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
+
+#include "RCoreFilter/Public/FilterGroup.h"
 
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryEntryObject.h"
@@ -33,18 +34,28 @@ void UInventoryCollectionWidget::DisplayItems()
 	}
 
 #if WITH_EDITOR
-	TIMER_START(Nested);
+	TIMER_START(Inventory);
 #endif
+	
+	UFilterCriterion* CriterionRoot = nullptr;
+	if (IsValid(FilterRule))
+	{
+		CriterionRoot = FilterRule->CriterionRoot;
+	}
 
-	Subsystem->HandleInventoryItems2(FilterRule, QueryRule,
+	Subsystem->QueryItems(CriterionRoot, QueryRule,
 		[this](const FInventorySortEntry& SortEntry)
 		{
-			ConstructEntry(SortEntry.AssetId, SortEntry.ItemQuantity, SortEntry.Record);
+			ConstructEntry(
+				SortEntry.AssetId,
+				SortEntry.ItemQuantity,
+				SortEntry.Record
+			);
 		}
 	);
 
 #if WITH_EDITOR
-	TIMER_END(Nested, 5.0f, TEXT("Nested"));
+	TIMER_END(Inventory, 5.0f, TEXT("Inventory rendered in"));
 #endif
 
 }
@@ -82,12 +93,12 @@ UInventoryEntryObject* UInventoryCollectionWidget::GetSelectedItem()
 }
 
 
-void UInventoryCollectionWidget::AddPayload(FName ItemId, FInstancedStruct Payload)
+void UInventoryCollectionWidget::AddPayload(const FPrimaryAssetId& AssetId, FInstancedStruct Payload)
 {
-	InventoryPayloads.Add(ItemId, Payload);
+	InventoryPayloads.Add(AssetId, Payload);
 }
 
-void UInventoryCollectionWidget::SetPayloads(const TMap<FName, FInstancedStruct>& Payloads)
+void UInventoryCollectionWidget::SetPayloads(const TMap<FPrimaryAssetId, FInstancedStruct>& Payloads)
 {
 	InventoryPayloads = Payloads;
 }
@@ -148,7 +159,11 @@ void UInventoryCollectionWidget::HandleSelectedEntry(UObject* Object)
 	UInventoryEntryObject* Entry = Cast<UInventoryEntryObject>(Object);
 	if (IsValid(Entry))
 	{
-		OnItemSelected.Broadcast(Entry->AssetId, Entry->Quantity, Entry->Record);
+		OnItemSelected.Broadcast(
+			Entry->AssetId,
+			Entry->Quantity,
+			Entry->Record
+		);
 	}
 }
 
@@ -181,7 +196,6 @@ void UInventoryCollectionWidget::NativeConstruct()
 
 		InventorySubsystem = Subsystem;
 	}
-	PRINT_WARNING(LogTemp, 5.0f, TEXT("InventoryCollectionWidget::NativeConstruct"));
 
 	Super::NativeConstruct();
 }

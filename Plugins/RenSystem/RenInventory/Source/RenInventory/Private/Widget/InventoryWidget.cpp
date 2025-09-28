@@ -44,8 +44,13 @@ void UInventoryWidget::DisplayEnhanceItem()
 			LOG_ERROR(LogTemp, TEXT("EnhanceItemWidget is invalid"));
 			return;
 		}
+
 		Widget->AddToViewport();
-		// Widget->InitializeDetails(Entry->ItemGuid, Entry->InventoryRecord, Entry->InventoryAsset);
+		Widget->InitializeDetails(
+			Entry->AssetId,
+			Entry->Quantity,
+			Entry->Record
+		);
 
 		EnhanceItemWidget = Widget;
 	}
@@ -63,6 +68,7 @@ void UInventoryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Qua
 	{
 		InventoryDetail->InitializeDetails(AssetId, Quantity, Record);
 	}
+
 	if (InventorySwitch)
 	{
 		InventorySwitch->InitializeDetails(AssetId, Quantity, Record);

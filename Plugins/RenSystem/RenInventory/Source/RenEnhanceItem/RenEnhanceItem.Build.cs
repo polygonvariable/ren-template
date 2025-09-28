@@ -48,6 +48,7 @@ public class RenEnhanceItem : ModuleRules
                 "RCoreStorage",
                 "RCoreLibrary",
                 "RCoreEnhance",
+                "RCoreFilter",
                 "RenAsset",
             }
 			);

@@ -4,7 +4,6 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
 
 // Project Headers
 #include "RenInventory/Public/Widget/InventoryBaseWidget.h"
@@ -19,7 +18,6 @@ class UPanelWidget;
 class UWidgetSwitcher;
 class UEditableTextBox;
 
-class UInventoryAsset;
 class UInventorySubsystem;
 
 struct FInventoryRecord;
@@ -95,8 +93,10 @@ protected:
 
 protected:
 
+	// ~ End of UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

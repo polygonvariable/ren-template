@@ -7,7 +7,6 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryAsset.h"
 
 
 

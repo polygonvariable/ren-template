@@ -9,6 +9,13 @@
 
 // Project Headers
 #include "RCoreEnhance/Public/EnhanceLibrary.h"
+
+#include "RCoreFilter/Public/FilterGroup.h"
+#include "RCoreFilter/Public/FilterLeafCriterion.h"
+
+#include "RCoreInventory/Public/InventoryRecord.h"
+
+#include "RCoreLibrary/Public/AssetManagerUtils.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenAsset/Public/Inventory/Asset/Category/EnhanceableAsset.h"
@@ -16,6 +23,7 @@
 #include "RenAsset/Public/Inventory/Type/InventoryAssetQuantity.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
+#include "RenInventory/Public/InventoryPrimaryAsset.h"
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryCollectionWidget.h"
 #include "RenInventory/Public/Widget/InventoryDetailWidget.h"
@@ -25,132 +33,192 @@
 
 
 
-//void UEnhanceItemWidget::InitializeDetails(const FName& ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
-//{
-//	ActiveItemGuid = ItemGuid;
-//
-//	UEnhanceableAsset* ItemAsset = Cast<UEnhanceableAsset>(Asset);
-//	if (ItemAsset)
-//	{
-//		ActiveAsset = ItemAsset;
-//
-//		HandleLevelUpDisplay();
-//		HandleRankUpDisplay(Record);
-//	}
-//
-//	if (InventoryDetail)
-//	{
-//		InventoryDetail->InitializeDetails(ItemGuid, Record, Asset);
-//	}
-//}
+void UEnhanceItemWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
+{
+	if (!Record || !AssetId.IsValid())
+	{
+		return;
+	}
+
+	ActiveAssetId = AssetId;
+	ActiveItemId = Record->ItemId;
+	ActiveEnhanceRecord = Record->EnhanceRecord;
+
+	TWeakObjectPtr<UEnhanceItemWidget> WeakThis(this);
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, AssetId, [WeakThis](FPrimaryAssetId AssetId, UObject* LoadedAsset)
+		{
+			if (!WeakThis.IsValid()) return;
+			WeakThis.Get()->HandleAssetLoaded(AssetId, LoadedAsset);
+		}
+	);
+
+	if (InventoryDetail)
+	{
+		InventoryDetail->InitializeDetails(AssetId, Quantity, Record);
+	}
+}
 
 void UEnhanceItemWidget::ResetDetails()
 {
-	ActiveItemGuid = NAME_None;
+	ActiveItemId = NAME_None;
 	ActiveAsset = nullptr;
 }
 
 void UEnhanceItemWidget::RefreshDetails()
 {
-	/*UInventorySubsystem* Subsystem = InventorySubsystem.Get();
+	UInventorySubsystem* Subsystem = InventorySubsystem.Get();
 	if (!IsValid(Subsystem)) {
 		LOG_ERROR(LogTemp, "InventorySubsystem is invalid");
 		return;
 	}
 
-	const FInventoryRecord* Record = Subsystem->GetItemRecord(ContainerId, ActiveItemGuid);
+	const FInventoryRecord* Record = Subsystem->GetRecordById(ContainerId, ActiveAssetId, ActiveItemId);
 	if (!Record)
 	{
 		LOG_ERROR(LogTemp, "Record is invalid");
 		return;
 	}
 
-	HandleRankUpDisplay(Record);*/
+	ActiveEnhanceRecord = Record->EnhanceRecord;
+
+	HandleRankUpDisplay();
 }
 
-void UEnhanceItemWidget::TryLevelUp(FName ItemGuid)
+
+void UEnhanceItemWidget::TryLevelUp(const FPrimaryAssetId& AssetId, FName ItemId)
 {
-	/*UEnhanceItemSubsystem* Subsystem = EnhanceItemSubsystem.Get();
-	if (IsValid(Subsystem) && ItemGuid.IsValid())
+	UEnhanceItemSubsystem* Subsystem = EnhanceItemSubsystem.Get();
+	if (IsValid(Subsystem) && ActiveAssetId.IsValid() && ActiveItemId.IsValid())
 	{
-		Subsystem->LevelUpItem(ContainerId, ActiveItemGuid, ItemGuid);
-	}*/
+		Subsystem->LevelUpItem(ContainerId, ActiveAssetId, ActiveItemId, AssetId, ItemId);
+	}
 }
 
 void UEnhanceItemWidget::TryRankUp()
 {
-	/*UEnhanceItemSubsystem* Subsystem = EnhanceItemSubsystem.Get();
-	if (IsValid(Subsystem) && ActiveItemGuid.IsValid())
+	UEnhanceItemSubsystem* Subsystem = EnhanceItemSubsystem.Get();
+	if (IsValid(Subsystem) && ActiveAssetId.IsValid() && ActiveItemId.IsValid())
 	{
-		Subsystem->RankUpItem(ContainerId, ActiveItemGuid);
-	}*/
-}
-
-void UEnhanceItemWidget::HandleLevelUpDisplay()
-{
-	if (LevelUpCollection)
-	{
-		/*TArray<FName> ItemIds;
-		const TArray<TObjectPtr<UEnhanceAsset>>& CostItems = ActiveAsset->EnhanceCosts;
-
-		for (UEnhanceAsset* EnhanceAsset : CostItems)
-		{
-			ItemIds.Add(EnhanceAsset->ItemId);
-		}
-
-		LevelUpCollection->FilterRule.FilterId.Included.Append(ItemIds);
-		LevelUpCollection->DisplayItems();*/
+		Subsystem->RankUpItem(ContainerId, ActiveAssetId, ActiveItemId);
 	}
 }
 
-void UEnhanceItemWidget::HandleRankUpDisplay(const FInventoryRecord* Record)
+
+void UEnhanceItemWidget::HandleLevelUpDisplay()
 {
-	/*bool bCanRankUp = UEnhanceLibrary::CanRankUp(
-		Record->EnhanceRecord.Experience,
-		Record->EnhanceRecord.Level,
-		Record->EnhanceRecord.Rank,
-		ActiveAsset->GetLevelInterval(Record->EnhanceRecord.Rank)
+	if (LevelUpCollection && ActiveAsset && ActiveItemId.IsValid())
+	{
+		const FExchangeRule& EnhanceRules = ActiveAsset->EnhanceRules;
+		const TMap<FPrimaryAssetId, int>& RequiredAssets = EnhanceRules.RequiredAssets;
+		const TMap<FName, int>& RequiredArbitrary = EnhanceRules.RequiredArbitrary;
+
+		TArray<FPrimaryAssetId> AssetIds;
+		RequiredAssets.GetKeys(AssetIds);
+
+		TArray<FName> AssetTypes;
+		RequiredArbitrary.GetKeys(AssetTypes);
+
+		UFilterGroup* FilterRule = LevelUpCollection->FilterRule;
+		if (FilterRule)
+		{
+			UFilterAssetCriterion* AssetCriterion = FilterRule->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
+			UFilterTextCriterion* AssetTypeCriterion = FilterRule->GetCriterionByName<UFilterTextCriterion>(InventoryFilterProperty::AssetType);
+			UFilterTextCriterion* ItemIdCriterion = FilterRule->GetCriterionByName<UFilterTextCriterion>(InventoryFilterProperty::ItemId);
+
+			if (AssetCriterion)
+			{
+				AssetCriterion->Included.Append(AssetIds);
+			}
+			if (AssetTypeCriterion)
+			{
+				AssetTypeCriterion->Included.Append(AssetTypes);
+			}
+			if (ItemIdCriterion)
+			{
+				ItemIdCriterion->Included.Add(ActiveItemId);
+			}
+		}
+
+		LevelUpCollection->DisplayItems();
+	}
+}
+
+void UEnhanceItemWidget::HandleRankUpDisplay()
+{
+	if (!ActiveAsset)
+	{
+		return;
+	}
+
+	int CurrentRank = ActiveEnhanceRecord.Rank;
+
+	bool bCanRankUp = UEnhanceLibrary::CanRankUp(
+		ActiveEnhanceRecord,
+		ActiveAsset->GetLevelInterval(CurrentRank),
+		ActiveAsset->MaxLevel
 	);
-	if (EnhanceSwitcher) EnhanceSwitcher->SetActiveWidgetIndex(bCanRankUp ? 1 : 0);
+
+	if (EnhanceSwitcher)
+	{
+		EnhanceSwitcher->SetActiveWidgetIndex(bCanRankUp ? 1 : 0);
+	}
 
 	if (RankUpCollection)
 	{
 		RankUpCollection->ClearItems();
 
-		const TArray<FInventoryAssetQuantity>& RankItems = ActiveAsset->RankingCosts;
-		if (bCanRankUp && RankItems.IsValidIndex(Record->EnhanceRecord.Rank))
+		const TArray<FExchangeRule>& RankingRules = ActiveAsset->RankingRules;
+		if (bCanRankUp && RankingRules.IsValidIndex(CurrentRank))
 		{
-			const FInventoryAssetQuantity& RankItem = RankItems[Record->EnhanceRecord.Rank];
-			const TMap<FName, int>& ItemQuantities = RankItem.GetItemIds();
+			TMap<FPrimaryAssetId, FInstancedStruct> Payloads;
 
-			TMap<FName, FInstancedStruct> Payloads;
-			for (auto& Pair : ItemQuantities)
+			const TMap<FPrimaryAssetId, int>& RequiredAssets = RankingRules[CurrentRank].RequiredAssets;
+
+			for (auto& Pair : RequiredAssets)
 			{
-				FInventoryPayloadQuantity Payload;
-				Payload.Quantity = Pair.Value;
+				const FPrimaryAssetId& AssetId = Pair.Key;
+				int Quantity = Pair.Value;
 
-				Payloads.Add(Pair.Key, FInstancedStruct::Make(Payload));
+				FInventoryPayloadQuantity Payload;
+				Payload.Quantity = Quantity;
+
+				Payloads.Add(AssetId, FInstancedStruct::Make(Payload));
 			}
 
+			TArray<FPrimaryAssetId> AssetIds;
+			RequiredAssets.GetKeys(AssetIds);
+
 			RankUpCollection->SetPayloads(Payloads);
-
-			TArray<FName> RankItemIds;
-			ItemQuantities.GetKeys(RankItemIds);
-
-			RankUpCollection->FilterRule.FilterId.Included.Append(RankItemIds);
+			//RankUpCollection->FilterRule.FilterAsset.Included.Append(AssetIds);
 			RankUpCollection->DisplayItems();
 		}
-	}*/
+	}
 }
 
-void UEnhanceItemWidget::HandleItemSelected(FName ItemGuid, const FInventoryRecord* Record, UInventoryAsset* Asset)
+
+
+void UEnhanceItemWidget::HandleAssetLoaded(FPrimaryAssetId AssetId, UObject* LoadedAsset)
 {
-	TryLevelUp(ItemGuid);
+	UEnhanceableAsset* ItemAsset = Cast<UEnhanceableAsset>(LoadedAsset);
+	if (ItemAsset)
+	{
+		ActiveAsset = ItemAsset;
+
+		HandleLevelUpDisplay();
+	}
+}
+
+void UEnhanceItemWidget::HandleItemSelected(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
+{
+	if (Record)
+	{
+		TryLevelUp(AssetId, Record->ItemId);
+	}
 }
 
 void UEnhanceItemWidget::NativeConstruct()
 {
-	/*UGameInstance* GameInstance = GetGameInstance();
+	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
 		UEnhanceItemSubsystem* EnhanceItemSubsystemPtr = GetGameInstance()->GetSubsystem<UEnhanceItemSubsystem>();
@@ -168,9 +236,9 @@ void UEnhanceItemWidget::NativeConstruct()
 
 		if (bAutoRefresh)
 		{
-			InventorySubsystemPtr->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			InventorySubsystemPtr->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, FInventoryRecord Record)			{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
-			InventorySubsystemPtr->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, FName ItemGuid, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			InventorySubsystemPtr->OnItemAdded.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			InventorySubsystemPtr->OnItemRemoved.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
+			InventorySubsystemPtr->OnItemUpdated.AddWeakLambda(this, [this](FName ContainerId, const FPrimaryAssetId& AssetId, const FInventoryRecord* Record)	{ if (this->ContainerId == ContainerId && bAutoRefresh) RefreshDetails(); });
 		}
 
 		InventorySubsystem = InventorySubsystemPtr;
@@ -179,14 +247,14 @@ void UEnhanceItemWidget::NativeConstruct()
 	if (LevelUpCollection)
 	{
 		LevelUpCollection->OnItemSelected.AddUObject(this, &UEnhanceItemWidget::HandleItemSelected);
-	}*/
+	}
 
 	Super::NativeConstruct();
 }
 
 void UEnhanceItemWidget::NativeDestruct()
 {
-	/*ResetDetails();
+	ResetDetails();
 
 	if (LevelUpCollection)
 	{
@@ -202,7 +270,7 @@ void UEnhanceItemWidget::NativeDestruct()
 	}
 	InventorySubsystem.Reset();
 
-	EnhanceItemSubsystem.Reset();*/
+	EnhanceItemSubsystem.Reset();
 
 	Super::NativeDestruct();
 }
