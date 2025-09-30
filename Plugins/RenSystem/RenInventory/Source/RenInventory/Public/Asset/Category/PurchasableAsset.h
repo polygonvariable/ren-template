@@ -11,6 +11,9 @@
 // Generated Headers
 #include "PurchasableAsset.generated.h"
 
+// Forward Declarations
+
+
 
 /**
  * 
@@ -23,10 +26,11 @@ class UPurchasableAsset : public UInventoryAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Purchasable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int PurchaseQuantity;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Purchasable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<UInventoryAsset*, int> PurchaseCosts;
 
 };
+

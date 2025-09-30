@@ -21,7 +21,7 @@ public class RenEntity : ModuleRules
             new string[]
             {
                 "RCoreCommon",
-                "RenAsset",
+                //"RenAsset",
                 "RenStorage",
                 "RenAbility",
             }

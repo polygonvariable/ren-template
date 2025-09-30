@@ -16,7 +16,7 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct FExchangeRule : public FTableRowBase
+struct RCOREEXCHANGE_API FExchangeRule : public FTableRowBase
 {
 
 	GENERATED_BODY()
@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, int> RequiredArbitrary;
 
-	int FindAny(const FPrimaryAssetId& AssetId, const FName& AssetType)
+	int FindAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const
 	{
 		const int* AssetCount = RequiredAssets.Find(AssetId);
 		if (AssetCount)
@@ -46,12 +46,12 @@ public:
 		return -1;
 	}
 
-	bool Contains(const FPrimaryAssetId& AssetId, const FName& AssetType)
+	bool Contains(const FPrimaryAssetId& AssetId, const FName& AssetType) const
 	{
 		return RequiredAssets.Contains(AssetId) && RequiredArbitrary.Contains(AssetType);
 	}
 
-	bool ContainsAny(const FPrimaryAssetId& AssetId, const FName& AssetType)
+	bool ContainsAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const
 	{
 		return RequiredAssets.Contains(AssetId) || RequiredArbitrary.Contains(AssetType);
 	}

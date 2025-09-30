@@ -12,10 +12,10 @@
 #include "EnhanceItemSubsystem.generated.h"
 
 // Forward Declarations
-class UEnhanceableAsset;
-class UInventorySubsystem;
-
 class UAssetManager;
+
+class UInventorySubsystem;
+class IEnhanceProviderInterface;
 
 struct FEnhanceRecord;
 
@@ -33,21 +33,22 @@ class UEnhanceItemSubsystem : public UGameInstanceSubsystem
 public:
 
 	void LevelUpItem(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FPrimaryAssetId& MaterialAssetId, FName MaterialId);
-	
 	void RankUpItem(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId);
 
 	void CanRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, TFunction<void(bool)> Callback);
+	bool CanRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, IEnhanceProviderInterface* TargetAsset);
+	bool CanRankUp(const FEnhanceRecord& EnhanceRecord, IEnhanceProviderInterface* TargetAsset);
 
 protected:
 
 	UAssetManager* AssetManager;
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
+
 	void HandleGameInitialized();
 
-	bool HandleLevelUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, UEnhanceableAsset* TargetAsset, const FPrimaryAssetId& MaterialAssetId, FName MaterialId, int MaterialQuantity, int Point);
-	
-	bool HandleRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, UEnhanceableAsset* TargetAsset, const TMap<FPrimaryAssetId, int>& ItemQuantities);
+	bool HandleLevelUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, IEnhanceProviderInterface* TargetAsset, const FPrimaryAssetId& MaterialAssetId, FName MaterialId, int MaterialQuantity, int Point);
+	bool HandleRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, IEnhanceProviderInterface* TargetAsset, const TMap<FPrimaryAssetId, int>& MaterialQuantities);
 
 protected:
 

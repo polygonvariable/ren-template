@@ -37,6 +37,7 @@ void UInventoryEntryWidget::NativeOnListItemObjectSet(UObject* ListItemObject)
 		EntryObject->Quantity,
 		EntryObject->Record
 	);
+	SetTertiaryDetails(EntryObject);
 }
 
 void UInventoryEntryWidget::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)

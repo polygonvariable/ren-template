@@ -30,6 +30,8 @@ public class RenInventory : ModuleRules
                 "UMG",
 				"StructUtils",
                 "RCoreInventory",
+                "RCoreEnhance",
+                "RCoreExchange",
             }
 			);
 			
@@ -47,7 +49,6 @@ public class RenInventory : ModuleRules
                 "RCoreStorage",
                 "RCoreLibrary",
                 "RCoreFilter",
-                "RenAsset",
             }
             );
 		

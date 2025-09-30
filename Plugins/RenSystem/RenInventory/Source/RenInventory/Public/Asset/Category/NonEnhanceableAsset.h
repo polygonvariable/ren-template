@@ -6,19 +6,23 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenAsset/Public/Inventory/Asset/Category/EquipmentAsset.h"
+#include "RenInventory/Public/Asset/Category/CraftableAsset.h"
 
 // Generated Headers
-#include "WeaponAsset.generated.h"
+#include "NonEnhanceableAsset.generated.h"
+
+// Forward Declarations
+
 
 
 /**
  * 
  */
-UCLASS(MinimalAPI)
-class UWeaponAsset : public UEquipmentAsset
+UCLASS(MinimalAPI, Abstract)
+class UNonEnhanceableAsset : public UCraftableAsset
 {
 
 	GENERATED_BODY()
 	
 };
+

@@ -39,27 +39,3 @@ public:
 
 };
 
-
-
-UINTERFACE(MinimalAPI)
-class UExchangeManagerInterface : public UInterface
-{
-	
-	GENERATED_BODY()
-
-};
-
-/**
- * 
- */
-class RCOREEXCHANGE_API IExchangeManagerInterface
-{
-
-	GENERATED_BODY()
-
-public:
-
-	virtual void PerformExchange() = 0;
-
-};
-

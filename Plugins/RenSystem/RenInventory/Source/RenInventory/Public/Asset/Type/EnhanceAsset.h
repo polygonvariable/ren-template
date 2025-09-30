@@ -6,10 +6,12 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenAsset/Public/Inventory/Asset/Category/NonEnhanceableAsset.h"
+#include "RenInventory/Public/Asset/Category/NonEnhanceableAsset.h"
 
 // Generated Headers
 #include "EnhanceAsset.generated.h"
+
+// Forward Declarations
 
 
 
@@ -24,13 +26,13 @@ class UEnhanceAsset : public UNonEnhanceableAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Enhancement")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int ExchangePoints = 500;
 
 public:
 
 	// ~ IExchangeInterface
-	RENASSET_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override
+	RENINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override
 	{
 		return ExchangePoints;
 	}

@@ -28,8 +28,5 @@ public:
 	UPROPERTY(Config, EditAnywhere, Category = "Inventory")
 	TSoftObjectPtr<UDataTable> InventoryTable;
 
-	UPROPERTY(Config, EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.PrimaryAssetMap"), Category = "Inventory")
-	TSoftObjectPtr<UPrimaryDataAsset> InventoryAssetMap;
-
 };
 

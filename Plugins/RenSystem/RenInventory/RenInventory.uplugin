@@ -60,10 +60,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAsset",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreEnhance",
 			"Enabled": true
 		},

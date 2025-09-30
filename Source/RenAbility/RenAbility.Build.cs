@@ -29,7 +29,7 @@ public class RenAbility : ModuleRules
             {
                 "RCoreCommon",
                 "RCoreTag",
-                "RenAsset",
+                //"RenAsset",
                 "RenStorage",
                 "RenGameplay",
             }

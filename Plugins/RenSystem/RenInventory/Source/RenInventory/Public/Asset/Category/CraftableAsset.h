@@ -6,13 +6,14 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenAsset/Public/Inventory/Asset/Category/PurchasableAsset.h"
+#include "RenInventory/Public/Asset/Category/PurchasableAsset.h"
 
 // Generated Headers
 #include "CraftableAsset.generated.h"
 
 // Forward Declarations
 class UInventoryAsset;
+
 
 
 /**
@@ -26,7 +27,8 @@ class UCraftableAsset : public UPurchasableAsset
 
 public:
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Item Craftable")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	TMap<UInventoryAsset*, int> CraftingCosts;
 
 };
+

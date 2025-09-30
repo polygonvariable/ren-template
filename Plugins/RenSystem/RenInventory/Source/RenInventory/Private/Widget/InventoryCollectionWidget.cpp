@@ -131,11 +131,11 @@ void UInventoryCollectionWidget::ConstructEntry(const FPrimaryAssetId& AssetId, 
 	Entry->Quantity = Quantity;
 	Entry->Record = Record;
 
-	/*if (bEnablePayloads)
+	if (bEnablePayloads)
 	{
-		Entry->bEnablePayload = true;
-		Entry->InventoryPayload = InventoryPayloads.FindRef(AssetId.PrimaryAssetName);
-	}*/
+		Entry->bHasPayload = true;
+		Entry->Payload = InventoryPayloads.FindRef(AssetId);
+	}
 
 	// Updating the data doesnt update the UI
 	// as the NativeOnListItemObjectSet in UInventoryEntryWidget

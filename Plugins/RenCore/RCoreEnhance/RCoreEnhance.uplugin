@@ -22,5 +22,9 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "RCoreExchange",
+			"Enabled": true
+		}
 	]
 }

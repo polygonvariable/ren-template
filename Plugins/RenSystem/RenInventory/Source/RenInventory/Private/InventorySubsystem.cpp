@@ -147,6 +147,8 @@ void UInventorySubsystem::HandleStorageLoaded()
 	}
 
 	InventoryProvider = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryProviderInterface);
+	AssetManager = UAssetManager::GetIfInitialized();
+
 	LOG_INFO(LogTemp, TEXT("InventorySubsystem storage loaded"));
 }
 
@@ -160,8 +162,6 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("InventorySubsystem initialized"));
 
-	AssetManager = UAssetManager::GetIfInitialized();
-
 	if (!FLatentDelegates::OnStorageLoaded.IsBoundToObject(this))
 	{
 		FLatentDelegates::OnStorageLoaded.AddUObject(this, &UInventorySubsystem::HandleStorageLoaded);
@@ -170,11 +170,10 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UInventorySubsystem::Deinitialize()
 {
-	InventoryProvider.Reset();
-
-	AssetManager = nullptr;
-
 	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
+
+	InventoryProvider.Reset();
+	AssetManager = nullptr;
 
 	LOG_WARNING(LogTemp, TEXT("InventorySubsystem deinitialized"));
 	Super::Deinitialize();
@@ -674,7 +673,7 @@ const FInventoryRecord* UInventorySubsystem::AddItemRecord(const FPrimaryAssetId
 	}
 
 	FName ItemId = InAssetId.PrimaryAssetName;
-	int Quantity = InQuantity;
+	int ItemQuantity = InQuantity;
 	FName RecordId = ItemId;
 
 	bool bIsStackable = false;
@@ -684,7 +683,7 @@ const FInventoryRecord* UInventorySubsystem::AddItemRecord(const FPrimaryAssetId
 		if (InItemStack->IsValidIndex(0))
 		{
 			FInventoryRecord& Record = (*InItemStack)[0];
-			Record.ItemQuantity += Quantity;
+			Record.ItemQuantity += ItemQuantity;
 
 			PRINT_INFO(LogTemp, 1.0f, TEXT("Record updated"));
 
@@ -694,7 +693,7 @@ const FInventoryRecord* UInventorySubsystem::AddItemRecord(const FPrimaryAssetId
 	}
 	else
 	{
-		Quantity = 1;
+		ItemQuantity = 1;
 		RecordId = FName(FGuid::NewGuid().ToString());
 	}
 
@@ -710,7 +709,7 @@ const FInventoryRecord* UInventorySubsystem::AddItemRecord(const FPrimaryAssetId
 	FInventoryRecord NewRecord;
 	NewRecord.ItemId = RecordId;
 	NewRecord.ItemType = ItemType;
-	NewRecord.ItemQuantity = Quantity;
+	NewRecord.ItemQuantity = ItemQuantity;
 
 	PreAddItem(NewRecord);
 

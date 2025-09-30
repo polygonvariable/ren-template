@@ -22,7 +22,7 @@
 /**
  *
  */
-UCLASS(MinimalAPI)
+UCLASS(Abstract, MinimalAPI)
 class UInventoryAsset : public UPrimaryDataAsset, public IExchangeInterface
 {
 
@@ -58,6 +58,12 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
 	bool bAllowEmptyData = false;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
+	bool bCanExpire = false;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FTimespan ExpirationTime = FTimespan::Zero();
 
 public:
 

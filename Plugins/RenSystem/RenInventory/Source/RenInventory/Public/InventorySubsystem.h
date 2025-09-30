@@ -16,7 +16,6 @@ class UAssetManager;
 
 class UFilterCriterion;
 class UInventoryAsset;
-class UCraftableAsset;
 class IInventoryProviderInterface;
 
 struct FInventoryRecord;

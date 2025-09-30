@@ -16,13 +16,13 @@
 // Forward Declarations
 class UWidgetSwitcher;
 
-class UInventoryAsset;
-class UEnhanceableAsset;
+class IEnhanceProviderInterface;
 
 class UInventoryCollectionWidget;
 class UInventoryDetailWidget;
 class UInventoryEntryObject;
 class UInventorySubsystem;
+
 class UEnhanceItemSubsystem;
 
 struct FInventoryRecord;
@@ -57,9 +57,8 @@ protected:
 	FPrimaryAssetId ActiveAssetId = FPrimaryAssetId();
 	FName ActiveItemId = NAME_None;
 	FEnhanceRecord ActiveEnhanceRecord;
+	TWeakInterfacePtr<IEnhanceProviderInterface> ActiveAsset;
 
-	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<UEnhanceableAsset> ActiveAsset = nullptr;
 
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 	TWeakObjectPtr<UEnhanceItemSubsystem> EnhanceItemSubsystem;

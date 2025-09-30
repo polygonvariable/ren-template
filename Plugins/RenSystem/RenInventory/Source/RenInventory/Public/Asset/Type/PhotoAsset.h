@@ -6,19 +6,23 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenAsset/Public/Inventory/Asset/Category/NonEnhanceableAsset.h"
+#include "RenInventory/Public/Asset/Category/NonPurchasableAsset.h"
 
 // Generated Headers
-#include "FoodAsset.generated.h"
+#include "PhotoAsset.generated.h"
+
+// Forward Declarations
+
 
 
 /**
- * 
+ *
  */
 UCLASS(MinimalAPI)
-class UFoodAsset : public UNonEnhanceableAsset
+class UPhotoAsset : public UNonPurchasableAsset
 {
 
 	GENERATED_BODY()
 
 };
+
