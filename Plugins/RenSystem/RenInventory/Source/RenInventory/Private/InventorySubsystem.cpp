@@ -12,19 +12,655 @@
 #include "RCoreFilter/Public/FilterContext.h"
 #include "RCoreFilter/Public/FilterCriterion.h"
 
+#include "RCoreInventory/Public/InventoryContainer.h"
+#include "RCoreInventory/Public/InventoryAsset.h"
 #include "RCoreInventory/Public/InventoryItemType.h"
 #include "RCoreInventory/Public/InventoryProviderInterface.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
 
+#include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/SubsystemUtils.h"
 
-#include "RCoreStorage/Public/StorageProviderInterface.h"
+#include "RCoreStorage/Public/StorageUtils.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
 #include "RenInventory/Public/InventoryPrimaryAsset.h"
 
 
+
+bool UInventorySubsystem::AddItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
+		return false;
+	}
+
+	FInventoryStack* Stack = GetMutableInventoryStack(ContainerId, AssetId);
+	if (!Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Stack is invalid"));
+		return false;
+	}
+
+	bool bAdded = AddItemRecord(ContainerId, AssetId, Quantity, Stack);
+	if (!bAdded)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items)
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!ContainerId.IsValid() || !InventoryInterface)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("ContainerId or InventoryInterface is invalid"));
+		return false;
+	}
+
+	FName CurrentItemId = TEXT_EMPTY;
+	FInventoryStack* CurrentStack = nullptr;
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	{
+		const FPrimaryAssetId AssetId = Kv.Key;
+		int Quantity = Kv.Value;
+
+		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+		{
+			continue;
+		}
+
+		if (CurrentItemId != AssetId.PrimaryAssetName)
+		{
+			CurrentItemId = AssetId.PrimaryAssetName;
+			CurrentStack = GetMutableInventoryStack(ContainerId, AssetId);
+		}
+
+		bool bAdded = AddItemRecord(ContainerId, AssetId, Quantity, CurrentStack);
+	}
+
+	return true;
+}
+
+
+bool UInventorySubsystem::RemoveItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
+		return false;
+	}
+
+	FInventoryStack* Stack = GetMutableInventoryStack(ContainerId, AssetId);
+	if (!Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Stack is invalid"));
+		return false;
+	}
+
+	bool bRemoved = RemoveItemRecord(ContainerId, AssetId, Quantity, Stack);
+	return bRemoved;
+}
+
+bool UInventorySubsystem::RemoveItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items)
+{
+	return RemoveItems(ContainerId, Items, 1);
+}
+
+bool UInventorySubsystem::RemoveItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier)
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!ContainerId.IsValid() || !InventoryInterface)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("ContainerId, InventoryInterface is invalid"));
+		return false;
+	}
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	{
+		const FPrimaryAssetId AssetId = Kv.Key;
+		int Quantity = Kv.Value * Multiplier;
+
+		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+		{
+			continue;
+		}
+
+		FName CurrentItemId = AssetId.PrimaryAssetName;
+		FInventoryStack* CurrentStack = GetMutableInventoryStack(ContainerId, AssetId, InventoryInterface);
+
+		bool bRemoved = RemoveItemRecord(ContainerId, AssetId, Quantity, CurrentStack);
+		if (!bRemoved)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool UInventorySubsystem::RemoveItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
+		return false;
+	}
+
+	FInventoryStack* Stack = GetMutableInventoryStack(ContainerId, AssetId);
+	if (!Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Stack is invalid"));
+		return false;
+	}
+
+	bool bRemoved = RemoveItemRecordById(ContainerId, AssetId, RecordId, Quantity, Stack);
+	return bRemoved;
+}
+
+
+bool UInventorySubsystem::ContainsItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity) const
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+	{
+		return false;
+	}
+
+	const FInventoryStack* Stack = GetInventoryStack(ContainerId, AssetId);
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, Stack);
+	if (!Stack && !RecordList)
+	{
+		return false;
+	}
+
+	bool bStackable = Stack->bStackable;
+	if (bStackable)
+	{
+		if (!RecordList->IsValidIndex(0))
+		{
+			return false;
+		}
+
+		const FInventoryRecord& Record = (*RecordList)[0];
+		return Record.Quantity >= Quantity;
+	}
+
+	return RecordList->Num() >= Quantity;
+}
+
+bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items) const
+{
+	return ContainsItems(ContainerId, Items, 1);
+}
+
+bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items, int Multiplier) const
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!ContainerId.IsValid() || !InventoryInterface)
+	{
+		return false;
+	}
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	{
+		const FPrimaryAssetId& AssetId = Kv.Key;
+		int Quantity = Kv.Value * Multiplier;
+
+		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+		{
+			return false;
+		}
+
+		const FInventoryStack* Stack = GetInventoryStack(ContainerId, AssetId, InventoryInterface);
+		const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, Stack);
+		if (!Stack && !RecordList)
+		{
+			return false;
+		}
+
+		bool bStackable = Stack->bStackable;
+		if (bStackable)
+		{
+			if (!RecordList->IsValidIndex(0))
+			{
+				return false;
+			}
+
+			const FInventoryRecord& Record = (*RecordList)[0];
+			if (Record.Quantity < Quantity)
+			{
+				return false;
+			}
+
+			continue;
+		}
+
+		if (RecordList->Num() < Quantity)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool UInventorySubsystem::ContainsItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity) const
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+	{
+		return false;
+	}
+
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, AssetId);
+	if (!RecordList || !RecordList->IsValidIndex(0))
+	{
+		return false;
+	}
+
+	const FInventoryRecord* Record = RecordList->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
+	if (!Record)
+	{
+		return false;
+	}
+
+	return Record->Quantity >= Quantity;
+}
+
+int UInventorySubsystem::GetMaxMultiplier(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items) const
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!ContainerId.IsValid() || !InventoryInterface)
+	{
+		return 0;
+	}
+
+	int MaxMultiplier = INT_MAX;
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
+	{
+		const FPrimaryAssetId& AssetId = Kv.Key;
+		int Quantity = Kv.Value;
+
+		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
+		{
+			continue;
+		}
+
+		int Available = GetTotalQuantity(ContainerId, AssetId, InventoryInterface);
+		int PossibleMultiplier = Available / Quantity;
+
+		MaxMultiplier = FMath::Max(MaxMultiplier, PossibleMultiplier);
+	}
+
+	return (MaxMultiplier == INT_MAX ? 0 : MaxMultiplier);
+}
+
+
+bool UInventorySubsystem::UpdateItem(FName ContainerId, const FPrimaryAssetId& AssetId, TFunctionRef<bool(FInventoryRecord*)> Callback)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
+	{
+		return false;
+	}
+
+	FInventoryRecord* Record = GetMutableRecord(ContainerId, AssetId);
+	if (!Callback(Record))
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Record update callback returned false"));
+		return false;
+	}
+
+	OnItemUpdated.Broadcast(ContainerId, AssetId, Record->ItemId);
+	return true;
+}
+
+bool UInventorySubsystem::UpdateItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, TFunctionRef<bool(FInventoryRecord*)> Callback)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
+	{
+		return false;
+	}
+
+	FInventoryRecord* Record = GetMutableRecordById(ContainerId, AssetId, RecordId);
+	if (!Callback(Record))
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Record update callback returned false"));
+		return false;
+	}
+
+	OnItemUpdated.Broadcast(ContainerId, AssetId, Record->ItemId);
+	return true;
+}
+
+
+int UInventorySubsystem::GetStackCount(FName ContainerId, const FPrimaryAssetId& AssetId) const
+{
+	return GetStackCount(ContainerId, AssetId, InventoryProvider.Get());
+}
+
+int UInventorySubsystem::GetStackCount(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const
+{
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, AssetId, InventoryInterface);
+	if (!RecordList)
+	{
+		return 0;
+	}
+
+	return RecordList->Num();
+}
+
+
+int UInventorySubsystem::GetTotalQuantity(FName ContainerId, const FPrimaryAssetId& AssetId) const
+{
+	return GetTotalQuantity(ContainerId, AssetId, InventoryProvider.Get());
+}
+
+int UInventorySubsystem::GetTotalQuantity(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const
+{
+	const FInventoryStack* Stack = GetInventoryStack(ContainerId, AssetId, InventoryInterface);
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, Stack);
+	if (!Stack && !RecordList)
+	{
+		return 0;
+	}
+
+	bool bStackable = Stack->bStackable;
+	if (bStackable)
+	{
+		if (!RecordList->IsValidIndex(0))
+		{
+			return 0;
+		}
+
+		const FInventoryRecord& Record = (*RecordList)[0];
+		return Record.Quantity;
+	}
+
+	return RecordList->Num();
+}
+
+
+int UInventorySubsystem::GetQuantityById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId) const
+{
+	return GetQuantityById(ContainerId, AssetId, InventoryProvider.Get(), RecordId);
+}
+
+int UInventorySubsystem::GetQuantityById(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface, FName RecordId) const
+{
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, AssetId, InventoryInterface);
+	if (!RecordList)
+	{
+		return 0;
+	}
+
+	const FInventoryRecord* Record = RecordList->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
+	if (!Record)
+	{
+		return 0;
+	}
+
+	return Record->Quantity;
+}
+
+
+const FInventoryStack* UInventorySubsystem::GetInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId) const
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	return GetInventoryStack(ContainerId, AssetId, InventoryInterface);
+}
+
+const FInventoryStack* UInventorySubsystem::GetInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const
+{
+	if (!InventoryInterface)
+	{
+		return nullptr;
+	}
+
+	const TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetInventoryContainer();
+	const FInventoryContainer* Records = Containers.Find(ContainerId);
+	if (!Records)
+	{
+		return nullptr;
+	}
+
+	FName ItemId = AssetId.PrimaryAssetName;
+	const TMap<FName, FInventoryStack>& Stacks = Records->Stacks;
+	const FInventoryStack* Stack = Stacks.Find(ItemId);
+	if (!Stack)
+	{
+		return nullptr;
+	}
+
+	return Stack;
+}
+
+
+const TArray<FInventoryRecord>* UInventorySubsystem::GetRecords(FName ContainerId, const FPrimaryAssetId& AssetId) const
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	return GetRecords(ContainerId, AssetId, InventoryInterface);
+}
+
+const TArray<FInventoryRecord>* UInventorySubsystem::GetRecords(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const
+{
+	const FInventoryStack* Stack = GetInventoryStack(ContainerId, AssetId, InventoryInterface);
+	return GetRecords(ContainerId, Stack);
+}
+
+const TArray<FInventoryRecord>* UInventorySubsystem::GetRecords(FName ContainerId, const FInventoryStack* Stack) const
+{
+	if (!Stack)
+	{
+		return nullptr;
+	}
+	const TArray<FInventoryRecord>& ItemRecords = Stack->ItemRecords;
+	return &ItemRecords;
+}
+
+
+const FInventoryRecord* UInventorySubsystem::GetRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index) const
+{
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, AssetId);
+	if (!RecordList || !RecordList->IsValidIndex(Index))
+	{
+		return nullptr;
+	}
+
+	const FInventoryRecord& Record = (*RecordList)[Index];
+	return &Record;
+}
+
+const FInventoryRecord* UInventorySubsystem::GetRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId) const
+{
+	const TArray<FInventoryRecord>* RecordList = GetRecords(ContainerId, AssetId);
+	if (!RecordList)
+	{
+		return nullptr;
+	}
+
+	const FInventoryRecord* Record = RecordList->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
+	return Record;
+}
+
+
+void UInventorySubsystem::QueryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback)
+{
+	if (QueryRule.QuerySource == EInventoryQuerySource::Glossary)
+	{
+		HandleGlossaryItems(FilterCriterion, QueryRule, MoveTemp(Callback));
+	}
+	else
+	{
+		HandleInventoryItems(FilterCriterion, QueryRule, MoveTemp(Callback));
+	}
+}
+
+
+bool UInventorySubsystem::CreateContainer(FName ContainerId)
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!InventoryInterface || !ContainerId.IsValid())
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("InventoryInterface, ContainerId is invalid"));
+		return false;
+	}
+
+	TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetMutableInventoryContainer();
+	if (Containers.Contains(ContainerId))
+	{
+		PRINT_WARNING(LogInventory, 1.0f, TEXT("Container already exists"));
+		return false;
+	}
+
+	Containers.Add(ContainerId, { FGuid::NewGuid() });
+	OnContainerAdded.Broadcast(ContainerId);
+
+	PRINT_INFO(LogInventory, 1.0f, TEXT("Container created"));
+	return true;
+}
+
+bool UInventorySubsystem::RemoveContainer(FName ContainerId)
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	if (!InventoryInterface || !ContainerId.IsValid())
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("InventoryProvider, ContainerId is invalid"));
+		return false;
+	}
+
+	TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetMutableInventoryContainer();
+	if (Containers.Remove(ContainerId) <= 0)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Container not found"));
+		return false;
+	}
+
+	OnContainerRemoved.Broadcast(ContainerId);
+
+	PRINT_INFO(LogInventory, 1.0f, TEXT("Container removed"));
+	return true;
+}
+
+
+FInventoryStack* UInventorySubsystem::GetMutableInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId)
+{
+	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
+	return GetMutableInventoryStack(ContainerId, AssetId, InventoryInterface);
+}
+
+FInventoryStack* UInventorySubsystem::GetMutableInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || !InventoryInterface)
+	{
+		return nullptr;
+	}
+
+	TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetMutableInventoryContainer();
+	FInventoryContainer& Records = Containers.FindOrAdd(ContainerId, { FGuid::NewGuid() });
+
+	FName ItemId = AssetId.PrimaryAssetName;
+	TMap<FName, FInventoryStack>& Stacks = Records.Stacks;
+	FInventoryStack* Stack = Stacks.Find(ItemId);
+	if (Stack)
+	{
+		return Stack;
+	}
+
+	FAssetData AssetData;
+	if (!AssetManager->GetPrimaryAssetData(AssetId, AssetData))
+	{
+		return nullptr;
+	}
+
+	bool bStackable = false;
+	InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
+
+	bool bPersistWhenEmpty = false;
+	InventoryPrimaryAsset::GetPersistWhenEmpty(AssetData, bPersistWhenEmpty);
+
+	FInventoryStack& NewStack = Stacks.Add(ItemId, { FGuid::NewGuid(), bStackable, bPersistWhenEmpty });
+	return &NewStack;
+}
+
+
+TArray<FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName InContainerId, const FPrimaryAssetId& InAssetId)
+{
+	return GetMutableRecords(InContainerId, InAssetId, InventoryProvider.Get());
+}
+
+TArray<FInventoryRecord>* UInventorySubsystem::GetMutableRecords(FName InContainerId, const FPrimaryAssetId& InAssetId, IInventoryProviderInterface* InventoryInterface)
+{
+	FInventoryStack* Stack = GetMutableInventoryStack(InContainerId, InAssetId, InventoryInterface);
+	if (!Stack)
+	{
+		return nullptr;
+	}
+	return &Stack->ItemRecords;
+}
+
+
+FInventoryRecord* UInventorySubsystem::GetMutableRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
+	{
+		return nullptr;
+	}
+
+	TArray<FInventoryRecord>* RecordList = GetMutableRecords(ContainerId, AssetId);
+	if (!RecordList || !RecordList->IsValidIndex(Index))
+	{
+		return nullptr;
+	}
+
+	FInventoryRecord& Record = (*RecordList)[Index];
+	return &Record;
+}
+
+FInventoryRecord* UInventorySubsystem::GetMutableRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId)
+{
+	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
+	{
+		return nullptr;
+	}
+
+	TArray<FInventoryRecord>* RecordList = GetMutableRecords(ContainerId, AssetId);
+	if (!RecordList)
+	{
+		return nullptr;
+	}
+
+	FInventoryRecord* Record = RecordList->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
+	return Record;
+}
+
+
+void UInventorySubsystem::HandleAddItem(const FPrimaryAssetId& AssetId, FInventoryRecord& Record)
+{
+	if (!AssetManager)
+	{
+		return;
+	}
+
+	UInventoryAsset* Asset = AssetManager->GetPrimaryAssetObject<UInventoryAsset>(AssetId);
+	if (!Asset)
+	{
+		PRINT_WARNING(LogInventory, 1.0f, TEXT("Asset not loaded"));
+		return;
+	}
+
+	const FInstancedStruct& Metadata = Asset->GetMetadata();
+	if (!Metadata.IsValid())
+	{
+		PRINT_WARNING(LogInventory, 1.0f, TEXT("Asset metadata is invalid"));
+		return;
+	}
+
+	Record.Metadata = Metadata;
+}
 
 void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const
 {
@@ -34,7 +670,7 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 	switch (SortType)
 	{
 	case EInventorySortType::None:
-		LOG_WARNING(LogTemp, TEXT("No sort implemented"));
+		LOG_WARNING(LogInventory, TEXT("No sort implemented"));
 		break;
 	case EInventorySortType::Alphabetical:
 		SortedItems.Sort([SortDirection](const FInventorySortEntry& A, const FInventorySortEntry& B)
@@ -59,8 +695,8 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 			{
 				if (!A.Record || !B.Record) return false;
 				return (SortDirection == ESortDirection::Ascending) ?
-					A.Record->EnhanceRecord.Level < B.Record->EnhanceRecord.Level :
-					A.Record->EnhanceRecord.Level > B.Record->EnhanceRecord.Level;
+					A.Record->Enhancement.Level < B.Record->Enhancement.Level :
+					A.Record->Enhancement.Level > B.Record->Enhancement.Level;
 			}
 		);
 		break;
@@ -69,753 +705,23 @@ void UInventorySubsystem::HandleItemSorting(TArray<FInventorySortEntry>& SortedI
 			{
 				if (!A.Record || !B.Record) return false;
 				return (SortDirection == ESortDirection::Ascending) ?
-					A.Record->EnhanceRecord.Rank < B.Record->EnhanceRecord.Rank :
-					A.Record->EnhanceRecord.Rank > B.Record->EnhanceRecord.Rank;
+					A.Record->Enhancement.Rank < B.Record->Enhancement.Rank :
+					A.Record->Enhancement.Rank > B.Record->Enhancement.Rank;
 			}
 		);
 		break;
 	default:
-		LOG_WARNING(LogTemp, TEXT("No sort implemented"));
+		LOG_WARNING(LogInventory, TEXT("No sort implemented"));
 		break;
 	}
 }
 
-bool UInventorySubsystem::CreateContainer(FName ContainerId)
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	if (!InventoryInterface)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryInterface is invalid"));
-		return false;
-	}
-
-	TMap<FName, FInventoryContainer>& Containers = InventoryProvider->GetMutableInventoryContainer();
-	if (Containers.Contains(ContainerId))
-	{
-		PRINT_WARNING(LogTemp, 1.0f, TEXT("Container already exists"));
-		return false;
-	}
-
-	Containers.Add(ContainerId, { FGuid::NewGuid() });
-	OnContainerAdded.Broadcast(ContainerId);
-
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Container created"));
-	return true;
-}
-
-bool UInventorySubsystem::RemoveContainer(FName ContainerId)
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	if (!InventoryInterface)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryProvider is invalid"));
-		return false;
-	}
-
-	TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetMutableInventoryContainer();
-	if (Containers.Remove(ContainerId) <= 0)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Container not found"));
-		return false;
-	}
-
-	OnContainerRemoved.Broadcast(ContainerId);
-
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Container removed"));
-	return true;
-}
-
-
-void UInventorySubsystem::HandleStorageLoaded()
-{
-	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
-	LOG_INFO(LogTemp, TEXT("InventorySubsystem storage load started"));
-
-	IStorageProviderInterface* StorageProvider = SubsystemUtils::GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, IStorageProviderInterface>(GetGameInstance());
-	if (!StorageProvider)
-	{
-		LOG_ERROR(LogTemp, TEXT("StorageProvider is invalid"));
-		return;
-	}
-
-	UObject* Storage = StorageProvider->GetLocalStorage();
-	IInventoryProviderInterface* InventoryProviderInterface = Cast<IInventoryProviderInterface>(Storage);
-	if (!InventoryProviderInterface)
-	{
-		LOG_ERROR(LogTemp, TEXT("InventoryInterface is invalid"));
-		return;
-	}
-
-	InventoryProvider = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryProviderInterface);
-	AssetManager = UAssetManager::GetIfInitialized();
-
-	LOG_INFO(LogTemp, TEXT("InventorySubsystem storage loaded"));
-}
-
-bool UInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
-{
-	return true;
-}
-
-void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
-{
-	Super::Initialize(Collection);
-	LOG_WARNING(LogTemp, TEXT("InventorySubsystem initialized"));
-
-	if (!FLatentDelegates::OnStorageLoaded.IsBoundToObject(this))
-	{
-		FLatentDelegates::OnStorageLoaded.AddUObject(this, &UInventorySubsystem::HandleStorageLoaded);
-	}
-}
-
-void UInventorySubsystem::Deinitialize()
-{
-	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
-
-	InventoryProvider.Reset();
-	AssetManager = nullptr;
-
-	LOG_WARNING(LogTemp, TEXT("InventorySubsystem deinitialized"));
-	Super::Deinitialize();
-}
-
-
-
-
-
-
-
-
-
-
-
-const TArray<FInventoryRecord>* UInventorySubsystem::GetItemStack(FName ContainerId, FName ItemId) const
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	return GetItemStack(ContainerId, ItemId, InventoryInterface);
-}
-
-const TArray<FInventoryRecord>* UInventorySubsystem::GetItemStack(FName ContainerId, FName ItemId, IInventoryProviderInterface* InventoryInterface) const
-{
-	if (!InventoryInterface)
-	{
-		return nullptr;
-	}
-
-	const TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetInventoryContainer();
-	const FInventoryContainer* Records = Containers.Find(ContainerId);
-	if (!Records)
-	{
-		return nullptr;
-	}
-
-	const TMap<FName, FInventoryStack>& Stacks = Records->ItemStacks;
-	const FInventoryStack* InventoryStack = Stacks.Find(ItemId);
-	if (!InventoryStack)
-	{
-		return nullptr;
-	}
-
-	return &InventoryStack->Records;
-}
-
-TArray<FInventoryRecord>* UInventorySubsystem::GetMutableItemStack(FName ContainerId, FName ItemId)
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	return GetMutableItemStack(ContainerId, ItemId, InventoryInterface);
-}
-
-TArray<FInventoryRecord>* UInventorySubsystem::GetMutableItemStack(FName ContainerId, FName ItemId, IInventoryProviderInterface* InventoryInterface)
-{
-	if (!InventoryInterface)
-	{
-		return nullptr;
-	}
-
-	TMap<FName, FInventoryContainer>& Containers = InventoryInterface->GetMutableInventoryContainer();
-	FInventoryContainer* Records = Containers.Find(ContainerId);
-	if (!Records)
-	{
-		return nullptr;
-	}
-
-	TMap<FName, FInventoryStack>& Stacks = Records->ItemStacks;
-	FInventoryStack& InventoryStack = Stacks.FindOrAdd(ItemId, { FGuid::NewGuid() });
-	return &InventoryStack.Records;
-}
-
-
-const FInventoryRecord* UInventorySubsystem::GetRecordByIndex(FName ContainerId, const FPrimaryAssetId& AssetId, int Index) const
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return nullptr;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId);
-	if (!ItemStack || !ItemStack->IsValidIndex(Index))
-	{
-		return nullptr;
-	}
-
-	const FInventoryRecord& Record = (*ItemStack)[Index];
-	return &Record;
-}
-
-const FInventoryRecord* UInventorySubsystem::GetRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId) const
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return nullptr;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId);
-	if (!ItemStack)
-	{
-		return nullptr;
-	}
-
-	const FInventoryRecord* Record = ItemStack->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
-	return Record;
-}
-
-void UInventorySubsystem::QueryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> InCallback)
-{
-	if (QueryRule.QuerySource == EInventoryQuerySource::Glossary)
-	{
-		HandleGlossaryItems(FilterCriterion, QueryRule, MoveTemp(InCallback));
-	}
-	else
-	{
-		HandleInventoryItems(FilterCriterion, QueryRule, MoveTemp(InCallback));
-	}
-}
-
-FInventoryRecord* UInventorySubsystem::GetMutableRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return nullptr;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	TArray<FInventoryRecord>* ItemStack = GetMutableItemStack(ContainerId, ItemId);
-	if (!ItemStack)
-	{
-		return nullptr;
-	}
-
-	FInventoryRecord* Record = ItemStack->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
-	return Record;
-}
-
-
-FInventoryRecord* UInventorySubsystem::GetMutableRecordByIndex(FName ContainerId, const FPrimaryAssetId& AssetId, int Index)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return nullptr;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	TArray<FInventoryRecord>* ItemStack = GetMutableItemStack(ContainerId, ItemId);
-	if (!ItemStack || !ItemStack->IsValidIndex(Index))
-	{
-		return nullptr;
-	}
-
-	FInventoryRecord& Record = (*ItemStack)[Index];
-	return &Record;
-}
-
-
-bool UInventorySubsystem::AddItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
-		return false;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	TArray<FInventoryRecord>* ItemStack = GetMutableItemStack(ContainerId, ItemId);
-	if (!ItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryStack is invalid"));
-		return false;
-	}
-
-	FName RecordId = TEXT_EMPTY;
-	const FInventoryRecord* Record = AddItemRecord(AssetId, Quantity, ItemStack, RecordId);
-	if (Record)
-	{
-		OnItemAdded.Broadcast(ContainerId, AssetId, Record);
-		return true;
-	}
-
-	return false;
-}
-
-bool UInventorySubsystem::AddItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items)
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	if (!ContainerId.IsValid() || !InventoryInterface)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ContainerId or InventoryInterface is invalid"));
-		return false;
-	}
-
-	FName CurrentItemId = TEXT_EMPTY;
-	TArray<FInventoryRecord>* CurrentItemStack = nullptr;
-
-	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
-	{
-		const FPrimaryAssetId AssetId = Kv.Key;
-		int Quantity = Kv.Value;
-
-		if (InventoryPrimaryAsset::IsValid(AssetId) && Quantity > 0)
-		{
-			if (CurrentItemId != AssetId.PrimaryAssetName)
-			{
-				CurrentItemId = AssetId.PrimaryAssetName;
-				CurrentItemStack = GetMutableItemStack(ContainerId, CurrentItemId, InventoryInterface);
-			}
-
-			FName RecordId = TEXT_EMPTY;
-			const FInventoryRecord* Record = AddItemRecord(AssetId, Quantity, CurrentItemStack, RecordId);
-			if (Record)
-			{
-				OnItemAdded.Broadcast(ContainerId, AssetId, Record);
-			}
-		}
-	}
-
-	return true;
-}
-
-
-bool UInventorySubsystem::RemoveItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
-		return false;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	TArray<FInventoryRecord>* ItemStack = GetMutableItemStack(ContainerId, ItemId);
-	if (!ItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryStack is invalid"));
-		return false;
-	}
-
-	bool bRemoved = false;
-	const FInventoryRecord* Record = RemoveItemRecord(AssetId, Quantity, ItemStack, bRemoved);
-	if (Record && bRemoved)
-	{
-		OnItemRemoved.Broadcast(ContainerId, AssetId, Record);
-		return true;
-	}
-
-	return false;
-}
-
-bool UInventorySubsystem::RemoveItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items)
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	if (!ContainerId.IsValid() || !InventoryInterface)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ContainerId, InventoryInterface is invalid"));
-		return false;
-	}
-
-	FName CurrentItemId = TEXT_EMPTY;
-	TArray<FInventoryRecord>* CurrentItemStack = nullptr;
-
-	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
-	{
-		const FPrimaryAssetId AssetId = Kv.Key;
-		int Quantity = Kv.Value;
-
-		if (InventoryPrimaryAsset::IsValid(AssetId) && Quantity > 0)
-		{
-			if (CurrentItemId != AssetId.PrimaryAssetName)
-			{
-				CurrentItemId = AssetId.PrimaryAssetName;
-				CurrentItemStack = GetMutableItemStack(ContainerId, CurrentItemId, InventoryInterface);
-			}
-
-			bool bRemoved = false;
-			const FInventoryRecord* Record = RemoveItemRecord(AssetId, Quantity, CurrentItemStack, bRemoved);
-			if (Record && bRemoved)
-			{
-				OnItemRemoved.Broadcast(ContainerId, AssetId, Record);
-			}
-		}
-	}
-
-	return true;
-}
-
-bool UInventorySubsystem::RemoveItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("ContainerId, AssetId is invalid or Quantity is less than or equal to 0"));
-		return false;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	TArray<FInventoryRecord>* ItemStack = GetMutableItemStack(ContainerId, ItemId);
-	if (!ItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InventoryStack is invalid"));
-		return false;
-	}
-
-	bool bRemoved = false;
-	const FInventoryRecord* Record = RemoveItemRecordById(AssetId, RecordId, Quantity, ItemStack, bRemoved);
-	if (Record && bRemoved)
-	{
-		OnItemRemoved.Broadcast(ContainerId, AssetId, Record);
-		return true;
-	}
-
-	return false;
-}
-
-
-bool UInventorySubsystem::ContainsItem(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity) const
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-	{
-		return false;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId);
-	if (!ItemStack || !ItemStack->IsValidIndex(0))
-	{
-		return false;
-	}
-
-	const FInventoryRecord& Record = (*ItemStack)[0];
-
-	return Record.ItemQuantity >= Quantity;
-}
-
-bool UInventorySubsystem::ContainsItems(FName ContainerId, const TMap<FPrimaryAssetId, int>& Items) const
-{
-	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
-	if (!ContainerId.IsValid() || !InventoryInterface)
-	{
-		return false;
-	}
-
-	for (const TPair<FPrimaryAssetId, int>& Kv : Items)
-	{
-		const FPrimaryAssetId& AssetId = Kv.Key;
-		int Quantity = Kv.Value;
-
-		if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-		{
-			return false;
-		}
-
-		FName ItemId = AssetId.PrimaryAssetName;
-		const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId, InventoryInterface);
-		if (!ItemStack || !ItemStack->IsValidIndex(0))
-		{
-			return false;
-		}
-
-		const FInventoryRecord& Record = (*ItemStack)[0];
-		if (Record.ItemQuantity < Quantity)
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
-bool UInventorySubsystem::ContainsItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity) const
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0)
-	{
-		return false;
-	}
-
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId);
-	if (!ItemStack || !ItemStack->IsValidIndex(0))
-	{
-		return false;
-	}
-
-	const FInventoryRecord* Record = ItemStack->FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
-	if (!Record)
-	{
-		return false;
-	}
-
-	return Record->ItemQuantity >= Quantity;
-}
-
-
-bool UInventorySubsystem::UpdateItem(FName ContainerId, const FPrimaryAssetId& AssetId, TFunctionRef<bool(FInventoryRecord*)> InCallback)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return false;
-	}
-
-	FInventoryRecord* Record = GetMutableRecordByIndex(ContainerId, AssetId);
-	if (!InCallback(Record))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update callback returned false"));
-		return false;
-	}
-
-	OnItemUpdated.Broadcast(ContainerId, AssetId, Record);
-	return true;
-}
-
-bool UInventorySubsystem::UpdateItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, TFunctionRef<bool(FInventoryRecord*)> InCallback)
-{
-	if (!ContainerId.IsValid() || !InventoryPrimaryAsset::IsValid(AssetId))
-	{
-		return false;
-	}
-
-	FInventoryRecord* Record = GetMutableRecordById(ContainerId, AssetId, RecordId);
-	if (!InCallback(Record))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record update callback returned false"));
-		return false;
-	}
-
-	OnItemUpdated.Broadcast(ContainerId, AssetId, Record);
-	return true;
-}
-
-int UInventorySubsystem::GetItemCount(FName ContainerId, const FPrimaryAssetId& AssetId) const
-{
-	return GetItemCount(ContainerId, AssetId, InventoryProvider.Get());
-}
-
-int UInventorySubsystem::GetItemCount(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const
-{
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId, InventoryInterface);
-	if (!ItemStack)
-	{
-		return 0;
-	}
-
-	return ItemStack->Num();
-}
-
-int UInventorySubsystem::GetItemQuantity(FName ContainerId, const FPrimaryAssetId& AssetId, int Index) const
-{
-	return GetItemQuantity(ContainerId, AssetId, InventoryProvider.Get(), Index);
-}
-
-int UInventorySubsystem::GetItemQuantity(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface, int Index) const
-{
-	FName ItemId = AssetId.PrimaryAssetName;
-	const TArray<FInventoryRecord>* ItemStack = GetItemStack(ContainerId, ItemId, InventoryInterface);
-	if (!ItemStack)
-	{
-		return 0;
-	}
-
-	if (!ItemStack->IsValidIndex(Index))
-	{
-		return 0;
-	}
-
-	return (*ItemStack)[Index].ItemQuantity;
-}
-
-
-
-
-
-
-
-
-void UInventorySubsystem::PreAddItem(FInventoryRecord& Record)
-{
-
-}
-
-const FInventoryRecord* UInventorySubsystem::AddItemRecord(const FPrimaryAssetId& InAssetId, int InQuantity, TArray<FInventoryRecord>* InItemStack, FName& OutRecordId)
-{
-	if (!InventoryPrimaryAsset::IsValid(InAssetId) || InQuantity <= 0 || !InItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InAssetId, InItemStack is invalid or InQuantity less than or equal to 0"));
-
-		OutRecordId = TEXT_EMPTY;
-		return nullptr;
-	}
-
-	FAssetData AssetData;
-	if (!AssetManager->GetPrimaryAssetData(InAssetId, AssetData))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("AssetData not found for InAssetId"));
-
-		OutRecordId = TEXT_EMPTY;
-		return nullptr;
-	}
-
-	FName ItemId = InAssetId.PrimaryAssetName;
-	int ItemQuantity = InQuantity;
-	FName RecordId = ItemId;
-
-	bool bIsStackable = false;
-	InventoryPrimaryAsset::GetItemIsStackable(AssetData, bIsStackable);
-	if (bIsStackable)
-	{
-		if (InItemStack->IsValidIndex(0))
-		{
-			FInventoryRecord& Record = (*InItemStack)[0];
-			Record.ItemQuantity += ItemQuantity;
-
-			PRINT_INFO(LogTemp, 1.0f, TEXT("Record updated"));
-
-			OutRecordId = Record.ItemId;
-			return &Record;
-		}
-	}
-	else
-	{
-		ItemQuantity = 1;
-		RecordId = FName(FGuid::NewGuid().ToString());
-	}
-
-	EInventoryItemType ItemType;
-	if (!InventoryPrimaryAsset::GetItemType(AssetData, ItemType))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Item type not found"));
-
-		OutRecordId = TEXT_EMPTY;
-		return nullptr;
-	}
-
-	FInventoryRecord NewRecord;
-	NewRecord.ItemId = RecordId;
-	NewRecord.ItemType = ItemType;
-	NewRecord.ItemQuantity = ItemQuantity;
-
-	PreAddItem(NewRecord);
-
-	InItemStack->Add(NewRecord);
-
-	PRINT_INFO(LogTemp, 1.0f, TEXT("New record added"));
-
-	OutRecordId = RecordId;
-	return &NewRecord;
-}
-
-const FInventoryRecord* UInventorySubsystem::RemoveItemRecord(const FPrimaryAssetId& InAssetId, int InQuantity, TArray<FInventoryRecord>* InItemStack, bool& bOutRemoved)
-{
-	if (InventoryPrimaryAsset::IsValid(InAssetId) || InQuantity <= 0 || !InItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InAssetId, InItemStack is invalid or InQuantity less than or equal to 0"));
-
-		bOutRemoved = false;
-		return nullptr;
-	}
-
-	if (!InItemStack->IsValidIndex(0))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InItemStack is empty"));
-
-		bOutRemoved = false;
-		return nullptr;
-	}
-
-	FInventoryRecord& Record = (*InItemStack)[0];
-	return RemoveItemRecord_Internal(InAssetId, &Record, InQuantity, InItemStack, bOutRemoved);
-}
-
-const FInventoryRecord* UInventorySubsystem::RemoveItemRecordById(const FPrimaryAssetId& InAssetId, FName InRecordId, int InQuantity, TArray<FInventoryRecord>* InItemStack, bool& bOutRemoved)
-{
-	if (InRecordId.IsNone() || InQuantity <= 0 || !InItemStack)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("InRecordId, InItemStack is invalid or InQuantity less than or equal to 0"));
-
-		bOutRemoved = false;
-		return nullptr;
-	}
-
-	FInventoryRecord* Record = InItemStack->FindByPredicate([InRecordId](const FInventoryRecord& Record) { return Record.ItemId == InRecordId; });
-
-	return RemoveItemRecord_Internal(InAssetId, Record, InQuantity, InItemStack, bOutRemoved);
-}
-
-const FInventoryRecord* UInventorySubsystem::RemoveItemRecord_Internal(const FPrimaryAssetId& InAssetId, FInventoryRecord* InRecord, int InQuantity, TArray<FInventoryRecord>* InItemStack, bool& bOutRemoved)
-{
-	if (!InRecord)
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Record is invalid"));
-
-		bOutRemoved = false;
-		return nullptr;
-	}
-
-	int FinalQuantity = InRecord->ItemQuantity - InQuantity;
-	if (FinalQuantity > 0)
-	{
-		InRecord->ItemQuantity = FinalQuantity;
-		PRINT_INFO(LogTemp, 1.0f, TEXT("Record quantity reduced"));
-
-		bOutRemoved = true;
-		return InRecord;
-	}
-
-	FPrimaryAssetId AssetId = InventoryPrimaryAsset::GetPrimaryAssetId(InAssetId.PrimaryAssetName);
-	FAssetData AssetData;
-	if (!AssetManager->GetPrimaryAssetData(AssetId, AssetData))
-	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("AssetData not found for AssetId"));
-
-		bOutRemoved = false;
-		return nullptr;
-	}
-
-	bool bAllowEmptyData = false;
-	InventoryPrimaryAsset::GetItemAllowEmptyData(AssetData, bAllowEmptyData);
-	if (bAllowEmptyData)
-	{
-		InRecord->ItemQuantity = 0;
-		PRINT_INFO(LogTemp, 1.0f, TEXT("Record quantity reduced to zero"));
-
-		bOutRemoved = true;
-		return InRecord;
-	}
-
-	InItemStack->Remove(*InRecord);
-	PRINT_INFO(LogTemp, 1.0f, TEXT("Record removed"));
-
-	bOutRemoved = true;
-	return nullptr;
-}
-
-
-
-
-
-void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> InCallback) const
+void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
 {
 	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
 	if (!IsValid(AssetManager) || !InventoryInterface)
 	{
-		LOG_ERROR(LogTemp, TEXT("AssetManager, InventoryInterface is invalid"));
+		LOG_ERROR(LogInventory, TEXT("AssetManager, InventoryInterface is invalid"));
 		return;
 	}
 
@@ -837,17 +743,17 @@ void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion,
 		}
 
 		FName ItemId = AssetId.PrimaryAssetName;
-		FText ItemName = FText::GetEmpty();
-		InventoryPrimaryAsset::GetItemName(AssetData, ItemName);
+		FText DisplayName = FText::GetEmpty();
+		InventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
 
 		FName ItemType = NAME_None;
-		InventoryPrimaryAsset::GetItemType(AssetData, ItemType);
+		InventoryPrimaryAsset::GetType(AssetData, ItemType);
 
 		FName ItemRarity = NAME_None;
-		InventoryPrimaryAsset::GetItemRarity(AssetData, ItemRarity);
+		InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
-		bool bIsStackable = false;
-		InventoryPrimaryAsset::GetItemIsStackable(AssetData, bIsStackable);
+		bool bStackable = false;
+		InventoryPrimaryAsset::GetStackable(AssetData, bStackable);
 
 		if (bFilterValid)
 		{
@@ -863,27 +769,27 @@ void UInventorySubsystem::HandleGlossaryItems(UFilterCriterion* FilterCriterion,
 		}
 
 		int ItemQuantity = 0;
-		if (bIsStackable)
+		if (bStackable)
 		{
-			ItemQuantity = GetItemQuantity(ContainerId, AssetId, InventoryInterface);
+			ItemQuantity = GetTotalQuantity(ContainerId, AssetId, InventoryInterface);
 		}
 		else
 		{
-			ItemQuantity = GetItemCount(ContainerId, AssetId, InventoryInterface);
+			ItemQuantity = GetStackCount(ContainerId, AssetId, InventoryInterface);
 		}
 
-		SortedItems.Emplace(AssetId, ItemName, ItemQuantity);
+		SortedItems.Emplace(AssetId, DisplayName, ItemQuantity);
 	}
 
 	HandleItemSorting(SortedItems, QueryRule);
 
 	for (const FInventorySortEntry& Item : SortedItems)
 	{
-		InCallback(Item);
+		Callback(Item);
 	}
 }
 
-void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> InCallback) const
+void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const
 {
 	IInventoryProviderInterface* InventoryInterface = InventoryProvider.Get();
 	if (!InventoryInterface)
@@ -903,7 +809,7 @@ void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion
 	bool bFilterValid = IsValid(FilterCriterion);
 	TArray<FInventorySortEntry> SortedItems;
 
-	const TMap<FName, FInventoryStack>& Stacks = Container->ItemStacks;
+	const TMap<FName, FInventoryStack>& Stacks = Container->Stacks;
 	for (const TPair<FName, FInventoryStack>& Kv : Stacks)
 	{
 		FName ItemId = Kv.Key;
@@ -920,36 +826,24 @@ void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion
 			continue;
 		}
 
-		FText ItemName = FText::GetEmpty();
-		bool bNameValid = InventoryPrimaryAsset::GetItemName(AssetData, ItemName);
+		FText DisplayName = FText::GetEmpty();
+		bool bNameValid = InventoryPrimaryAsset::GetDisplayName(AssetData, DisplayName);
 
 		FName ItemType = TEXT_EMPTY;
-		bool bTypeValid = InventoryPrimaryAsset::GetItemType(AssetData, ItemType);
+		bool bTypeValid = InventoryPrimaryAsset::GetType(AssetData, ItemType);
 
 		FName ItemRarity = TEXT_EMPTY;
-		bool bRarityValid = InventoryPrimaryAsset::GetItemRarity(AssetData, ItemRarity);
+		bool bRarityValid = InventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
-		bool bIsStackable = false;
-		bool bStackableValid = InventoryPrimaryAsset::GetItemIsStackable(AssetData, bIsStackable);
-
-		if (!bNameValid || !bTypeValid || !bRarityValid || !bStackableValid)
+		if (!bNameValid || !bTypeValid || !bRarityValid)
 		{
 			continue;
 		}
-		
-		int ItemQuantity = 0;
-		if (bIsStackable)
-		{
-			ItemQuantity = GetItemQuantity(ContainerId, AssetId, InventoryInterface);
-		}
 
-		const TArray<FInventoryRecord>& Records = Stack->Records;
+		const TArray<FInventoryRecord>& Records = Stack->ItemRecords;
 		for (const FInventoryRecord& Record : Records)
 		{
-			if (!bIsStackable)
-			{
-				ItemQuantity = Record.ItemQuantity;
-			}
+			int ItemQuantity = Record.Quantity;
 
 			if (bFilterValid)
 			{
@@ -966,7 +860,7 @@ void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion
 				}
 			}
 
-			SortedItems.Emplace(AssetId, ItemName, ItemQuantity, &Record);
+			SortedItems.Emplace(AssetId, DisplayName, ItemQuantity, &Record);
 		}
 	}
 
@@ -974,7 +868,225 @@ void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion
 
 	for (const FInventorySortEntry& Item : SortedItems)
 	{
-		InCallback(Item);
+		Callback(Item);
 	}
+}
+
+
+void UInventorySubsystem::HandleStorageLoaded()
+{
+	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
+	LOG_INFO(LogInventory, TEXT("InventorySubsystem storage load started"));
+
+	IInventoryProviderInterface* InventoryProviderInterface = StorageUtils::GetStorageInterface<IInventoryProviderInterface>(GetGameInstance());
+	if (!InventoryProviderInterface)
+	{
+		LOG_ERROR(LogInventory, TEXT("InventoryInterface is invalid"));
+		return;
+	}
+
+	InventoryProvider = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryProviderInterface);
+	AssetManager = UAssetManager::GetIfInitialized();
+
+	LOG_INFO(LogInventory, TEXT("InventorySubsystem storage loaded"));
+}
+
+
+bool UInventorySubsystem::AddItemRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack)
+{
+	if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("AssetId, Stack is invalid or Quantity less than or equal to 0"));
+		return false;
+	}
+
+	TArray<FInventoryRecord>& RecordList = Stack->ItemRecords;
+	bool bStackable = Stack->bStackable;
+	if (bStackable)
+	{
+		if (RecordList.IsValidIndex(0))
+		{
+			FInventoryRecord& Record = RecordList[0];
+			AddItemRecord_Internal(ContainerId, AssetId, Record, Quantity);
+			return true;
+		}
+		else
+		{
+			AddItemRecord_Internal(ContainerId, AssetId, RecordList, Quantity);
+			return true;
+		}
+	}
+
+	for (int i = 0; i < Quantity; i++)
+	{
+		AddItemRecord_Internal(ContainerId, AssetId, RecordList, 1);
+	}
+	
+	return true;
+}
+
+void UInventorySubsystem::AddItemRecord_Internal(FName ContainerId, const FPrimaryAssetId& AssetId, TArray<FInventoryRecord>& RecordList, int Quantity)
+{
+	FName RecordId = FName(FGuid::NewGuid().ToString());
+
+	FInventoryRecord Record;
+	Record.ItemId = RecordId;
+	Record.Quantity = Quantity;
+
+	HandleAddItem(AssetId, Record);
+
+	RecordList.Add(Record);
+	PRINT_INFO(LogInventory, 1.0f, TEXT("New record added"));
+
+	OnItemAdded.Broadcast(ContainerId, AssetId, RecordId);
+}
+
+void UInventorySubsystem::AddItemRecord_Internal(FName ContainerId, const FPrimaryAssetId& AssetId, FInventoryRecord& Record, int Quantity)
+{
+	Record.Quantity += Quantity;
+	PRINT_INFO(LogInventory, 1.0f, TEXT("Record updated"));
+
+	OnItemAdded.Broadcast(ContainerId, AssetId, Record.ItemId);
+}
+
+
+bool UInventorySubsystem::RemoveItemRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Quantity, FInventoryStack* Stack)
+{
+	if (!InventoryPrimaryAsset::IsValid(AssetId) || Quantity <= 0 || !Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("AssetId, Stack is invalid or Quantity less than or equal to 0"));
+		return false;
+	}
+
+	TArray<FInventoryRecord>& RecordList = Stack->ItemRecords;
+	bool bStackable = Stack->bStackable;
+	if (bStackable)
+	{
+		if (RecordList.IsValidIndex(0))
+		{
+			bool bPersistWhenEmpty = Stack->bPersistWhenEmpty;
+
+			FInventoryRecord& Record = RecordList[0];
+			RemoveItemRecord_Internal(ContainerId, AssetId, &RecordList, bPersistWhenEmpty, &Record, Quantity);
+
+			return true;
+		}
+
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Not item to remove"));
+		return false;
+	}
+
+	bool bRemoved = RemoveItemRecord_Internal(ContainerId, AssetId, &RecordList, Quantity);
+	return bRemoved;
+}
+
+bool UInventorySubsystem::RemoveItemRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, int Quantity, FInventoryStack* Stack)
+{
+	if (!InventoryPrimaryAsset::IsValid(AssetId) || !RecordId.IsValid() || Quantity <= 0 || !Stack)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("AssetId, RecordId, Stack is invalid or Quantity less than or equal to 0"));
+		return false;
+	}
+
+	TArray<FInventoryRecord>& RecordList = Stack->ItemRecords;
+
+	FInventoryRecord* Record = RecordList.FindByPredicate([RecordId](const FInventoryRecord& Record) { return Record.ItemId == RecordId; });
+	if (!Record)
+	{
+		PRINT_ERROR(LogInventory, 1.0f, TEXT("Record not found for InRecordId"));
+		return false;
+	}
+
+	bool bStackable = Stack->bStackable;
+	if (bStackable)
+	{
+		bool bPersistWhenEmpty = Stack->bPersistWhenEmpty;
+		RemoveItemRecord_Internal(ContainerId, AssetId, &RecordList, bPersistWhenEmpty, Record, Quantity);
+		return true;
+	}
+
+	bool bRemoved = RemoveItemRecord_Internal(ContainerId, AssetId, &RecordList, Record);
+	return bRemoved;
+}
+
+
+bool UInventorySubsystem::RemoveItemRecord_Internal(FName ContainerId, const FPrimaryAssetId& AssetId, TArray<FInventoryRecord>* RecordList, int Quantity)
+{
+	int StackCount = RecordList->Num();
+	if (Quantity > StackCount)
+	{
+		return false;
+	}
+
+	for (int i = 0; i < Quantity; i++)
+	{
+		FInventoryRecord Record = RecordList->Pop();
+		OnItemRemoved.Broadcast(ContainerId, AssetId, Record.ItemId);
+	}
+	return true;
+}
+
+bool UInventorySubsystem::RemoveItemRecord_Internal(FName ContainerId, const FPrimaryAssetId& AssetId, TArray<FInventoryRecord>* RecordList, FInventoryRecord* Record)
+{
+	FInventoryRecord RecordCopy = *Record;
+
+	int Count = RecordList->Remove(RecordCopy);
+	if (Count == 0)
+	{
+		return false;
+	}
+
+	OnItemRemoved.Broadcast(ContainerId, AssetId, RecordCopy.ItemId);
+	return true;
+}
+
+void UInventorySubsystem::RemoveItemRecord_Internal(FName ContainerId, const FPrimaryAssetId& AssetId, TArray<FInventoryRecord>* RecordList, bool bPersistWhenEmpty, FInventoryRecord* Record, int Quantity)
+{
+	FName ItemId = Record->ItemId;
+
+	int NewQuantity = Record->Quantity - Quantity;
+	if (NewQuantity > 0)
+	{
+		Record->Quantity = NewQuantity;
+		OnItemRemoved.Broadcast(ContainerId, AssetId, ItemId);
+		return;
+	}
+
+	if (bPersistWhenEmpty)
+	{
+		Record->Quantity = 0;
+		OnItemRemoved.Broadcast(ContainerId, AssetId, ItemId);
+		return;
+	}
+
+	RemoveItemRecord_Internal(ContainerId, AssetId, RecordList, Record);
+}
+
+
+bool UInventorySubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	return true;
+}
+
+void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogInventory, TEXT("Initialized"));
+
+	if (!FLatentDelegates::OnStorageLoaded.IsBoundToObject(this))
+	{
+		FLatentDelegates::OnStorageLoaded.AddUObject(this, &UInventorySubsystem::HandleStorageLoaded);
+	}
+}
+
+void UInventorySubsystem::Deinitialize()
+{
+	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
+
+	InventoryProvider.Reset();
+	AssetManager = nullptr;
+
+	LOG_WARNING(LogInventory, TEXT("Deinitialized"));
+	Super::Deinitialize();
 }
 

@@ -22,11 +22,13 @@ public:
 	template <typename TReturnType>
 	static TReturnType GetAssetTagValue(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, FName Tag);
 
-	RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(FPrimaryAssetId, UObject*)> OnLoaded);
-    RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(FPrimaryAssetId, UObject*)> OnLoaded);
+	RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+    RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+
+	RCORELIBRARY_API static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool)> OnLoaded);
 
     template <typename CallbackType, typename... AssetType>
-	static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, CallbackType&& OnLoaded, AssetType... AssetIds)
+	static void LoadPrimaryAssetsArgs(UObject* Outer, UAssetManager* AssetManager, CallbackType&& OnLoaded, AssetType... AssetIds)
 	{
 		constexpr size_t Size = sizeof...(AssetIds);
 		TArray<FPrimaryAssetId> PrimaryAssetIds = { AssetIds... };

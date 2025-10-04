@@ -4,10 +4,12 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+
 #include "Engine/DataAsset.h"
+#include "InstancedStruct.h"
 
 // Project Headers
-#include "RCoreExchange/Public/ExchangeInterface.h"
+#include "RCoreExchange/Public/ExchangeProviderInterface.h"
 
 #include "RCoreInventory/Public/InventoryItemRarity.h"
 #include "RCoreInventory/Public/InventoryItemType.h"
@@ -23,7 +25,7 @@
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryAsset : public UPrimaryDataAsset, public IExchangeInterface
+class UInventoryAsset : public UPrimaryDataAsset, public IExchangeProviderInterface
 {
 
 	GENERATED_BODY()
@@ -34,22 +36,22 @@ public:
 	FName ItemId = NAME_None;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	FText ItemName = FText::GetEmpty();
+	FText DisplayName = FText::GetEmpty();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FText ItemDescription = FText::GetEmpty();
+	FText Description = FText::GetEmpty();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TSoftObjectPtr<UTexture2D> ItemIcon = nullptr;
+	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	EInventoryItemType ItemType = EInventoryItemType::Default;
+	EInventoryItemType Type = EInventoryItemType::Default;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	EInventoryItemRarity ItemRarity = EInventoryItemRarity::Default;
+	EInventoryItemRarity Rarity = EInventoryItemRarity::Default;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	bool bIsStackable = false;
+	bool bStackable = false;
 
 	/*
 	 * When true, the item will still be present in inventory even if the quantity is 0,
@@ -57,13 +59,16 @@ public:
 	 * removal of key value pairs.
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	bool bAllowEmptyData = false;
+	bool bPersistWhenEmpty = false;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, AssetRegistrySearchable)
-	bool bCanExpire = false;
+	bool bExpires = false;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FTimespan ExpirationTime = FTimespan::Zero();
+	FTimespan ExpirationDuration = FTimespan::Zero();
+
+
+	RCOREINVENTORY_API virtual FInstancedStruct GetMetadata();
 
 public:
 
@@ -71,10 +76,10 @@ public:
 	RCOREINVENTORY_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
-	// ~ IExchangeInterface
+	// ~ IExchangeProviderInterface
 	RCOREINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override;
 	RCOREINVENTORY_API virtual FName GetExchangedText(FInstancedStruct& Context) const override;
-	// ~ End of IExchangeInterface
+	// ~ End of IExchangeProviderInterface
 
 };
 

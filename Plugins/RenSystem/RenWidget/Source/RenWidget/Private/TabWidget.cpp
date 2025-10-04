@@ -49,7 +49,7 @@ void UTabBoxControl::BuildTabs_Implementation(const TMap<uint8, FName>& TabItems
 {
 	if(!TabControlClass || !TabControlClass->IsChildOf(UTabControl::StaticClass()))
 	{
-		LOG_ERROR(LogTemp, "TabControlClass must be child of UTabControl");
+		LOG_ERROR(LogTemp, TEXT("TabControlClass must be child of UTabControl"));
 		return;
 	}
 	
@@ -80,7 +80,7 @@ void UTabBoxControl::ClearTabs_Implementation()
 {
 	if (!IsValid(TabContainer))
 	{
-		LOG_ERROR(LogTemp, "TabContainer is not valid");
+		LOG_ERROR(LogTemp, TEXT("TabContainer is not valid"));
 		return;
 	}
 	TArray<UWidget*> Tabs = TabContainer->GetAllChildren();
@@ -100,7 +100,7 @@ void UTabBoxControl::HandleTabSelected_Implementation(UTabControl* SelectedTab)
 {
 	if (!IsValid(SelectedTab) || !IsValid(TabContainer))
 	{
-		LOG_ERROR(LogTemp, "Tab or TabContainer is not valid");
+		LOG_ERROR(LogTemp, TEXT("Tab or TabContainer is not valid"));
 		return;
 	}
 
@@ -121,7 +121,7 @@ void UTabBoxControl::HandleTabSelected_Implementation(UTabControl* SelectedTab)
 void UTabBoxControl::HandleTabSetup_Implementation(UTabControl* NewTab) {
 	if (!IsValid(TabContainer))
 	{
-		LOG_ERROR(LogTemp, "TabContainer is not valid");
+		LOG_ERROR(LogTemp, TEXT("TabContainer is not valid"));
 		return;
 	}
 	TabContainer->AddChild(NewTab);

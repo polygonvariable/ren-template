@@ -21,14 +21,5 @@
 			"LoadingPhase": "Default"
 		}
 	],
-	"Plugins": [
-		{
-			"Name": "StructUtils",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreCommon",
-			"Enabled": true
-		}
-	]
+	"Plugins": []
 }

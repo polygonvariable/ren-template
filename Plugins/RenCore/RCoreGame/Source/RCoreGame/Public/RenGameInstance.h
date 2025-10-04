@@ -14,8 +14,8 @@
 /**
  * 
  */
-UCLASS()
-class RCOREGAME_API URenGameInstance : public UGameInstance
+UCLASS(MinimalAPI)
+class URenGameInstance : public UGameInstance
 {
 
 	GENERATED_BODY()
@@ -23,6 +23,11 @@ class RCOREGAME_API URenGameInstance : public UGameInstance
 public:
 
 	virtual void Init() override;
+
+protected:
+
+	virtual void GameInit();
+	virtual void PreloadAssets();
 
 };
 

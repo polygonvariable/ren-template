@@ -32,6 +32,8 @@ public class RenInventory : ModuleRules
                 "RCoreInventory",
                 "RCoreEnhance",
                 "RCoreExchange",
+                "RCoreCraft",
+                "RCoreShop",
             }
 			);
 			
@@ -44,7 +46,6 @@ public class RenInventory : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreSettings",
                 "RCoreDelegate",
                 "RCoreStorage",
                 "RCoreLibrary",

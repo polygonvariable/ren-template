@@ -7,12 +7,12 @@
 #include "UObject/Interface.h"
 
 // Project Headers
-#include "RCoreQuest/Public/QuestRecord.h"
 
 // Generated Headers
 #include "QuestProviderInterface.generated.h"
 
 // Forward Declarations
+struct FQuestRecord;
 
 
 

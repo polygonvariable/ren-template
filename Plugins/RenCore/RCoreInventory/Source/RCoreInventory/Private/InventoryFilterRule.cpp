@@ -19,10 +19,10 @@ bool FInventoryFilterRule::Match(const FInventoryRecord* Record) const
 	if (Record)
 	{
 		Results.Add(FilterId.Matches(Record->ItemId));
-		Results.Add(FilterRank.Matches(Record->EnhanceRecord.Rank));
-		Results.Add(FilterLevel.Matches(Record->EnhanceRecord.Level));
-		Results.Add(FilterExperience.Matches(Record->EnhanceRecord.Experience));
-		Results.Add(FilterQuantity.Matches(Record->ItemQuantity));
+		Results.Add(FilterRank.Matches(Record->Enhancement.Rank));
+		Results.Add(FilterLevel.Matches(Record->Enhancement.Level));
+		Results.Add(FilterExperience.Matches(Record->Enhancement.Experience));
+		Results.Add(FilterQuantity.Matches(Record->Quantity));
 	}
 
 	return MatchInternal(Results);
@@ -57,10 +57,10 @@ bool FInventoryFilterRule::Match(const FInventoryRecord* Record, const FPrimaryA
 	if (Record)
 	{
 		Results.Add(FilterId.Matches(Record->ItemId));
-		Results.Add(FilterRank.Matches(Record->EnhanceRecord.Rank));
-		Results.Add(FilterLevel.Matches(Record->EnhanceRecord.Level));
-		Results.Add(FilterExperience.Matches(Record->EnhanceRecord.Experience));
-		Results.Add(FilterQuantity.Matches(Record->ItemQuantity));
+		Results.Add(FilterRank.Matches(Record->Enhancement.Rank));
+		Results.Add(FilterLevel.Matches(Record->Enhancement.Level));
+		Results.Add(FilterExperience.Matches(Record->Enhancement.Experience));
+		Results.Add(FilterQuantity.Matches(Record->Quantity));
 	}
 
 	Results.Add(FilterAsset.Matches(AssetId));

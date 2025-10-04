@@ -29,14 +29,14 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int ExchangePoints = 500;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	FCurveTableRowHandle ExchangeCurve;
+
 public:
 
-	// ~ IExchangeInterface
-	RENINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override
-	{
-		return ExchangePoints;
-	}
-	// ~ End of IExchangeInterface
+	// ~ IExchangeProviderInterface
+	RENINVENTORY_API virtual float GetExchangedNumber(FInstancedStruct& Context) const override;
+	// ~ End of IExchangeProviderInterface
 
 };
 

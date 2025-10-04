@@ -29,32 +29,71 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, int> RequiredArbitrary;
 
-	int FindAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const
-	{
-		const int* AssetCount = RequiredAssets.Find(AssetId);
-		if (AssetCount)
-		{
-			return *AssetCount;
-		}
+	int FindAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const;
+	bool Contains(const FPrimaryAssetId& AssetId, const FName& AssetType) const;
+	bool ContainsAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const;
 
-		const int* ArbitraryCount = RequiredArbitrary.Find(AssetType);
-		if (ArbitraryCount)
-		{
-			return *ArbitraryCount;
-		}
+};
 
-		return -1;
-	}
 
-	bool Contains(const FPrimaryAssetId& AssetId, const FName& AssetType) const
-	{
-		return RequiredAssets.Contains(AssetId) && RequiredArbitrary.Contains(AssetType);
-	}
 
-	bool ContainsAny(const FPrimaryAssetId& AssetId, const FName& AssetType) const
-	{
-		return RequiredAssets.Contains(AssetId) || RequiredArbitrary.Contains(AssetType);
-	}
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct RCOREEXCHANGE_API FExchangeQuota
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Limit = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bUnlimited = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FTimespan Cooldown = FTimespan::Zero();
+
+};
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct RCOREEXCHANGE_API FExchangeRecord
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FExchangeQuota Quota;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int Quantity = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FDateTime LastExchangeTime = FDateTime::Now();
+
+};
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct RCOREEXCHANGE_API FExchangeCatalog : public FTableRowBase
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FPrimaryAssetId, FExchangeQuota> Stock;
 
 };
 

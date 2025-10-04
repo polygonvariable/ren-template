@@ -25,13 +25,19 @@ struct FInventoryStack
 public:
 
 	UPROPERTY()
-	TArray<FInventoryRecord> Records;
+	TArray<FInventoryRecord> ItemRecords;
 
 	UPROPERTY()
 	FGuid StackId;
 
+	UPROPERTY()
+	bool bStackable = false;
+
+	UPROPERTY()
+	bool bPersistWhenEmpty = false;
+
 	FInventoryStack() {}
-	FInventoryStack(FGuid InStackId) : StackId(InStackId) {}
+	FInventoryStack(FGuid InStackId, bool bInStackable, bool bInPersistWhenEmpty) : StackId(InStackId), bStackable(bInStackable), bPersistWhenEmpty(bInPersistWhenEmpty) {}
 
 	friend inline bool operator == (const FInventoryStack& A, const FInventoryStack& B)
 	{
@@ -57,12 +63,8 @@ struct FInventoryContainer
 
 public:
 
-	UE_DEPRECATED(5.4, "Use ItemStacks instead")
 	UPROPERTY()
-	TMap<FName, FInventoryRecord> Items;
-
-	UPROPERTY()
-	TMap<FName, FInventoryStack> ItemStacks;
+	TMap<FName, FInventoryStack> Stacks;
 
 	UPROPERTY()
 	FGuid ContainerId;
@@ -79,5 +81,6 @@ public:
 	{
 		return GetTypeHash(A.ContainerId.ToString());
 	}
+
 };
 

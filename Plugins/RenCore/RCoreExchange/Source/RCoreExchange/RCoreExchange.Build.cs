@@ -27,7 +27,6 @@ public class RCoreExchange : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreCommon",
             }
 			);
 			
@@ -40,7 +39,6 @@ public class RCoreExchange : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"StructUtils",
             }
             );
 		

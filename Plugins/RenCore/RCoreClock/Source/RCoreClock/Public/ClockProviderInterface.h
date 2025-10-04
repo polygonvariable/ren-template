@@ -7,12 +7,12 @@
 #include "UObject/Interface.h"
 
 // Project Headers
-#include "RCoreClock/Public/ClockRecord.h"
 
 // Generated Headers
 #include "ClockProviderInterface.generated.h"
 
 // Forward Declarations
+struct FClockRecord;
 
 
 

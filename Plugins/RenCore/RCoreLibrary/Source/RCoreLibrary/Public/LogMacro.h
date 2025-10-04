@@ -5,14 +5,15 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
-// Log Categories
-//RENCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTemp, Log, All);
-//
-//RENCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTemp, Log, All);
-//
-//RENCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTemp, Log, All);
-//RENCORE_API DECLARE_LOG_CATEGORY_EXTERN(LogTemp, Log, All);
+// Project Headers
 
+// Generated Headers
+
+// Forward Declarations
+
+
+
+#if WITH_EDITOR
 
 #define REN_LOG(Category, Verbosity, Text, ...) \
     { \
@@ -31,6 +32,15 @@
         REN_PRINT(__PrintMessage__, Time, Color) \
     }
 
+#else
+
+#define REN_LOG(Category, Verbosity, Text, ...) \
+    UE_LOG(Category, Verbosity, Text, ##__VA_ARGS__)
+
+#define REN_PRINT_LOG(Category, Verbosity, Time, Color, Text, ...) \
+    REN_LOG(Category, Verbosity, Text, ##__VA_ARGS__)
+
+#endif
 
 #define LOG_INFO(Category, Text, ...) \
     REN_LOG(Category, Log, Text, ##__VA_ARGS__)

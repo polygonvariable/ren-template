@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 
 // Project Headers
+#include "RCoreExchange/Public/ExchangeRule.h"
+#include "RCoreShop/Public/ShopProviderInterface.h"
+
 #include "RCoreInventory/Public/InventoryAsset.h"
 
 // Generated Headers
@@ -19,7 +22,7 @@
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UPurchasableAsset : public UInventoryAsset
+class UPurchasableAsset : public UInventoryAsset, public IShopProviderInterface
 {
 
 	GENERATED_BODY()
@@ -27,10 +30,11 @@ class UPurchasableAsset : public UInventoryAsset
 public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	int PurchaseQuantity;
+	FExchangeRule PurchaseRule;
 
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<UInventoryAsset*, int> PurchaseCosts;
+	// ~ IShopProviderInterface
+	RENINVENTORY_API virtual const FExchangeRule& GetPurchaseRule() const override;
+	// ~ End of IShopProviderInterface
 
 };
 

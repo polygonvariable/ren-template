@@ -8,6 +8,12 @@
 // Project Headers
 
 
+
+FInstancedStruct UInventoryAsset::GetMetadata()
+{
+	return FInstancedStruct();
+}
+
 FPrimaryAssetId UInventoryAsset::GetPrimaryAssetId() const
 {
 	return FPrimaryAssetId(TEXT("Inventory"), GetFName());

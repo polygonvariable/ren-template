@@ -6,6 +6,9 @@
 #include "CoreMinimal.h"
 
 // Project Headers
+#include "RCoreExchange/Public/ExchangeRule.h"
+#include "RCoreCraft/Public/CraftProviderInterface.h"
+
 #include "RenInventory/Public/Asset/Category/PurchasableAsset.h"
 
 // Generated Headers
@@ -20,7 +23,7 @@ class UInventoryAsset;
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UCraftableAsset : public UPurchasableAsset
+class UCraftableAsset : public UPurchasableAsset, public ICraftProviderInterface
 {
 
 	GENERATED_BODY()
@@ -28,7 +31,11 @@ class UCraftableAsset : public UPurchasableAsset
 public:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TMap<UInventoryAsset*, int> CraftingCosts;
+	FExchangeRule CraftingRule;
+
+	// ~ ICraftProviderInterface
+	RENINVENTORY_API virtual const FExchangeRule& GetCraftingRule() const override;
+	// ~ End of ICraftProviderInterface
 
 };
 

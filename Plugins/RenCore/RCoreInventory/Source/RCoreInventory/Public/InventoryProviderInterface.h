@@ -7,12 +7,12 @@
 #include "UObject/Interface.h"
 
 // Project Headers
-#include "RCoreInventory/Public/InventoryContainer.h"
 
 // Generated Headers
 #include "InventoryProviderInterface.generated.h"
 
 // Forward Declarations
+struct FInventoryContainer;
 
 
 

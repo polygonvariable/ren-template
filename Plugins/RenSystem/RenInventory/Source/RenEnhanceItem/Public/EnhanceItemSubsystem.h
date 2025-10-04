@@ -47,8 +47,8 @@ protected:
 
 	void HandleGameInitialized();
 
-	bool HandleLevelUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, IEnhanceProviderInterface* TargetAsset, const FPrimaryAssetId& MaterialAssetId, FName MaterialId, int MaterialQuantity, int Point);
-	bool HandleRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhance, IEnhanceProviderInterface* TargetAsset, const TMap<FPrimaryAssetId, int>& MaterialQuantities);
+	bool HandleLevelUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhancement, UObject* TargetObject, const FPrimaryAssetId& MaterialAssetId, FName MaterialId, UObject* MaterialObject);
+	bool HandleRankUp(FName ContainerId, const FPrimaryAssetId& TargetAssetId, FName TargetId, const FEnhanceRecord& TargetEnhancement, UObject* TargetObject);
 
 protected:
 

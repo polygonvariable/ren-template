@@ -32,5 +32,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int Experience = 0;
 
+	FEnhanceRecord() {}
+	FEnhanceRecord(int InRank, int InLevel, int InExperience) : Rank(InRank), Level(InLevel), Experience(InExperience) {}
 };
 

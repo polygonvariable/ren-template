@@ -21,7 +21,7 @@ bool UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 {
 	if (!IsValid(WeatherController) || !IsValid(WeatherAsset))
 	{
-		LOG_ERROR(LogTemp, "WeatherController or WeatherAsset is invalid");
+		LOG_ERROR(LogTemp, TEXT("WeatherController or WeatherAsset is invalid"));
 		return false;
 	}
 	return WeatherController->AddItem(WeatherAsset, Priority);
@@ -31,7 +31,7 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 {
 	if (!IsValid(WeatherController))
 	{
-		LOG_ERROR(LogTemp, "WeatherController is invalid");
+		LOG_ERROR(LogTemp, TEXT("WeatherController is invalid"));
 		return false;
 	}
 	return WeatherController->RemoveItem(Priority);
@@ -48,14 +48,14 @@ bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UObjectPrioritySyste
 {
 	if (IsValid(WeatherController) || !IsValid(ControllerClass))
 	{
-		LOG_ERROR(LogTemp, "WeatherController is already valid or WeatherController Class is invalid");
+		LOG_ERROR(LogTemp, TEXT("WeatherController is already valid or WeatherController Class is invalid"));
 		return false;
 	}
 
 	UWeatherController* Controller = NewObject<UWeatherController>(this, ControllerClass);
 	if (!IsValid(Controller))
 	{
-		LOG_ERROR(LogTemp, "Failed to create WeatherController");
+		LOG_ERROR(LogTemp, TEXT("Failed to create WeatherController"));
 		return false;
 	}
 	Controller->OnWeatherChanged.AddWeakLambda(this, [this](UWeatherAsset* WeatherAsset) { OnWeatherChanged.Broadcast(WeatherAsset); });

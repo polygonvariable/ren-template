@@ -28,15 +28,15 @@ public:
 
 	static bool IsValid(const FPrimaryAssetId& AssetId);
 
-	static bool GetItemType(const FAssetData& AssetData, FName& ItemType);
-	static bool GetItemType(const FAssetData& AssetData, EInventoryItemType& ItemType);
+	static bool GetType(const FAssetData& AssetData, FName& Type);
+	static bool GetType(const FAssetData& AssetData, EInventoryItemType& Type);
 
-	static bool GetItemRarity(const FAssetData& AssetData, FName& ItemRarity);
-	static bool GetItemRarity(const FAssetData& AssetData, EInventoryItemRarity& ItemRarity);
+	static bool GetRarity(const FAssetData& AssetData, FName& Rarity);
+	static bool GetRarity(const FAssetData& AssetData, EInventoryItemRarity& Rarity);
 
-	static bool GetItemName(const FAssetData& AssetData, FText& ItemName);
-	static bool GetItemIsStackable(const FAssetData& AssetData, bool& bIsStackable);
-	static bool GetItemAllowEmptyData(const FAssetData& AssetData, bool& bOutAllowEmptyData);
+	static bool GetDisplayName(const FAssetData& AssetData, FText& DisplayName);
+	static bool GetStackable(const FAssetData& AssetData, bool& bStackable);
+	static bool GetPersistWhenEmpty(const FAssetData& AssetData, bool& bPersistWhenEmpty);
 
 };
 

@@ -19,9 +19,18 @@
 			"Name": "RCoreInventory",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreCraft",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "StructUtils",
+			"Enabled": true
+		},
 		{
 			"Name": "RCoreCommon",
 			"Enabled": true

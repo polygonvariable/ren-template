@@ -25,8 +25,8 @@ class RCORESETTINGS_API UGameMetadataSettings : public UDeveloperSettings
 
 public:
 
-	UPROPERTY(Config, EditAnywhere, Category = "Inventory")
-	TSoftObjectPtr<UDataTable> InventoryTable;
+	UPROPERTY(Config, EditDefaultsOnly)
+	TArray<FPrimaryAssetId> PreloadAssets;
 
 };
 

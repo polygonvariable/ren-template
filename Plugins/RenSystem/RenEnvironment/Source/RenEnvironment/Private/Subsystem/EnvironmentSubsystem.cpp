@@ -63,21 +63,21 @@ bool UEnvironmentSubsystem::CreateStackedController(TSubclassOf<UEnvironmentStac
 {
 	if (!IsValid(ControllerClass))
 	{
-		LOG_ERROR(LogTemp, "ControllerClass is invalid");
+		LOG_ERROR(LogTemp, TEXT("ControllerClass is invalid"));
 		return false;
 	}
 
 	UEnvironmentStackedController* DefaultController = ControllerClass->GetDefaultObject<UEnvironmentStackedController>();
 	if (EnvironmentStackedControllers.Contains(DefaultController->EnvironmentProfileType))
 	{
-		LOG_ERROR(LogTemp, "EnvironmentStackedController already exists");
+		LOG_ERROR(LogTemp, TEXT("EnvironmentStackedController already exists"));
 		return false;
 	}
 
 	UEnvironmentStackedController* NewController = NewObject<UEnvironmentStackedController>(this, ControllerClass);
 	if (!IsValid(NewController))
 	{
-		LOG_ERROR(LogTemp, "Failed to create EnvironmentStackedController");
+		LOG_ERROR(LogTemp, TEXT("Failed to create EnvironmentStackedController"));
 		return false;
 	}
 
@@ -91,14 +91,14 @@ bool UEnvironmentSubsystem::CreateDiscreteController(TSubclassOf<UEnvironmentDis
 {
 	if (!IsValid(ControllerClass))
 	{
-		LOG_ERROR(LogTemp, "ControllerClass is invalid");
+		LOG_ERROR(LogTemp, TEXT("ControllerClass is invalid"));
 		return false;
 	}
 
 	UEnvironmentDiscreteController* NewController = NewObject<UEnvironmentDiscreteController>(this, ControllerClass);
 	if (!IsValid(NewController))
 	{
-		LOG_ERROR(LogTemp, "Failed to create EnvironmentDiscreteController");
+		LOG_ERROR(LogTemp, TEXT("Failed to create EnvironmentDiscreteController"));
 		return false;
 	}
 

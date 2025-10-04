@@ -24,6 +24,16 @@
 			"Name": "RenEnhanceItem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenCraftItem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RenPurchaseItem",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -65,6 +75,10 @@
 		},
 		{
 			"Name": "RCoreExchange",
+			"Enabled": true
+		},
+		{
+			"Name": "RenCounter",
 			"Enabled": true
 		}
 	]

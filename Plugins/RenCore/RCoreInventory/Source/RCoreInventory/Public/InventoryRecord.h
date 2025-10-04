@@ -5,8 +5,9 @@
 // Engine Headers
 #include "CoreMinimal.h"
 
+#include "InstancedStruct.h"
+
 // Project Headers
-#include "RCoreInventory/Public/InventoryItemType.h"
 #include "RCoreEnhance/Public/EnhanceRecord.h"
 
 // Generated Headers
@@ -26,59 +27,36 @@ struct FInventoryRecord
 public:
 
 	/*
-	 * Static ID of the item, based on the asset.
+	 * 
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName ItemId = NAME_None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	EInventoryItemType ItemType = EInventoryItemType::Default;
-
 	/*
-	 * TODO:
-	 * Rename this from ItemQuantity to Quantity
+	 * 
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int ItemQuantity = 0;
+	int Quantity = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FEnhanceRecord EnhanceRecord = FEnhanceRecord();
+	FEnhanceRecord Enhancement = FEnhanceRecord();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FTimespan ExpireTime = FTimespan::Zero();
+	FInstancedStruct Metadata;
 
 	bool IsValid() const
 	{
-		return ItemId.IsValid() && ItemQuantity > 0 && ItemType != EInventoryItemType::Default && !IsExpired();
-	}
-
-	bool CanExpire() const
-	{
-		return ExpireTime.IsZero();
-	}
-
-	bool IsExpired() const
-	{
-		if (!CanExpire()) return false;
-
-		FDateTime CurrentDate = FDateTime::Now();
-		FDateTime ExpireDate = CurrentDate + ExpireTime;
-		return ExpireDate < CurrentDate;
-	}
-
-	const FDateTime GetExpireDateTime() const
-	{
-		return FDateTime::Now() + ExpireTime;
+		return ItemId.IsValid() && Quantity > 0;
 	}
 
 	friend inline bool operator == (const FInventoryRecord& A, const FInventoryRecord& B)
 	{
-		return A.ItemId == B.ItemId && A.ItemType == B.ItemType;
+		return A.ItemId == B.ItemId && A.Quantity == B.Quantity;
 	}
 
 	friend inline uint32 GetTypeHash(const FInventoryRecord& Record)
 	{
-		return HashCombine(GetTypeHash(Record.ItemId.ToString()), GetTypeHash(Record.ItemType));
+		return HashCombine(GetTypeHash(Record.ItemId.ToString()), GetTypeHash(Record.Quantity));
 	}
 
 };

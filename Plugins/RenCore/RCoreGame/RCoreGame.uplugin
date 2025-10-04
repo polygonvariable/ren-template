@@ -25,6 +25,14 @@
 		{
 			"Name": "RCoreDelegate",
 			"Enabled": true
+		},
+		{
+			"Name": "RCoreLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreSettings",
+			"Enabled": true
 		}
 	]
 }

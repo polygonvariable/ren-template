@@ -25,63 +25,63 @@ bool InventoryPrimaryAsset::IsValid(const FPrimaryAssetId& AssetId)
 	return AssetId.PrimaryAssetType == InventoryPrimaryAsset::GetAssetType();
 }
 
-bool InventoryPrimaryAsset::GetItemType(const FAssetData& AssetData, FName& ItemType)
+bool InventoryPrimaryAsset::GetType(const FAssetData& AssetData, FName& Type)
 {
-	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemType), ItemType);
+	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, Type), Type);
 }
 
-bool InventoryPrimaryAsset::GetItemType(const FAssetData& AssetData, EInventoryItemType& ItemType)
+bool InventoryPrimaryAsset::GetType(const FAssetData& AssetData, EInventoryItemType& Type)
 {
 	FName TypeText;
-	GetItemType(AssetData, TypeText);
+	GetType(AssetData, TypeText);
 
 	const UEnum* Enum = StaticEnum<EInventoryItemType>();
 	int64 EnumValue = Enum->GetValueByName(TypeText);
 	if (EnumValue == INDEX_NONE)
 	{
-		ItemType = EInventoryItemType::Default;
+		Type = EInventoryItemType::Default;
 		return false;
 	}
 
-	ItemType = static_cast<EInventoryItemType>(EnumValue);
+	Type = static_cast<EInventoryItemType>(EnumValue);
 	return true;
 }
 
-bool InventoryPrimaryAsset::GetItemRarity(const FAssetData& AssetData, FName& ItemRarity)
+bool InventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, FName& Rarity)
 {
-	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemRarity), ItemRarity);
+	return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, Rarity), Rarity);
 }
 
-bool InventoryPrimaryAsset::GetItemRarity(const FAssetData& AssetData, EInventoryItemRarity& ItemRarity)
+bool InventoryPrimaryAsset::GetRarity(const FAssetData& AssetData, EInventoryItemRarity& Rarity)
 {
 	FName RarityText;
-	GetItemRarity(AssetData, RarityText);
+	GetRarity(AssetData, RarityText);
 
 	const UEnum* Enum = StaticEnum<EInventoryItemType>();
 	int64 EnumValue = Enum->GetValueByName(RarityText);
 	if (EnumValue == INDEX_NONE)
 	{
-		ItemRarity = EInventoryItemRarity::Default;
+		Rarity = EInventoryItemRarity::Default;
 		return false;
 	}
 
-	ItemRarity = static_cast<EInventoryItemRarity>(EnumValue);
+	Rarity = static_cast<EInventoryItemRarity>(EnumValue);
 	return true;
 }
 
-bool InventoryPrimaryAsset::GetItemName(const FAssetData& AssetData, FText& ItemName)
+bool InventoryPrimaryAsset::GetDisplayName(const FAssetData& AssetData, FText& DisplayName)
 {
-	return AssetData.GetTagValue<FText>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, ItemName), ItemName);
+	return AssetData.GetTagValue<FText>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, DisplayName), DisplayName);
 }
 
-bool InventoryPrimaryAsset::GetItemIsStackable(const FAssetData& AssetData, bool& bIsStackable)
+bool InventoryPrimaryAsset::GetStackable(const FAssetData& AssetData, bool& bStackable)
 {
-	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bIsStackable), bIsStackable);
+	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bStackable), bStackable);
 }
 
-bool InventoryPrimaryAsset::GetItemAllowEmptyData(const FAssetData& AssetData, bool& bOutAllowEmptyData)
+bool InventoryPrimaryAsset::GetPersistWhenEmpty(const FAssetData& AssetData, bool& bPersistWhenEmpty)
 {
-	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bAllowEmptyData), bOutAllowEmptyData);
+	return AssetData.GetTagValue<bool>(GET_MEMBER_NAME_CHECKED(UInventoryAsset, bPersistWhenEmpty), bPersistWhenEmpty);
 }
 
 
