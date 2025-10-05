@@ -50,6 +50,7 @@ public class RenInventory : ModuleRules
                 "RCoreStorage",
                 "RCoreLibrary",
                 "RCoreFilter",
+                "RCorePool",
             }
             );
 		

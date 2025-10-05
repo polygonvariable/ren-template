@@ -12,6 +12,8 @@
 #include "InventoryViewUI.generated.h"
 
 // Forward Declarations
+class UButton;
+
 class UInventoryCollectionUI;
 class UInventoryDetailUI;
 class UInventorySwitchUI;
@@ -31,35 +33,41 @@ class UInventoryViewUI : public UInventoryUI
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	virtual void DisplayEnhanceItem();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	FName ContainerId = NAME_None;
 
-	void SetContainerId(FName ContainerId);
+	// ~ UInventoryUI
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
+	// ~ End of UInventoryUI
 
 protected:
 
 	UPROPERTY()
-	TObjectPtr<UInventoryUI> EnhanceItemWidget = nullptr;
+	TObjectPtr<UInventoryUI> EnhanceItemUI = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	TSubclassOf<UInventoryUI> EnhanceItemClass = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> InventoryCollection = nullptr;
+	TObjectPtr<UInventoryCollectionUI> ItemList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryDetailUI> InventoryDetail = nullptr;
+	TObjectPtr<UInventoryDetailUI> ItemDetail = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventorySwitchUI> InventorySwitch = nullptr;
+	TObjectPtr<UButton> CloseButton = nullptr;
 
-	// ~ UInventoryBaseWidget
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
-	// ~ End of UInventoryBaseWidget
+	UFUNCTION(BlueprintCallable)
+	virtual void DisplayEnhanceItem();
+
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<UInventorySwitchUI*> GetDetailSwitches() const;
+	virtual TArray<UInventorySwitchUI*> GetDetailSwitches_Implementation() const;
 
 protected:
 
 	// ~ UUserWidget
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

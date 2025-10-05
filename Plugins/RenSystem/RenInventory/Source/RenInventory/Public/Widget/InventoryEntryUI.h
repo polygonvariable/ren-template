@@ -34,10 +34,10 @@ class RENINVENTORY_API UInventoryEntryUI : public UInventoryUI, public IUserObje
 
 public:
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	virtual void ResetDetails() override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -64,11 +64,11 @@ protected:
 	void HandleDetailsValidity(bool bIsValid);
 
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
 	virtual void SetSecondaryDetails(int Quantity) override;
 	virtual void SetTertiaryDetails(UInventoryEntry* Entry) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -95,9 +95,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemAmount = nullptr;
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void SetTertiaryDetails(UInventoryEntry* Entry) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 };
 

@@ -42,6 +42,24 @@ void UInventoryUI::SetTertiaryDetails(UInventoryEntry* Entry)
 {
 }
 
+void UInventoryUI::LockControls(bool bLock)
+{
+
+}
+
+void UInventoryUI::LockControls(TArray<UWidget*> Widgets, bool bLock)
+{
+	for (UWidget* Widget : Widgets)
+	{
+		Widget->SetIsEnabled(!bLock);
+	}
+}
+
+void UInventoryUI::CloseWidget()
+{
+	RemoveFromParent();
+}
+
 void UInventoryUI::SwitchDetails(bool bPrimary)
 {
 }

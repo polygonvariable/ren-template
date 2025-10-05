@@ -4,7 +4,6 @@
 #include "CraftItemUI.h"
 
 // Engine Headers
-#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "InstancedStruct.h"
 
@@ -12,19 +11,22 @@
 #include "RCoreFilter/Public/FilterGroup.h"
 #include "RCoreFilter/Public/FilterLeafCriterion.h"
 
+#include "RCoreInventory/Public/InventoryAsset.h"
 #include "RCoreInventory/Public/InventoryRecord.h"
 
+
 #include "RCoreLibrary/Public/AssetManagerUtils.h"
+#include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RCoreCraft/Public/CraftProviderInterface.h"
 
 #include "RenInventory/Public/InventoryDefinition.h"
+#include "RenInventory/Public/InventoryEntry.h"
 #include "RenInventory/Public/InventoryPrimaryAsset.h"
 #include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/Widget/InventoryCollectionUI.h"
 #include "RenInventory/Public/Widget/InventoryDetailUI.h"
-#include "RenInventory/Public/InventoryEntry.h"
 
 #include "RenCraftItem/Public/CraftItemSubsystem.h"
 
@@ -38,10 +40,9 @@ int UCraftItemUI::GetCraftingQuantity() const
 	return 1;
 }
 
-
 void UCraftItemUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
-	if (!IsValid(AssetManager) || !InventoryDetail || !CraftButton || !RequiredCollection)
+	if (!IsValid(AssetManager) || !ItemDetail || !CraftButton || !RequiredList)
 	{
 		return;
 	}
@@ -50,7 +51,7 @@ void UCraftItemUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantit
 
 	ActiveAssetId = AssetId;
 
-	InventoryDetail->InitializeDetails(AssetId, Quantity);
+	ItemDetail->InitializeDetails(AssetId, Quantity);
 
 	TWeakObjectPtr<UCraftItemUI> WeakThis(this);
 	TFunction<void(bool, UObject*)> AsyncCallback = [WeakThis](bool, UObject* LoadedObject)
@@ -67,7 +68,7 @@ void UCraftItemUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantit
 void UCraftItemUI::DisplayStockItems()
 {
 	UCounterSubsystem* Counter = CounterSubsystem.Get();
-	if (!CraftCollection || !IsValid(Counter))
+	if (!CraftingList || !IsValid(Counter))
 	{
 		return;
 	}
@@ -76,7 +77,7 @@ void UCraftItemUI::DisplayStockItems()
 
 	if (bEnableCounter)
 	{
-		CraftCollection->ClearPayloads();
+		CraftingList->ClearPayloads();
 
 		for (const TPair<FPrimaryAssetId, FExchangeQuota>& Kv : Stock)
 		{
@@ -97,33 +98,32 @@ void UCraftItemUI::DisplayStockItems()
 				NewRecord.LastExchangeTime = FDateTime::MinValue();
 			}
 
-			CraftCollection->AddPayload(AssetId, FInstancedStruct::Make(NewRecord));
+			CraftingList->AddPayload(AssetId, FInstancedStruct::Make(NewRecord));
 		}
 	}
 
-	TArray<FPrimaryAssetId> AssetIds;
-	Stock.GetKeys(AssetIds);
-
-	UFilterAssetCriterion* AssetCriterion = CraftCollection->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetCriterion = CraftingList->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
+		TArray<FPrimaryAssetId> AssetIds;
+		Stock.GetKeys(AssetIds);
+
 		AssetCriterion->Included.Empty();
 		AssetCriterion->Included.Append(AssetIds);
 	}
 
-	CraftCollection->ClearItems();
-	CraftCollection->DisplayItems();
+	CraftingList->RefreshItems();
 }
 
 void UCraftItemUI::DisplayRequiredItems(UObject* LoadedAsset)
 {
 	ICraftProviderInterface* CraftProvider = Cast<ICraftProviderInterface>(LoadedAsset);
-	if (!CraftProvider || !RequiredCollection)
+	if (!CraftProvider || !RequiredList)
 	{
 		return;
 	}
 
-	RequiredCollection->ClearPayloads();
+	RequiredList->ClearPayloads();
 
 	const FExchangeRule& ExchangeRule = CraftProvider->GetCraftingRule();
 	const TMap<FPrimaryAssetId, int>& RequiredAssets = ExchangeRule.RequiredAssets;
@@ -136,21 +136,20 @@ void UCraftItemUI::DisplayRequiredItems(UObject* LoadedAsset)
 		FInventoryPayloadQuantity Payload;
 		Payload.Quantity = Quantity;
 
-		RequiredCollection->AddPayload(AssetId, FInstancedStruct::Make(Payload));
+		RequiredList->AddPayload(AssetId, FInstancedStruct::Make(Payload));
 	}
 
-	TArray<FPrimaryAssetId> AssetIds;
-	RequiredAssets.GetKeys(AssetIds);
-
-	UFilterAssetCriterion* AssetCriterion = RequiredCollection->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
+	UFilterAssetCriterion* AssetCriterion = RequiredList->GetCriterionByName<UFilterAssetCriterion>(InventoryFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
+		TArray<FPrimaryAssetId> AssetIds;
+		RequiredAssets.GetKeys(AssetIds);
+
 		AssetCriterion->Included.Empty();
 		AssetCriterion->Included.Append(AssetIds);
 	}
 
-	RequiredCollection->ClearItems();
-	RequiredCollection->DisplayItems();
+	RequiredList->RefreshItems();
 
 	LockControls(false);
 
@@ -189,8 +188,8 @@ void UCraftItemUI::HandleItemCrafted(bool bSuccess)
 	{
 		DisplayStockItems();
 
-		if (InventoryDetail) InventoryDetail->RefreshDetails();
-		if (RequiredCollection) RequiredCollection->RefreshItems();
+		//if (ItemDetail) ItemDetail->RefreshDetails();
+		//if (RequiredList) RequiredList->RefreshItems();
 	}
 }
 
@@ -198,41 +197,40 @@ void UCraftItemUI::HandleItemCrafted(bool bSuccess)
 void UCraftItemUI::LockControls(bool bLock)
 {
 	if (CraftButton) CraftButton->SetIsEnabled(!bLock);
-	if (CraftCollection) CraftCollection->SetIsEnabled(!bLock);
-	if (RequiredCollection) RequiredCollection->SetIsEnabled(!bLock);
+	if (CraftingList) CraftingList->SetIsEnabled(!bLock);
+	if (RequiredList) RequiredList->SetIsEnabled(!bLock);
 }
 
-void UCraftItemUI::LockControls(TArray<UWidget*> Widgets, bool bLock)
+void UCraftItemUI::CloseWidget()
 {
-	for (UWidget* Widget : Widgets)
-	{
-		Widget->SetIsEnabled(!bLock);
-	}
+	RemoveFromParent();
 }
 
 
 void UCraftItemUI::NativePreConstruct()
 {
-	if (CraftCollection)
+	Super::NativePreConstruct();
+
+	if (CraftingList)
 	{
-		CraftCollection->bAutoRefresh = false;
-		CraftCollection->bEnablePayloads = true;
-		CraftCollection->QueryRule.QuerySource = EInventoryQuerySource::Glossary;
-		CraftCollection->QueryRule.ContainerId = ContainerId;
+		CraftingList->bAutoRefresh = false;
+		CraftingList->bEnablePayloads = true;
+		CraftingList->QueryRule.QuerySource = EInventoryQuerySource::Glossary;
+		CraftingList->QueryRule.ContainerId = ContainerId;
 	}
 
-	if (RequiredCollection)
+	if (RequiredList)
 	{
-		RequiredCollection->bAutoRefresh = false;
-		RequiredCollection->bEnablePayloads = true;
-		RequiredCollection->QueryRule.QuerySource = EInventoryQuerySource::Glossary;
-		RequiredCollection->QueryRule.ContainerId = ContainerId;
+		RequiredList->bAutoRefresh = false;
+		RequiredList->bEnablePayloads = true;
+		RequiredList->QueryRule.QuerySource = EInventoryQuerySource::Glossary;
+		RequiredList->QueryRule.ContainerId = ContainerId;
 	}
 
-	if (InventoryDetail)
+	if (ItemDetail)
 	{
-		InventoryDetail->bAutoRefresh = false;
-		InventoryDetail->ContainerId = ContainerId;
+		ItemDetail->bAutoRefresh = false;
+		ItemDetail->ContainerId = ContainerId;
 	}
 }
 
@@ -252,9 +250,22 @@ void UCraftItemUI::NativeConstruct()
 		}
 	}
 
-	if (CraftCollection)
+	if (CraftingList)
 	{
-		CraftCollection->OnItemSelected.AddUObject(this, &UCraftItemUI::InitializeDetails);
+		CraftingList->OnItemSelected.RemoveAll(this);
+		CraftingList->OnItemSelected.AddUObject(this, &UCraftItemUI::InitializeDetails);
+	}
+
+	if (CraftButton)
+	{
+		CraftButton->OnClicked.RemoveAll(this);
+		CraftButton->OnClicked.AddDynamic(this, &UCraftItemUI::CraftItem);
+	}
+
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.RemoveAll(this);
+		CloseButton->OnClicked.AddDynamic(this, &UCraftItemUI::CloseWidget);
 	}
 
 	Super::NativeConstruct();
@@ -272,14 +283,39 @@ void UCraftItemUI::NativeDestruct()
 	}
 	CraftItemSubsystem.Reset();
 
-	if (CraftCollection)
+	if (CraftingList)
 	{
-		CraftCollection->OnItemSelected.RemoveAll(this);
+		CraftingList->OnItemSelected.RemoveAll(this);
+	}
+
+	if (CraftButton)
+	{
+		CraftButton->OnClicked.RemoveAll(this);
 	}
 
 	Super::NativeDestruct();
 }
 
+
+void UCraftItemEntryUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
+{
+	TWeakObjectPtr<UCraftItemEntryUI> WeakThis(this);
+	TFunction<void(bool, UObject*)> AsyncCallback = [WeakThis, Quantity](bool, UObject* LoadedAsset)
+		{
+			UCraftItemEntryUI* Owner = WeakThis.Get();
+			UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(LoadedAsset);
+			if (IsValid(Owner) && IsValid(InventoryAsset))
+			{
+				Owner->SetPrimaryDetails(
+					InventoryAsset->DisplayName,
+					InventoryAsset->Description,
+					InventoryAsset->Icon
+				);
+			}
+		};
+
+	AssetManagerUtils::LoadPrimaryAsset(this, AssetManager, AssetId, MoveTemp(AsyncCallback));
+}
 
 void UCraftItemEntryUI::SetTertiaryDetails(UInventoryEntry* Entry)
 {

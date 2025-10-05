@@ -26,7 +26,7 @@ class UFilterLeafCriterion : public UFilterCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName PropertyName;
 
 	virtual FName GetPropertyName() const override;
@@ -47,7 +47,7 @@ class UFilterTextCriterion : public UFilterLeafCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FName> Included;
 
 	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;
@@ -67,7 +67,7 @@ class UFilterAssetCriterion : public UFilterLeafCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FPrimaryAssetId> Included;
 
 	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;
@@ -87,13 +87,13 @@ class UFilterIntegerCriterion : public UFilterLeafCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Min = 0;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int Max = 0;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bEnableStrictMode = true;
 
 	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;

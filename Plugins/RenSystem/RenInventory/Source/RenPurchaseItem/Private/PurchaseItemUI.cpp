@@ -95,6 +95,7 @@ void UPurchaseItemUI::HandleLoadedAsset(UObject* LoadedAsset)
 		return;
 	}
 
+	RequiredCollection->ClearPayloads();
 	TMap<FPrimaryAssetId, FInstancedStruct> Payloads;
 
 	const FExchangeRule& ExchangeRule = ShopProvider->GetPurchaseRule();
@@ -108,7 +109,7 @@ void UPurchaseItemUI::HandleLoadedAsset(UObject* LoadedAsset)
 		FInventoryPayloadQuantity Payload;
 		Payload.Quantity = Quantity;
 
-		Payloads.Add(AssetId, FInstancedStruct::Make(Payload));
+		RequiredCollection->AddPayload(AssetId, FInstancedStruct::Make(Payload));
 	}
 
 	TArray<FPrimaryAssetId> AssetIds;
@@ -125,7 +126,6 @@ void UPurchaseItemUI::HandleLoadedAsset(UObject* LoadedAsset)
 		}
 	}
 
-	RequiredCollection->SetPayloads(Payloads);
 	RequiredCollection->DisplayItems();
 
 	// int MaxMultiplier = Inventory->GetMaxMultiplier(ContainerId, RequiredAssets);

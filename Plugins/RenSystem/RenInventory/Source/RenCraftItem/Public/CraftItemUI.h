@@ -4,10 +4,11 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
+#include "Components/Button.h"
 
 // Project Headers
-#include "RenInventory/Public/Widget/InventoryUI.h"
 #include "RCoreExchange/Public/ExchangeRule.h"
+#include "RenInventory/Public/Widget/InventoryUI.h"
 
 #include "RenInventory/Public/Widget/InventoryEntryUI.h"
 
@@ -40,12 +41,17 @@ class UCraftItemUI : public UInventoryUI
 
 public:
 
-
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
+
+	FPrimaryAssetId ActiveAssetId;
+	TWeakObjectPtr<UCounterSubsystem> CounterSubsystem;
+	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
+	TWeakObjectPtr<UCraftItemSubsystem> CraftItemSubsystem;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FName CraftId = NAME_None;
@@ -59,23 +65,20 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FExchangeCatalog CraftCatalog;
 
-	FPrimaryAssetId ActiveAssetId;
-	TWeakObjectPtr<UCounterSubsystem> CounterSubsystem;
-	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
-	TWeakObjectPtr<UCraftItemSubsystem> CraftItemSubsystem;
-
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UButton> CloseButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UButton> CraftButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> CraftCollection = nullptr;
+	TObjectPtr<UInventoryCollectionUI> CraftingList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> RequiredCollection = nullptr;
+	TObjectPtr<UInventoryCollectionUI> RequiredList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryGlossaryUI> InventoryDetail = nullptr;
+	TObjectPtr<UInventoryGlossaryUI> ItemDetail = nullptr;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -89,8 +92,10 @@ protected:
 
 	void HandleItemCrafted(bool bSuccess);
 
-	void LockControls(bool bLock);
-	void LockControls(TArray<UWidget*> Widgets, bool bLock);
+	// ~ UInventoryUI
+	virtual void LockControls(bool bLock) override;
+	virtual void CloseWidget() override;
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -101,6 +106,7 @@ protected:
 	// ~ End of UUserWidget
 
 };
+
 
 
 /**
@@ -117,10 +123,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemLimit = nullptr;
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryEntryUI
+	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	virtual void SetTertiaryDetails(UInventoryEntry* Entry) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryEntryUI
 
 };
-
 

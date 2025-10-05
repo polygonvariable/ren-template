@@ -11,38 +11,38 @@
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenInventory/Public/InventoryEntry.h"
-#include "RenInventory/Public/Widget/InventoryUI.h"
 #include "RenInventory/Public/Widget/InventoryCollectionUI.h"
 #include "RenInventory/Public/Widget/InventoryDetailUI.h"
 #include "RenInventory/Public/Widget/InventorySwitchUI.h"
+#include "RenInventory/Public/Widget/InventoryUI.h"
 
 
 
 void UInventoryViewUI::DisplayEnhanceItem()
 {
-	if (!InventoryCollection)
+	if (!ItemList)
 	{
 		LOG_ERROR(LogInventory, TEXT("InventoryCollection is invalid"));
 		return;
 	}
 
-	UInventoryEntry* Entry = InventoryCollection->GetSelectedItem();
+	UInventoryEntry* Entry = ItemList->GetSelectedItem();
 	if (!IsValid(Entry))
 	{
 		LOG_ERROR(LogInventory, TEXT("Entry is invalid"));
 		return;
 	}
 
-	if (IsValid(EnhanceItemWidget))
+	if (IsValid(EnhanceItemUI))
 	{
-		EnhanceItemWidget->SetVisibility(ESlateVisibility::Visible);
+		EnhanceItemUI->SetVisibility(ESlateVisibility::Visible);
 	}
 	else
 	{
 		UInventoryUI* Widget = CreateWidget<UInventoryUI>(this, EnhanceItemClass);
 		if (!IsValid(Widget))
 		{
-			LOG_ERROR(LogInventory, TEXT("EnhanceItemWidget is invalid"));
+			LOG_ERROR(LogInventory, TEXT("EnhanceItemUI is invalid"));
 			return;
 		}
 
@@ -53,35 +53,47 @@ void UInventoryViewUI::DisplayEnhanceItem()
 			Entry->Record
 		);
 
-		EnhanceItemWidget = Widget;
+		EnhanceItemUI = Widget;
 	}
 }
 
-void UInventoryViewUI::SetContainerId(FName ContainerId)
+TArray<UInventorySwitchUI*> UInventoryViewUI::GetDetailSwitches_Implementation() const
 {
-	InventoryDetail->ContainerId = ContainerId;
-	InventoryCollection->QueryRule.ContainerId = ContainerId;
+	return {};
 }
 
 void UInventoryViewUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
 {
-	if (InventoryDetail)
-	{
-		InventoryDetail->InitializeDetails(AssetId, Quantity, Record);
-	}
+	if (ItemDetail) ItemDetail->InitializeDetails(AssetId, Quantity, Record);
 
-	if (InventorySwitch)
+	const TArray<UInventorySwitchUI*>& Switches = GetDetailSwitches();
+	for (UInventorySwitchUI* Switch : Switches)
 	{
-		InventorySwitch->InitializeDetails(AssetId, Quantity, Record);
+		if (Switch) Switch->InitializeDetails(AssetId, Quantity);
 	}
 }
 
 
+void UInventoryViewUI::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (ItemDetail) ItemDetail->ContainerId = ContainerId;
+	if (ItemList) ItemList->QueryRule.ContainerId = ContainerId;
+}
+
 void UInventoryViewUI::NativeConstruct()
 {
-	if (InventoryCollection)
+	if (ItemList)
 	{
-		InventoryCollection->OnItemSelected.AddUObject(this, &UInventoryViewUI::InitializeDetails);
+		ItemList->OnItemSelected.RemoveAll(this);
+		ItemList->OnItemSelected.AddUObject(this, &UInventoryViewUI::InitializeDetails);
+	}
+
+	if (CloseButton)
+	{
+		CloseButton->OnClicked.RemoveAll(this);
+		CloseButton->OnClicked.AddDynamic(this, &UInventoryViewUI::CloseWidget);
 	}
 
 	UUserWidget::NativeConstruct();
@@ -89,10 +101,8 @@ void UInventoryViewUI::NativeConstruct()
 
 void UInventoryViewUI::NativeDestruct()
 {
-	if (InventoryCollection)
-	{
-		InventoryCollection->OnItemSelected.RemoveAll(this);
-	}
+	if (ItemList) ItemList->OnItemSelected.RemoveAll(this);
+	if (CloseButton) CloseButton->OnClicked.RemoveAll(this);
 
 	UUserWidget::NativeDestruct();
 }

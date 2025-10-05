@@ -48,6 +48,7 @@ public class RenCraftItem : ModuleRules
                 "RCoreFilter",
 				"RCoreCraft",
 
+                "RCoreInventory",
                 "RCoreCounter",
                 "RenCounter",
                 "RenTimestamp",

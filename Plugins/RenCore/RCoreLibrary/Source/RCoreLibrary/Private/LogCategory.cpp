@@ -8,6 +8,9 @@
 // Project Headers
 
 
+// Pool Categories
+DEFINE_LOG_CATEGORY(LogPool);
+
 // Counter Categories
 DEFINE_LOG_CATEGORY(LogCounter);
 DEFINE_LOG_CATEGORY(LogTimestamp);

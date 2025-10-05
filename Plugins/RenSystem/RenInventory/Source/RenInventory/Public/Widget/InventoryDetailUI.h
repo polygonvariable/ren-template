@@ -26,7 +26,7 @@ struct FInventoryRecord;
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UInventoryDetailUI : public UInventoryUI
 {
 
@@ -40,11 +40,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bAutoRefresh = false;
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
 	RENINVENTORY_API virtual void RefreshDetails() override;
 	RENINVENTORY_API virtual void ResetDetails() override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -52,22 +52,21 @@ protected:
 	FName ActiveRecordId = NAME_None;
 
 
-	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> DetailSwitch = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UImage> ItemIcon = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemName = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemDescription = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
@@ -82,12 +81,12 @@ protected:
 
 	void FetchDetails(const FInventoryRecord* Record, int Quantity);
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void SwitchDetails(bool bPrimary) override;
 
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
 	virtual void SetSecondaryDetails(int Quantity, const FEnhanceRecord& Enhance) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -116,11 +115,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bAutoRefresh = false;
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity) override;
 	RENINVENTORY_API virtual void RefreshDetails() override;
 	RENINVENTORY_API virtual void ResetDetails() override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 
@@ -130,30 +129,30 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UWidgetSwitcher> DetailSwitch = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UImage> ItemIcon = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemName = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemDescription = nullptr;
 
 
 	void FetchDetails(int Quantity);
 
-	// ~ UInventoryBaseWidget
+	// ~ UInventoryUI
 	virtual void SwitchDetails(bool bPrimary) override;
 
 	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
 	virtual void SetSecondaryDetails(int Quantity) override;
-	// ~ End of UInventoryBaseWidget
+	// ~ End of UInventoryUI
 
 protected:
 

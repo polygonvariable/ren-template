@@ -17,6 +17,8 @@
 // Forward Declarations
 class UListView;
 
+class UPoolSubsystem;
+
 class UFilterGroup;
 class UInventorySubsystem;
 class UInventoryEntry;
@@ -39,7 +41,7 @@ class UInventoryCollectionUI : public UUserWidget
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
-	TSubclassOf<UInventoryEntry> EntryObjectClass;
+	TSubclassOf<UInventoryEntry> EntryClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bAutoRefresh = false;
@@ -47,7 +49,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	bool bEnablePayloads = false;
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
@@ -67,9 +69,7 @@ public:
 	RENINVENTORY_API UInventoryEntry* GetSelectedItem();
 
 
-
 	RENINVENTORY_API void AddPayload(const FPrimaryAssetId& AssetId, FInstancedStruct Payload);
-	RENINVENTORY_API void SetPayloads(const TMap<FPrimaryAssetId, FInstancedStruct>& Payloads);
 	RENINVENTORY_API void ClearPayloads();
 
 
@@ -83,19 +83,16 @@ public:
 
 protected:
 
+	TWeakObjectPtr<UPoolSubsystem> PoolSubsystem;
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
 
+	TMap<FPrimaryAssetId, FInstancedStruct> Payloads;
+
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UListView> InventoryContainer = nullptr;
-
-	UPROPERTY(BlueprintReadOnly)
-	TMap<FPrimaryAssetId, FInstancedStruct> InventoryPayloads;
+	TObjectPtr<UListView> ItemList = nullptr;
 
 
-	virtual void ConstructEntry(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
-
-	virtual void HandleDisplayOfEntry(UInventoryEntry* EntryObject);
-	virtual void HandleSelectedEntry(UObject* Object);
+	virtual void HandleSelectedItem(UObject* Object);
 
 public:
 

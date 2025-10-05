@@ -35,26 +35,18 @@ public:
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
 	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
-	// ~ UInventoryBaseWidget
-	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
-	RENINVENTORY_API virtual void ResetDetails() override;
-	// ~ End of UInventoryBaseWidget
+	// ~ UInventoryUI
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity) override;
+	// ~ End of UInventoryUI
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UWidgetSwitcher> DetailSwitcher = nullptr;
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UNamedSlot> DetailSlot = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UNamedSlot> PrimarySlot = nullptr;
-
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UNamedSlot> SecondarySlot = nullptr;
-
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool BP_HandleSwitch(const FPrimaryAssetId& AssetId, FInventoryRecord Record);
-	virtual bool BP_HandleSwitch_Implementation(const FPrimaryAssetId& AssetId, FInventoryRecord Record);
+	// ~ UInventoryUI
+	virtual void SwitchDetails(bool bPrimary) override;
+	// ~ End of UInventoryUI
 
 };
 

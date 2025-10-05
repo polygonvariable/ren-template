@@ -27,10 +27,10 @@ class UFilterGroupCriterion : public UFilterCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EFilterCombination Combination = EFilterCombination::And;
 
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TArray<TObjectPtr<UFilterCriterion>> Criteria;
 
 	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;
@@ -50,7 +50,7 @@ class UFilterNotCriterion : public UFilterCriterion
 
 public:
 
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TObjectPtr<UFilterCriterion> Negate;
 
 	RCOREFILTER_API virtual bool Evaluate(const FFilterContext& Context) const override;

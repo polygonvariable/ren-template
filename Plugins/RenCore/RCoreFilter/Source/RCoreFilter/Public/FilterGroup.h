@@ -26,7 +26,7 @@ class UFilterGroup : public UObject
 
 public:
 
-	UPROPERTY(EditAnywhere, Instanced)
+	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TObjectPtr<UFilterCriterion> CriterionRoot;
 
 

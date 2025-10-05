@@ -12,6 +12,9 @@
 // Forward Declarations
 
 
+// Pool Categories
+RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogPool, Log, All);
+
 // Counter Categories
 RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogCounter, Log, All);
 RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogTimestamp, Log, All);

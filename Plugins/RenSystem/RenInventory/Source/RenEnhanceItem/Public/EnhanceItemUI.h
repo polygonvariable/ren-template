@@ -13,6 +13,7 @@
 #include "EnhanceItemUI.generated.h"
 
 // Forward Declarations
+class UButton;
 class UWidgetSwitcher;
 
 class IEnhanceProviderInterface;
@@ -52,7 +53,7 @@ public:
 
 protected:
 
-	FPrimaryAssetId ActiveAssetId = FPrimaryAssetId();
+	FPrimaryAssetId ActiveAssetId;
 	FName ActiveItemId = NAME_None;
 	FEnhanceRecord ActiveEnhancement;
 	TWeakInterfacePtr<IEnhanceProviderInterface> ActiveAsset;
@@ -63,16 +64,22 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UWidgetSwitcher> EnhanceSwitch = nullptr;
+	TObjectPtr<UInventoryCollectionUI> LevelUpList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> LevelUpCollection = nullptr;
+	TObjectPtr<UWidgetSwitcher> RankUpSwitch = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> RankUpCollection = nullptr;
+	TObjectPtr<UInventoryCollectionUI> RankUpList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryDetailUI> InventoryDetail = nullptr;
+	TObjectPtr<UButton> RankUpButton = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UInventoryDetailUI> ItemDetail = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	TObjectPtr<UButton> CloseButton = nullptr;
 	
 
 	UFUNCTION(BlueprintCallable)
@@ -84,15 +91,20 @@ protected:
 
 	void HandleAssetLoaded(FPrimaryAssetId AssetId, UObject* LoadedAsset);
 
-	void HandleLevelUpDisplay();
-	void HandleRankUpDisplay();
+	void DisplayLevelUpItems();
+	void DisplayRankUpItems();
 
 	void HandleItemSelected(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
 
+	// ~ UInventoryUI
+	virtual void SwitchDetails(bool bPrimary) override;
+	virtual void LockControls(bool bLock) override;
+	// ~ End of UInventoryUI
 
 protected:
 
 	// ~ UUserWidget
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

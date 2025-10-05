@@ -26,42 +26,48 @@ struct FEnhanceRecord;
 /**
  *
  */
-UCLASS(Abstract)
-class RENINVENTORY_API UInventoryUI : public UUserWidget
+UCLASS(Abstract, MinimalAPI)
+class UInventoryUI : public UUserWidget
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity);
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity);
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record);
 
 	UFUNCTION(BlueprintCallable)
-	virtual void RefreshDetails();
+	RENINVENTORY_API virtual void RefreshDetails();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void ResetDetails();
+	RENINVENTORY_API virtual void ResetDetails();
 
 protected:
 
-	virtual void SwitchDetails(bool bPrimary);
-	virtual void SwitchDetails(int Index);
+	RENINVENTORY_API virtual void SwitchDetails(bool bPrimary);
+	RENINVENTORY_API virtual void SwitchDetails(int Index);
 
-	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image);
+	RENINVENTORY_API virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image);
 
-	virtual void SetSecondaryDetails(int Quantity);
-	virtual void SetSecondaryDetails(int Quantity, const FEnhanceRecord& Enhance);
+	RENINVENTORY_API virtual void SetSecondaryDetails(int Quantity);
+	RENINVENTORY_API virtual void SetSecondaryDetails(int Quantity, const FEnhanceRecord& Enhance);
 
-	virtual void SetTertiaryDetails(UInventoryEntry* Entry);
+	RENINVENTORY_API virtual void SetTertiaryDetails(UInventoryEntry* Entry);
+
+	RENINVENTORY_API virtual void LockControls(bool bLock);
+	RENINVENTORY_API void LockControls(TArray<UWidget*> Widgets, bool bLock);
+
+	UFUNCTION(BlueprintCallable)
+	RENINVENTORY_API virtual void CloseWidget();
 
 protected:
 
 	TObjectPtr<UAssetManager> AssetManager;
 
 	// ~ UUserWidget
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+	RENINVENTORY_API virtual void NativeConstruct() override;
+	RENINVENTORY_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 };

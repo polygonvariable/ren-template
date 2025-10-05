@@ -16,27 +16,23 @@
 #include "RCoreInventory/Public/InventoryRecord.h"
 
 #include "RCoreFilter/Public/FilterGroup.h"
+#include "RCorePool/Public/PoolSubsystem.h"
 
-#include "RenInventory/Public/InventorySubsystem.h"
 #include "RenInventory/Public/InventoryEntry.h"
+#include "RenInventory/Public/InventorySubsystem.h"
 
 
 
 void UInventoryCollectionUI::DisplayItems()
 {
-	if (!IsValid(EntryObjectClass))
-	{
-		LOG_ERROR(LogInventory, TEXT("EntryObjectClass is invalid"));
-		return;
-	}
-
+	UPoolSubsystem* Pool = PoolSubsystem.Get();
 	UInventorySubsystem* Inventory = InventorySubsystem.Get();
-	if (!IsValid(Inventory))
+	if (!IsValid(Pool) || !IsValid(Inventory) || !IsValid(EntryClass) || !ItemList)
 	{
-		LOG_ERROR(LogInventory, TEXT("InventorySubsystem is invalid"));
+		LOG_ERROR(LogInventory, TEXT("PoolSubsystem, InventorySubsystem, EntryClass, ItemList is invalid"));
 		return;
 	}
-
+	
 #if WITH_EDITOR
 	TIMER_START(Inventory);
 #endif
@@ -48,13 +44,24 @@ void UInventoryCollectionUI::DisplayItems()
 	}
 
 	Inventory->QueryItems(CriterionRoot, QueryRule,
-		[this](const FInventorySortEntry& SortEntry)
+		[this, Pool](const FInventorySortEntry& SortEntry)
 		{
-			ConstructEntry(
-				SortEntry.AssetId,
-				SortEntry.ItemQuantity,
-				SortEntry.Record
-			);
+			UInventoryEntry* Entry = Pool->AcquireObject<UInventoryEntry>();
+			//UInventoryEntry* Entry = NewObject<UInventoryEntry>(this, EntryClass);
+			if (Entry)
+			{
+				Entry->AssetId = SortEntry.AssetId;
+				Entry->Quantity = SortEntry.ItemQuantity;
+				Entry->Record = SortEntry.Record;
+
+				if (bEnablePayloads)
+				{
+					Entry->bHasPayload = true;
+					Entry->Payload = Payloads.FindRef(SortEntry.AssetId);
+				}
+
+				ItemList->AddItem(Entry);
+			}
 		}
 	);
 
@@ -66,19 +73,26 @@ void UInventoryCollectionUI::DisplayItems()
 
 void UInventoryCollectionUI::ClearItems()
 {
-	if (InventoryContainer)
+	UPoolSubsystem* Pool = PoolSubsystem.Get();
+	if (!IsValid(Pool) || !ItemList)
 	{
-		const TArray<UObject*> Items = InventoryContainer->GetListItems();
-		for (UObject* Item : Items)
-		{
-			UInventoryEntry* EntryObject = Cast<UInventoryEntry>(Item);
-			if (EntryObject)
-			{
-				EntryObject->ResetData();
-			}
-		}
-		InventoryContainer->ClearListItems();
+		return;
 	}
+
+	const TArray<UObject*>& Items = ItemList->GetListItems();
+	for (UObject* Item : Items)
+	{
+		UInventoryEntry* Entry = Cast<UInventoryEntry>(Item);
+		if (!IsValid(Entry))
+		{
+			continue;
+		}
+		Entry->ResetData();
+		Pool->ReturnToPool<UInventoryEntry>(Entry);
+	}
+
+	ItemList->ClearListItems();
+	ItemList->RegenerateAllEntries();
 }
 
 void UInventoryCollectionUI::RefreshItems()
@@ -89,27 +103,22 @@ void UInventoryCollectionUI::RefreshItems()
 
 UInventoryEntry* UInventoryCollectionUI::GetSelectedItem()
 {
-	if (!InventoryContainer)
+	if (!ItemList)
 	{
 		return nullptr;
 	}
-	return InventoryContainer->GetSelectedItem<UInventoryEntry>();
+	return ItemList->GetSelectedItem<UInventoryEntry>();
 }
 
 
 void UInventoryCollectionUI::AddPayload(const FPrimaryAssetId& AssetId, FInstancedStruct Payload)
 {
-	InventoryPayloads.Add(AssetId, Payload);
-}
-
-void UInventoryCollectionUI::SetPayloads(const TMap<FPrimaryAssetId, FInstancedStruct>& Payloads)
-{
-	InventoryPayloads = Payloads;
+	Payloads.Add(AssetId, Payload);
 }
 
 void UInventoryCollectionUI::ClearPayloads()
 {
-	InventoryPayloads.Empty();
+	Payloads.Empty();
 }
 
 UFilterCriterion* UInventoryCollectionUI::GetCriterionByName(FName Name)
@@ -121,53 +130,8 @@ UFilterCriterion* UInventoryCollectionUI::GetCriterionByName(FName Name)
 	return FilterRule->GetCriterionByName(Name);
 }
 
-void UInventoryCollectionUI::ConstructEntry(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
-{
-	// man i give up on the implementation of object pooling for now.
-	// 
-	// so when the .ClearListItems() is called it removes all object entries but they cannot be Garbage Collected.
-	// but when .RemoveItem() is called the objects can be Garbage Collected.
-	// so i thought of removing items individually using .GetListItems() & .RemoveItem() and it doesn't GC the entry object, WHAT!
-	// 
-	// another problem is that .AddItem() doesn't seem to update its' entry object ptr if the object is valid & was used before.
-	// for example in 2nd iteration of display items, the display order could be wrong as the object reference didn't update,
-	// this can also cause list to render is reverse order in each iteration.
-	// 
-	// UInventoryEntry* Entry = EntryObjectPool->AcquireObject<UInventoryEntry>(Index, this);
-	UInventoryEntry* Entry = NewObject<UInventoryEntry>(this, EntryObjectClass);
-	if (!IsValid(Entry))
-	{
-		LOG_ERROR(LogInventory, TEXT("Failed to create entry object"));
-		return;
-	}
-	Entry->AssetId = AssetId;
-	Entry->Quantity = Quantity;
-	Entry->Record = Record;
 
-	if (bEnablePayloads)
-	{
-		Entry->bHasPayload = true;
-		Entry->Payload = InventoryPayloads.FindRef(AssetId);
-	}
-
-	// Updating the data doesn't update the UI
-	// as the NativeOnListItemObjectSet in UInventoryEntryWidget
-	// is not called when the same object is reused.
-	// It did worked when creating new objects in each iteration.
-	// Also in object pool if .pop() is used to acquire the object, then the order is reversed in each iteration,
-	// as the actual widget of UInventoryEntryWidget doesn't update the UInventoryEntry ptr in InventoryContainer->AddItem(EntryObject);
-	HandleDisplayOfEntry(Entry);
-}
-
-void UInventoryCollectionUI::HandleDisplayOfEntry(UInventoryEntry* EntryObject)
-{
-	if (InventoryContainer)
-	{
-		InventoryContainer->AddItem(EntryObject);
-	}
-}
-
-void UInventoryCollectionUI::HandleSelectedEntry(UObject* Object)
+void UInventoryCollectionUI::HandleSelectedItem(UObject* Object)
 {
 	UInventoryEntry* Entry = Cast<UInventoryEntry>(Object);
 	if (IsValid(Entry))
@@ -182,17 +146,16 @@ void UInventoryCollectionUI::HandleSelectedEntry(UObject* Object)
 
 void UInventoryCollectionUI::NativeConstruct()
 {
-	if (InventoryContainer)
+	if (ItemList)
 	{
-		if (!InventoryContainer->OnItemSelectionChanged().IsBoundToObject(this))
-		{
-			InventoryContainer->OnItemSelectionChanged().AddUObject(this, &UInventoryCollectionUI::HandleSelectedEntry);
-		}
+		ItemList->OnItemSelectionChanged().RemoveAll(this);
+		ItemList->OnItemSelectionChanged().AddUObject(this, &UInventoryCollectionUI::HandleSelectedItem);
 	}
 
 	UGameInstance* GameInstance = GetGameInstance();
 	if (IsValid(GameInstance))
 	{
+		PoolSubsystem = GameInstance->GetSubsystem<UPoolSubsystem>();
 		UInventorySubsystem* Inventory = GameInstance->GetSubsystem<UInventorySubsystem>();
 		if (!IsValid(Inventory))
 		{
@@ -215,9 +178,11 @@ void UInventoryCollectionUI::NativeConstruct()
 
 void UInventoryCollectionUI::NativeDestruct()
 {
-	if (InventoryContainer)
+	ClearItems();
+
+	if (ItemList)
 	{
-		InventoryContainer->OnItemSelectionChanged().RemoveAll(this);
+		ItemList->OnItemSelectionChanged().RemoveAll(this);
 	}
 
 	UInventorySubsystem* Inventory = InventorySubsystem.Get();
@@ -228,6 +193,7 @@ void UInventoryCollectionUI::NativeDestruct()
 		Inventory->OnItemUpdated.RemoveAll(this);
 	}
 	InventorySubsystem.Reset();
+	PoolSubsystem.Reset();
 
 	Super::NativeDestruct();
 }

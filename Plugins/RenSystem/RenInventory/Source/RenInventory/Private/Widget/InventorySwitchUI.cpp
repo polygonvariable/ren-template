@@ -19,18 +19,18 @@
 
 
 
-void UInventorySwitchUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record)
+void UInventorySwitchUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity)
 {
-	if (!IsValid(AssetManager))
+	if (!IsValid(AssetManager) || !IsValid(FilterRule) || !IsValid(FilterRule->CriterionRoot))
 	{
-		ResetDetails();
+		SwitchDetails(false);
 		return;
 	}
 
 	FAssetData AssetData;
 	if (!AssetManager->GetPrimaryAssetData(AssetId, AssetData))
 	{
-		ResetDetails();
+		SwitchDetails(false);
 		return;
 	}
 
@@ -44,33 +44,14 @@ void UInventorySwitchUI::InitializeDetails(const FPrimaryAssetId& AssetId, int Q
 	Context.SetValue(InventoryFilterProperty::AssetId, AssetId);
 	Context.SetValue(InventoryFilterProperty::AssetType, ItemType);
 	Context.SetValue(InventoryFilterProperty::AssetRarity, ItemRarity);
-	
-	if (FilterRule->CriterionRoot->Evaluate(Context))
-	{
-		if (DetailSwitcher)
-		{
-			DetailSwitcher->SetActiveWidgetIndex(0);
-		}
-	}
-	else
-	{
-		ResetDetails();
-	}
 
-	FInventoryRecord LocalRecord = Record ? *Record : FInventoryRecord();
-	BP_HandleSwitch(AssetId, LocalRecord);
+	bool bPrimary = FilterRule->CriterionRoot->Evaluate(Context);
+	SwitchDetails(bPrimary);
 }
 
-void UInventorySwitchUI::ResetDetails()
+void UInventorySwitchUI::SwitchDetails(bool bPrimary)
 {
-	if (DetailSwitcher)
-	{
-		DetailSwitcher->SetActiveWidgetIndex(1);
-	}
-}
-
-bool UInventorySwitchUI::BP_HandleSwitch_Implementation(const FPrimaryAssetId& AssetId, FInventoryRecord Record)
-{
-	return false;
+	ESlateVisibility NewVisibility = (bPrimary) ? ESlateVisibility::Visible : ESlateVisibility::Collapsed;
+	SetVisibility(NewVisibility);
 }
 

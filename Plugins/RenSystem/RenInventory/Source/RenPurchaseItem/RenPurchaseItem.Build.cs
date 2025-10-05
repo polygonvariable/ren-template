@@ -46,6 +46,7 @@ public class RenPurchaseItem : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreShop",
+                "RCorePool",
             }
 			);
 		
