@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RenPurchaseItem : ModuleRules
+public class RenExchangeItem : ModuleRules
 {
-	public RenPurchaseItem(ReadOnlyTargetRules Target) : base(Target)
+	public RenExchangeItem(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -28,6 +28,7 @@ public class RenPurchaseItem : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "RenInventory",
+                "RCoreExchange",
             }
 			);
 			
@@ -46,7 +47,12 @@ public class RenPurchaseItem : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreShop",
+                "RCoreCraft",
+				
                 "RCorePool",
+
+                "RCoreInventory",
+                "RCoreCounter",
             }
 			);
 		

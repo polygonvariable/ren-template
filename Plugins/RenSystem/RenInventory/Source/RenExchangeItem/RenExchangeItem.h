@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRenCraftItemModule : public IModuleInterface
+class FRenExchangeItemModule : public IModuleInterface
 {
 public:
 

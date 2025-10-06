@@ -876,19 +876,14 @@ void UInventorySubsystem::HandleInventoryItems(UFilterCriterion* FilterCriterion
 void UInventorySubsystem::HandleStorageLoaded()
 {
 	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
-	LOG_INFO(LogInventory, TEXT("InventorySubsystem storage load started"));
+	LOG_INFO(LogInventory, TEXT("Storage loading"));
 
 	IInventoryProviderInterface* InventoryProviderInterface = StorageUtils::GetStorageInterface<IInventoryProviderInterface>(GetGameInstance());
-	if (!InventoryProviderInterface)
-	{
-		LOG_ERROR(LogInventory, TEXT("InventoryInterface is invalid"));
-		return;
-	}
-
 	InventoryProvider = TWeakInterfacePtr<IInventoryProviderInterface>(InventoryProviderInterface);
+
 	AssetManager = UAssetManager::GetIfInitialized();
 
-	LOG_INFO(LogInventory, TEXT("InventorySubsystem storage loaded"));
+	LOG_INFO(LogInventory, TEXT("Storage loaded"));
 }
 
 
@@ -1073,10 +1068,7 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("Initialized"));
 
-	if (!FLatentDelegates::OnStorageLoaded.IsBoundToObject(this))
-	{
-		FLatentDelegates::OnStorageLoaded.AddUObject(this, &UInventorySubsystem::HandleStorageLoaded);
-	}
+	FLatentDelegates::OnStorageLoaded.AddUObject(this, &UInventorySubsystem::HandleStorageLoaded);
 }
 
 void UInventorySubsystem::Deinitialize()

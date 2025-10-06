@@ -4,29 +4,28 @@
 
 // Engine Headers
 #include "CoreMinimal.h"
-#include "Components/Button.h"
 
 // Project Headers
-#include "RCoreExchange/Public/ExchangeRule.h"
-#include "RenInventory/Public/Widget/InventoryUI.h"
+#include "RCoreExchange/Public/ExchangeQuota.h"
 
 #include "RenInventory/Public/Widget/InventoryEntryUI.h"
+#include "RenInventory/Public/Widget/InventoryUI.h"
 
 // Generated Headers
-#include "CraftItemUI.generated.h"
+#include "ExchangeItemUI.generated.h"
 
 // Forward Declarations
 class UButton;
+class UTextBlock;
 
-class UCounterSubsystem;
-
+class ICounterManagerInterface;
 class UInventoryCollectionUI;
 class UInventoryGlossaryUI;
-
 class UInventorySubsystem;
-class UCraftItemSubsystem;
+class UExchangeItemSubsystem;
 
 struct FInventoryRecord;
+struct FExchangeRule;
 
 
 
@@ -34,7 +33,7 @@ struct FInventoryRecord;
  *
  */
 UCLASS(Abstract)
-class UCraftItemUI : public UInventoryUI
+class UExchangeItemUI : public UInventoryUI
 {
 
 	GENERATED_BODY()
@@ -48,13 +47,12 @@ public:
 protected:
 
 	FPrimaryAssetId ActiveAssetId;
-	TWeakObjectPtr<UCounterSubsystem> CounterSubsystem;
 	TWeakObjectPtr<UInventorySubsystem> InventorySubsystem;
-	TWeakObjectPtr<UCraftItemSubsystem> CraftItemSubsystem;
+	TWeakInterfacePtr<ICounterManagerInterface> CounterManagerInterface;
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-	FName CraftId = NAME_None;
+	FName CounterId = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 	FName ContainerId = NAME_None;
@@ -63,16 +61,16 @@ protected:
 	bool bEnableCounter = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-	FExchangeCatalog CraftCatalog;
+	FExchangeCatalog Catalog;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UButton> CloseButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UButton> CraftButton = nullptr;
+	TObjectPtr<UButton> ExchangeButton = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UInventoryCollectionUI> CraftingList = nullptr;
+	TObjectPtr<UInventoryCollectionUI> CatalogList = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UInventoryCollectionUI> RequiredList = nullptr;
@@ -86,18 +84,23 @@ protected:
 	void DisplayRequiredItems(UObject* LoadedAsset);
 
 	UFUNCTION(BlueprintCallable)
-	void CraftItem();
+	virtual void ExchangeItem();
 
-	int GetCraftingQuantity() const;
 
-	void HandleItemCrafted(bool bSuccess);
+	virtual int GetExchangeQuantity() const;
+	virtual UExchangeItemSubsystem* GetExchangeItemSubsystem() const;
+	virtual const FExchangeRule* GetExchangeRule(UObject* Target) const;
 
-	// ~ UInventoryUI
-	virtual void LockControls(bool bLock) override;
-	virtual void CloseWidget() override;
-	// ~ End of UInventoryUI
+
+	// ~ Bindings
+	virtual void HandleItemExchanged(bool bSuccess);
+	// ~ End of Bindings
 
 protected:
+
+	// ~ UInventoryUI
+	virtual void CloseWidget() override;
+	// ~ End of UInventoryUI
 
 	// ~ UUserWidget
 	virtual void NativePreConstruct() override;
@@ -108,12 +111,11 @@ protected:
 };
 
 
-
 /**
  *
  */
 UCLASS(Abstract)
-class UCraftItemEntryUI : public UInventoryEntryUI
+class UExchangeItemEntryUI : public UInventoryEntryUI
 {
 
 	GENERATED_BODY()
@@ -122,6 +124,8 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemLimit = nullptr;
+
+protected:
 
 	// ~ UInventoryEntryUI
 	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;

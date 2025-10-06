@@ -104,6 +104,7 @@ protected:
 	FInventoryRecord* GetMutableRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index = 0);
 	FInventoryRecord* GetMutableRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId);
 
+	// ~ Bindings
 	virtual void HandleAddItem(const FPrimaryAssetId& AssetId, FInventoryRecord& Record);
 
 	virtual void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
@@ -111,6 +112,7 @@ protected:
 	virtual void HandleInventoryItems(UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback) const;
 
 	virtual void HandleStorageLoaded();
+	// ~ End of Bindings
 
 private:
 

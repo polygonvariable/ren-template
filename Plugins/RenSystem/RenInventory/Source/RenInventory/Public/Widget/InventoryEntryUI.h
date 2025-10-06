@@ -26,8 +26,8 @@ struct FInventoryRecord;
 /**
  *
  */
-UCLASS(Abstract)
-class RENINVENTORY_API UInventoryEntryUI : public UInventoryUI, public IUserObjectListEntry
+UCLASS(Abstract, MinimalAPI)
+class UInventoryEntryUI : public UInventoryUI, public IUserObjectListEntry
 {
 
 	GENERATED_BODY()
@@ -35,8 +35,8 @@ class RENINVENTORY_API UInventoryEntryUI : public UInventoryUI, public IUserObje
 public:
 
 	// ~ UInventoryUI
-	virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
-	virtual void ResetDetails() override;
+	RENINVENTORY_API virtual void InitializeDetails(const FPrimaryAssetId& AssetId, int Quantity, const FInventoryRecord* Record) override;
+	RENINVENTORY_API virtual void ResetDetails() override;
 	// ~ End of UInventoryUI
 
 protected:
@@ -65,16 +65,16 @@ protected:
 
 
 	// ~ UInventoryUI
-	virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
-	virtual void SetSecondaryDetails(int Quantity) override;
-	virtual void SetTertiaryDetails(UInventoryEntry* Entry) override;
+	RENINVENTORY_API virtual void SetPrimaryDetails(const FText& Title, const FText& Description, const TSoftObjectPtr<UTexture2D>& Image) override;
+	RENINVENTORY_API virtual void SetSecondaryDetails(int Quantity) override;
+	RENINVENTORY_API virtual void SetTertiaryDetails(UInventoryEntry* Entry) override;
 	// ~ End of UInventoryUI
 
 protected:
 
 	// ~ IUserObjectListEntry
-	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-	virtual void NativeOnItemSelectionChanged(bool bSelected) override;
+	RENINVENTORY_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	RENINVENTORY_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
 	// ~ End of IUserObjectListEntry
 
 };

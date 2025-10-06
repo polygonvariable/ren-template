@@ -26,12 +26,7 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenCraftItem",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RenPurchaseItem",
+			"Name": "RenExchangeItem",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

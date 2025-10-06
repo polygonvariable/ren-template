@@ -136,7 +136,7 @@ bool UCounterSubsystem::ResetCounter(FName ContainerId)
 
 int UCounterSubsystem::IncrementCounter(FName ContainerId, FName Name, int Max)
 {
-	FCounterRecord* Counter = GetCounterRecordX(ContainerId, Name);
+	FCounterRecord* Counter = FindCounterRecord(ContainerId, Name);
 	if (!Counter)
 	{
 		PRINT_ERROR(LogCounter, 1.0f, TEXT("Counter does not exist"));
@@ -153,7 +153,7 @@ int UCounterSubsystem::IncrementCounter(FName ContainerId, FName Name, int Max)
 
 int UCounterSubsystem::DecrementCounter(FName ContainerId, FName Name)
 {
-	FCounterRecord* Counter = GetCounterRecordX(ContainerId, Name);
+	FCounterRecord* Counter = FindCounterRecord(ContainerId, Name);
 	if (!Counter)
 	{
 		PRINT_ERROR(LogCounter, 1.0f, TEXT("Counter does not exist"));
@@ -215,13 +215,13 @@ TMap<FName, FCounterRecord>* UCounterSubsystem::FindOrAddCounters(FName Containe
 		return nullptr;
 	}
 
-	ICounterProviderInterface* Counter = CounterProvider.Get();
-	if (!Counter)
+	ICounterProviderInterface* CounterProvider = CounterProviderInterface.Get();
+	if (!CounterProvider)
 	{
 		return nullptr;
 	}
 
-	TMap<FName, FCounterContainer>& Containers = Counter->GetCounterContainer();
+	TMap<FName, FCounterContainer>& Containers = CounterProvider->GetCounterContainer();
 	FCounterContainer& Container = Containers.FindOrAdd(ContainerId, { FGuid::NewGuid() });
 
 	TMap<FName, FCounterRecord>* Counters = &Container.Counters;
@@ -231,13 +231,13 @@ TMap<FName, FCounterRecord>* UCounterSubsystem::FindOrAddCounters(FName Containe
 
 const TMap<FName, FCounterRecord>* UCounterSubsystem::GetCounters(FName ContainerId) const
 {
-	const ICounterProviderInterface* Counter = CounterProvider.Get();
-	if (!Counter)
+	const ICounterProviderInterface* CounterProvider = CounterProviderInterface.Get();
+	if (!CounterProvider)
 	{
 		return nullptr;
 	}
 
-	const TMap<FName, FCounterContainer>& Containers = Counter->GetCounterContainer();
+	const TMap<FName, FCounterContainer>& Containers = CounterProvider->GetCounterContainer();
 	const FCounterContainer* Container = Containers.Find(ContainerId);
 	if (!Container)
 	{
@@ -247,7 +247,7 @@ const TMap<FName, FCounterRecord>* UCounterSubsystem::GetCounters(FName Containe
 	return &Container->Counters;
 }
 
-FCounterRecord* UCounterSubsystem::GetCounterRecordX(FName ContainerId, FName Name)
+FCounterRecord* UCounterSubsystem::FindCounterRecord(FName ContainerId, FName Name)
 {
 	TMap<FName, FCounterRecord>* Counters = FindOrAddCounters(ContainerId);
 	if (!Counters)
@@ -262,18 +262,12 @@ FCounterRecord* UCounterSubsystem::GetCounterRecordX(FName ContainerId, FName Na
 void UCounterSubsystem::HandleStorageLoaded()
 {
 	FLatentDelegates::OnStorageLoaded.RemoveAll(this);
-	LOG_INFO(LogInventory, TEXT("CounterSubsystem storage loading"));
+	LOG_INFO(LogCounter, TEXT("Storage loading"));
 
-	ICounterProviderInterface* Counter = StorageUtils::GetStorageInterface<ICounterProviderInterface>(GetGameInstance());
-	if (!Counter)
-	{
-		LOG_ERROR(LogInventory, TEXT("CounterProvider is invalid"));
-		return;
-	}
+	ICounterProviderInterface* CounterProvider = StorageUtils::GetStorageInterface<ICounterProviderInterface>(GetGameInstance());
+	CounterProviderInterface = TWeakInterfacePtr<ICounterProviderInterface>(CounterProvider);
 
-	CounterProvider = TWeakInterfacePtr<ICounterProviderInterface>(Counter);
-
-	LOG_INFO(LogInventory, TEXT("CounterSubsystem storage loaded"));
+	LOG_INFO(LogCounter, TEXT("Storage loaded"));
 }
 
 bool UCounterSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -286,14 +280,13 @@ void UCounterSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogCounter, TEXT("Initialize"));
 
-	if (!FLatentDelegates::OnStorageLoaded.IsBoundToObject(this))
-	{
-		FLatentDelegates::OnStorageLoaded.AddUObject(this, &UCounterSubsystem::HandleStorageLoaded);
-	}
+	FLatentDelegates::OnStorageLoaded.AddUObject(this, &UCounterSubsystem::HandleStorageLoaded);
 }
 
 void UCounterSubsystem::Deinitialize()
 {
+	CounterProviderInterface.Reset();
+
 	LOG_WARNING(LogCounter, TEXT("Deinitialize"));
 	Super::Deinitialize();
 }
