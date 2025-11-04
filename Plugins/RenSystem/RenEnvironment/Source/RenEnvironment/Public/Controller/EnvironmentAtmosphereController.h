@@ -30,21 +30,22 @@ public:
 
 	UEnvironmentAtmosphereController();
 
-	FName ActorTag = TEXT("Actor.Environment");
-
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<USkyAtmosphereComponent> AtmosphereComponent;
+	TWeakObjectPtr<USkyAtmosphereComponent> SkyAtmosphereComponent;
 
 public:
 
-	virtual void InitializeController() override;
+	// ~ UEnvironmentStackedController
+	virtual void InitializeController(AActor* Actor) override;
 	virtual void CleanupController() override;
+	// ~ End of UEnvironmentStackedController
 
 protected:
 
+	// ~ UObjectPrioritySystem
 	virtual void HandleItemChanged(UObject* Item) override;
+	// ~ End of UObjectPrioritySystem
 
 };
 

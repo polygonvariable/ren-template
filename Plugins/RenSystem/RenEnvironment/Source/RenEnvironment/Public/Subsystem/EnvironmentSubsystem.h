@@ -13,50 +13,70 @@
 #include "EnvironmentSubsystem.generated.h"
 
 // Forward Declarations
+class URAssetManager;
+
 class UEnvironmentDiscreteController;
 class UEnvironmentStackedController;
 class UEnvironmentProfileAsset;
-class UEnvironmentAsset;
 
 
 
 /**
  *
  */
-UCLASS(Blueprintable) // Add Blueprintable for easiy debug in live blueprint debugger
-class RENENVIRONMENT_API UEnvironmentSubsystem : public UWorldSubsystem
+UCLASS(MinimalAPI)
+class UEnvironmentSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	bool AddStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	virtual AActor* GetEnvironmentActor();
 
-	UFUNCTION(BlueprintCallable)
-	bool RemoveStackedProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	RENENVIRONMENT_API bool AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	RENENVIRONMENT_API bool RemoveProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
-protected:
+	RENENVIRONMENT_API void AddProfile(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority);
+	RENENVIRONMENT_API bool RemoveProfile(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority);
 
-	UPROPERTY()
-	TMap<TEnumAsByte<EEnvironmentProfileType>, TObjectPtr<UEnvironmentStackedController>> EnvironmentStackedControllers;
-
-	UPROPERTY()
-	TSet<TObjectPtr<UEnvironmentDiscreteController>> EnvironmentDiscreateControllers;
-
-
-	void LoadDefaultStackedProfiles(const TSet<TObjectPtr<UEnvironmentProfileAsset>>& ProfileAssets);
-
-	bool CreateStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass);
-	bool CreateDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
+	RENENVIRONMENT_API void AddProfile(const FPrimaryAssetId& AssetId, int Priority);
+	RENENVIRONMENT_API bool RemoveProfile(const FPrimaryAssetId& AssetId, int Priority);
 
 protected:
 
+
+	FName EnvironmentTag = TEXT("Actor.Environment");
+
+	TArray<TPair<FPrimaryAssetId, int>> CancelledProfiles;
+
+	UPROPERTY()
+	TObjectPtr<URAssetManager> AssetManager;
+
+	UPROPERTY()
+	TWeakObjectPtr<AActor> EnvironmentActor;
+
+	UPROPERTY()
+	TMap<EEnvironmentProfileType, TObjectPtr<UEnvironmentStackedController>> StackedControllers;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UEnvironmentDiscreteController>> DiscreateControllers;
+
+
+	bool RemoveProfile(EEnvironmentProfileType ProfileType, int Priority);
+
+	bool RegisterStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass);
+	bool RegisterDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
+
+	void LoadDefaultProfiles(const TArray<FPrimaryAssetId>& AssetIds);
+
+protected:
+
+	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
+	// ~ End of UWorldSubsystem
 
 };
-

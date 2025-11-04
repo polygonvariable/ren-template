@@ -3,13 +3,20 @@
 // Parent Header
 #include "SeasonSubsystem.h"
 
-// Engine Header
+// Engine Headers
+#include "Engine/AssetManager.h"
+#include "EngineUtils.h"
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 
-// Project Header
-#include "RCoreClock/Public/ClockAsset.h"
+// Project Headers
+#include "RCoreAssetManager/Public/RAssetManager.h"
+#include "RCoreAssetManager/Private/RAssetManager.inl"
+#include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
+
 #include "RCoreClock/Public/ClockManagerInterface.h"
+#include "RCoreLibrary/Public/AssetManagerUtils.h"
+#include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/SubsystemUtils.h"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
@@ -20,52 +27,69 @@
 
 
 
-const FName USeasonSubsystem::GetSeasonName() const
+void USeasonSubsystem::HandleScalarTransition(FName ParameterName, float Target, float Alpha)
 {
-	return (IsValid(CurrentSeason)) ? CurrentSeason->SeasonName : NAME_None;
-}
-
-UPrimaryDataAsset* USeasonSubsystem::GetSeasonAsset()
-{
-	return CurrentSeason;
-}
-
-FOnSeasonChanged& USeasonSubsystem::GetOnSeasonChanged()
-{
-	return OnSeasonChanged;
-}
-
-
-USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, float& OutAlpha, float& OutCurveAlpha) const
-{
-	int SeasonCount = SeasonAssets.Num();
-	int ClampedDay = FMath::Clamp(CurrentDay, 1, TotalDaysInAYear);
-
-	for (int i = 0; i < SeasonCount; i++)
+	if (!MPC)
 	{
-		USeasonAsset* Season = SeasonAssets[i];
+		return;
+	}
 
-		if (ClampedDay >= Season->SeasonStartDay && ClampedDay <= Season->SeasonEndDay)
+	float Current = 0.0f;
+	bool bFound = MPC->GetScalarParameterValue(ParameterName, Current);
+	if (bFound)
+	{
+		MPC->SetScalarParameterValue(ParameterName, FMath::InterpEaseInOut(Current, Target, Alpha, 3.0f));
+	}
+}
+
+void USeasonSubsystem::HandleVectorTransition(FName ParameterName, const FLinearColor& Target, float Alpha)
+{
+	if (!MPC)
+	{
+		return;
+	}
+
+	FLinearColor Current = FLinearColor::Transparent;
+	bool bFound = MPC->GetVectorParameterValue(ParameterName, Current);
+	if (bFound)
+	{
+		MPC->SetVectorParameterValue(ParameterName, FMath::InterpEaseInOut(Current, Target, Alpha, 3.0f));
+	}
+}
+
+USeasonAsset* USeasonSubsystem::CalculateSeasonBlend(int CurrentDay, int TotalDays, float& OutAlpha, float& OutCurve) const
+{
+	int SeasonCount = LoadedSeasons.Num();
+	int ClampedDay = FMath::Clamp(CurrentDay, 1, TotalDays);
+
+	for (USeasonAsset* Season : LoadedSeasons)
+	{
+		int StartDay = Season->StartDay;
+		int EndDay = Season->EndDay;
+
+		if (ClampedDay >= StartDay && ClampedDay <= EndDay)
 		{
-			int DaySpan = Season->SeasonEndDay - Season->SeasonStartDay;
+			int DaySpan = EndDay - StartDay;
 			if (DaySpan <= 0)
 			{
-				PRINT_ERROR(LogTemp, 2.0f, TEXT("Invalid season range"));
+				LOG_ERROR(LogSeason, TEXT("Invalid season range"));
 
 				OutAlpha = 0.0f;
-				OutCurveAlpha = 0.0f;
+				OutCurve = 0.0f;
 				return Season;
 			}
 
-			OutAlpha = float(ClampedDay - Season->SeasonStartDay) / float(DaySpan);
-			if (UCurveFloat* Curve = Season->SeasonCurve)
+			OutAlpha = float(ClampedDay - StartDay) / float(DaySpan);
+
+			UCurveFloat* Curve = Season->SeasonProgressCurve;
+			if (IsValid(Curve))
 			{
-				OutCurveAlpha = Curve->GetFloatValue(OutAlpha);
+				OutCurve = Curve->GetFloatValue(OutAlpha);
 			}
 			else
 			{
-				PRINT_ERROR(LogTemp, 2.0f, TEXT("Curve Asset is invalid, incorrect season transition is expected"));
-				OutCurveAlpha = 0.0f;
+				LOG_ERROR(LogSeason, TEXT("Curve Asset is invalid, incorrect season transition is expected"));
+				OutCurve = 0.0f;
 			}
 
 			return Season;
@@ -73,181 +97,177 @@ USeasonAsset* USeasonSubsystem::GetSeasonAlpha(int CurrentDay, float& OutAlpha, 
 	}
 
 	OutAlpha = 0.0f;
-	OutCurveAlpha = 0.0f;
+	OutCurve = 0.0f;
 
 	return nullptr;
 }
 
-
-
-bool USeasonSubsystem::IsSeasonsValid() const
+void USeasonSubsystem::LoadDefaultSeasons(const TArray<FPrimaryAssetId>& AssetIds)
 {
-	/*if (!IsValid(EnvironmentAsset) || !IsValid(ClockAsset))
+	if (!IsValid(AssetManager) || AssetIds.IsEmpty())
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset or ClockAsset is invalid"));
-		return false;
-	}
-
-
-	TArray<USeasonAsset*>& SeasonAssets = EnvironmentAsset->DefaultSeasons;
-
-	int SeasonCount = SeasonAssets.Num();
-	if (SeasonCount == 0)
-	{
-		LOG_ERROR(LogTemp, TEXT("Seasons are empty"));
-		return false;
-	}
-
-	for (int i = 0; i < SeasonCount; i++)
-	{
-		USeasonAsset* Current = SeasonAssets[i];
-		if (!IsValid(Current))
-		{
-			LOG_ERROR(LogTemp, TEXT("Season asset is not valid"));
-			return false;
-		}
-
-		if (Current->SeasonStartDay > Current->SeasonEndDay)
-		{
-			LOG_ERROR(LogTemp, TEXT("Season's start day is greater than end day"));
-			return false;
-		}
-
-		if (i > 0) {
-			USeasonAsset* Previous = SeasonAssets[i - 1];
-			if (Current->SeasonStartDay != Previous->SeasonEndDay + 1)
-			{
-				LOG_ERROR(LogTemp, TEXT("Invalid gap between seasons, %s"), *Previous->SeasonName.ToString());
-				return false;
-			}
-		}
-	}
-
-	USeasonAsset* FirstSeason = SeasonAssets[0];
-	USeasonAsset* LastSeason = SeasonAssets[SeasonCount - 1];
-	if (FirstSeason->SeasonStartDay != 1 || LastSeason->SeasonEndDay != ClockAsset->TotalDaysInAYear) {
-		LOG_ERROR(LogTemp, TEXT("First season's start day is not 1 or last season's doesnt cover the whole year"));
-		return false;
-	}*/
-
-	return true;
-}
-
-
-
-
-
-
-void USeasonSubsystem::HandleDayChange(int CurrentDay)
-{
-	if (!SeasonPrameterInstance)
-	{
-		PRINT_ERROR(LogTemp, 2.0f, TEXT("Season ParameterCollection or ClockAsset is invalid"));
+		LOG_ERROR(LogWeather, TEXT("AssetManager is invalid or AssetIds is empty"));
 		return;
 	}
 
-	float Alpha = 0.0f, CurveAlpha = 0.0f;
-	if (USeasonAsset* Season = GetSeasonAlpha(CurrentDay, Alpha, CurveAlpha))
+	TFuture<FLatentResultAssets<USeasonAsset>> Future = AssetManager->FetchPrimaryAssets<USeasonAsset>(AssetIds);
+	if (Future.IsValid())
 	{
-		PRINT_WARNING(LogTemp, 2.0f, TEXT("Season: %s, Alpha: %f, CurveAlpha: %f"), *Season->SeasonName.ToString(), Alpha, CurveAlpha);
+		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
+		return;
+	}
 
-		if (CurrentSeason != Season)
+	TWeakObjectPtr<USeasonSubsystem> WeakThis(this);
+	Future.Next([WeakThis, AssetIds](const FLatentResultAssets<USeasonAsset>& Result)
 		{
-			CurrentSeason = Season;
-			OnSeasonChanged.Broadcast(CurrentSeason);
+			USeasonSubsystem* This = WeakThis.Get();
+			if (IsValid(This) && Result.IsValid())
+			{
+				This->HandleSeasonsLoaded(Result.Assets);
+			}
+		}
+	);
+}
+
+
+void USeasonSubsystem::HandleDayChanged(int CurrentDay)
+{
+	IClockManagerInterface* ClockManager = ClockManagerInterface.Get();
+	if (!MPC || !ClockManager)
+	{
+		LOG_ERROR(LogSeason, TEXT("MPC, ClockManager is invalid"));
+		return;
+	}
+
+	float Alpha = 0.0f, Curve = 0.0f;
+	int TotalDays = ClockManager->GetTotalDaysInAYear();
+
+	USeasonAsset* SeasonAsset = CalculateSeasonBlend(CurrentDay, TotalDays, Alpha, Curve);
+	if (!IsValid(SeasonAsset))
+	{
+		LOG_ERROR(LogSeason, TEXT("SeasonAsset is invalid"));
+		return;
+	}
+
+	if (CurrentSeason != SeasonAsset)
+	{
+		if (IsValid(CurrentSeason))
+		{
+			Delegates.OnEnded.Broadcast(CurrentSeason);
 		}
 
-		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonSpecular"), FMath::Lerp(0.0f, Season->MaterialSpecular, CurveAlpha));
-		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonRoughness"), FMath::Lerp(0.0f, Season->MaterialRoughness, CurveAlpha));
-		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonOpacity"), FMath::Lerp(0.0f, Season->MaterialOpacity, CurveAlpha));
-		SeasonPrameterInstance->SetScalarParameterValue(TEXT("SeasonWind"), FMath::Lerp(0.0f, Season->MaterialWind, CurveAlpha));
-		SeasonPrameterInstance->SetVectorParameterValue(TEXT("SeasonColor"), FMath::CInterpTo(FLinearColor::Transparent, Season->MaterialColor, CurveAlpha, 1.0f));
+		Delegates.OnStarted.Broadcast(SeasonAsset);
+
+		CurrentSeason = SeasonAsset;
 	}
+
+	FMaterialSurfaceProperty& SurfaceProperty = SeasonAsset->SurfaceProperty;
+
+	HandleScalarTransition(TEXT("SeasonSpecular"), SurfaceProperty.Specular, 1.0f);
+	HandleScalarTransition(TEXT("SeasonRoughness"), SurfaceProperty.Roughness, 1.0f);
+	HandleScalarTransition(TEXT("SeasonOpacity"), SurfaceProperty.Opacity, 1.0f);
+	HandleVectorTransition(TEXT("SeasonTint"), SurfaceProperty.Tint, 1.0f);
+
+	LOG_INFO(LogSeason, TEXT("Season transition"));
+}
+
+void USeasonSubsystem::HandleSeasonsLoaded(const TArray<USeasonAsset*>& Assets)
+{
+	LoadedSeasons.Append(Assets);
+
+	IClockManagerInterface* ClockManager = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
+	if (!ClockManager)
+	{
+		LOG_ERROR(LogSeason, TEXT("ClockManager is invalid"));
+		return;
+	}
+
+	ClockManager->GetClockDelegates().OnDayChanged.AddUObject(this, &USeasonSubsystem::HandleDayChanged);
+
+	ClockManagerInterface = TWeakInterfacePtr<IClockManagerInterface>(ClockManager);
+}
+
+
+UPrimaryDataAsset* USeasonSubsystem::GetCurrentSeason() const
+{
+	return CurrentSeason;
+}
+
+FSeasonDelegates& USeasonSubsystem::GetSeasonDelegates()
+{
+	return Delegates;
 }
 
 
 bool USeasonSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
-	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
+	return
+		WorldType == EWorldType::Game ||
+		WorldType == EWorldType::PIE;
+}
+
+void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+{
+	Super::Initialize(Collection);
+	LOG_WARNING(LogEnvironment, TEXT("Initialized"));
+
+	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
 }
 
 void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
 	Super::OnWorldComponentsUpdated(InWorld);
-	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem world components updated"));
-
+	LOG_WARNING(LogSeason, TEXT("OnWorldComponentsUpdated"));
 
 	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
 	{
-		LOG_ERROR(LogTemp, TEXT("WorldConfigSettings is invalid"));
+		LOG_ERROR(LogSeason, TEXT("WorldConfigSettings is invalid"));
 		return;
 	}
 
 	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
 	if (!IsValid(EnvironmentAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("EnvironmentAsset is invalid"));
+		LOG_ERROR(LogSeason, TEXT("EnvironmentAsset is invalid"));
 		return;
 	}
 
-	if (!EnvironmentAsset->bEnableSeason)
+	bool bSeasonEnabled = EnvironmentAsset->bSeasonEnabled;
+	UMaterialParameterCollection* ParameterCollection = EnvironmentAsset->SeasonParameterCollection.Get();
+
+	if (!bSeasonEnabled || !ParameterCollection)
 	{
-		LOG_ERROR(LogTemp, TEXT("Season is disabled"));
+		LOG_ERROR(LogSeason, TEXT("Season is disabled, ParameterCollection is invalid"));
+		return;
+	}
+	
+	MPC = InWorld.GetParameterCollectionInstance(ParameterCollection);
+	if (!IsValid(MPC))
+	{
+		LOG_ERROR(LogSeason, TEXT("Season MPC is invalid"));
 		return;
 	}
 
-	if (!EnvironmentAsset->SeasonMaterialParameter)
-	{
-		LOG_ERROR(LogTemp, TEXT("SeasonMaterialParameter is invalid"));
-		return;
-	}
-
-	for (const TObjectPtr<UPrimaryDataAsset>& SeasonAsset : EnvironmentAsset->DefaultSeasons)
-	{
-		if (USeasonAsset* Season = Cast<USeasonAsset>(SeasonAsset))
-		{
-			SeasonAssets.Add(Season);
-		}
-	}
-
-	SeasonPrameterInstance = InWorld.GetParameterCollectionInstance(EnvironmentAsset->SeasonMaterialParameter);
-	if (!IsValid(SeasonPrameterInstance))
-	{
-		LOG_ERROR(LogTemp, TEXT("Season MaterialParameterCollectionInstance is invalid"));
-		return;
-	}
-
-	UClockAsset* ClockAsset = Cast<UClockAsset>(WorldSettings->ClockAsset);
-	if (!IsValid(ClockAsset))
-	{
-		LOG_ERROR(LogTemp, TEXT("ClockAsset is invalid"));
-		return;
-	}
-	TotalDaysInAYear = ClockAsset->TotalDaysInAYear;
-
-	if (IClockManagerInterface* ClockManagerInterface = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld()))
-	{
-		ClockManagerInterface->GetClockDelegates().OnDayChanged.AddUObject(this, &USeasonSubsystem::HandleDayChange);
-		ClockManager = TWeakInterfacePtr<IClockManagerInterface>(ClockManagerInterface);
-	}
+	LoadDefaultSeasons(EnvironmentAsset->DefaultSeasons);
 }
 
 void USeasonSubsystem::Deinitialize()
 {
-	if (IClockManagerInterface* ClockManagerInterface = ClockManager.Get())
+	IClockManagerInterface* ClockManager = ClockManagerInterface.Get();
+	if (ClockManager)
 	{
-		ClockManagerInterface->GetClockDelegates().OnDayChanged.RemoveAll(this);
+		ClockManager->GetClockDelegates().OnDayChanged.RemoveAll(this);
 	}
-	ClockManager.Reset();
+	ClockManagerInterface.Reset();
 
-	SeasonAssets.Empty();
+	LoadedSeasons.Empty();
 
+	AssetManager = nullptr;
 	CurrentSeason = nullptr;
-	SeasonPrameterInstance = nullptr;
+	MPC = nullptr;
 
-
-	LOG_WARNING(LogTemp, TEXT("SeasonSubsystem deinitialized"));
+	LOG_WARNING(LogEnvironment, TEXT("Deinitialized"));
 	Super::Deinitialize();
 }
 

@@ -24,7 +24,7 @@ void AEnvironmentRegionActor::AddProfile()
 
 	for (auto& Kvp : ProfileAssets)
 	{
-		SubsystemPtr->AddStackedProfile(Kvp.Key, Kvp.Value);
+		//SubsystemPtr->AddStackedProfile(Kvp.Key, Kvp.Value);
 	}
 }
 
@@ -39,7 +39,7 @@ void AEnvironmentRegionActor::RemoveProfile()
 
 	for (auto& Kvp : ProfileAssets)
 	{
-		SubsystemPtr->RemoveStackedProfile(Kvp.Key, Kvp.Value);
+		//SubsystemPtr->RemoveStackedProfile(Kvp.Key, Kvp.Value);
 	}
 }
 

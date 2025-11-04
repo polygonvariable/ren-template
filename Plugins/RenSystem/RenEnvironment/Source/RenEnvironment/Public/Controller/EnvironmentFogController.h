@@ -29,21 +29,22 @@ public:
 
 	UEnvironmentFogController();
 
-	FName ActorTag = TEXT("Actor.Environment");
-
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<UExponentialHeightFogComponent> FogComponent;
+	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFogComponent;
 
 public:
 
-	virtual void InitializeController() override;
+	// ~ UEnvironmentStackedController
+	virtual void InitializeController(AActor* Actor) override;
 	virtual void CleanupController() override;
+	// ~ End of UEnvironmentStackedController
 
 protected:
 
+	// ~ UObjectPrioritySystem
 	virtual void HandleItemChanged(UObject* Item) override;
+	// ~ End of UObjectPrioritySystem
 
 };
 

@@ -26,6 +26,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenWeatherEd",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenSeason",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -54,6 +59,14 @@
 		},
 		{
 			"Name": "RCoreSettings",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreAssetManager",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreMaterial",
 			"Enabled": true
 		}
 	]

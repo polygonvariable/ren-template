@@ -8,12 +8,15 @@
 // Generated Headers
 #include "EnvironmentProfileType.generated.h"
 
+
+
 /**
  *
  */
-UENUM(BlueprintType, DisplayName = "Environment Profile Type")
-enum EEnvironmentProfileType : uint8
+UENUM(BlueprintType)
+enum class EEnvironmentProfileType : uint8
 {
+    Default UMETA(DisplayName = "Default"),
     Fog UMETA(DisplayName = "Fog"),
     Atmosphere UMETA(DisplayName = "Atmosphere"),
     Light UMETA(DisplayName = "Light"),

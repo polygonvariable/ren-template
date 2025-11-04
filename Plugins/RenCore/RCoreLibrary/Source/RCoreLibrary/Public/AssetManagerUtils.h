@@ -22,12 +22,65 @@ public:
 	template <typename TReturnType>
 	static TReturnType GetAssetTagValue(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, FName Tag);
 
-	RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
-    RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	RCORELIBRARY_API static bool IsLoading(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
 
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	RCORELIBRARY_API static bool WasCancelled(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
+
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	RCORELIBRARY_API static bool CancelAnyPending(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
+
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	RCORELIBRARY_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	RCORELIBRARY_API static TSharedPtr<FStreamableHandle> LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
 	RCORELIBRARY_API static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool)> OnLoaded);
 
+	template <typename T>
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
+	static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool, TArray<T*>)> OnLoaded)
+	{
+		if (!IsValid(AssetManager) || !IsValid(Outer))
+		{
+			OnLoaded(false, TArray<T*>());
+			return;
+		}
+
+		TWeakObjectPtr<UAssetManager> WeakManager(AssetManager);
+		AssetManager->LoadPrimaryAssets(
+			AssetIds,
+			TArray<FName>(),
+			FStreamableDelegate::CreateWeakLambda(Outer, [WeakManager, AssetIds, Callback = MoveTemp(OnLoaded)]()
+				{
+					UAssetManager* Manager = WeakManager.Get();
+					if (!IsValid(Manager))
+					{
+						Callback(false, TArray<T*>());
+						return;
+					}
+
+					TArray<T*> LoadedAssets;
+					for (const FPrimaryAssetId& AssetId : AssetIds)
+					{
+						T* Asset = Cast<T>(Manager->GetPrimaryAssetObject(AssetId));
+						if (IsValid(Asset))
+						{
+							LoadedAssets.Add(Asset);
+						}
+					}
+
+					Callback(true, LoadedAssets);
+				}
+			)
+		);
+	}
+
     template <typename CallbackType, typename... AssetType>
+	UE_DEPRECATED(5.0, "Use RAssetManager instead")
 	static void LoadPrimaryAssetsArgs(UObject* Outer, UAssetManager* AssetManager, CallbackType&& OnLoaded, AssetType... AssetIds)
 	{
 		constexpr size_t Size = sizeof...(AssetIds);

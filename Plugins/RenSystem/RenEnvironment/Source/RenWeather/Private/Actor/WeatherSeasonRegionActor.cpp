@@ -22,14 +22,14 @@ void AWeatherSeasonRegionActor::HandleWeatherRefreshed()
 		return;
     }
 
-    UPrimaryDataAsset* CurrentSeason = SeasonInterfacePtr->GetSeasonAsset();
+    /*UPrimaryDataAsset* CurrentSeason = SeasonInterfacePtr->GetSeasonAsset();
     const FWeatherCollection& ItemCollection = WeatherCollections.FindRef(CurrentSeason);
 
     CurrentWeather = ItemCollection.GetRandomItem();
     if (bPlayerInRegion)
     {
         AddWeather();
-    }
+    }*/
 }
 
 void AWeatherSeasonRegionActor::BeginPlay()

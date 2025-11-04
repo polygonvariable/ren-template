@@ -14,10 +14,11 @@
 #include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 
 
+
 AEnvironmentActor::AEnvironmentActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	Tags.Push(TEXT("Actor.Environment"));
+	Tags.Add(TEXT("Actor.Environment"));
 	
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 	if(IsValid(SceneComponent))

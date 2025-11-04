@@ -28,13 +28,12 @@ class AWeatherRegionActorBase : public ARegionActor
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	int WeatherPriority = 20;
 
-	UPROPERTY()
-	TObjectPtr<UWeatherAsset> CurrentWeather;
+	UPROPERTY(EditAnywhere)
+	FPrimaryAssetId WeatherId;
 
-	UPROPERTY()
 	TWeakObjectPtr<UWeatherSubsystem> WeatherSubsystem;
 
 

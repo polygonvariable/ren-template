@@ -7,6 +7,7 @@
 
 // Project Header
 #include "RCoreLibrary/Public/LogMacro.h"
+#include "RCoreLibrary/Public/LogCategory.h"
 
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherSubsystem.h"
@@ -15,26 +16,26 @@
 
 void AWeatherRegionActorBase::AddWeather()
 {
-    UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
-    if (!IsValid(WeatherSubsystemPtr) || !IsValid(CurrentWeather))
+    UWeatherSubsystem* Weather = WeatherSubsystem.Get();
+    if (!IsValid(Weather) || !UWeatherAsset::IsValid(WeatherId))
     {
-        PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherSubsystem or CurrentWeather is not valid"));
+        PRINT_ERROR(LogWeather, 1.0f, TEXT("WeatherSubsystem, WeatherId is invalid"));
         return;
     }
 
-    WeatherSubsystem->AddWeather(CurrentWeather, WeatherPriority);
+    //WeatherSubsystem->AddWeather(WeatherId, WeatherPriority);
 }
 
 void AWeatherRegionActorBase::RemoveWeather()
 {
-    UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
-    if (!IsValid(WeatherSubsystemPtr))
+    UWeatherSubsystem* Weather = WeatherSubsystem.Get();
+    if (!IsValid(Weather))
     {
-        PRINT_ERROR(LogTemp, 1.0f, TEXT("WeatherSubsystem is not valid"));
+        PRINT_ERROR(LogWeather, 1.0f, TEXT("WeatherSubsystem is invalid"));
         return;
     }
 
-    WeatherSubsystem->RemoveWeather(WeatherPriority);
+    //WeatherSubsystem->RemoveWeather(WeatherId, WeatherPriority);
 }
 
 void AWeatherRegionActorBase::HandleWeatherRefreshed()
@@ -43,29 +44,29 @@ void AWeatherRegionActorBase::HandleWeatherRefreshed()
 
 void AWeatherRegionActorBase::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    if (DoesCollidedWithPlayer(OtherActor))
+    if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
     {
-        Super::HandlePlayerEntered(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+        bPlayerInRegion = true;
         AddWeather();
     }
 }
 
 void AWeatherRegionActorBase::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
-    if (DoesCollidedWithPlayer(OtherActor))
+    if (DoesCollidedWithPlayer(OtherActor) && bPlayerInRegion)
     {
-        Super::HandlePlayerExited(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+        bPlayerInRegion = false;
         RemoveWeather();
     }
 }
 
 void AWeatherRegionActorBase::BeginPlay()
 {
-    UWeatherSubsystem* WeatherSubsystemPtr = GetWorld()->GetSubsystem<UWeatherSubsystem>();
-    if (IsValid(WeatherSubsystemPtr))
+    UWeatherSubsystem* Weather = GetWorld()->GetSubsystem<UWeatherSubsystem>();
+    if (IsValid(Weather))
     {
-        WeatherSubsystemPtr->OnWeatherRefreshed.AddUObject(this, &AWeatherRegionActorBase::HandleWeatherRefreshed);
-        WeatherSubsystem = WeatherSubsystemPtr;
+        Weather->Delegates.OnRefreshed.AddUObject(this, &AWeatherRegionActorBase::HandleWeatherRefreshed);
+        WeatherSubsystem = Weather;
     }
 
     Super::BeginPlay();
@@ -75,10 +76,10 @@ void AWeatherRegionActorBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     RemoveWeather();
 
-    UWeatherSubsystem* WeatherSubsystemPtr = WeatherSubsystem.Get();
-    if (IsValid(WeatherSubsystemPtr))
+    UWeatherSubsystem* Weather = WeatherSubsystem.Get();
+    if (IsValid(Weather))
     {
-        WeatherSubsystemPtr->OnWeatherRefreshed.RemoveAll(this);
+        Weather->Delegates.RemoveAll(this);
     }
     WeatherSubsystem.Reset();
 

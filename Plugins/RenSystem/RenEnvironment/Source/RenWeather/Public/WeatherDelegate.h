@@ -6,10 +6,38 @@
 #include "CoreMinimal.h"
 
 // Forward Declarations
-class UWeatherAsset;
 
 // Delegate Declarations
 DECLARE_MULTICAST_DELEGATE(FOnWeatherRefreshed);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherChanged, UWeatherAsset* /* WeatherAsset */);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherRemoved, UWeatherAsset* /* WeatherAsset */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnWeatherChanged, UPrimaryDataAsset* /* WeatherAsset */);
+
+
+
+/**
+ *
+ */
+struct FWeatherDelegates
+{
+
+public:
+
+    FOnWeatherRefreshed OnRefreshed;
+    FOnWeatherChanged OnChanged;
+    FOnWeatherChanged OnRemoved;
+
+    void RemoveAll(UObject* Target)
+    {
+        OnRefreshed.RemoveAll(Target);
+        OnChanged.RemoveAll(Target);
+        OnRemoved.RemoveAll(Target);
+    }
+
+    void Clear()
+    {
+		OnRefreshed.Clear();
+		OnChanged.Clear();
+		OnRemoved.Clear();
+    }
+
+};
 

@@ -7,7 +7,7 @@
 
 
 
-void UEnvironmentDiscreteController::InitializeController()
+void UEnvironmentDiscreteController::InitializeController(AActor* Actor)
 {
 }
 
@@ -15,7 +15,7 @@ void UEnvironmentDiscreteController::CleanupController()
 {
 }
 
-void UEnvironmentStackedController::InitializeController()
+void UEnvironmentStackedController::InitializeController(AActor* Actor)
 {
 }
 

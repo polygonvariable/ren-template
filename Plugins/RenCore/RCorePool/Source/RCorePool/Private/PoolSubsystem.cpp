@@ -11,7 +11,6 @@
 
 
 
-
 UObject* UPoolSubsystem::AcquireObject(UClass* Class)
 {
 	TArray<TObjectPtr<UObject>>& Pool = Pools.FindOrAdd(Class);
@@ -24,7 +23,7 @@ UObject* UPoolSubsystem::AcquireObject(UClass* Class)
 
 void UPoolSubsystem::ReturnToPool(UClass* Class, UObject* Item)
 {
-	TArray<TObjectPtr<UObject>> &Pool = Pools.FindOrAdd(Class);
+	TArray<TObjectPtr<UObject>>& Pool = Pools.FindOrAdd(Class);
 	if (IsValid(Item))
 	{
 		Pool.Add(Item);

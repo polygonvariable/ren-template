@@ -7,6 +7,7 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
+#include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
 // #include "RenEnvironment/Public/Profile/WeatherWeight.h"
 
 // Generated Headers
@@ -31,37 +32,44 @@ public:
 
 
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
-    int SeasonStartDay = 1;
+    int StartDay = 1;
 
 	UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
-	int SeasonEndDay = 10;
-
+	int EndDay = 10;
 
 
     UPROPERTY(EditDefaultsOnly)
-    UCurveFloat* SeasonCurve = nullptr;
-
-
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
-    float MaterialSpecular = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
-    float MaterialRoughness = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
-    float MaterialOpacity = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
-    float MaterialWind = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly)
-    FColor MaterialColor = FColor::White;
-
+    TObjectPtr<UCurveFloat> SeasonProgressCurve = nullptr;
 
 
     //UPROPERTY(EditDefaultsOnly)
+    FMaterialSurfaceProperty SurfaceProperty;
+    
+    //UPROPERTY(EditDefaultsOnly)
     //TArray<FWeatherWeight> WeatherWeights;
+
+
+    // ~ UPrimaryDataAsset
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override
+    {
+        return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
+    }
+    // ~ End of UPrimaryDataAsset
+
+    static FPrimaryAssetType GetPrimaryAssetType()
+    {
+        return FPrimaryAssetType(TEXT("Environment.Season"));
+    }
+
+    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName)
+    {
+        return FPrimaryAssetId(GetPrimaryAssetType(), AssetName);
+    }
+
+    static bool IsValid(const FPrimaryAssetId& AssetId)
+    {
+        return AssetId.PrimaryAssetType == GetPrimaryAssetType();
+    }
 
 };
 

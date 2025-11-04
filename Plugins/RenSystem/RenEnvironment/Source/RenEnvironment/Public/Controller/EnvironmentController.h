@@ -27,7 +27,7 @@ class UEnvironmentDiscreteController : public UObject
 
 public:
 
-	virtual void InitializeController();
+	virtual void InitializeController(AActor* Actor);
 	virtual void CleanupController();
 
 };
@@ -44,9 +44,9 @@ class UEnvironmentStackedController : public UObjectPrioritySystem
 
 public:
 
-	TEnumAsByte<EEnvironmentProfileType> EnvironmentProfileType;
+	EEnvironmentProfileType ProfileType;
 
-	virtual void InitializeController();
+	virtual void InitializeController(AActor* Actor);
 	virtual void CleanupController();
 
 };

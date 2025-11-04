@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 
 // Project Headers
+#include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
@@ -17,43 +18,38 @@
 
 UEnvironmentAtmosphereController::UEnvironmentAtmosphereController()
 {
-	EnvironmentProfileType = EEnvironmentProfileType::Atmosphere;
+	ProfileType = EEnvironmentProfileType::Atmosphere;
 }
 
-void UEnvironmentAtmosphereController::InitializeController()
+void UEnvironmentAtmosphereController::InitializeController(AActor* Actor)
 {
-	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	if (IsValid(Actor))
 	{
-		if (IsValid(*ActorItr) && ActorItr->ActorHasTag(ActorTag))
-		{
-			AtmosphereComponent = Cast<USkyAtmosphereComponent>(ActorItr->GetComponentByClass(USkyAtmosphereComponent::StaticClass()));
-			break;
-		}
+		SkyAtmosphereComponent = Actor->GetComponentByClass<USkyAtmosphereComponent>();
 	}
 }
 
 void UEnvironmentAtmosphereController::CleanupController()
 {
-	AtmosphereComponent.Reset();
+	SkyAtmosphereComponent.Reset();
 }
 
 void UEnvironmentAtmosphereController::HandleItemChanged(UObject* Item)
 {
-	if (USkyAtmosphereComponent* AtmosphereComponentPtr = AtmosphereComponent.Get())
+	USkyAtmosphereComponent* SkyAtmosphere = SkyAtmosphereComponent.Get();
+	if (!IsValid(SkyAtmosphere))
 	{
-		UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
-		if (IsValid(AtmosphereProfile))
-		{
-			AtmosphereComponentPtr->SetMieScatteringScale(AtmosphereProfile->MieScatteringScale);
-		}
-		else
-		{
-			PRINT_ERROR(LogTemp, 1.0f, TEXT("AtmosphereProfile asset is invalid"));
-		}
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("AtmosphereComponent is invalid"));
+		return;
 	}
-	else
+	
+	UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
+	if (!IsValid(AtmosphereProfile))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("AtmosphereComponent not found"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("AtmosphereProfile asset is invalid"));
+		return;
 	}
+
+	SkyAtmosphere->SetMieScatteringScale(AtmosphereProfile->MieScatteringScale);
 }
 

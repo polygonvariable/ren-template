@@ -8,6 +8,12 @@
 // Project Headers
 
 
+
+// Environment Categories
+DEFINE_LOG_CATEGORY(LogEnvironment);
+DEFINE_LOG_CATEGORY(LogWeather);
+DEFINE_LOG_CATEGORY(LogSeason);
+
 // Pool Categories
 DEFINE_LOG_CATEGORY(LogPool);
 

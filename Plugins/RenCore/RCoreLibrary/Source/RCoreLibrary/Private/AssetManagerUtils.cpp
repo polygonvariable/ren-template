@@ -33,43 +33,98 @@ template RCORELIBRARY_API int32		AssetManagerUtils::GetAssetTagValue<int32>(UAss
 template RCORELIBRARY_API float		AssetManagerUtils::GetAssetTagValue<float>(UAssetManager*, const FPrimaryAssetId&, FName);
 template RCORELIBRARY_API bool		AssetManagerUtils::GetAssetTagValue<bool>(UAssetManager*, const FPrimaryAssetId&, FName);
 
+
+bool AssetManagerUtils::IsLoading(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId)
+{
+	if (!IsValid(AssetManager))
+	{
+		return false;
+	}
+
+	TSharedPtr<FStreamableHandle> Handle = AssetManager->GetPrimaryAssetHandle(AssetId);
+	FStreamableHandle* StreamableHandle = Handle.Get();
+	if (!StreamableHandle)
+	{
+		return false;
+	}
+
+	return StreamableHandle->IsLoadingInProgress();
+}
+
+bool AssetManagerUtils::WasCancelled(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId)
+{
+	if (!IsValid(AssetManager))
+	{
+		return false;
+	}
+
+	TSharedPtr<FStreamableHandle> Handle = AssetManager->GetPrimaryAssetHandle(AssetId);
+	FStreamableHandle* StreamableHandle = Handle.Get();
+	if (!StreamableHandle)
+	{
+		return false;
+	}
+
+	return StreamableHandle->WasCanceled();
+}
+
+
+bool AssetManagerUtils::CancelAnyPending(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId)
+{
+	if(!IsValid(AssetManager))
+	{
+		return false;
+	}
+
+	TSharedPtr<FStreamableHandle> Handle = AssetManager->GetPrimaryAssetHandle(AssetId);
+	FStreamableHandle* StreamableHandle = Handle.Get();
+	if (!StreamableHandle)
+	{
+		return false;
+	}
+
+	StreamableHandle->CancelHandle();
+	return true;
+}
+
 void AssetManagerUtils::LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	LoadPrimaryAsset(Outer, AssetManager, AssetId, MoveTemp(OnLoaded));
 }
 
-void AssetManagerUtils::LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded)
+TSharedPtr<FStreamableHandle> AssetManagerUtils::LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded)
 {
 	if (!IsValid(AssetManager) || !IsValid(Outer) || !AssetId.IsValid())
 	{
 		OnLoaded(false, nullptr);
-		return;
+		return nullptr;
 	}
 
-	UObject* LoadedAsset = AssetManager->GetPrimaryAssetObject(AssetId);
-	if (IsValid(LoadedAsset))
+	UObject* Object = AssetManager->GetPrimaryAssetObject(AssetId);
+	if (IsValid(Object))
 	{
-		OnLoaded(false, LoadedAsset);
+		OnLoaded(false, Object);
+		return nullptr;
 	}
-	else
-	{
-		AssetManager->LoadPrimaryAsset(
-			AssetId,
-			TArray<FName>(),
-			FStreamableDelegate::CreateWeakLambda(Outer, [AssetId, AssetManager, Callback = MoveTemp(OnLoaded)]()
+
+	TWeakObjectPtr<UAssetManager> WeakManager(AssetManager);
+	return AssetManager->LoadPrimaryAsset(
+		AssetId,
+		TArray<FName>(),
+		FStreamableDelegate::CreateWeakLambda(Outer, [WeakManager, AssetId, Callback = MoveTemp(OnLoaded)]()
+			{
+				UAssetManager* Manager = WeakManager.Get();
+				if (!IsValid(Manager))
 				{
-					if (!IsValid(AssetManager))
-					{
-						Callback(false, nullptr);
-						return;
-					}
-					UObject* NewlyLoadedAsset = AssetManager->GetPrimaryAssetObject(AssetId);
-					Callback(true, NewlyLoadedAsset);
+					Callback(false, nullptr);
+					return;
 				}
-			)
-		);
-	}
+				UObject* Object = Manager->GetPrimaryAssetObject(AssetId);
+				Callback(true, Object);
+			}
+		)
+	);
 }
 
 void AssetManagerUtils::LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool)> OnLoaded)

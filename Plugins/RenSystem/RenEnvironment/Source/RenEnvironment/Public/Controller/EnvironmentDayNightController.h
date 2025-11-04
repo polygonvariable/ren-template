@@ -30,7 +30,6 @@ class UEnvironmentDayNightController : public UEnvironmentDiscreteController
 
 public:
 
-	FName ActorTag = TEXT("Actor.Environment");
 	FName SunComponentTag = TEXT("Environment.Sun");
 	FName MoonComponentTag = TEXT("Environment.Moon");
 
@@ -42,11 +41,9 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
-	TWeakInterfacePtr<IClockManagerInterface> ClockManager;
+	TWeakInterfacePtr<IClockManagerInterface> ClockManagerInterface;
 	FTimerHandle DayTimerHandle;
 
-
-	bool LoadComponents();
 
 	void StartDayTimer();
 	void StopDayTimer();
@@ -54,8 +51,10 @@ protected:
 
 public:
 
-	virtual void InitializeController() override;
+	// ~ UEnvironmentDiscreteController
+	virtual void InitializeController(AActor* Actor) override;
 	virtual void CleanupController() override;
+	// ~ UEnvironmentDiscreteController
 
 };
 

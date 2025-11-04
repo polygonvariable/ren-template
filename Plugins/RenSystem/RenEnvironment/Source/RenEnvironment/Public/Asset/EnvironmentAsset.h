@@ -6,6 +6,10 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
 // Project Headers
 
 // Generated Headers
@@ -22,8 +26,8 @@ class UEnvironmentDiscreteController;
 /**
  *
  */
-UCLASS()
-class RENENVIRONMENT_API UEnvironmentAsset : public UPrimaryDataAsset
+UCLASS(MinimalAPI)
+class UEnvironmentAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
@@ -31,25 +35,29 @@ class RENENVIRONMENT_API UEnvironmentAsset : public UPrimaryDataAsset
 public:
 
     UPROPERTY(EditDefaultsOnly)
-    TSet<TSubclassOf<UEnvironmentStackedController>> StackedControllers;
+    FName ActorTag = TEXT("Actor.Environment");
+
+    UPROPERTY(EditDefaultsOnly)
+    TArray<TSubclassOf<UEnvironmentStackedController>> StackedControllers;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSet<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
+    TArray<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
+
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Profile"))
+    TArray<FPrimaryAssetId> DefaultProfiles;
 
 
     UPROPERTY(EditDefaultsOnly)
-    TSet<TObjectPtr<UEnvironmentProfileAsset>> DefaultStackedProfiles;
+    bool bWeatherEnabled = true;
 
+    UPROPERTY(EditDefaultsOnly, Meta = (MetaClass = "WeatherManagerActor"))
+    FSoftClassPath WeatherManager;
 
-
-    UPROPERTY(EditDefaultsOnly)
-    bool bEnableWeather = true;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherAsset"))
-    TObjectPtr<UPrimaryDataAsset> DefaultWeather;
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Weather"))
+    FPrimaryAssetId DefaultWeather;
 
     UPROPERTY(EditDefaultsOnly)
-    TObjectPtr<UMaterialParameterCollection> WeatherMaterialParameter;
+    TObjectPtr<UMaterialParameterCollection> WeatherParameterCollection;
 
     UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherController"))
     TSubclassOf<UObjectPrioritySystem> WeatherController;
@@ -58,15 +66,62 @@ public:
     float WeatherRefreshDuration = 5.0f;
 
 
+    UPROPERTY(EditDefaultsOnly)
+    bool bSeasonEnabled = true;
+
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Season"))
+    TArray<FPrimaryAssetId> DefaultSeasons;
 
     UPROPERTY(EditDefaultsOnly)
-    bool bEnableSeason = true;
+    TObjectPtr<UMaterialParameterCollection> SeasonParameterCollection;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenSeason.SeasonAsset"))
-    TSet<TObjectPtr<UPrimaryDataAsset>> DefaultSeasons;
+#if WITH_EDITOR
 
-    UPROPERTY(EditDefaultsOnly)
-    TObjectPtr<UMaterialParameterCollection> SeasonMaterialParameter;
+    // ~ UObject
+    virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const
+    {
+        bool bAnyFailed = false;
+
+        /*
+        if (bWeatherEnabled)
+        {
+            if (!WeatherManager.IsValid())
+            {
+                Context.AddError(FText::FromString(TEXT("Weather Manager is invalid.")));
+				bAnyFailed = true;
+            }
+
+            if (!DefaultWeather.IsValid())
+            {
+                Context.AddError(FText::FromString(TEXT("Default Weather is invalid.")));
+				bAnyFailed = true;
+            }
+
+            if (!WeatherParameterCollection)
+            {
+                Context.AddError(FText::FromString(TEXT("Weather Parameter Collection is invalid.")));
+				bAnyFailed = true;
+            }
+
+            if (!WeatherController)
+            {
+                Context.AddError(FText::FromString(TEXT("Weather Controller is invalid.")));
+                bAnyFailed = true;
+            }
+
+            if (WeatherRefreshDuration <= 1.0f)
+            {
+                Context.AddError(FText::FromString(TEXT("Weather Refresh Duration must be greater than 1.")));
+				bAnyFailed = true;
+            }
+        }*/
+
+        EDataValidationResult Result = (bAnyFailed) ? EDataValidationResult::Invalid : EDataValidationResult::Valid;
+        return Result;
+    }
+    // ~ End of UObject
+
+#endif
 
 };
 

@@ -39,5 +39,9 @@ public:
 	virtual float GetSmoothNormalizedTime() const = 0;
 	virtual bool IsClockActive() const = 0;
 
+	virtual int GetTotalSecondsInADay() const = 0;
+	virtual int GetTotalDaysInAYear() const = 0;
+
 };
+
 

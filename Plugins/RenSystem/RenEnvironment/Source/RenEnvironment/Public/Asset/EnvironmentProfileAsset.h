@@ -17,7 +17,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class UEnvironmentProfileAsset : public UPrimaryDataAsset
 {
 
@@ -25,8 +25,61 @@ class UEnvironmentProfileAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditDefaultsOnly)
-    TEnumAsByte<EEnvironmentProfileType> ProfileType;
+    UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+    EEnvironmentProfileType ProfileType;
+
+public:
+
+    // ~ UPrimaryDataAsset
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override
+    {
+        return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
+    }
+    // ~ End of UPrimaryDataAsset
+
+
+
+    static FPrimaryAssetType GetPrimaryAssetType()
+    {
+        return FPrimaryAssetType(TEXT("Environment.Profile"));
+    }
+
+    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName)
+    {
+        return FPrimaryAssetId(GetPrimaryAssetType(), AssetName);
+    }
+
+    static bool IsValid(const FPrimaryAssetId& AssetId)
+    {
+        return AssetId.PrimaryAssetType == GetPrimaryAssetType();
+    }
+
+    static bool GetType(const FAssetData& AssetData, FName& ProfileType)
+    {
+        return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UEnvironmentProfileAsset, ProfileType), ProfileType);
+    }
+
+    static bool GetType(const FAssetData& AssetData, EEnvironmentProfileType& ProfileType)
+    {
+        if (!AssetData.IsValid())
+        {
+            return false;
+        }
+
+        FName TypeText;
+        GetType(AssetData, TypeText);
+
+        const UEnum* Enum = StaticEnum<EEnvironmentProfileType>();
+        int64 EnumValue = Enum->GetValueByName(TypeText);
+        if (EnumValue == INDEX_NONE)
+        {
+            ProfileType = EEnvironmentProfileType::Default;
+            return false;
+        }
+
+        ProfileType = static_cast<EEnvironmentProfileType>(EnumValue);
+        return true;
+    }
 
 };
 
@@ -47,8 +100,6 @@ public:
     {
         ProfileType = EEnvironmentProfileType::Fog;
     }
-
-
 
     UPROPERTY(EditDefaultsOnly)
     float FogDensity = 0.05f;
@@ -72,8 +123,6 @@ public:
     {
         ProfileType = EEnvironmentProfileType::Light;
     }
-
-
 
     UPROPERTY(EditDefaultsOnly)
     float SunIntensity = 20.0f;
@@ -106,8 +155,6 @@ public:
     {
         ProfileType = EEnvironmentProfileType::Atmosphere;
     }
-
-
 
     UPROPERTY(EditDefaultsOnly)
     float MieScatteringScale = 0.003996f;

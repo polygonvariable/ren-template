@@ -28,13 +28,13 @@ public:
 	/**
 	* Total seconds taken to complete a day
 	*/
-	UPROPERTY(EditAnywhere, Meta = (UIMin = "0", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, AssetRegistrySearchable, Meta = (UIMin = "0", ClampMin = "0"))
 	int TotalSecondsInADay = 60;
 
 	/**
 	* Total days in game to complete a year
 	*/
-	UPROPERTY(EditAnywhere, Meta = (UIMin = "1", ClampMin = "1"))
+	UPROPERTY(EditAnywhere, AssetRegistrySearchable, Meta = (UIMin = "1", ClampMin = "1"))
 	int TotalDaysInAYear = 30;
 
 };

@@ -65,19 +65,19 @@ public:
 	RENINVENTORY_API bool UpdateItemById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId, TFunctionRef<bool(FInventoryRecord*)> Callback);
 
 	RENINVENTORY_API int GetStackCount(FName ContainerId, const FPrimaryAssetId& AssetId) const;
-	int GetStackCount(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const;
+	int GetStackCount(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider) const;
 
 	RENINVENTORY_API int GetTotalQuantity(FName ContainerId, const FPrimaryAssetId& AssetId) const;
-	int GetTotalQuantity(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const;
+	int GetTotalQuantity(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider) const;
 
 	RENINVENTORY_API int GetQuantityById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId) const;
-	int GetQuantityById(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface, FName RecordId) const;
+	int GetQuantityById(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider, FName RecordId) const;
 
 	const FInventoryStack* GetInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId) const;
-	const FInventoryStack* GetInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const;
+	const FInventoryStack* GetInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider) const;
 
 	const TArray<FInventoryRecord>* GetRecords(FName ContainerId, const FPrimaryAssetId& AssetId) const;
-	const TArray<FInventoryRecord>* GetRecords(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface) const;
+	const TArray<FInventoryRecord>* GetRecords(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider) const;
 	const TArray<FInventoryRecord>* GetRecords(FName ContainerId, const FInventoryStack* Stack) const;
 
 	RENINVENTORY_API const FInventoryRecord* GetRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index = 0) const;
@@ -93,13 +93,13 @@ public:
 
 protected:
 
-	TWeakInterfacePtr<IInventoryProviderInterface> InventoryProvider;
+	TWeakInterfacePtr<IInventoryProviderInterface> InventoryProviderInterface;
 
-	FInventoryStack* GetMutableInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId);
-	FInventoryStack* GetMutableInventoryStack(FName InContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface);
+	FInventoryStack* FindOrAddInventoryStack(FName ContainerId, const FPrimaryAssetId& AssetId);
+	FInventoryStack* FindOrAddInventoryStack(FName InContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider);
 
 	TArray<FInventoryRecord>* GetMutableRecords(FName ContainerId, const FPrimaryAssetId& AssetId);
-	TArray<FInventoryRecord>* GetMutableRecords(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryInterface);
+	TArray<FInventoryRecord>* GetMutableRecords(FName ContainerId, const FPrimaryAssetId& AssetId, IInventoryProviderInterface* InventoryProvider);
 
 	FInventoryRecord* GetMutableRecord(FName ContainerId, const FPrimaryAssetId& AssetId, int Index = 0);
 	FInventoryRecord* GetMutableRecordById(FName ContainerId, const FPrimaryAssetId& AssetId, FName RecordId);

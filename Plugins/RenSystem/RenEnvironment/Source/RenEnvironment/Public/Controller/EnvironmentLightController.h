@@ -30,26 +30,26 @@ public:
 
 	UEnvironmentLightController();
 
-	FName ActorTag = TEXT("Actor.Environment");
-	FName SunComponentTag = TEXT("Environment.Sun");
-	FName MoonComponentTag = TEXT("Environment.Moon");
+	FName SunTag = TEXT("Environment.Sun");
+	FName MoonTag = TEXT("Environment.Moon");
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UDirectionalLightComponent> SunComponent;
-
-	UPROPERTY(BlueprintReadOnly)
 	TWeakObjectPtr<UDirectionalLightComponent> MoonComponent;
 
 public:
 
-	virtual void InitializeController() override;
+	// ~ UEnvironmentStackedController
+	virtual void InitializeController(AActor* Actor) override;
 	virtual void CleanupController() override;
+	// ~ End of UEnvironmentStackedController
 
 protected:
 
+	// ~ UObjectPrioritySystem
 	virtual void HandleItemChanged(UObject* Item) override;
+	// ~ End of UObjectPrioritySystem
 
 };
 

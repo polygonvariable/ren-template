@@ -11,6 +11,10 @@
 
 // Forward Declarations
 
+// Environment Categories
+RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogEnvironment, Log, All);
+RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogWeather, Log, All);
+RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogSeason, Log, All);
 
 // Pool Categories
 RCORELIBRARY_API DECLARE_LOG_CATEGORY_EXTERN(LogPool, Log, All);

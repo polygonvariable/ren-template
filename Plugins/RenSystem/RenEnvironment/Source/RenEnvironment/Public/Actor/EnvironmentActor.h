@@ -14,8 +14,10 @@ class USceneComponent;
 class USkyLightComponent;
 class USkyAtmosphereComponent;
 class UExponentialHeightFogComponent;
-class UOrbitalLightComponent;
 class UStaticMeshComponent;
+
+class UOrbitalLightComponent;
+
 
 
 /**
@@ -57,7 +59,7 @@ public:
 	TObjectPtr<UStaticMeshComponent> MoonMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
-	float Time = 0.0f;
+	float TimeOfDay = 0.0f;
 
 protected:
 

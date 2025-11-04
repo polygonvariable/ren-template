@@ -21,9 +21,19 @@ class RCORECOMMON_API UObjectPrioritySystem : public UObject
 
 public:
 
+	virtual void Initialize();
+	virtual void Deinitialize();
+
 	bool AddItem(UObject* Item, int Priority);
 	bool RemoveItem(int Priority);
+
 	virtual void CleanUpItems();
+
+#if WITH_EDITOR
+
+	virtual FString GetDebugString();
+
+#endif
 
 protected:
 

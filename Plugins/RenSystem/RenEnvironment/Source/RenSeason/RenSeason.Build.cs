@@ -27,7 +27,8 @@ public class RenSeason : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RenEnvironment",
+                "RCoreMaterial",
+                "RenEnvironment",
             }
 			);
 			
@@ -43,6 +44,7 @@ public class RenSeason : ModuleRules
                 "RCoreClock",
                 "RCoreSettings",
                 "RCoreLibrary",
+                "RCoreAssetManager",
             }
 			);
 		

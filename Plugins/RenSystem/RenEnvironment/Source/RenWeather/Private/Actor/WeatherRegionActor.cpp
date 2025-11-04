@@ -11,10 +11,10 @@
 
 void AWeatherRegionActor::HandleWeatherRefreshed()
 {
-    CurrentWeather = WeatherCollection.GetRandomItem();
+    /*CurrentWeather = WeatherCollection.GetRandomItem();
     if (bPlayerInRegion)
     {
         AddWeather();
-    }
+    }*/
 }
 

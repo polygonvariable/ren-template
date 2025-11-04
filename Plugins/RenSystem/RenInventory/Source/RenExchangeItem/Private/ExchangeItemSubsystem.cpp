@@ -87,8 +87,8 @@ bool UExchangeItemSubsystem::HandleItemExchange(FName ContainerId, const FPrimar
 
 	const TMap<FPrimaryAssetId, int>& RequiredAssets = ExchangeRule->RequiredAssets;
 
-	bool bCanExchange = Inventory->ContainsItems(ContainerId, RequiredAssets, Quantity);
-	if (!bCanExchange)
+	bool bContains = Inventory->ContainsItems(ContainerId, RequiredAssets, Quantity);
+	if (!bContains)
 	{
 		PRINT_ERROR(LogExchangeItem, 1.0f, TEXT("Inventory does not contain required items"));
 		return false;
@@ -129,7 +129,8 @@ bool UExchangeItemSubsystem::HandleItemExchange(FName ContainerId, const FPrimar
 			return false;
 		}
 
-		if (Record->Value >= Quota.Limit)
+		bool bExhausted = Record->Value >= Quota.Limit;
+		if (bExhausted)
 		{
 			PRINT_ERROR(LogExchangeItem, 1.0f, TEXT("Exchange limit reached"));
 			return false;

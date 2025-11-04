@@ -20,13 +20,13 @@ UOrbitalLightComponent::UOrbitalLightComponent()
 	DynamicShadowDistanceMovableLight = 4000.0f;
 }
 
-void UOrbitalLightComponent::SetTime(float NewTime)
+void UOrbitalLightComponent::SetTimeOfDay(float NewTime)
 {
-	Time = NewTime;
+	TimeOfDay = NewTime;
 
-	int Hour = static_cast<int>(Time) % 24;
-	int Minute = static_cast<int>((Time - Hour) * 60.0f) % 60;
-	int Second = static_cast<int>(((Time - Hour) * 60.0f - Minute) * 60.0f) % 60;
+	int Hour = static_cast<int>(TimeOfDay) % 24;
+	int Minute = static_cast<int>((TimeOfDay - Hour) * 60.0f) % 60;
+	int Second = static_cast<int>(((TimeOfDay - Hour) * 60.0f - Minute) * 60.0f) % 60;
 
 	FSunPositionData SunPositionData;
 	USunPositionFunctionLibrary::GetSunPosition(Latitude, Longitude, TimeZone, true, Year, Month, Day, Hour, Minute, Second, SunPositionData);
@@ -38,8 +38,8 @@ void UOrbitalLightComponent::SetTime(float NewTime)
 	SetRelativeRotation(FRotator(RotationPitch, RotationYaw, 0.0f));
 }
 
-float UOrbitalLightComponent::GetTime()
+float UOrbitalLightComponent::GetTimeOfDay()
 {
-	return Time;
+	return TimeOfDay;
 }
 

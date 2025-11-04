@@ -89,8 +89,11 @@ public:
 
 	virtual FClockDelegates& GetClockDelegates() override;
 
-	float GetSmoothNormalizedTime() const override;
-	bool IsClockActive() const override;
+	virtual float GetSmoothNormalizedTime() const override;
+	virtual bool IsClockActive() const override;
+
+	virtual int GetTotalSecondsInADay() const override { return TotalSecondsInADay; }
+	virtual int GetTotalDaysInAYear() const override { return TotalDaysInAYear; }
 
 protected:
 

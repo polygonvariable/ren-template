@@ -6,6 +6,15 @@
 
 
 
+void UObjectPrioritySystem::Initialize()
+{
+}
+
+void UObjectPrioritySystem::Deinitialize()
+{
+	CleanUpItems();
+}
+
 bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 {
 	if (!IsValid(Item) || Priority < 0)
@@ -13,36 +22,36 @@ bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 		LOG_ERROR(LogTemp, TEXT("Item is not valid or priority is less than 0"));
 		return false;
 	}
-
-	TWeakObjectPtr<UObject> FoundItem = Items.FindRef(Priority);
-	UObject* FoundItemPtr = FoundItem.Get();
-	if (FoundItemPtr == Item)
+	
+	TWeakObjectPtr<UObject>* FoundItem = Items.Find(Priority);
+	if (FoundItem)
 	{
-		LOG_WARNING(LogTemp, TEXT("Item already exists at priority"));
-		return false;
+		UObject* Object = FoundItem->Get();
+		if (IsValid(Object))
+		{
+			if (Object == Item)
+			{
+				LOG_WARNING(LogTemp, TEXT("Item already exists at priority"));
+				return false;
+			}
+
+			HandleItemRemoved(Object, true);
+		}
+	}
+
+	Items.Add(Priority, Item);
+	HandleItemAdded(Item);
+
+	if (Priority >= HighestPriority)
+	{
+		HighestPriority = Priority;
+		HandleItemChanged(Item);
 	}
 	else
 	{
-		if (IsValid(FoundItemPtr))
-		{
-			HandleItemRemoved(FoundItemPtr, true);
-		}
-
-		Items.Add(Priority, Item);
-		HandleItemAdded(Item);
-
-		if (Priority >= HighestPriority)
-		{
-			HighestPriority = Priority;
-			HandleItemChanged(Item);
-		}
-		else
-		{
-			LOG_WARNING(LogTemp, TEXT("Priority is less than highest priority, added in queue"));
-		}
-
-		return true;
+		LOG_WARNING(LogTemp, TEXT("Priority is less than highest priority, added in queue"));
 	}
+	return true;
 }
 
 bool UObjectPrioritySystem::RemoveItem(int Priority)
@@ -102,6 +111,30 @@ void UObjectPrioritySystem::CleanUpItems()
 	Items.Empty();
 }
 
+#if WITH_EDITOR
+
+FString UObjectPrioritySystem::GetDebugString()
+{
+	FString Result;
+
+	Result += FString::Printf(TEXT("Total items: %d\n"), Items.Num());
+	Result += FString::Printf(TEXT("Priority\tName\n"));
+
+	for (const TPair<int, TWeakObjectPtr<UObject>>& Pair : Items)
+	{
+		int Priority = Pair.Key;
+		TObjectPtr<UObject> Item = Pair.Value.Get();
+
+		FString Title = IsValid(Item) ? Item->GetName() : TEXT("???");
+
+		Result += FString::Printf(TEXT("%d\t%s\n"), Priority, *Title);
+	}
+
+	return Result;
+}
+
+#endif
+
 void UObjectPrioritySystem::HandleItemAdded(UObject* Item)
 {
 }
@@ -117,5 +150,4 @@ void UObjectPrioritySystem::HandleItemChanged(UObject* Item)
 void UObjectPrioritySystem::HandleNoItemsLeft()
 {
 }
-
 

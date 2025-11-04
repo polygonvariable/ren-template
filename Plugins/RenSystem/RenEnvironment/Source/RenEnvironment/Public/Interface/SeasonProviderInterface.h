@@ -15,7 +15,22 @@
 class UPrimaryDataAsset;
 
 // Delegates Declarations
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSeasonChanged, UPrimaryDataAsset* /* Season Asset */);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSeasonUpdated, UPrimaryDataAsset* /* SeasonAsset */);
+
+
+
+/**
+ *
+ */
+struct FSeasonDelegates
+{
+
+public:
+
+	FOnSeasonUpdated OnStarted;
+	FOnSeasonUpdated OnEnded;
+
+};
 
 
 
@@ -31,9 +46,8 @@ class RENENVIRONMENT_API ISeasonProviderInterface
 
 public:
 
-	virtual FOnSeasonChanged& GetOnSeasonChanged() = 0;
-	virtual UPrimaryDataAsset* GetSeasonAsset() = 0;
-	virtual const FName GetSeasonName() const = 0;
+	virtual FSeasonDelegates& GetSeasonDelegates() = 0;
+	virtual UPrimaryDataAsset* GetCurrentSeason() const = 0;
 	
 };
 

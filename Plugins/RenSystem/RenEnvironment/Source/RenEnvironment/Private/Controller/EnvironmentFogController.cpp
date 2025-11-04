@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 
 // Project Headers
+#include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentProfileAsset.h"
@@ -17,43 +18,38 @@
 
 UEnvironmentFogController::UEnvironmentFogController()
 {
-	EnvironmentProfileType = EEnvironmentProfileType::Fog;
+	ProfileType = EEnvironmentProfileType::Fog;
 }
 
-void UEnvironmentFogController::InitializeController()
+void UEnvironmentFogController::InitializeController(AActor* Actor)
 {
-	for (TActorIterator<AActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+	if (IsValid(Actor))
 	{
-		if (IsValid(*ActorItr) && ActorItr->ActorHasTag(ActorTag))
-		{
-			FogComponent = Cast<UExponentialHeightFogComponent>(ActorItr->GetComponentByClass(UExponentialHeightFogComponent::StaticClass()));
-			break;
-		}
+		ExponentialHeightFogComponent = Actor->GetComponentByClass<UExponentialHeightFogComponent>();
 	}
 }
 
 void UEnvironmentFogController::CleanupController()
 {
-	FogComponent.Reset();
+	ExponentialHeightFogComponent.Reset();
 }
 
 void UEnvironmentFogController::HandleItemChanged(UObject* Item)
 {
-	if (UExponentialHeightFogComponent* FogComponentPtr = FogComponent.Get())
+	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
+	if (!IsValid(ExponentialHeightFog))
 	{
-		UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
-		if (IsValid(FogProfile))
-		{
-			FogComponentPtr->SetFogDensity(FogProfile->FogDensity);
-		}
-		else
-		{
-			PRINT_ERROR(LogTemp, 1.0f, TEXT("FogProfile asset is invalid"));
-		}
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("ExponentialHeightFog is invalid"));
+		return;
 	}
-	else
+
+	UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
+	if (!IsValid(FogProfile))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("FogComponent not found"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("FogProfile asset is invalid"));
+		return;
 	}
+
+	ExponentialHeightFog->SetFogDensity(FogProfile->FogDensity);
 }
 

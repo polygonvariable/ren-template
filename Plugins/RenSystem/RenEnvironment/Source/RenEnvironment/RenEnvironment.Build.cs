@@ -44,6 +44,7 @@ public class RenEnvironment : ModuleRules
                 "RCoreClock",
                 "RCoreSettings",
                 "RCoreLibrary",
+                "RCoreAssetManager",
             }
 			);
 		
