@@ -39,6 +39,10 @@ public class RenWeatherEd : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"Projects",
+				"AssetTools",
+                "UnrealEd",
+
                 "RenWeather",
             }
 			);

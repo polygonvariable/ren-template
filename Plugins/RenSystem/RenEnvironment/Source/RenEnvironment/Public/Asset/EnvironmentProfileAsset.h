@@ -17,7 +17,7 @@
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UEnvironmentProfileAsset : public UPrimaryDataAsset
 {
 
@@ -25,7 +25,7 @@ class UEnvironmentProfileAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+    UPROPERTY(VisibleAnywhere, AssetRegistrySearchable)
     EEnvironmentProfileType ProfileType;
 
 public:
@@ -88,7 +88,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UEnvironmentFogProfileAsset : public UEnvironmentProfileAsset
 {
  
@@ -111,7 +111,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UEnvironmentLightProfileAsset : public UEnvironmentProfileAsset
 {
  
@@ -143,7 +143,7 @@ public:
 /**
  * 
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UEnvironmentAtmosphereProfileAsset : public UEnvironmentProfileAsset
 {
  

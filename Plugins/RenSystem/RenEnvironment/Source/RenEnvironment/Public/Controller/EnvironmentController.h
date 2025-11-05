@@ -37,7 +37,7 @@ public:
  *
  */
 UCLASS(Abstract)
-class UEnvironmentStackedController : public UObjectPrioritySystem
+class UEnvironmentStackedController : public UPrioritySystem
 {
 
 	GENERATED_BODY()

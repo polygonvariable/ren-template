@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenEnvironmentEd",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenWeather",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

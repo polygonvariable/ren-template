@@ -6,16 +6,16 @@
 
 
 
-void UObjectPrioritySystem::Initialize()
+void UPrioritySystem::Initialize()
 {
 }
 
-void UObjectPrioritySystem::Deinitialize()
+void UPrioritySystem::Deinitialize()
 {
 	CleanUpItems();
 }
 
-bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
+bool UPrioritySystem::AddItem(UObject* Item, int Priority)
 {
 	if (!IsValid(Item) || Priority < 0)
 	{
@@ -35,17 +35,17 @@ bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 				return false;
 			}
 
-			HandleItemRemoved(Object, true);
+			OnItemRemoved(Object, true);
 		}
 	}
 
 	Items.Add(Priority, Item);
-	HandleItemAdded(Item);
+	OnItemAdded(Item);
 
 	if (Priority >= HighestPriority)
 	{
 		HighestPriority = Priority;
-		HandleItemChanged(Item);
+		OnItemChanged(Item);
 	}
 	else
 	{
@@ -54,7 +54,7 @@ bool UObjectPrioritySystem::AddItem(UObject* Item, int Priority)
 	return true;
 }
 
-bool UObjectPrioritySystem::RemoveItem(int Priority)
+bool UPrioritySystem::RemoveItem(int Priority)
 {
 	TWeakObjectPtr<UObject> RemovedItem;
 	if (!Items.RemoveAndCopyValue(Priority, RemovedItem))
@@ -66,7 +66,7 @@ bool UObjectPrioritySystem::RemoveItem(int Priority)
 	UObject* RemovedItemPtr = RemovedItem.Get();
 	if (IsValid(RemovedItemPtr))
 	{
-		HandleItemRemoved(RemovedItemPtr, false);
+		OnItemRemoved(RemovedItemPtr, false);
 	}
 
 	if (Priority == HighestPriority)
@@ -74,7 +74,7 @@ bool UObjectPrioritySystem::RemoveItem(int Priority)
 		if (Items.Num() == 0)
 		{
 			HighestPriority = -1;
-			HandleNoItemsLeft();
+			OnNoItemsLeft();
 		}
 		else
 		{
@@ -84,7 +84,7 @@ bool UObjectPrioritySystem::RemoveItem(int Priority)
 			UObject* NewItemPtr = NewItem.Get();
 			if (IsValid(NewItemPtr))
 			{
-				HandleItemChanged(NewItemPtr);
+				OnItemChanged(NewItemPtr);
 			}
 		}
 	}
@@ -92,7 +92,7 @@ bool UObjectPrioritySystem::RemoveItem(int Priority)
 	return true;
 }
 
-void UObjectPrioritySystem::CalculateHighestPriority()
+void UPrioritySystem::CalculateHighestPriority()
 {
 	int NewPriority = TNumericLimits<int>::Lowest();
 	for (const auto& Pair : Items)
@@ -106,14 +106,14 @@ void UObjectPrioritySystem::CalculateHighestPriority()
 	HighestPriority = NewPriority;
 }
 
-void UObjectPrioritySystem::CleanUpItems()
+void UPrioritySystem::CleanUpItems()
 {
 	Items.Empty();
 }
 
 #if WITH_EDITOR
 
-FString UObjectPrioritySystem::GetDebugString()
+FString UPrioritySystem::GetDebugString()
 {
 	FString Result;
 
@@ -135,19 +135,19 @@ FString UObjectPrioritySystem::GetDebugString()
 
 #endif
 
-void UObjectPrioritySystem::HandleItemAdded(UObject* Item)
+void UPrioritySystem::OnItemAdded(UObject* Item)
 {
 }
 
-void UObjectPrioritySystem::HandleItemRemoved(UObject* Item, bool bWasReplaced)
+void UPrioritySystem::OnItemRemoved(UObject* Item, bool bWasReplaced)
 {
 }
 
-void UObjectPrioritySystem::HandleItemChanged(UObject* Item)
+void UPrioritySystem::OnItemChanged(UObject* Item)
 {
 }
 
-void UObjectPrioritySystem::HandleNoItemsLeft()
+void UPrioritySystem::OnNoItemsLeft()
 {
 }
 

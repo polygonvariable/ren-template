@@ -14,7 +14,7 @@
  *
  */
 UCLASS()
-class RCORECOMMON_API UObjectPrioritySystem : public UObject
+class RCORECOMMON_API UPrioritySystem : public UObject
 {
 
 	GENERATED_BODY()
@@ -43,10 +43,10 @@ protected:
 
 	void CalculateHighestPriority();
 
-	virtual void HandleItemAdded(UObject* Item);
-	virtual void HandleItemRemoved(UObject* Item, bool bWasReplaced);
-	virtual void HandleItemChanged(UObject* Item);
-	virtual void HandleNoItemsLeft();
+	virtual void OnItemAdded(UObject* Item);
+	virtual void OnItemRemoved(UObject* Item, bool bWasReplaced);
+	virtual void OnItemChanged(UObject* Item);
+	virtual void OnNoItemsLeft();
 
 };
 

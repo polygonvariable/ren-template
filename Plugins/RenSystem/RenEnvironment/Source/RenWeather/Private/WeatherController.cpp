@@ -13,6 +13,7 @@
 #include "RCoreMaterial/Public/MaterialLibrary.h"
 
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
+#include "RenWeather/Public/WeatherAsset.h"
 
 
 
@@ -21,11 +22,6 @@ void UWeatherController::SetMaterialCollection(UMaterialParameterCollectionInsta
 	MPC = MaterialCollection;
 }
 
-
-void UWeatherController::TimerUpdate(float Rate, float Duration)
-{
-	PRINT_INFO(LogWeather, 0.1f, TEXT("Weather Update"));
-}
 
 void UWeatherController::AddEnvironmentProfile(UWeatherAsset* WeatherAsset)
 {
@@ -79,19 +75,6 @@ void UWeatherController::RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset)
 
 void UWeatherController::HandleTransition(const FMaterialSurfaceProperty& SurfaceProperty, const FWeatherSurfaceEffect& SurfaceEffect)
 {
-	/*
-	CurrentSurfaceProperty.GetParameters(MPC, TEXT("WeatherTint"), TEXT("WeatherSpecular"), TEXT("WeatherRoughness"), TEXT("WeatherOpacity"));
-	CurrentSurfaceEffect.GetParameters(MPC, TEXT("WeatherWind"), TEXT("WeatherRain"), TEXT("WeatherSnow"));
-
-	TargetSurfaceProperty = SurfaceProperty;
-	TargetSurfaceEffect = SurfaceEffect;
-
-	if (IsValid(WeatherTimer))
-	{
-		WeatherTimer->RestartTimer();
-	}
-	*/
-
 	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherSpecular"), SurfaceProperty.Specular, 1.0f);
 	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherRoughness"), SurfaceProperty.Roughness, 1.0f);
 	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherOpacity"), SurfaceProperty.Opacity, 1.0f);
@@ -104,24 +87,13 @@ void UWeatherController::HandleTransition(const FMaterialSurfaceProperty& Surfac
 
 void UWeatherController::Initialize()
 {
-	if (!IsValid(WeatherTimer))
-	{
-		WeatherTimer = NewObject<UTimer>(this);
-		WeatherTimer->OnTimerUpdate.BindUObject(this, &UWeatherController::TimerUpdate);
-	}
+
 }
 
 void UWeatherController::Deinitialize()
 {
 	UWeatherAsset* WeatherAsset = CurrentWeather.Get();
 	RemoveEnvironmentProfile(WeatherAsset);
-
-	if (IsValid(WeatherTimer))
-	{
-		WeatherTimer->OnTimerUpdate.Unbind();
-		WeatherTimer->ClearTimer();
-	}
-	WeatherTimer = nullptr;
 
 	LatentCollection.Empty();
 	CurrentWeather = nullptr;
@@ -131,7 +103,7 @@ void UWeatherController::Deinitialize()
 }
 
 
-void UWeatherController::HandleItemChanged(UObject* Item)
+void UWeatherController::OnItemChanged(UObject* Item)
 {
 	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
 	if (!MPC || !IsValid(WeatherAsset) || WeatherAsset == CurrentWeather)
@@ -152,7 +124,7 @@ void UWeatherController::HandleItemChanged(UObject* Item)
 	Delegates.OnChanged.Broadcast(WeatherAsset);
 }
 
-void UWeatherController::HandleItemRemoved(UObject* Item, bool bWasReplaced)
+void UWeatherController::OnItemRemoved(UObject* Item, bool bWasReplaced)
 {
 	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
 	if (!IsValid(WeatherAsset))
@@ -167,7 +139,7 @@ void UWeatherController::HandleItemRemoved(UObject* Item, bool bWasReplaced)
 	Delegates.OnRemoved.Broadcast(WeatherAsset);
 }
 
-void UWeatherController::HandleNoItemsLeft()
+void UWeatherController::OnNoItemsLeft()
 {
 	CurrentWeather = nullptr;
 
@@ -176,7 +148,7 @@ void UWeatherController::HandleNoItemsLeft()
 
 
 
-
+/*
 bool UTimer::IsTimerValid()
 {
 	return TimerUtils::IsValid(TimerHandle, this);
@@ -241,4 +213,4 @@ void UTimer::TimerTick()
 
 	LOG_INFO(LogWeather, TEXT("Timer Tick"));
 }
-
+*/

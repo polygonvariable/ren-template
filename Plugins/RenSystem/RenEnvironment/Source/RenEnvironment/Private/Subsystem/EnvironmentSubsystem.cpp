@@ -250,7 +250,7 @@ bool UEnvironmentSubsystem::RegisterDiscreteController(TSubclassOf<UEnvironmentD
 	return true;
 }
 
-void UEnvironmentSubsystem::LoadDefaultProfiles(const TArray<FPrimaryAssetId>& AssetIds)
+void UEnvironmentSubsystem::LoadDefaultProfiles(const TArray<FPrimaryAssetId>& AssetIds, int Priority)
 {
 	if (!IsValid(AssetManager) || AssetIds.IsEmpty())
 	{
@@ -326,7 +326,10 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		RegisterDiscreteController(Controller);
 	}
 
-	LoadDefaultProfiles(EnvironmentAsset->DefaultProfiles);
+	const TArray<FPrimaryAssetId>& AssetIds = EnvironmentAsset->DefaultProfiles;
+	int Priority = EnvironmentAsset->DefaultProfilePriority;
+
+	LoadDefaultProfiles(AssetIds, Priority);
 }
 
 void UEnvironmentSubsystem::Deinitialize()

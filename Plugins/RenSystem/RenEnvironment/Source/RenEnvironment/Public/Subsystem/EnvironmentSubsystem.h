@@ -68,7 +68,7 @@ protected:
 	bool RegisterStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass);
 	bool RegisterDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass);
 
-	void LoadDefaultProfiles(const TArray<FPrimaryAssetId>& AssetIds);
+	void LoadDefaultProfiles(const TArray<FPrimaryAssetId>& AssetIds, int Priority);
 
 protected:
 

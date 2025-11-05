@@ -8,9 +8,9 @@
 // Project Headers
 #include "RCoreCommon/Public/Priority/PrioritySystem.h"
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
-#include "RenWeather/Public/WeatherAsset.h"
 
 #include "RenWeather/Public/WeatherDelegate.h"
+#include "RenWeather/Public/WeatherSurfaceEffect.h"
 
 // Generated Headers
 #include "WeatherController.generated.h"
@@ -19,14 +19,60 @@
 class UMaterialParameterCollectionInstance;
 class UWeatherAsset;
 
-struct FMaterialSurfaceProperty;
-struct FWeatherSurfaceEffect;
 
 
 /**
- *
- *
+ * 
+ * 
  */
+UCLASS()
+class UWeatherController : public UPrioritySystem
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FWeatherDelegates Delegates;
+
+	void SetMaterialCollection(UMaterialParameterCollectionInstance* MaterialCollection);
+
+protected:
+
+	TObjectPtr<UWeatherAsset> CurrentWeather;
+	UMaterialParameterCollectionInstance* MPC;
+
+	TMap<TObjectPtr<UWeatherAsset>, TArray<TPair<FPrimaryAssetId, FGuid>>> LatentCollection;
+
+
+	virtual void AddEnvironmentProfile(UWeatherAsset* WeatherAsset);
+	virtual void RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset);
+
+	virtual void HandleTransition(const FMaterialSurfaceProperty& SurfaceProperty, const FWeatherSurfaceEffect& SurfaceEffects);
+
+public:
+
+	// ~ UPrioritySystem
+	virtual void Initialize() override;
+	virtual void Deinitialize() override;
+	// ~ End of UPrioritySystem
+
+protected:
+	
+	// ~ UPrioritySystem
+	virtual void OnItemChanged(UObject* Item) override;
+	virtual void OnItemRemoved(UObject* Item, bool bWasReplaced) override;
+	virtual void OnNoItemsLeft() override;
+	// ~ End of UPrioritySystem
+
+};
+
+
+
+
+
+
+/**
 UCLASS()
 class UTimer : public UObject
 {
@@ -61,60 +107,5 @@ private:
 	FTimerHandle TimerHandle;
 
 };
-
-
-/**
- * 
- * 
- */
-UCLASS()
-class UWeatherController : public UObjectPrioritySystem
-{
-
-	GENERATED_BODY()
-
-public:
-
-	FWeatherDelegates Delegates;
-
-	void SetMaterialCollection(UMaterialParameterCollectionInstance* MaterialCollection);
-
-protected:
-
-	UPROPERTY()
-	TObjectPtr<UTimer> WeatherTimer;
-
-	FMaterialSurfaceProperty CurrentSurfaceProperty;
-	FWeatherSurfaceEffect CurrentSurfaceEffect;
-
-	FMaterialSurfaceProperty TargetSurfaceProperty;
-	FWeatherSurfaceEffect TargetSurfaceEffect;
-
-	TMap<TObjectPtr<UWeatherAsset>, TArray<TPair<FPrimaryAssetId, FGuid>>> LatentCollection;
-	TObjectPtr<UWeatherAsset> CurrentWeather;
-	UMaterialParameterCollectionInstance* MPC;
-
-	virtual void TimerUpdate(float Rate, float Duration);
-
-	virtual void AddEnvironmentProfile(UWeatherAsset* WeatherAsset);
-	virtual void RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset);
-
-	virtual void HandleTransition(const FMaterialSurfaceProperty& SurfaceProperty, const FWeatherSurfaceEffect& SurfaceEffects);
-
-public:
-
-	// ~ UObjectPrioritySystem
-	virtual void Initialize() override;
-	virtual void Deinitialize() override;
-	// ~ End of UObjectPrioritySystem
-
-protected:
-	
-	// ~ UObjectPrioritySystem
-	virtual void HandleItemChanged(UObject* Item) override;
-	virtual void HandleItemRemoved(UObject* Item, bool bWasReplaced) override;
-	virtual void HandleNoItemsLeft() override;
-	// ~ End of UObjectPrioritySystem
-
-};
+*/
 

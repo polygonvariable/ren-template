@@ -91,7 +91,7 @@ void UWeatherSubsystem::LoadWeatherManager(const FSoftClassPath& ClassPath)
 	// Load & Spawn WeatherManager
 }
 
-void UWeatherSubsystem::LoadDefaultWeather(const FPrimaryAssetId& AssetId)
+void UWeatherSubsystem::LoadDefaultWeather(const FPrimaryAssetId& AssetId, int Priority)
 {
 	if (!UWeatherAsset::IsValid(AssetId))
 	{
@@ -125,7 +125,7 @@ bool UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
 	return TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(5.0f, RefreshTime));
 }
 
-bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UObjectPrioritySystem> ControllerClass)
+bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UPrioritySystem> ControllerClass)
 {
 	if (IsValid(WeatherController) || !IsValid(ControllerClass))
 	{
@@ -237,7 +237,10 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		return;
 	}
 
-	LoadDefaultWeather(EnvironmentAsset->DefaultWeather);
+	FPrimaryAssetId& DefaultWeather = EnvironmentAsset->DefaultWeather;
+	int Priority = EnvironmentAsset->DefaultWeatherPriority;
+
+	LoadDefaultWeather(DefaultWeather, Priority);
 }
 
 void UWeatherSubsystem::Deinitialize()

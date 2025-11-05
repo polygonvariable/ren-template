@@ -34,7 +34,7 @@ void UEnvironmentFogController::CleanupController()
 	ExponentialHeightFogComponent.Reset();
 }
 
-void UEnvironmentFogController::HandleItemChanged(UObject* Item)
+void UEnvironmentFogController::OnItemChanged(UObject* Item)
 {
 	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
 	if (!IsValid(ExponentialHeightFog))

@@ -47,9 +47,9 @@ public:
 
 protected:
 
-	// ~ UObjectPrioritySystem
-	virtual void HandleItemChanged(UObject* Item) override;
-	// ~ End of UObjectPrioritySystem
+	// ~ UPrioritySystem
+	virtual void OnItemChanged(UObject* Item) override;
+	// ~ End of UPrioritySystem
 
 };
 

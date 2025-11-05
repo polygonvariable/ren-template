@@ -34,7 +34,7 @@ void UEnvironmentAtmosphereController::CleanupController()
 	SkyAtmosphereComponent.Reset();
 }
 
-void UEnvironmentAtmosphereController::HandleItemChanged(UObject* Item)
+void UEnvironmentAtmosphereController::OnItemChanged(UObject* Item)
 {
 	USkyAtmosphereComponent* SkyAtmosphere = SkyAtmosphereComponent.Get();
 	if (!IsValid(SkyAtmosphere))

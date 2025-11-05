@@ -42,7 +42,7 @@ void UEnvironmentLightController::CleanupController()
 	MoonComponent.Reset();
 }
 
-void UEnvironmentLightController::HandleItemChanged(UObject* Item)
+void UEnvironmentLightController::OnItemChanged(UObject* Item)
 {
 	UDirectionalLightComponent* Sun = SunComponent.Get();
 	UDirectionalLightComponent* Moon = MoonComponent.Get();

@@ -14,8 +14,7 @@
 
 // Forward Declarations
 class URAssetManager;
-
-class UObjectPrioritySystem;
+class UPrioritySystem;
 class UEnvironmentAsset;
 class UWeatherController;
 class UWeatherAsset;
@@ -59,10 +58,10 @@ protected:
 	
 
 	void LoadWeatherManager(const FSoftClassPath& ClassPath);
-	void LoadDefaultWeather(const FPrimaryAssetId& AssetId);
+	void LoadDefaultWeather(const FPrimaryAssetId& AssetId, int Priority);
 
 	bool CreateWeatherTimer(float RefreshTime);
-	bool CreateWeatherController(TSubclassOf<UObjectPrioritySystem> ControllerClass);
+	bool CreateWeatherController(TSubclassOf<UPrioritySystem> ControllerClass);
 	bool CreateWeatherMPC(UMaterialParameterCollection* Collection);
 
 	// ~ Bindings

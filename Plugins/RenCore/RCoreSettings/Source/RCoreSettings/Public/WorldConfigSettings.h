@@ -31,8 +31,5 @@ public:
 	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> EnvironmentAsset;
 
-	UPROPERTY(EditAnywhere, Category = "World Config Settings")
-	FName EnvironmentTag = NAME_None;
-
 };
 

@@ -5,16 +5,15 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Headers
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
+#include "RenWeather/Public/WeatherSurfaceEffect.h"
 
 // Generated Headers
 #include "WeatherAsset.generated.h"
 
 // Forward Declarations
-class UEnvironmentProfileAsset;
 class AWeatherEffectActor;
 
 
@@ -23,38 +22,7 @@ class AWeatherEffectActor;
  *
  * 
  */
-USTRUCT(BlueprintType)
-struct FWeatherSurfaceEffect
-{
-
-    GENERATED_BODY()
-
-public:
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
-    float WindStrength = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
-    float RainIntensity = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
-    float SnowIntensity = 0.0f;
-
-    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName WindName, FName RainName, FName SnowName)
-    {
-        Instance->GetScalarParameterValue(WindName, WindStrength);
-		Instance->GetScalarParameterValue(RainName, RainIntensity);
-		Instance->GetScalarParameterValue(SnowName, SnowIntensity);
-    }
-
-};
-
-
-/**
- *
- * 
- */
-UCLASS()
+UCLASS(MinimalAPI)
 class UWeatherAsset : public UPrimaryDataAsset
 {
 
@@ -62,48 +30,35 @@ class UWeatherAsset : public UPrimaryDataAsset
 
 public:
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Details")
     FName WeatherName = NAME_None;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     FMaterialSurfaceProperty SurfaceProperty;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     FWeatherSurfaceEffect SurfaceEffect;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
+    TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Profile"))
+    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Profile"), Category = "Environment Profile")
     TArray<FPrimaryAssetId> EnvironmentProfiles;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Environment Profile")
     int ProfilePriority = 0;
 
 
-    UPROPERTY(EditDefaultsOnly)
-    TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
+    static FPrimaryAssetType GetPrimaryAssetType();
+    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName);
 
+    static bool IsValid(const FPrimaryAssetId& AssetId);
+
+public:
 
     // ~ UPrimaryDataAsset
-    virtual FPrimaryAssetId GetPrimaryAssetId() const override
-    {
-        return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
-    }
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
-
-    static FPrimaryAssetType GetPrimaryAssetType()
-    {
-        return FPrimaryAssetType(TEXT("Environment.Weather"));
-    }
-
-    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName)
-    {
-        return FPrimaryAssetId(GetPrimaryAssetType(), AssetName);
-    }
-
-    static bool IsValid(const FPrimaryAssetId& AssetId)
-    {
-        return AssetId.PrimaryAssetType == GetPrimaryAssetType();
-    }
 
 };
 
