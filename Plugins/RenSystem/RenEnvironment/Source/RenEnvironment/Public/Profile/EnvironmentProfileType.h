@@ -16,9 +16,12 @@
 UENUM(BlueprintType)
 enum class EEnvironmentProfileType : uint8
 {
+
     Default UMETA(DisplayName = "Default"),
-    Fog UMETA(DisplayName = "Fog"),
+
     Atmosphere UMETA(DisplayName = "Atmosphere"),
+    Fog UMETA(DisplayName = "Fog"),
     Light UMETA(DisplayName = "Light"),
+    
 };
 

@@ -16,6 +16,8 @@
 
 /**
  * 
+ * 
+ * 
  */
 UCLASS(Abstract, MinimalAPI)
 class UEnvironmentProfileAsset : public UPrimaryDataAsset
@@ -28,64 +30,33 @@ public:
     UPROPERTY(VisibleAnywhere, AssetRegistrySearchable)
     EEnvironmentProfileType ProfileType;
 
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    float TransitionRate = 0.5f;
+
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    float TransitionDuration = 5.0f;
+
 public:
 
     // ~ UPrimaryDataAsset
-    virtual FPrimaryAssetId GetPrimaryAssetId() const override
-    {
-        return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
-    }
+    virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
 
+    static FPrimaryAssetType GetPrimaryAssetType();
+    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName);
 
-    static FPrimaryAssetType GetPrimaryAssetType()
-    {
-        return FPrimaryAssetType(TEXT("Environment.Profile"));
-    }
-
-    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName)
-    {
-        return FPrimaryAssetId(GetPrimaryAssetType(), AssetName);
-    }
-
-    static bool IsValid(const FPrimaryAssetId& AssetId)
-    {
-        return AssetId.PrimaryAssetType == GetPrimaryAssetType();
-    }
-
-    static bool GetType(const FAssetData& AssetData, FName& ProfileType)
-    {
-        return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UEnvironmentProfileAsset, ProfileType), ProfileType);
-    }
-
-    static bool GetType(const FAssetData& AssetData, EEnvironmentProfileType& ProfileType)
-    {
-        if (!AssetData.IsValid())
-        {
-            return false;
-        }
-
-        FName TypeText;
-        GetType(AssetData, TypeText);
-
-        const UEnum* Enum = StaticEnum<EEnvironmentProfileType>();
-        int64 EnumValue = Enum->GetValueByName(TypeText);
-        if (EnumValue == INDEX_NONE)
-        {
-            ProfileType = EEnvironmentProfileType::Default;
-            return false;
-        }
-
-        ProfileType = static_cast<EEnvironmentProfileType>(EnumValue);
-        return true;
-    }
+    static bool IsValid(const FPrimaryAssetId& AssetId);
+    static bool GetType(const FAssetData& AssetData, FName& ProfileType);
+    static bool GetType(const FAssetData& AssetData, EEnvironmentProfileType& ProfileType);
 
 };
 
 
 
 /**
+ * 
+ * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -96,10 +67,7 @@ class UEnvironmentFogProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentFogProfileAsset()
-    {
-        ProfileType = EEnvironmentProfileType::Fog;
-    }
+    UEnvironmentFogProfileAsset();
 
     UPROPERTY(EditDefaultsOnly)
     float FogDensity = 0.05f;
@@ -110,6 +78,8 @@ public:
 
 /**
  * 
+ * 
+ * 
  */
 UCLASS(MinimalAPI)
 class UEnvironmentLightProfileAsset : public UEnvironmentProfileAsset
@@ -119,10 +89,7 @@ class UEnvironmentLightProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentLightProfileAsset()
-    {
-        ProfileType = EEnvironmentProfileType::Light;
-    }
+    UEnvironmentLightProfileAsset();
 
     UPROPERTY(EditDefaultsOnly)
     float SunIntensity = 20.0f;
@@ -142,6 +109,8 @@ public:
 
 /**
  * 
+ * 
+ * 
  */
 UCLASS(MinimalAPI)
 class UEnvironmentAtmosphereProfileAsset : public UEnvironmentProfileAsset
@@ -151,10 +120,7 @@ class UEnvironmentAtmosphereProfileAsset : public UEnvironmentProfileAsset
  
 public:
 
-    UEnvironmentAtmosphereProfileAsset()
-    {
-        ProfileType = EEnvironmentProfileType::Atmosphere;
-    }
+    UEnvironmentAtmosphereProfileAsset();
 
     UPROPERTY(EditDefaultsOnly)
     float MieScatteringScale = 0.003996f;

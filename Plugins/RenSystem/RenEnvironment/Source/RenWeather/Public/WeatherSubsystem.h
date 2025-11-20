@@ -14,15 +14,17 @@
 
 // Forward Declarations
 class URAssetManager;
-class UPrioritySystem;
+
 class UEnvironmentAsset;
 class UWeatherController;
+class IWeatherControllerInterface;
 class UWeatherAsset;
 
 
 
 /**
- *
+ * 
+ * 
  */
 UCLASS()
 class UWeatherSubsystem : public UWorldSubsystem
@@ -32,8 +34,6 @@ class UWeatherSubsystem : public UWorldSubsystem
 
 public:
 
-	FWeatherDelegates Delegates;
-
 	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
 	bool RemoveWeather(int Priority);
 
@@ -42,6 +42,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool RemoveWeather(const FGuid& LatentId, int Priority);
+
+	IWeatherControllerInterface* GetWeatherController();
 
 protected:
 
@@ -61,7 +63,7 @@ protected:
 	void LoadDefaultWeather(const FPrimaryAssetId& AssetId, int Priority);
 
 	bool CreateWeatherTimer(float RefreshTime);
-	bool CreateWeatherController(TSubclassOf<UPrioritySystem> ControllerClass);
+	bool CreateWeatherController(UClass* ControllerClass);
 	bool CreateWeatherMPC(UMaterialParameterCollection* Collection);
 
 	// ~ Bindings

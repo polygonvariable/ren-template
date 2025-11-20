@@ -57,11 +57,6 @@ public:
 		return (bSuccess && !bCancelled) && Asset != nullptr;
 	}
 
-	T*& Get() const
-	{
-		return Asset;
-	}
-
 };
 
 /**

@@ -3,6 +3,7 @@
 #pragma once
 
 // Parent Header
+#include "RAssetManager.h"
 
 // Project Headers
 #include "RCoreAssetManager/Public/LatentHandle.h"

@@ -7,18 +7,20 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
+#include "RCoreCommon/Public/Priority/PriorityList.h"
 #include "RCoreAssetManager/Public/RAssetManager.h"
 #include "RCoreAssetManager/Private/RAssetManager.inl"
 
 #include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/TimerUtils.h"
+#include "RCoreLibrary/Private/TimerUtils.inl"
 #include "RCoreSettings/Public/WorldConfigSettings.h"
 
 #include "RenEnvironment/Public/Asset/EnvironmentAsset.h"
 
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherController.h"
+#include "RenWeather/Public/WeatherControllerInterface.h"
 
 
 
@@ -30,7 +32,7 @@ bool UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
 		return false;
 	}
 
-	return WeatherController->AddItem(WeatherAsset, Priority);
+	return WeatherController->AddWeather(WeatherAsset, Priority);
 }
 
 bool UWeatherSubsystem::RemoveWeather(int Priority)
@@ -41,7 +43,7 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 		return false;
 	}
 
-	return WeatherController->RemoveItem(Priority);
+	return WeatherController->RemoveWeather(Priority);
 }
 
 void UWeatherSubsystem::AddWeather(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority)
@@ -81,6 +83,10 @@ bool UWeatherSubsystem::RemoveWeather(const FGuid& LatentId, int Priority)
 	return RemoveWeather(Priority);
 }
 
+IWeatherControllerInterface* UWeatherSubsystem::GetWeatherController()
+{
+	return WeatherController.Get();
+}
 
 void UWeatherSubsystem::LoadWeatherManager(const FSoftClassPath& ClassPath)
 {
@@ -107,12 +113,12 @@ void UWeatherSubsystem::LoadDefaultWeather(const FPrimaryAssetId& AssetId, int P
 	}
 
 	TWeakObjectPtr<UWeatherSubsystem> WeakThis(this);
-	TFunction<void(const FLatentResultAsset<UWeatherAsset>&)> Callback = [WeakThis](const FLatentResultAsset<UWeatherAsset>& Result)
+	TFunction<void(const FLatentResultAsset<UWeatherAsset>&)> Callback = [WeakThis, Priority](const FLatentResultAsset<UWeatherAsset>& Result)
 		{
 			UWeatherSubsystem* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
-				This->AddWeather(Result.Asset, 0);
+				This->AddWeather(Result.Asset, Priority);
 			}
 		};
 
@@ -125,7 +131,7 @@ bool UWeatherSubsystem::CreateWeatherTimer(float RefreshTime)
 	return TimerUtils::StartTimer(WeatherTimer, this, &UWeatherSubsystem::HandleWeatherTimer, FMath::Max(5.0f, RefreshTime));
 }
 
-bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UPrioritySystem> ControllerClass)
+bool UWeatherSubsystem::CreateWeatherController(UClass* ControllerClass)
 {
 	if (IsValid(WeatherController) || !IsValid(ControllerClass))
 	{
@@ -133,20 +139,14 @@ bool UWeatherSubsystem::CreateWeatherController(TSubclassOf<UPrioritySystem> Con
 		return false;
 	}
 
-	UWeatherController* Controller = NewObject<UWeatherController>(this, ControllerClass);
-	if (!IsValid(Controller))
+	WeatherController = NewObject<UWeatherController>(this, ControllerClass);
+	if (!IsValid(WeatherController))
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherController"));
 		return false;
 	}
 
-	Controller->Initialize();
-
-	FWeatherDelegates& WeatherDelegates = Controller->Delegates;
-	WeatherDelegates.OnChanged.AddWeakLambda(this, [this](UPrimaryDataAsset* WeatherAsset) { Delegates.OnChanged.Broadcast(WeatherAsset); });
-	WeatherDelegates.OnRemoved.AddWeakLambda(this, [this](UPrimaryDataAsset* WeatherAsset) { Delegates.OnRemoved.Broadcast(WeatherAsset); });
-
-	WeatherController = Controller;
+	WeatherController->Initialize();
 
 	return true;
 }
@@ -166,7 +166,7 @@ bool UWeatherSubsystem::CreateWeatherMPC(UMaterialParameterCollection* Collectio
 		LOG_ERROR(LogWeather, TEXT("Failed to create MPC"));
 		return false;
 	}
-
+	
 	WeatherController->SetMaterialCollection(MPC);
 	return true;
 }
@@ -174,8 +174,7 @@ bool UWeatherSubsystem::CreateWeatherMPC(UMaterialParameterCollection* Collectio
 
 void UWeatherSubsystem::HandleWeatherTimer()
 {
-	PRINT_INFO(LogWeather, 1.0f, TEXT("Weather refreshed"));
-	Delegates.OnRefreshed.Broadcast();
+	WeatherController->RefreshWeather();
 }
 
 
@@ -250,8 +249,8 @@ void UWeatherSubsystem::Deinitialize()
 	UWeatherController* Controller = WeatherController.Get();
 	if (IsValid(Controller))
 	{
-		Controller->Delegates.Clear();
-		Controller->CleanUpItems();
+		Controller->GetWeatherDelegates().ClearAll();
+		Controller->Deinitialize();
 		Controller->MarkAsGarbage();
 	}
 	WeatherController = nullptr;

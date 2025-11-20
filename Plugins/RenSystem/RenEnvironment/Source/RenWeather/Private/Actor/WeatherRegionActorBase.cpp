@@ -65,7 +65,7 @@ void AWeatherRegionActorBase::BeginPlay()
     UWeatherSubsystem* Weather = GetWorld()->GetSubsystem<UWeatherSubsystem>();
     if (IsValid(Weather))
     {
-        Weather->Delegates.OnRefreshed.AddUObject(this, &AWeatherRegionActorBase::HandleWeatherRefreshed);
+        //Weather->Delegates.OnRefreshed.AddUObject(this, &AWeatherRegionActorBase::HandleWeatherRefreshed);
         WeatherSubsystem = Weather;
     }
 
@@ -79,7 +79,7 @@ void AWeatherRegionActorBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
     UWeatherSubsystem* Weather = WeatherSubsystem.Get();
     if (IsValid(Weather))
     {
-        Weather->Delegates.RemoveAll(this);
+        //Weather->Delegates.RemoveAll(this);
     }
     WeatherSubsystem.Reset();
 

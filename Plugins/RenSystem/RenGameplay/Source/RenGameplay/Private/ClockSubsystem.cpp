@@ -10,7 +10,7 @@
 
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/SubsystemUtils.h"
-#include "RCoreLibrary/Public/TimerUtils.h"
+#include "RCoreLibrary/Private/TimerUtils.inl"
 
 #include "RCoreClock/Public/ClockAsset.h"
 #include "RCoreClock/Public/ClockProviderInterface.h"

@@ -21,10 +21,11 @@ AEnvironmentActor::AEnvironmentActor()
 	Tags.Add(TEXT("Actor.Environment"));
 	
 	SceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+
 	if(IsValid(SceneComponent))
 	{
-		SceneComponent->SetupAttachment(GetRootComponent());
-
+		SetRootComponent(SceneComponent);
+		
 		SkyLight = CreateDefaultSubobject<USkyLightComponent>(TEXT("SkyLight"));
 		if (IsValid(SkyLight))
 		{

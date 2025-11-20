@@ -27,12 +27,12 @@ public:
 
     void RemoveAll(UObject* Target)
     {
-        OnRefreshed.RemoveAll(Target);
+		OnRefreshed.RemoveAll(Target);
         OnChanged.RemoveAll(Target);
         OnRemoved.RemoveAll(Target);
     }
 
-    void Clear()
+    void ClearAll()
     {
 		OnRefreshed.Clear();
 		OnChanged.Clear();

@@ -27,7 +27,7 @@ struct FWeatherSurfaceEffect
 public:
 
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
-    float WindStrength = 0.0f;
+    float WindIntensity = 0.0f;
 
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float RainIntensity = 0.0f;
@@ -35,7 +35,13 @@ public:
     UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float SnowIntensity = 0.0f;
 
-    void FillParameters(UMaterialParameterCollectionInstance* Instance, FName WindName, FName RainName, FName SnowName);
+    void Reset();
+    void Clamp();
+
+    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName WindName, FName RainName, FName SnowName);
+    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName WindName, FName RainName, FName SnowName);
+
+    static FWeatherSurfaceEffect Lerp(const FWeatherSurfaceEffect& A, const FWeatherSurfaceEffect& B, float Alpha);
 
 };
 

@@ -22,14 +22,14 @@
         UE_LOG(Category, Verbosity, TEXT("%s"), *__InternalMessage__) \
     }
 
-#define REN_PRINT(Message, Time, Color) \
-    if (GEngine) GEngine->AddOnScreenDebugMessage(-1, Time, Color, Message);
+#define REN_PRINT(Message, Id, Time, Color) \
+    if (GEngine) GEngine->AddOnScreenDebugMessage(Id, Time, Color, Message);
 
-#define REN_PRINT_LOG(Category, Verbosity, Time, Color, Text, ...) \
+#define REN_PRINT_LOG(Category, Verbosity, Id, Time, Color, Text, ...) \
     { \
 		REN_LOG(Category, Verbosity, Text, ##__VA_ARGS__) \
         const FString __PrintMessage__ = FString::Printf(Text, ##__VA_ARGS__); \
-        REN_PRINT(__PrintMessage__, Time, Color) \
+        REN_PRINT(__PrintMessage__, Id, Time, Color) \
     }
 
 #else
@@ -37,10 +37,11 @@
 #define REN_LOG(Category, Verbosity, Text, ...) \
     UE_LOG(Category, Verbosity, Text, ##__VA_ARGS__)
 
-#define REN_PRINT_LOG(Category, Verbosity, Time, Color, Text, ...) \
+#define REN_PRINT_LOG(Category, Verbosity, Id, Time, Color, Text, ...) \
     REN_LOG(Category, Verbosity, Text, ##__VA_ARGS__)
 
 #endif
+
 
 #define LOG_INFO(Category, Text, ...) \
     REN_LOG(Category, Log, Text, ##__VA_ARGS__)
@@ -53,16 +54,16 @@
 
 
 #define PRINT_SUCCESS(Category, Time, Text, ...) \
-    REN_PRINT_LOG(Category, Log, Time, FColor::Green, Text, ##__VA_ARGS__)
+    REN_PRINT_LOG(Category, Log, -1, Time, FColor::Green, Text, ##__VA_ARGS__)
 
 #define PRINT_INFO(Category, Time, Text, ...) \
-    REN_PRINT_LOG(Category, Log, Time, FColor::Magenta, Text, ##__VA_ARGS__)
+    REN_PRINT_LOG(Category, Log, -1, Time, FColor::Magenta, Text, ##__VA_ARGS__)
 
 #define PRINT_WARNING(Category, Time, Text, ...) \
-    REN_PRINT_LOG(Category, Warning, Time, FColor::Orange, Text, ##__VA_ARGS__)
+    REN_PRINT_LOG(Category, Warning, -1, Time, FColor::Orange, Text, ##__VA_ARGS__)
 
 #define PRINT_ERROR(Category, Time, Text, ...) \
-    REN_PRINT_LOG(Category, Error, Time, FColor::Red, Text, ##__VA_ARGS__)
+    REN_PRINT_LOG(Category, Error, -1, Time, FColor::Red, Text, ##__VA_ARGS__)
 
 
 #define TIMER_START(Name) \

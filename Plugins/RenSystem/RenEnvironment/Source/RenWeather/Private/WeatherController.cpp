@@ -7,9 +7,11 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
+#include "RCoreCommon/Public/Priority/PriorityList.h"
+
+#include "RCoreLibrary/Private/TimerUtils.inl"
 #include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RCoreLibrary/Public/TimerUtils.h"
 #include "RCoreMaterial/Public/MaterialLibrary.h"
 
 #include "RenEnvironment/Public/Subsystem/EnvironmentSubsystem.h"
@@ -17,18 +19,111 @@
 
 
 
+void UWeatherController::Initialize()
+{
+	if (IsValid(PriorityList))
+	{
+		LOG_ERROR(LogWeather, TEXT("PriorityList is already valid"));
+		return;
+	}
+
+	PriorityList = NewObject<UPriorityList>(this);
+	if (!IsValid(PriorityList))
+	{
+		LOG_ERROR(LogWeather, TEXT("Failed to create PriorityList"));
+		return;
+	}
+
+	FPriorityListDelegates& PriorityDelegates = PriorityList->GetPriorityDelegates();
+	PriorityDelegates.OnChanged.BindUObject(this, &UWeatherController::HandleItemChanged);
+	PriorityDelegates.OnRemoved.BindUObject(this, &UWeatherController::HandleItemRemoved);
+	PriorityDelegates.OnCleared.BindUObject(this, &UWeatherController::HandleItemCleared);
+
+	UWorld* World = GetWorld();
+	EnvironmentSubsystem = World->GetSubsystem<UEnvironmentSubsystem>();
+
+	Timer = NewObject<UTimer>(this);
+	if (!IsValid(Timer))
+	{
+		LOG_ERROR(LogWeather, TEXT("Failed to create Timer"));
+		return;
+	}
+	Timer->OnTick.BindUObject(this, &UWeatherController::HandleTimerTick);
+}
+
+void UWeatherController::Deinitialize()
+{
+	UWeatherAsset* WeatherAsset = CurrentWeather.Get();
+	RemoveEnvironmentProfile(WeatherAsset);
+
+	if (IsValid(Timer))
+	{
+		Timer->Clear();
+		Timer->OnTick.Unbind();
+		Timer->MarkAsGarbage();
+	}
+	Timer = nullptr;
+
+	if (IsValid(PriorityList))
+	{
+		FPriorityListDelegates& PriorityDelegates = PriorityList->GetPriorityDelegates();
+		PriorityDelegates.ClearAll();
+
+		PriorityList->CleanUpItems();
+		PriorityList->MarkAsGarbage();
+	}
+	PriorityList = nullptr;
+
+	MPC = nullptr;
+	CurrentWeather = nullptr;
+	LatentCollection.Empty();
+
+	EnvironmentSubsystem.Reset();
+}
+
 void UWeatherController::SetMaterialCollection(UMaterialParameterCollectionInstance* MaterialCollection)
 {
 	MPC = MaterialCollection;
 }
 
+bool UWeatherController::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
+{
+	if (!IsValid(PriorityList) || !IsValid(WeatherAsset))
+	{
+		LOG_ERROR(LogWeather, TEXT("PriorityList, WeatherAsset is invalid"));
+		return false;
+	}
+
+	return PriorityList->AddItem(WeatherAsset, Priority);
+}
+
+bool UWeatherController::RemoveWeather(int Priority)
+{
+	if (!IsValid(PriorityList))
+	{
+		LOG_ERROR(LogWeather, TEXT("PriorityList is invalid"));
+		return false;
+	}
+
+	return PriorityList->RemoveItem(Priority);
+}
+
+FWeatherDelegates& UWeatherController::GetWeatherDelegates()
+{
+	return Delegates;
+}
+
+void UWeatherController::RefreshWeather()
+{
+	PRINT_INFO(LogWeather, 1.0f, TEXT("Weather refreshed"));
+	Delegates.OnRefreshed.Broadcast();
+}
+
 
 void UWeatherController::AddEnvironmentProfile(UWeatherAsset* WeatherAsset)
 {
-	UWorld* World = GetWorld();
-	UEnvironmentSubsystem* EnvironmentSubsystem = World->GetSubsystem<UEnvironmentSubsystem>();
-
-	if (!IsValid(EnvironmentSubsystem) || !IsValid(WeatherAsset))
+	UEnvironmentSubsystem* Environment = EnvironmentSubsystem.Get();
+	if (!IsValid(Environment) || !IsValid(WeatherAsset))
 	{
 		LOG_ERROR(LogWeather, TEXT("EnvironmentSubsystem, WeatherAsset is invalid"));
 		return;
@@ -44,16 +139,14 @@ void UWeatherController::AddEnvironmentProfile(UWeatherAsset* WeatherAsset)
 		FGuid LatentId = FGuid::NewGuid();
 		LatentIds.Add({ AssetId, LatentId });
 
-		EnvironmentSubsystem->AddProfile(AssetId, Priority);
+		Environment->AddProfile(LatentId, AssetId, Priority);
 	}
 }
 
 void UWeatherController::RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset)
 {
-	UWorld* World = GetWorld();
-	UEnvironmentSubsystem* EnvironmentSubsystem = World->GetSubsystem<UEnvironmentSubsystem>();
-
-	if (!IsValid(EnvironmentSubsystem) || !IsValid(WeatherAsset))
+	UEnvironmentSubsystem* Environment = EnvironmentSubsystem.Get();
+	if (!IsValid(Environment) || !IsValid(WeatherAsset))
 	{
 		LOG_ERROR(LogWeather, TEXT("EnvironmentSubsystem, WeatherAsset is invalid"));
 		return;
@@ -68,42 +161,57 @@ void UWeatherController::RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset)
 	{
 		const FPrimaryAssetId& ProfileId = Kv.Key;
 		const FGuid& LatentId = Kv.Value;
-		EnvironmentSubsystem->RemoveProfile(LatentId, ProfileId, Priority);
+
+		Environment->RemoveProfile(LatentId, ProfileId, Priority);
 	}
 }
 
 
-void UWeatherController::HandleTransition(const FMaterialSurfaceProperty& SurfaceProperty, const FWeatherSurfaceEffect& SurfaceEffect)
+void UWeatherController::StartTransition(UWeatherAsset* WeatherAsset)
 {
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherSpecular"), SurfaceProperty.Specular, 1.0f);
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherRoughness"), SurfaceProperty.Roughness, 1.0f);
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherOpacity"), SurfaceProperty.Opacity, 1.0f);
-	MaterialLibrary::LerpVectorParameter(MPC, TEXT("WeatherTint"), SurfaceProperty.Tint, 1.0f);
+	if (!IsValid(WeatherAsset) || !IsValid(MPC) || !IsValid(Timer))
+	{
+		LOG_ERROR(LogWeather, TEXT("WeatherAsset, MPC, Timer is invalid"));
+		return;
+	}
 
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherWind"), SurfaceEffect.WindStrength, 1.0f);
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherRain"), SurfaceEffect.RainIntensity, 1.0f);
-	MaterialLibrary::LerpScalarParameter(MPC, TEXT("WeatherSnow"), SurfaceEffect.SnowIntensity, 1.0f);
+	TargetSurfaceProperty = WeatherAsset->SurfaceProperty;
+	TargetSurfaceEffect = WeatherAsset->SurfaceEffect;
+
+	SourceSurfaceProperty.Reset();
+	SourceSurfaceEffect.Reset();
+
+	SourceSurfaceProperty.GetParameters(MPC, TEXT("WeatherTint"), TEXT("WeatherSpecular"), TEXT("WeatherRoughness"), TEXT("WeatherOpacity"));
+	SourceSurfaceEffect.GetParameters(MPC, TEXT("WeatherWind"), TEXT("WeatherRain"), TEXT("WeatherSnow"));
+
+	float TransitionRate = WeatherAsset->TransitionRate;
+	float TransitionDuration = WeatherAsset->TransitionDuration;
+
+	Timer->Restart(TransitionRate, TransitionDuration);
 }
 
-void UWeatherController::Initialize()
+void UWeatherController::HandleTimerTick(float ElapsedTime)
 {
+	if (!MPC)
+	{
+		return;
+	}
 
+	float Duration = Timer->GetDuration();
+	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+
+	FMaterialSurfaceProperty SurfaceProperty = FMaterialSurfaceProperty::Lerp(SourceSurfaceProperty, TargetSurfaceProperty, Alpha);
+	FWeatherSurfaceEffect SurfaceEffect = FWeatherSurfaceEffect::Lerp(SourceSurfaceEffect, TargetSurfaceEffect, Alpha);
+
+	SurfaceProperty.SetParameters(MPC, TEXT("WeatherTint"), TEXT("WeatherSpecular"), TEXT("WeatherRoughness"), TEXT("WeatherOpacity"));
+	SurfaceEffect.SetParameters(MPC, TEXT("WeatherWind"), TEXT("WeatherRain"), TEXT("WeatherSnow"));
+
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Elapsed: %f, Duration: %f, Alpha: %f"), ElapsedTime, Duration, Alpha);
 }
 
-void UWeatherController::Deinitialize()
-{
-	UWeatherAsset* WeatherAsset = CurrentWeather.Get();
-	RemoveEnvironmentProfile(WeatherAsset);
-
-	LatentCollection.Empty();
-	CurrentWeather = nullptr;
-	MPC = nullptr;
-
-	Super::Deinitialize();
-}
 
 
-void UWeatherController::OnItemChanged(UObject* Item)
+void UWeatherController::HandleItemChanged(UObject* Item)
 {
 	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
 	if (!MPC || !IsValid(WeatherAsset) || WeatherAsset == CurrentWeather)
@@ -115,16 +223,13 @@ void UWeatherController::OnItemChanged(UObject* Item)
 	CurrentWeather = WeatherAsset;
 
 	AddEnvironmentProfile(WeatherAsset);
-
-	FMaterialSurfaceProperty& SurfaceProperty = WeatherAsset->SurfaceProperty;
-	FWeatherSurfaceEffect& SurfaceEffect = WeatherAsset->SurfaceEffect;
-	HandleTransition(SurfaceProperty, SurfaceEffect);
+	StartTransition(WeatherAsset);
 
 	LOG_INFO(LogWeather, TEXT("Weather changed"));
 	Delegates.OnChanged.Broadcast(WeatherAsset);
 }
 
-void UWeatherController::OnItemRemoved(UObject* Item, bool bWasReplaced)
+void UWeatherController::HandleItemRemoved(UObject* Item, bool bReplaced)
 {
 	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
 	if (!IsValid(WeatherAsset))
@@ -139,78 +244,10 @@ void UWeatherController::OnItemRemoved(UObject* Item, bool bWasReplaced)
 	Delegates.OnRemoved.Broadcast(WeatherAsset);
 }
 
-void UWeatherController::OnNoItemsLeft()
+void UWeatherController::HandleItemCleared()
 {
 	CurrentWeather = nullptr;
 
 	LOG_ERROR(LogWeather, TEXT("Weather controller has no items left, which was not supposed to happen"));
 }
 
-
-
-/*
-bool UTimer::IsTimerValid()
-{
-	return TimerUtils::IsValid(TimerHandle, this);
-}
-
-void UTimer::SetTimer(float InRate, float InDuration)
-{
-	if (TimerHandle.IsValid())
-	{
-		LOG_ERROR(LogWeather, TEXT("Timer is already set"));
-		return;
-	}
-
-	Rate = FMath::Max(0.05f, InRate);
-	Duration = FMath::Max(0.05f, InDuration);
-	ElapsedTime = 0.0f;
-
-	TimerUtils::StartTimer(TimerHandle, this, &UTimer::TimerTick, Rate);
-}
-
-void UTimer::RestartTimer()
-{
-	ElapsedTime = 0.0f;
-	ResumeTimer();
-}
-
-void UTimer::ResumeTimer()
-{
-	TimerUtils::ResumeTimer(TimerHandle, this);
-	LOG_INFO(LogWeather, TEXT("Timer Resumed"));
-}
-
-void UTimer::PauseTimer()
-{
-	TimerUtils::PauseTimer(TimerHandle, this);
-	LOG_INFO(LogWeather, TEXT("Timer Paused"));
-}
-
-void UTimer::ClearTimer()
-{
-	Rate = 0.0f;
-	Duration = 0.0f;
-	ElapsedTime = 0.0f;
-
-	TimerUtils::ClearTimer(TimerHandle, this);
-	LOG_INFO(LogWeather, TEXT("Timer Cleared"));
-}
-
-void UTimer::TimerTick()
-{
-	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
-	OnTimerUpdate.ExecuteIfBound(ElapsedTime, Alpha);
-
-	ElapsedTime += Rate;
-
-	if (ElapsedTime >= Duration)
-	{
-		ElapsedTime = 0.0f;
-		PauseTimer();
-		return;
-	}
-
-	LOG_INFO(LogWeather, TEXT("Timer Tick"));
-}
-*/

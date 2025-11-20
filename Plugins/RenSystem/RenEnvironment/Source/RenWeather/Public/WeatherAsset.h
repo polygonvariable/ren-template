@@ -49,6 +49,13 @@ public:
     int ProfilePriority = 0;
 
 
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    float TransitionRate = 0.5f;
+
+    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    float TransitionDuration = 5.0f;
+
+
     static FPrimaryAssetType GetPrimaryAssetType();
     static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName);
 

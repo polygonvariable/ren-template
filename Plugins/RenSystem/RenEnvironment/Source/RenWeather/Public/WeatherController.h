@@ -6,18 +6,22 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RCoreCommon/Public/Priority/PrioritySystem.h"
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
 
 #include "RenWeather/Public/WeatherDelegate.h"
 #include "RenWeather/Public/WeatherSurfaceEffect.h"
+#include "RenWeather/Public/WeatherControllerInterface.h"
 
 // Generated Headers
 #include "WeatherController.generated.h"
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
+
+class UTimer;
 class UWeatherAsset;
+class UEnvironmentSubsystem;
+class UPriorityList;
 
 
 
@@ -26,86 +30,71 @@ class UWeatherAsset;
  * 
  */
 UCLASS()
-class UWeatherController : public UPrioritySystem
+class UWeatherController : public UObject, public IWeatherControllerInterface
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FWeatherDelegates Delegates;
+	void Initialize();
+	void Deinitialize();
 
 	void SetMaterialCollection(UMaterialParameterCollectionInstance* MaterialCollection);
 
+	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
+	bool RemoveWeather(int Priority);
+
+	void RefreshWeather();
+
 protected:
 
-	TObjectPtr<UWeatherAsset> CurrentWeather;
+	FWeatherDelegates Delegates;
+
+	UPROPERTY()
+	TObjectPtr<UTimer> Timer;
+
+	UPROPERTY()
+	TObjectPtr<UPriorityList> PriorityList;
+
+	UPROPERTY()
 	UMaterialParameterCollectionInstance* MPC;
+
+	UPROPERTY()
+	TWeakObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+
+	UPROPERTY()
+	TObjectPtr<UWeatherAsset> CurrentWeather;
 
 	TMap<TObjectPtr<UWeatherAsset>, TArray<TPair<FPrimaryAssetId, FGuid>>> LatentCollection;
 
 
-	virtual void AddEnvironmentProfile(UWeatherAsset* WeatherAsset);
-	virtual void RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset);
 
-	virtual void HandleTransition(const FMaterialSurfaceProperty& SurfaceProperty, const FWeatherSurfaceEffect& SurfaceEffects);
+	void AddEnvironmentProfile(UWeatherAsset* WeatherAsset);
+	void RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset);
 
-public:
+	// ~ Item Bindings
+	void HandleItemChanged(UObject* Item);
+	void HandleItemRemoved(UObject* Item, bool bReplaced);
+	void HandleItemCleared();
+	// ~ End of Item Bindings
 
-	// ~ UPrioritySystem
-	virtual void Initialize() override;
-	virtual void Deinitialize() override;
-	// ~ End of UPrioritySystem
+	// ~ Timer
+	FMaterialSurfaceProperty SourceSurfaceProperty;
+	FWeatherSurfaceEffect SourceSurfaceEffect;
 
-protected:
-	
-	// ~ UPrioritySystem
-	virtual void OnItemChanged(UObject* Item) override;
-	virtual void OnItemRemoved(UObject* Item, bool bWasReplaced) override;
-	virtual void OnNoItemsLeft() override;
-	// ~ End of UPrioritySystem
+	FMaterialSurfaceProperty TargetSurfaceProperty;
+	FWeatherSurfaceEffect TargetSurfaceEffect;
 
-};
-
-
-
-
-
-
-/**
-UCLASS()
-class UTimer : public UObject
-{
-
-	GENERATED_BODY()
+	void StartTransition(UWeatherAsset* WeatherAsset);
+	void HandleTimerTick(float ElapsedTime);
+	// ~ End of Timer
 
 public:
 
-	DECLARE_DELEGATE_TwoParams(FTimerUpdate, float, float);
-	FTimerUpdate OnTimerUpdate;
-
-	bool IsTimerValid();
-
-
-	void SetTimer(float InRate, float InDuration);
-
-	void RestartTimer();
-	void ResumeTimer();
-	void PauseTimer();
-	void ClearTimer();
-
-protected:
-
-	float Rate = 0.0f;
-	float Duration = 0.0f;
-	float ElapsedTime = 0.0f;
-
-	void TimerTick();
-
-private:
-
-	FTimerHandle TimerHandle;
+	// ~ IWeatherControllerInterface
+	virtual FWeatherDelegates& GetWeatherDelegates() override;
+	// ~ End of IWeatherControllerInterface
 
 };
-*/
 

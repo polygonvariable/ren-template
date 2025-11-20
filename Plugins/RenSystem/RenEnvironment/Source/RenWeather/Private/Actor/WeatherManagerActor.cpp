@@ -15,6 +15,7 @@
 #include "RenWeather/Public/Actor/WeatherEffectActor.h"
 #include "RenWeather/Public/WeatherAsset.h"
 #include "RenWeather/Public/WeatherSubsystem.h"
+#include "RenWeather/Public/WeatherControllerInterface.h"
 
 
 
@@ -129,8 +130,13 @@ void AWeatherManagerActor::BeginPlay()
     UWeatherSubsystem* Weather = World->GetSubsystem<UWeatherSubsystem>();
     if (IsValid(Weather))
     {
-        Weather->Delegates.OnChanged.AddUObject(this, &AWeatherManagerActor::HandleWeatherChanged);
-        Weather->Delegates.OnRemoved.AddUObject(this, &AWeatherManagerActor::HandleWeatherRemoved);
+        IWeatherControllerInterface* WeatherController = Weather->GetWeatherController();
+        if (WeatherController)
+		{
+            FWeatherDelegates& Delegates = WeatherController->GetWeatherDelegates();
+            Delegates.OnChanged.AddUObject(this, &AWeatherManagerActor::HandleWeatherChanged);
+            Delegates.OnRemoved.AddUObject(this, &AWeatherManagerActor::HandleWeatherRemoved);
+		}
 
         WeatherSubsystem = Weather;
     }
@@ -155,7 +161,12 @@ void AWeatherManagerActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     UWeatherSubsystem* Weather = WeatherSubsystem.Get();
     if (IsValid(Weather))
     {
-        Weather->Delegates.RemoveAll(this);
+		IWeatherControllerInterface* WeatherController = Weather->GetWeatherController();
+		if (WeatherController)
+		{
+			FWeatherDelegates& Delegates = WeatherController->GetWeatherDelegates();
+            Delegates.RemoveAll(this);
+		}
     }
     WeatherSubsystem.Reset();
 

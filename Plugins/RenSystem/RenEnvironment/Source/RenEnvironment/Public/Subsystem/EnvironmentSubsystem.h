@@ -22,7 +22,9 @@ class UEnvironmentProfileAsset;
 
 
 /**
- *
+ * 
+ * 
+ * 
  */
 UCLASS(MinimalAPI)
 class UEnvironmentSubsystem : public UWorldSubsystem
@@ -37,18 +39,15 @@ public:
 	RENENVIRONMENT_API bool AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 	RENENVIRONMENT_API bool RemoveProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 
+	UFUNCTION(BlueprintCallable)
 	RENENVIRONMENT_API void AddProfile(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority);
-	RENENVIRONMENT_API bool RemoveProfile(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority);
 
-	RENENVIRONMENT_API void AddProfile(const FPrimaryAssetId& AssetId, int Priority);
-	RENENVIRONMENT_API bool RemoveProfile(const FPrimaryAssetId& AssetId, int Priority);
+	UFUNCTION(BlueprintCallable)
+	RENENVIRONMENT_API bool RemoveProfile(const FGuid& LatentId, const FPrimaryAssetId& AssetId, int Priority);
 
 protected:
 
-
 	FName EnvironmentTag = TEXT("Actor.Environment");
-
-	TArray<TPair<FPrimaryAssetId, int>> CancelledProfiles;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager;
@@ -80,3 +79,4 @@ protected:
 	// ~ End of UWorldSubsystem
 
 };
+

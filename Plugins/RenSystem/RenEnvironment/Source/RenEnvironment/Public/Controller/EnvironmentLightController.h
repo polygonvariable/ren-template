@@ -41,15 +41,28 @@ protected:
 public:
 
 	// ~ UEnvironmentStackedController
-	virtual void InitializeController(AActor* Actor) override;
-	virtual void CleanupController() override;
+	virtual void Initialize(AActor* Actor) override;
+	virtual void Deinitialize() override;
 	// ~ End of UEnvironmentStackedController
 
 protected:
 
-	// ~ UPrioritySystem
-	virtual void OnItemChanged(UObject* Item) override;
-	// ~ End of UPrioritySystem
+	float CurrentSunIntensity = 0.0f;
+	FColor CurrentSunColor = FColor::White;
+
+	float CurrentMoonIntensity = 0.0f;
+	FColor CurrentMoonColor = FColor::White;
+
+	float TargetSunIntensity = 0.0f;
+	FColor TargetSunColor = FColor::White;
+
+	float TargetMoonIntensity = 0.0f;
+	FColor TargetMoonColor = FColor::White;
+
+	// ~ UEnvironmentStackedController
+	virtual void HandleItemChanged(UObject* Item) override;
+	virtual void HandleTimerTick(float ElapsedTime) override;
+	// ~ End of UEnvironmentStackedController
 
 };
 

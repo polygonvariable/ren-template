@@ -16,7 +16,7 @@
 #include "EnvironmentAsset.generated.h"
 
 // Forward Declarations
-class UPrioritySystem;
+class UPriorityList;
 class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
@@ -66,7 +66,7 @@ public:
     TObjectPtr<UMaterialParameterCollection> WeatherParameterCollection;
 
     UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherController"), Category = "Weather")
-    TSubclassOf<UPrioritySystem> WeatherController;
+    UClass* WeatherController;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     float WeatherRefreshDuration = 5.0f;

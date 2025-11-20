@@ -52,8 +52,8 @@ protected:
 public:
 
 	// ~ UEnvironmentDiscreteController
-	virtual void InitializeController(AActor* Actor) override;
-	virtual void CleanupController() override;
+	virtual void Initialize(AActor* Actor) override;
+	virtual void Deinitialize() override;
 	// ~ UEnvironmentDiscreteController
 
 };

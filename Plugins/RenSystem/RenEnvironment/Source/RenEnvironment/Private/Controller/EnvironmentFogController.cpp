@@ -21,21 +21,27 @@ UEnvironmentFogController::UEnvironmentFogController()
 	ProfileType = EEnvironmentProfileType::Fog;
 }
 
-void UEnvironmentFogController::InitializeController(AActor* Actor)
+void UEnvironmentFogController::Initialize(AActor* Actor)
 {
+	Super::Initialize(Actor);
+
 	if (IsValid(Actor))
 	{
 		ExponentialHeightFogComponent = Actor->GetComponentByClass<UExponentialHeightFogComponent>();
 	}
 }
 
-void UEnvironmentFogController::CleanupController()
+void UEnvironmentFogController::Deinitialize()
 {
 	ExponentialHeightFogComponent.Reset();
+
+	Super::Deinitialize();
 }
 
-void UEnvironmentFogController::OnItemChanged(UObject* Item)
+void UEnvironmentFogController::HandleItemChanged(UObject* Item)
 {
+	Super::HandleItemChanged(Item);
+
 	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
 	if (!IsValid(ExponentialHeightFog))
 	{
@@ -50,6 +56,27 @@ void UEnvironmentFogController::OnItemChanged(UObject* Item)
 		return;
 	}
 
-	ExponentialHeightFog->SetFogDensity(FogProfile->FogDensity);
+	CurentDensity = ExponentialHeightFog->FogDensity;
+	TargetDensity = FogProfile->FogDensity;
+
+	StartTransition();
+}
+
+void UEnvironmentFogController::HandleTimerTick(float ElapsedTime)
+{
+	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
+	if (!IsValid(ExponentialHeightFog))
+	{
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("ExponentialHeightFog is invalid"));
+		return;
+	}
+
+	float Duration = GetTransitionDuration();
+	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
+	float NewDensity = FMath::Lerp(CurentDensity, TargetDensity, Alpha);
+
+	ExponentialHeightFog->SetFogDensity(NewDensity);
+
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Elapsed: %f, Duration: %f, Alpha: %f"), ElapsedTime, Duration, Alpha);
 }
 

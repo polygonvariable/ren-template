@@ -12,7 +12,7 @@
 #include "RCoreLibrary/Public/LogCategory.h"
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "RCoreLibrary/Public/SubsystemUtils.h"
-#include "RCoreLibrary/Public/TimerUtils.h"
+#include "RCoreLibrary/Private/TimerUtils.inl"
 
 #include "RenEnvironment/Public/Component/OrbitalLightComponent.h"
 
@@ -26,7 +26,8 @@ void UEnvironmentDayNightController::StartDayTimer()
 		return;
 	}
 
-	if (!TimerUtils::StartTimer(DayTimerHandle, this, &UEnvironmentDayNightController::HandleDayTimerTick, 0.1f))
+	bool bResult = TimerUtils::StartTimer(DayTimerHandle, this, &UEnvironmentDayNightController::HandleDayTimerTick, 0.1f);
+	if (!bResult)
 	{
 		LOG_ERROR(LogEnvironment, TEXT("Failed to create timer or timer is already running"));
 	}
@@ -51,8 +52,14 @@ void UEnvironmentDayNightController::HandleDayTimerTick()
 
 
 
-void UEnvironmentDayNightController::InitializeController(AActor* Actor)
+void UEnvironmentDayNightController::Initialize(AActor* Actor)
 {
+	if (!IsValid(Actor))
+	{
+		LOG_ERROR(LogEnvironment, TEXT("Actor is invalid"));
+		return;
+	}
+
 	IClockManagerInterface* ClockManager = SubsystemUtils::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
 
 	SunComponent = Actor->GetComponentByClass<UOrbitalLightComponent>();
@@ -76,7 +83,7 @@ void UEnvironmentDayNightController::InitializeController(AActor* Actor)
 	ClockManagerInterface = TWeakInterfacePtr<IClockManagerInterface>(ClockManager);
 }
 
-void UEnvironmentDayNightController::CleanupController()
+void UEnvironmentDayNightController::Deinitialize()
 {
 	IClockManagerInterface* ClockManager = ClockManagerInterface.Get();
 	if (ClockManager)

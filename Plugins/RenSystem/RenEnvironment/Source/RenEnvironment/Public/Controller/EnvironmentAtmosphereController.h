@@ -37,15 +37,19 @@ protected:
 public:
 
 	// ~ UEnvironmentStackedController
-	virtual void InitializeController(AActor* Actor) override;
-	virtual void CleanupController() override;
+	virtual void Initialize(AActor* Actor) override;
+	virtual void Deinitialize() override;
 	// ~ End of UEnvironmentStackedController
 
 protected:
 
-	// ~ UPrioritySystem
-	virtual void OnItemChanged(UObject* Item) override;
-	// ~ End of UPrioritySystem
+	float CurentMieScattering = 0.0f;
+	float TargetMieScattering = 0.0f;
+
+	// ~ UEnvironmentStackedController
+	virtual void HandleItemChanged(UObject* Item) override;
+	virtual void HandleTimerTick(float ElapsedTime) override;
+	// ~ End of UEnvironmentStackedController
 
 };
 
