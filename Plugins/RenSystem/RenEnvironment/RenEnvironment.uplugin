@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RenEnvironmentFx",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RenEnvironmentEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
