@@ -21,7 +21,7 @@ class IEnvironmentBrushInterface;
  * Can affect performance with too many brushes, use EnvironmentComputeCanvas & EnvironmentComputeBrush instead.
  * 
  */
-UCLASS()
+UCLASS(Abstract, MinimalAPI)
 class AEnvironmentCanvasActor : public AActor
 {
 
@@ -47,16 +47,14 @@ protected:
 	float PixelRatio = 1.0f;
 
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UMaterialParameterCollection> MPC;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UMaterialParameterCollectionInstance> MPCInstance;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector2D PixelOffset;
-	
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -65,21 +63,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TObjectPtr<UTextureRenderTarget2D> PersistentRenderTarget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialInterface> DrawPersistentMaterial;
-
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> DrawPersistentMaterialInstance;
-
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialInterface> DrawBrushMaterial;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialInterface> DrawMainAdditiveMaterial;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FName BrushTag = TEXT("EnvironmentBrush");
+	FName BrushTag = TEXT("Environment.Brush");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int MaxBrushes = 16;
@@ -87,15 +73,45 @@ protected:
 	TArray<TWeakInterfacePtr<IEnvironmentBrushInterface>> BrushCollection;
 
 
-	void FindBrushComponents();
+	UPROPERTY(VisibleAnywhere)
+	TWeakObjectPtr<APlayerController> Controller;
 
-	void RegisterBrush(AActor* Actor);
-	void UnregisterBrush(AActor* Actor);
+	UPROPERTY(VisibleAnywhere)
+	TWeakObjectPtr<APawn> Pawn;
 
 
-	void MoveRenderTargets();
-	void DrawPersistentRenderTarget();
-	void DrawMainRenderTarget();
+
+	virtual bool Initialize();
+	virtual void Deinitialize();
+
+	virtual bool InitializeMPC();
+	virtual bool InitializePixel();
+	virtual bool InitializeRenderTargets();
+
+	virtual bool InitializeController();
+	virtual void DeinitializeController();
+
+	UFUNCTION()
+	virtual void UpdatePawn(APawn* OldPawn, APawn* NewPawn);
+
+
+	virtual void FindBrushComponents();
+	virtual void ClearBrushComponents();
+	virtual void GetBrushComponents(AActor* Actor, TArray<UActorComponent*>& OutComponents);
+
+
+	virtual void RegisterBrush(AActor* Actor);
+	virtual void UnregisterBrush(AActor* Actor);
+
+
+	virtual void MoveRenderTargets();
+	virtual void DrawRenderTargets();
+
+#if WITH_EDITOR
+
+	virtual void DrawDebug();
+
+#endif
 
 };
 

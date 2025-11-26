@@ -22,12 +22,41 @@
 
 
 
-
 AEnvironmentCanvasActor::AEnvironmentCanvasActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 }
+
+
+void AEnvironmentCanvasActor::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Initialize();
+}
+
+void AEnvironmentCanvasActor::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	MoveRenderTargets();
+	DrawRenderTargets();
+
+#if WITH_EDITOR
+
+	DrawDebug();
+
+#endif
+}
+
+void AEnvironmentCanvasActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Deinitialize();
+
+	Super::EndPlay(EndPlayReason);
+}
+
 
 void AEnvironmentCanvasActor::FindBrushComponents()
 {
@@ -36,6 +65,16 @@ void AEnvironmentCanvasActor::FindBrushComponents()
 	{
 		RegisterBrush(*ActorItr);
 	}
+}
+
+void AEnvironmentCanvasActor::ClearBrushComponents()
+{
+	BrushCollection.Empty();
+}
+
+void AEnvironmentCanvasActor::GetBrushComponents(AActor* Actor, TArray<UActorComponent*>& OutComponents)
+{
+	OutComponents = Actor->GetComponentsByInterface(UEnvironmentBrushInterface::StaticClass());
 }
 
 void AEnvironmentCanvasActor::RegisterBrush(AActor* Actor)
@@ -53,7 +92,8 @@ void AEnvironmentCanvasActor::RegisterBrush(AActor* Actor)
 		return;
 	}
 
-	TArray<UActorComponent*> Components = Actor->GetComponentsByInterface(UEnvironmentBrushInterface::StaticClass());
+	TArray<UActorComponent*> Components;
+	GetBrushComponents(Actor, Components);
 
 	for (UActorComponent* Component : Components)
 	{
@@ -65,60 +105,139 @@ void AEnvironmentCanvasActor::RegisterBrush(AActor* Actor)
 	}
 }
 
-
 void AEnvironmentCanvasActor::UnregisterBrush(AActor* Actor)
 {
-
-}
-
-
-void AEnvironmentCanvasActor::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (!MPC || !MainRenderTarget || !PersistentRenderTarget || !DrawBrushMaterial || !DrawMainAdditiveMaterial)
+	if (!IsValid(Actor))
 	{
-		LOG_ERROR(LogEnvironment, TEXT("Invalid parameters"));
+		LOG_ERROR(LogEnvironment, TEXT("Actor is invalid or not a brush"));
 		return;
 	}
 
-	UWorld* World = GetWorld();
-	MPCInstance = World->GetParameterCollectionInstance(MPC);
+	TArray<UActorComponent*> Components;
+	GetBrushComponents(Actor, Components);
 
-	DrawPersistentMaterialInstance = UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, DrawPersistentMaterial);
+	for (UActorComponent* Component : Components)
+	{
+		IEnvironmentBrushInterface* Interface = Cast<IEnvironmentBrushInterface>(Component);
+		if (Interface)
+		{
+			BrushCollection.Remove(Interface);
+		}
+	}
+}
+
+
+bool AEnvironmentCanvasActor::Initialize()
+{
+	if (!MPC || !MainRenderTarget || !PersistentRenderTarget)
+	{
+		LOG_ERROR(LogEnvironment, TEXT("Invalid parameters"));
+		return false;
+	}
+
+	InitializeMPC();
+	InitializePixel();
+	InitializeController();
+	InitializeRenderTargets();
+
+	FindBrushComponents();
+
+	SetActorTickEnabled(true);
+
+	return true;
+}
+
+void AEnvironmentCanvasActor::Deinitialize()
+{
+	SetActorTickEnabled(false);
+
+	DeinitializeController();
+
+	ClearBrushComponents();
+}
+
+
+bool AEnvironmentCanvasActor::InitializeMPC()
+{
+	UWorld* World = GetWorld();
+
+	MPCInstance = World->GetParameterCollectionInstance(MPC);
+	if (!IsValid(MPCInstance))
+	{
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("MPCInstance is invalid"));
+		return false;
+	}
+
+	MPCInstance->SetScalarParameterValue(TEXT("Canvas.Size"), CanvasSize);
+	MPCInstance->SetVectorParameterValue(TEXT("Canvas.Location"), GetActorLocation());
+
+	return true;
+}
+
+bool AEnvironmentCanvasActor::InitializePixel()
+{
+	if (CanvasSize <= 0.0f || ImageSize <= 0.0f)
+	{
+		LOG_ERROR(LogEnvironment, TEXT("CanvasSize or ImageSize is invalid"));
+		return false;
+	}
+
+	PixelRatio = (1.0f / ImageSize) * CanvasSize;
+
+	return true;
+}
+
+bool AEnvironmentCanvasActor::InitializeRenderTargets()
+{
+	if (!MainRenderTarget || !PersistentRenderTarget)
+	{
+		LOG_ERROR(LogEnvironment, TEXT("PersistentMaterial, MainRT, PersistentRT is invalid"));
+		return false;
+	}
 
 	FLinearColor ClearColor = FLinearColor::Black;
 	UKismetRenderingLibrary::ClearRenderTarget2D(this, MainRenderTarget, ClearColor);
 	UKismetRenderingLibrary::ClearRenderTarget2D(this, PersistentRenderTarget, ClearColor);
 
-	if (!MPCInstance || !DrawPersistentMaterialInstance)
+	return true;
+}
+
+bool AEnvironmentCanvasActor::InitializeController()
+{
+	UWorld* World = GetWorld();
+	APlayerController* PlayerController = World->GetFirstPlayerController();
+
+	if (!IsValid(PlayerController))
 	{
-		LOG_ERROR(LogEnvironment, TEXT("Invalid runtime parameters"));
-		return;
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("PlayerController is invalid"));
+		return false;
 	}
 
-	FindBrushComponents();
+	PlayerController->OnPossessedPawnChanged.AddDynamic(this, &AEnvironmentCanvasActor::UpdatePawn);
 
-	MPCInstance->SetScalarParameterValue(TEXT("Size"), CanvasSize);
-	PixelRatio = (1.0f / ImageSize) * CanvasSize;
+	Controller = PlayerController;
+	Pawn = PlayerController->GetPawn();
 
-	SetActorTickEnabled(true);
+	return true;
 }
 
-void AEnvironmentCanvasActor::Tick(float DeltaTime)
+void AEnvironmentCanvasActor::DeinitializeController()
 {
-	Super::Tick(DeltaTime);
+	APlayerController* PlayerController = Controller.Get();
+	if (IsValid(PlayerController))
+	{
+		PlayerController->OnPossessedPawnChanged.RemoveAll(this);
+	}
 
-	MoveRenderTargets();
-	DrawPersistentRenderTarget();
-	DrawMainRenderTarget();
+	Controller = nullptr;
+	Pawn = nullptr;
 }
-void AEnvironmentCanvasActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+
+void AEnvironmentCanvasActor::UpdatePawn(APawn* OldPawn, APawn* NewPawn)
 {
-	SetActorTickEnabled(false);
-
-	Super::EndPlay(EndPlayReason);
+	Pawn = NewPawn;
 }
+
 
 
 void AEnvironmentCanvasActor::MoveRenderTargets()
@@ -129,14 +248,7 @@ void AEnvironmentCanvasActor::MoveRenderTargets()
 		return;
 	}
 
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (!IsValid(PlayerController))
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("PlayerController is invalid"));
-		return;
-	}
-
-	ACharacter* PlayerCharacter = PlayerController->GetCharacter();
+	APawn* PlayerCharacter = Pawn.Get();
 	if (!IsValid(PlayerCharacter))
 	{
 		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("PlayerCharacter is invalid"));
@@ -145,7 +257,7 @@ void AEnvironmentCanvasActor::MoveRenderTargets()
 
 	FVector CurrentLocation = GetActorLocation();
 	FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-	
+
 	float X = FMath::Floor(PlayerLocation.X / PixelRatio);
 	float Y = FMath::Floor(PlayerLocation.Y / PixelRatio);
 
@@ -156,81 +268,26 @@ void AEnvironmentCanvasActor::MoveRenderTargets()
 
 	AddActorWorldOffset(FVector(PixelOffset.X, PixelOffset.Y, 0.0f));
 
-	MPCInstance->SetVectorParameterValue(TEXT("Loc"), GetActorLocation());
+	MPCInstance->SetVectorParameterValue(TEXT("Canvas.Location"), GetActorLocation());
 }
 
-void AEnvironmentCanvasActor::DrawPersistentRenderTarget()
+void AEnvironmentCanvasActor::DrawRenderTargets()
 {
-	if (!PersistentRenderTarget || !DrawPersistentMaterialInstance)
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("PersistentRenderTarget, DrawPersistentMaterialInstance is invalid"));
-		return;
-	}
 
-	UCanvas* Canvas;
-	FVector2D Size;
-	FDrawToRenderTargetContext Context;
-	 
-	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, PersistentRenderTarget, Canvas, Size, Context);
-
-	FVector2D Ratio = PixelOffset / CanvasSize;
-	FVector4 Offset = FVector4(Ratio.X, Ratio.Y, 0.0f, 1.0f);
-
-	DrawPersistentMaterialInstance->SetVectorParameterValue(TEXT("Offset"), Offset);
-
-	Canvas->K2_DrawMaterial(DrawPersistentMaterialInstance, FVector2D(0.0f, 0.0f), Size, FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
-	
-	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, Context);
 }
 
-void AEnvironmentCanvasActor::DrawMainRenderTarget()
+
+#if WITH_EDITOR
+
+void AEnvironmentCanvasActor::DrawDebug()
 {
-	if (!MainRenderTarget || !DrawBrushMaterial || !DrawMainAdditiveMaterial)
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("MainRenderTarget, DrawBrushMaterial, DrawMainAdditiveMaterial is invalid"));
-		return;
-	}
+	UWorld* World = GetWorld();
+	FVector StartLocation = GetActorLocation();
+	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, 100.0f);
 
-	FVector CurrentLocation = GetActorLocation();
-
-	UCanvas* Canvas;
-	FVector2D Size;
-	FDrawToRenderTargetContext Context;
-
-	UKismetRenderingLibrary::ClearRenderTarget2D(this, MainRenderTarget, FLinearColor::Black);
-	UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(this, MainRenderTarget, Canvas, Size, Context);
-
-	FVector2D SizeHalf = Size / 2;
-
-	for (TWeakInterfacePtr<IEnvironmentBrushInterface> Interface : BrushCollection)
-	{
-		IEnvironmentBrushInterface* Brush = Interface.Get();
-		if (!Brush)
-		{
-			continue;
-		}
-
-		FVector ComponentLocation;
-		FVector2D BrushSize = FVector2D(4);
-
-		bool bCanDraw = Brush->GetBrushDetails(ComponentLocation, BrushSize);
-		if (!bCanDraw)
-		{
-			continue;
-		}
-
-		FVector2D BrushSizeHalf = BrushSize / 2;
-
-		float DX = (ComponentLocation.X - CurrentLocation.X) / PixelRatio;
-		float DY = (ComponentLocation.Y - CurrentLocation.Y) / PixelRatio;
-
-		FVector2D DrawPosition = (FVector2D(DX, DY) + SizeHalf) - BrushSizeHalf;
-
-		Canvas->K2_DrawMaterial(DrawBrushMaterial, DrawPosition, BrushSize, FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
-	}
-
-	Canvas->K2_DrawMaterial(DrawMainAdditiveMaterial, FVector2D(0.0f, 0.0f), Size, FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
-
-	UKismetRenderingLibrary::EndDrawCanvasToRenderTarget(this, Context);
+	DrawDebugDirectionalArrow(World, StartLocation, EndLocation, 10.0f, FColor::Magenta);
 }
+
+#endif
+
 

@@ -48,6 +48,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "Niagara",
+			"Enabled": true
+		},
+		{
 			"Name": "SunPosition",
 			"Enabled": true
 		},

@@ -9,24 +9,15 @@
 
 
 
-bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& Size)
+bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& Size, float& Density)
 {
 	const FTransform& Transform = GetComponentToWorld();
 	Location = Transform.GetLocation();
 	Size = BrushSize;
+	Density = BrushDensity;
 
 	return bCanDraw;
-}/*
-
-bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& Size, UMaterialInstanceDynamic*& Material)
-{
-	const FTransform& Transform = GetComponentToWorld();
-	Location = Transform.GetLocation();
-	Size = BrushSize;
-	Material = BrushMaterialInstance;
-
-	return bCanDraw;
-}*/
+}
 
 void UEnvironmentBrushComponent::SetCanDraw(bool bEnable)
 {

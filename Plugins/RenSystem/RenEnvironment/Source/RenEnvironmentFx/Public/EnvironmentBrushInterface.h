@@ -29,7 +29,7 @@ class RENENVIRONMENTFX_API IEnvironmentBrushInterface
 
 public:
 
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size) { return false; };
+	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float &Density) { return false; };
 	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, UMaterialInstanceDynamic*& Material) { return false; };
 	
 };

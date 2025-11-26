@@ -22,7 +22,7 @@
  * Can affect performance with too many brushes, use ComputeCanvas & ComputeBrush instead.
  * 
  */
-UCLASS(ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
+UCLASS()
 class UEnvironmentBrushComponent : public USceneComponent, public IEnvironmentBrushInterface
 {
 
@@ -36,22 +36,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D BrushSize = FVector2D(4.0f, 4.0f);
 
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TObjectPtr<UMaterialInterface> BrushMaterial;
-
 	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> BrushMaterialInstance;
+	float BrushDensity = 1.0f;
 
 
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size) override;
-	//virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, UMaterialInstanceDynamic*& Material) override;
+	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density) override;
 
-
-	UFUNCTION(BlueprintCallable)
 	void SetBrushSize(FVector2D Size);
-
-	UFUNCTION(BlueprintCallable)
 	void SetCanDraw(bool bEnable);
 
 };

@@ -39,7 +39,8 @@ public class RenEnvironmentFx : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreLibrary",
+				"Niagara",
+                "RCoreLibrary",
             }
 			);
 		
