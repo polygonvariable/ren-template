@@ -13,8 +13,8 @@ bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& S
 {
 	const FTransform& Transform = GetComponentToWorld();
 	Location = Transform.GetLocation();
-	Size = BrushSize;
 	Density = BrushDensity;
+	Size = BrushSize;
 
 	return bCanDraw;
 }

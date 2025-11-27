@@ -37,48 +37,40 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	float CanvasSize = 4096.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	float ImageSize = 512.0f;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	
 	float PixelRatio = 1.0f;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TObjectPtr<UMaterialParameterCollection> MPC;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UMaterialParameterCollectionInstance> MPCInstance;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FVector2D PixelOffset;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UMaterialParameterCollection> MPC;
+
+	TObjectPtr<UMaterialParameterCollectionInstance> MPCInstance;
+
+
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTextureRenderTarget2D> MainRenderTarget;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	TObjectPtr<UTextureRenderTarget2D> PersistentRenderTarget;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	FName BrushTag = TEXT("Environment.Brush");
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere)
 	int MaxBrushes = 16;
+
 
 	TArray<TWeakInterfacePtr<IEnvironmentBrushInterface>> BrushCollection;
 
-
-	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<APlayerController> Controller;
-
-	UPROPERTY(VisibleAnywhere)
 	TWeakObjectPtr<APawn> Pawn;
-
 
 
 	virtual bool Initialize();
@@ -104,6 +96,7 @@ protected:
 	virtual void UnregisterBrush(AActor* Actor);
 
 
+	virtual FVector2D MakePixelOffset() const;
 	virtual void MoveRenderTargets();
 	virtual void DrawRenderTargets();
 

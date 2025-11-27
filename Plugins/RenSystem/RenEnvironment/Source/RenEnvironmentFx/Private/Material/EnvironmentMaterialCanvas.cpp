@@ -19,6 +19,7 @@
 
 #include "RenEnvironmentFx/Public/EnvironmentBrushInterface.h"
 #include "RenEnvironmentFx/Public/EnvironmentBrushComponent.h"
+#include "RenEnvironmentFx/Public/EnvironmentPaintConstant.h"
 
 
 
@@ -75,7 +76,7 @@ void AEnvironmentMaterialCanvas::DrawPersistentRenderTarget()
 	FVector2D Ratio = PixelOffset / CanvasSize;
 	FVector4 Offset = FVector4(Ratio.X, Ratio.Y, 0.0f, 1.0f);
 
-	DrawPersistentMaterialInstance->SetVectorParameterValue(TEXT("Offset"), Offset);
+	DrawPersistentMaterialInstance->SetVectorParameterValue(EnvironmentPaintConstant::M_Offset, Offset);
 
 	Canvas->K2_DrawMaterial(DrawPersistentMaterialInstance, FVector2D(0.0f, 0.0f), Size, FVector2D(0.0f, 0.0f), FVector2D(1.0f, 1.0f));
 

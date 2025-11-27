@@ -19,6 +19,7 @@
 
 #include "RenEnvironmentFx/Public/EnvironmentBrushInterface.h"
 #include "RenEnvironmentFx/Public/EnvironmentBrushComponent.h"
+#include "RenEnvironmentFx/Public/EnvironmentPaintConstant.h"
 
 
 
@@ -26,6 +27,7 @@ AEnvironmentCanvasActor::AEnvironmentCanvasActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	bIsSpatiallyLoaded = false;
 }
 
 
@@ -168,8 +170,8 @@ bool AEnvironmentCanvasActor::InitializeMPC()
 		return false;
 	}
 
-	MPCInstance->SetScalarParameterValue(TEXT("Canvas.Size"), CanvasSize);
-	MPCInstance->SetVectorParameterValue(TEXT("Canvas.Location"), GetActorLocation());
+	MPCInstance->SetScalarParameterValue(EnvironmentPaintConstant::MPC_CanvasSize, CanvasSize);
+	MPCInstance->SetVectorParameterValue(EnvironmentPaintConstant::MPC_CanvasLocation, GetActorLocation());
 
 	return true;
 }
@@ -182,7 +184,7 @@ bool AEnvironmentCanvasActor::InitializePixel()
 		return false;
 	}
 
-	PixelRatio = (1.0f / ImageSize) * CanvasSize;
+	PixelRatio = CanvasSize / ImageSize;
 
 	return true;
 }
@@ -201,6 +203,7 @@ bool AEnvironmentCanvasActor::InitializeRenderTargets()
 
 	return true;
 }
+
 
 bool AEnvironmentCanvasActor::InitializeController()
 {
@@ -239,6 +242,26 @@ void AEnvironmentCanvasActor::UpdatePawn(APawn* OldPawn, APawn* NewPawn)
 }
 
 
+FVector2D AEnvironmentCanvasActor::MakePixelOffset() const
+{
+	APawn* Character = Pawn.Get();
+	if (!IsValid(Character))
+	{
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Character is invalid"));
+		return FVector2D::ZeroVector;
+	}
+
+	FVector CurrentLocation = GetActorLocation();
+	FVector PlayerLocation = Character->GetActorLocation();
+
+	float X = FMath::Floor(PlayerLocation.X / PixelRatio);
+	float Y = FMath::Floor(PlayerLocation.Y / PixelRatio);
+
+	FVector2D Snap2D = (FVector2D(X, Y) + 0.5f) * PixelRatio;
+	FVector2D Location2D = FVector2D(CurrentLocation.X, CurrentLocation.Y);
+
+	return (Snap2D - Location2D);
+}
 
 void AEnvironmentCanvasActor::MoveRenderTargets()
 {
@@ -248,27 +271,11 @@ void AEnvironmentCanvasActor::MoveRenderTargets()
 		return;
 	}
 
-	APawn* PlayerCharacter = Pawn.Get();
-	if (!IsValid(PlayerCharacter))
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("PlayerCharacter is invalid"));
-		return;
-	}
-
-	FVector CurrentLocation = GetActorLocation();
-	FVector PlayerLocation = PlayerCharacter->GetActorLocation();
-
-	float X = FMath::Floor(PlayerLocation.X / PixelRatio);
-	float Y = FMath::Floor(PlayerLocation.Y / PixelRatio);
-
-	FVector2D Snap2D = (FVector2D(X, Y) + 0.5f) * PixelRatio;
-	FVector2D Location2D = FVector2D(CurrentLocation.X, CurrentLocation.Y);
-
-	PixelOffset = Snap2D - Location2D;
+	PixelOffset = MakePixelOffset();
 
 	AddActorWorldOffset(FVector(PixelOffset.X, PixelOffset.Y, 0.0f));
 
-	MPCInstance->SetVectorParameterValue(TEXT("Canvas.Location"), GetActorLocation());
+	MPCInstance->SetVectorParameterValue(EnvironmentPaintConstant::MPC_CanvasLocation, GetActorLocation());
 }
 
 void AEnvironmentCanvasActor::DrawRenderTargets()
@@ -285,7 +292,7 @@ void AEnvironmentCanvasActor::DrawDebug()
 	FVector StartLocation = GetActorLocation();
 	FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, 100.0f);
 
-	DrawDebugDirectionalArrow(World, StartLocation, EndLocation, 10.0f, FColor::Magenta);
+	DrawDebugDirectionalArrow(World, StartLocation, EndLocation, 10.0f, FColor::Magenta, false, -1.0f, 0, 20.0f);
 }
 
 #endif

@@ -153,7 +153,7 @@
 			"Name": "NiagaraFluids",
 			"Enabled": true
 		},
-		 {
+		{
 			"Name": "OpenXR",
 			"Enabled": false,
 			"SupportedTargetPlatforms": [
@@ -169,6 +169,10 @@
 				"Win64",
 				"Linux"
 			]
+		},
+		{
+			"Name": "AdvancedRenamer",
+			"Enabled": true
 		}
 	]
 }
