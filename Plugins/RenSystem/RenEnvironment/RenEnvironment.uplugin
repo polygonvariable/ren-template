@@ -21,7 +21,7 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEnvironmentFx",
+			"Name": "RenEnvironmentPaint",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

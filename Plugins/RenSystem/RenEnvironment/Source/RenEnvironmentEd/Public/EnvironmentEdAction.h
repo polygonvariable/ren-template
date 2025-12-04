@@ -13,6 +13,12 @@
 // Forward Declarations
 
 
+#define ACTION_METHODS_DECLARE() \
+	virtual FText GetName() const override; \
+	virtual FColor GetTypeColor() const override; \
+	virtual UClass* GetSupportedClass() const override; \
+	virtual uint32 GetCategories() override;
+
 
 /**
  *
@@ -23,10 +29,7 @@ class FEnvironmentProfileActions : public FAssetTypeActions_Base
 
 public:
 
-	virtual FText GetName() const override;
-	virtual FColor GetTypeColor() const override;
-	virtual UClass* GetSupportedClass() const override;
-	virtual uint32 GetCategories() override;
+	ACTION_METHODS_DECLARE()
 
 };
 
@@ -40,10 +43,7 @@ class FEnvironmentFogProfileActions : public FAssetTypeActions_Base
 
 public:
 
-	virtual FText GetName() const override;
-	virtual FColor GetTypeColor() const override;
-	virtual UClass* GetSupportedClass() const override;
-	virtual uint32 GetCategories() override;
+	ACTION_METHODS_DECLARE()
 
 };
 
@@ -56,10 +56,7 @@ class FEnvironmentLightProfileActions : public FAssetTypeActions_Base
 
 public:
 
-	virtual FText GetName() const override;
-	virtual FColor GetTypeColor() const override;
-	virtual UClass* GetSupportedClass() const override;
-	virtual uint32 GetCategories() override;
+	ACTION_METHODS_DECLARE()
 
 };
 
@@ -72,10 +69,7 @@ class FEnvironmentAtmosphereProfileActions : public FAssetTypeActions_Base
 
 public:
 
-	virtual FText GetName() const override;
-	virtual FColor GetTypeColor() const override;
-	virtual UClass* GetSupportedClass() const override;
-	virtual uint32 GetCategories() override;
+	ACTION_METHODS_DECLARE()
 
 };
 
@@ -89,10 +83,7 @@ class FEnvironmentAssetActions : public FAssetTypeActions_Base
 
 public:
 
-	virtual FText GetName() const override;
-	virtual FColor GetTypeColor() const override;
-	virtual UClass* GetSupportedClass() const override;
-	virtual uint32 GetCategories() override;
+	ACTION_METHODS_DECLARE()
 
 };
 

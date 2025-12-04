@@ -57,6 +57,10 @@ void FRenEnvironmentEdModule::StartupModule()
 	SetIconAndThumbnail(TEXT("EnvironmentLightProfileAsset"), TEXT("ProfileLight128.png"));
 	SetIconAndThumbnail(TEXT("EnvironmentAtmosphereProfileAsset"), TEXT("ProfileAtmosphere128.png"));
 
+	SetIconAndThumbnail(TEXT("EnvironmentActor"), TEXT("ActorEnvironment128.png"));
+	SetIconAndThumbnail(TEXT("EnvironmentNiagaraCanvas"), TEXT("ActorNiagaraPaint128.png"));
+	SetIconAndThumbnail(TEXT("EnvironmentMaterialCanvas"), TEXT("ActorMaterialPaint128.png"));
+
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleSet.Get());
 }
 

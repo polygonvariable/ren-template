@@ -11,110 +11,29 @@
 
 
 
-FText FEnvironmentProfileActions::GetName() const
-{
-    return FText::FromString(TEXT("Environment Profile"));
-}
+#define ACTION_METHODS_IMPLEMENTATION(Class, Name, Color, Type, Category) \
+    FText Class::GetName() const \
+    { \
+        return FText::FromString(Name); \
+    } \
+    FColor Class::GetTypeColor() const \
+    { \
+        return FColor::FromHex(Color); \
+    } \
+    UClass* Class::GetSupportedClass() const \
+    { \
+        return Type::StaticClass(); \
+    } \
+    uint32 Class::GetCategories() \
+    { \
+        return Category; \
+    }
 
-FColor FEnvironmentProfileActions::GetTypeColor() const
-{
-    return FColor::FromHex(TEXT("#3D7C31"));
-}
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentProfileActions, TEXT("Environment Profile"), TEXT("#3D7C31"), UEnvironmentProfileAsset, EAssetTypeCategories::Misc)
 
-UClass* FEnvironmentProfileActions::GetSupportedClass() const
-{
-    return UEnvironmentProfileAsset::StaticClass();
-}
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentFogProfileActions, TEXT("Fog Profile"), TEXT("#3D7C31"), UEnvironmentFogProfileAsset, EAssetTypeCategories::Misc)
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentLightProfileActions, TEXT("Light Profile"), TEXT("#3D7C31"), UEnvironmentLightProfileAsset, EAssetTypeCategories::Misc)
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentAtmosphereProfileActions, TEXT("Atmosphere Profile"), TEXT("#3D7C31"), UEnvironmentAtmosphereProfileAsset, EAssetTypeCategories::Misc)
 
-uint32 FEnvironmentProfileActions::GetCategories()
-{
-    return EAssetTypeCategories::Misc;
-}
-
-
-FText FEnvironmentFogProfileActions::GetName() const
-{
-    return FText::FromString(TEXT("Fog Profile"));
-}
-
-FColor FEnvironmentFogProfileActions::GetTypeColor() const
-{
-    return FColor::FromHex(TEXT("#3D7C31"));
-}
-
-UClass* FEnvironmentFogProfileActions::GetSupportedClass() const
-{
-    return UEnvironmentFogProfileAsset::StaticClass();
-}
-
-uint32 FEnvironmentFogProfileActions::GetCategories()
-{
-    return EAssetTypeCategories::Misc;
-}
-
-
-
-FText FEnvironmentLightProfileActions::GetName() const
-{
-    return FText::FromString(TEXT("Light Profile"));
-}
-
-FColor FEnvironmentLightProfileActions::GetTypeColor() const
-{
-    return FColor::FromHex(TEXT("#3D7C31"));
-}
-
-UClass* FEnvironmentLightProfileActions::GetSupportedClass() const
-{
-    return UEnvironmentLightProfileAsset::StaticClass();
-}
-
-uint32 FEnvironmentLightProfileActions::GetCategories()
-{
-    return EAssetTypeCategories::Misc;
-}
-
-
-
-FText FEnvironmentAtmosphereProfileActions::GetName() const
-{
-    return FText::FromString(TEXT("Atmosphere Profile"));
-}
-
-FColor FEnvironmentAtmosphereProfileActions::GetTypeColor() const
-{
-    return FColor::FromHex(TEXT("#3D7C31"));
-}
-
-UClass* FEnvironmentAtmosphereProfileActions::GetSupportedClass() const
-{
-    return UEnvironmentAtmosphereProfileAsset::StaticClass();
-}
-
-uint32 FEnvironmentAtmosphereProfileActions::GetCategories()
-{
-    return EAssetTypeCategories::Misc;
-}
-
-
-
-FText FEnvironmentAssetActions::GetName() const
-{
-    return FText::FromString(TEXT("Environment Asset"));
-}
-
-FColor FEnvironmentAssetActions::GetTypeColor() const
-{
-    return FColor::FromHex(TEXT("#3D7C31"));
-}
-
-UClass* FEnvironmentAssetActions::GetSupportedClass() const
-{
-    return UEnvironmentAsset::StaticClass();
-}
-
-uint32 FEnvironmentAssetActions::GetCategories()
-{
-    return EAssetTypeCategories::Misc;
-}
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentAssetActions, TEXT("Environment Asset"), TEXT("#3D7C31"), UEnvironmentAsset, EAssetTypeCategories::Misc)
 

@@ -52,6 +52,13 @@ public:
 	float NorthPoleOffset = 0.0f;
 
 
+	UPROPERTY(EditAnywhere, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
+	float EnabledStartTime = 6.0f;
+
+	UPROPERTY(EditAnywhere, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
+	float EnabledEndTime = 18.0f;
+
+
 	UFUNCTION(BlueprintCallable)
 	void SetTimeOfDay(float NewTime);
 
@@ -60,8 +67,15 @@ public:
 
 protected:
 
+
 	UPROPERTY(EditAnywhere, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
 	float TimeOfDay = 12.0f;
+
+
+	void UpdateLightRotation();
+	void UpdateLightShadow();
+
+	bool IsLightTime(float InTimeOfDay) const;
 
 };
 
