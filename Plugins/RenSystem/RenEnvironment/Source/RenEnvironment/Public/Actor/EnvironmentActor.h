@@ -138,3 +138,157 @@ public:
 	void GenerateLandscapeSpline();
 
 };
+
+
+UENUM(BlueprintType)
+enum class ESegmentType : uint8
+{
+	Spline UMETA(DisplayName = "Spline"),
+	Socket UMETA(DisplayName = "Socket")
+};
+
+UENUM(BlueprintType)
+enum class ESplinePositionType : uint8
+{
+	Start UMETA(DisplayName = "Start"),
+	End UMETA(DisplayName = "End"),
+	Custom UMETA(DisplayName = "Custom")
+};
+
+USTRUCT(BlueprintType)
+struct FSegmentData
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TWeakObjectPtr<AActor> Actor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ESegmentType SegmentType = ESegmentType::Spline;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ESplinePositionType PointPosition = ESplinePositionType::Start;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName SocketName = NAME_None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bEnabled = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TangentMultiplier = 250.0f;
+
+};
+
+
+
+/**
+ *
+ *
+ */
+UCLASS()
+class ASplineSegment : public AActor
+{
+
+	GENERATED_BODY()
+
+public:
+
+	ASplineSegment();
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<USceneComponent> SceneComponent;
+
+#if WITH_EDITORONLY_DATA
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<USplineComponent> SplineComponent;
+
+	UPROPERTY(EditAnywhere, AdvancedDisplay)
+	TSoftObjectPtr<ALandscapeSplineActor> LandscapeSpline;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMesh> SegmentMesh;
+
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Meta = (ContentDir))
+	FDirectoryPath ExportPath;
+
+	UPROPERTY(EditAnywhere, AdvancedDisplay)
+	FString ExportName = TEXT("Segment");
+
+	UPROPERTY(EditAnywhere)
+	bool bAutoUpdate = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableMeshBuild = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableSnap = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableSnapRotation = false;
+
+	UPROPERTY(EditAnywhere, AdvancedDisplay)
+	bool bClearSplineMeshAfterBuild = false;
+
+	UPROPERTY(EditAnywhere)
+	float SnapOffset = 10.0f;
+
+	UPROPERTY(EditAnywhere)
+	FSegmentData StartPoint;
+
+	UPROPERTY(EditAnywhere)
+	FSegmentData EndPoint;
+
+#endif
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
+
+#if WITH_EDITOR
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void BuildSpline();
+
+
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void BuildSplineMeshes();
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveSplineMeshes();
+
+
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void SnapSplineToSurface(bool bEnableRotation);
+
+
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void RecenterActor();
+
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void BuildLandscapeSpline();
+
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void BakeSplineMesh();
+
+
+
+	void AddSegment(ULandscapeSplineControlPoint* Start, ULandscapeSplineControlPoint* End, bool bAutoRotateStart, bool bAutoRotateEnd);
+
+	bool GetSplineData(USplineComponent* InSpline, ESplinePositionType InPointPosition, FVector& OutLocation, FRotator& OutRotation, FVector& OutTangent);
+
+	// ~ AActor
+	virtual void OnConstruction(const FTransform& Transform) override;
+	// ~ End of AActor
+
+#endif
+
+};
+

@@ -13,6 +13,7 @@
 #include "EnvironmentBrushComponent.generated.h"
 
 // Forward Declarations
+class UCharacterMovementComponent;
 
 
 
@@ -30,6 +31,18 @@ class UEnvironmentBrushComponent : public USceneComponent, public IEnvironmentBr
 
 public:
 
+	void SetBrushDensity(float Density);
+	void SetBrushSize(FVector2D Size);
+	void SetCanDraw(bool bEnable);
+
+protected:
+
+	UPROPERTY()
+	TObjectPtr<UCharacterMovementComponent> CharacterMovement;
+
+	UPROPERTY()
+	bool bIsCharacter = false;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanDraw = true;
 
@@ -39,11 +52,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BrushDensity = 1.0f;
 
+public:
 
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density) override;
+	// ~ USceneComponent
+	virtual void Activate(bool bReset) override;
+	virtual void Deactivate() override;
+	// ~ End of USceneComponent
 
-	void SetBrushSize(FVector2D Size);
-	void SetCanDraw(bool bEnable);
+	// ~ IEnvironmentBrushInterface
+	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) override;
+	// ~ End of IEnvironmentBrushInterface
 
 };
 

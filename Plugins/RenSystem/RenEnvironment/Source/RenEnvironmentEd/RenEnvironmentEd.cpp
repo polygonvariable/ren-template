@@ -20,10 +20,11 @@ void FRenEnvironmentEdModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
-	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	FModuleManager& ModuleManager = FModuleManager::Get();
+	if (ModuleManager.IsModuleLoaded("AssetTools"))
 	{
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
-
+		
 		TSharedPtr<FEnvironmentProfileActions> EnvironmentProfile = MakeShareable(new FEnvironmentProfileActions());
 		TSharedPtr<FEnvironmentFogProfileActions> FogProfile = MakeShareable(new FEnvironmentFogProfileActions());
 		TSharedPtr<FEnvironmentLightProfileActions> LightProfile = MakeShareable(new FEnvironmentLightProfileActions());
@@ -69,7 +70,8 @@ void FRenEnvironmentEdModule::ShutdownModule()
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
 
-	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))
+	FModuleManager& ModuleManager = FModuleManager::Get();
+	if (ModuleManager.IsModuleLoaded("AssetTools"))
 	{
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
 		for (TSharedPtr<IAssetTypeActions> Action : AssetActions)

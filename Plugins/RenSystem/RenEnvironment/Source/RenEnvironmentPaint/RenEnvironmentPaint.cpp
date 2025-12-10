@@ -1,6 +1,11 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+// Parent Header
 #include "RenEnvironmentPaint.h"
+
+// Engine Headers
+
+
 
 #define LOCTEXT_NAMESPACE "FRenEnvironmentPaintModule"
 
@@ -18,3 +23,4 @@ void FRenEnvironmentPaintModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FRenEnvironmentPaintModule, RenEnvironmentPaint)
+

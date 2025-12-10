@@ -108,6 +108,7 @@ protected:
 	void StartBrushScan();
 	void StopBrushScan();
 
+	float PackFloats(float ValueA, float ValueB);
 
 	virtual void RegisterBrush(AActor* Actor);
 

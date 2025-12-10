@@ -50,6 +50,8 @@ void UOrbitalLightComponent::UpdateLightShadow()
 
     if (CastShadows != bCanCastShadows)
     {
+        bEnableLightShaftOcclusion = bCanCastShadows;
+        bEnableLightShaftBloom = bCanCastShadows;
         SetCastShadows(bCanCastShadows);
     }
 }

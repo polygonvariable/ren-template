@@ -29,8 +29,8 @@ class IEnvironmentBrushInterface
 
 public:
 
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float &Density) { return false; };
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, UMaterialInstanceDynamic*& Material) { return false; };
+	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) { return false; };
+	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, UMaterialInstanceDynamic*& Material) { return false; };
 	
 };
 

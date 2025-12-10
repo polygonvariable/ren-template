@@ -92,10 +92,11 @@ void AEnvironmentNiagaraCanvas::DrawRenderTargets()
 		}
 
 		FVector Location = FVector::ZeroVector;
+		FVector Velocity = FVector::ZeroVector;
 		FVector2D Size = FVector2D::ZeroVector;
 		float Density = 0.0f;
 
-		bool bCanDraw = Brush->GetBrushDetails(Location, Size, Density);
+		bool bCanDraw = Brush->GetBrushDetails(Location, Velocity, Size, Density);
 		if (!bCanDraw)
 		{
 			continue;
@@ -110,7 +111,10 @@ void AEnvironmentNiagaraCanvas::DrawRenderTargets()
 
 		FVector DrawLocation = Location - CurrentLocation;
 
-		BrushPoints.Add(FVector4(DrawLocation.X, DrawLocation.Y, Size.Length(), Density));
+		float PackedVelocity = PackFloats(Velocity.X, Velocity.Y);
+		float PackedAttributes = PackFloats(Size.Length(), Density);
+
+		BrushPoints.Add(FVector4(DrawLocation.X, DrawLocation.Y, PackedVelocity, PackedAttributes));
 	}
 
 	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector4(NiagaraComponent, CanvasParameters.NS_DrawPoints, BrushPoints);

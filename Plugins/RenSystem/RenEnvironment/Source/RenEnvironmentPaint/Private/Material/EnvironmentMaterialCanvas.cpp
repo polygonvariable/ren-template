@@ -102,11 +102,12 @@ void AEnvironmentMaterialCanvas::DrawMainRenderTarget()
 			continue;
 		}
 
-		FVector ComponentLocation = FVector::ZeroVector;
+		FVector Location = FVector::ZeroVector;
+		FVector Velocity = FVector::ZeroVector;
 		FVector2D BrushSize = FVector2D(4);
 		float Density = 1.0f;
 
-		bool bCanDraw = Brush->GetBrushDetails(ComponentLocation, BrushSize, Density);
+		bool bCanDraw = Brush->GetBrushDetails(Location, Velocity, BrushSize, Density);
 		if (!bCanDraw)
 		{
 			continue;
@@ -114,8 +115,8 @@ void AEnvironmentMaterialCanvas::DrawMainRenderTarget()
 
 		FVector2D BrushSizeHalf = BrushSize / 2;
 
-		float DX = (ComponentLocation.X - CurrentLocation.X) / PixelRatio;
-		float DY = (ComponentLocation.Y - CurrentLocation.Y) / PixelRatio;
+		float DX = (Location.X - CurrentLocation.X) / PixelRatio;
+		float DY = (Location.Y - CurrentLocation.Y) / PixelRatio;
 
 		FVector2D DrawPosition = (FVector2D(DX, DY) + SizeHalf) - BrushSizeHalf;
 

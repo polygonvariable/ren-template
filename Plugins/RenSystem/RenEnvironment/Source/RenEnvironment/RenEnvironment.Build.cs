@@ -42,6 +42,10 @@ public class RenEnvironment : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"StaticMeshEditor",
+                "EditorScriptingUtilities",
+                "UnrealEd",
+
                 "SunPosition",
                 "RCoreClock",
                 "RCoreSettings",

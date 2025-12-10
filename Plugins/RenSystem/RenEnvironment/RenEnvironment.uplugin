@@ -60,6 +60,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "EditorScriptingUtilities",
+			"Enabled": true
+		},
+		{
 			"Name": "RCoreCommon",
 			"Enabled": true
 		},
