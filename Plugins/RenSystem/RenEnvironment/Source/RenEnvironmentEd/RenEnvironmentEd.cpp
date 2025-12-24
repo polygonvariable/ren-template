@@ -44,6 +44,17 @@ void FRenEnvironmentEdModule::StartupModule()
 		}
 	}
 
+	static const FName PropertyEditor("PropertyEditor");
+	FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditor);
+
+	FText DisplayName = FText::FromString("Segment");
+
+	TSharedRef<FPropertySection> Section = PropertyModule.FindOrCreateSection("SplineSegment", "Segment", DisplayName);
+	Section->AddCategory("Segment");
+	Section->AddCategory("Landscape");
+	Section->AddCategory("Mesh");
+	Section->AddCategory("Export");
+
 	if (StyleSet.IsValid())
 	{
 		return;

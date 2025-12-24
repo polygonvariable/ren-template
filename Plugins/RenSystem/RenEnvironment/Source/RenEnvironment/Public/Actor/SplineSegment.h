@@ -78,13 +78,50 @@ public:
 
 };
 
+/**
+ *
+ *
+ */
+USTRUCT()
+struct FSegmentMesh
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UStaticMesh> StaticMesh;
+
+	UPROPERTY(EditAnywhere)
+	float SideOffset = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	float VerticalOffset = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	float Size = 200.0f;
+
+	bool IsValid() const
+	{
+		return StaticMesh != nullptr && Size > 0.0f;
+	}
+
+};
+
 #endif
 
 
 
 /**
- *
- *
+ * 
+ * Actor for generating spline-based geometry such as roads, rails etc.
+ * 
+ * Notes:
+ * - Avoid using high-poly meshes, as they can negatively impact performance.
+ * - Generated meshes must be baked; otherwise, they will not appear in cooked (packaged) builds.
+ * - SplineComponent is only available in editor.
+ * 
  */
 UCLASS()
 class ASplineSegment : public AActor
@@ -99,38 +136,38 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USceneComponent> SceneComponent;
 
-	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
-	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
-
 #if WITH_EDITORONLY_DATA
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<USplineComponent> SplineComponent;
 
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Segment")
 	void BuildSpline();
 
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Mesh")
 	void BuildSplineMeshes();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Mesh")
 	void RemoveSplineMeshes();
 
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Segment")
 	void SnapSplineToSurface(bool bEnableRotation);
 
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Segment")
 	void RecenterActor();
 
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Mesh")
+	void RemoveStaticMeshComponents();
+
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Landscape")
 	void BuildLandscapeSpline();
 
-	UFUNCTION(BlueprintCallable, CallInEditor)
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Export")
 	void BakeSplineMesh();
 
 
@@ -140,52 +177,46 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, AdvancedDisplay)
+	UPROPERTY(EditAnywhere, Category = "Mesh")
+	TArray<FSegmentMesh> SegmentMeshes;
+
+	UPROPERTY(EditAnywhere, Category = "Landscape")
 	TSoftObjectPtr<ALandscapeSplineActor> LandscapeSpline;
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UStaticMesh> SegmentMesh;
-
-	UPROPERTY(EditAnywhere, AdvancedDisplay, Meta = (ContentDir))
+	UPROPERTY(EditAnywhere, Category = "Export", Meta = (ContentDir))
 	FDirectoryPath ExportPath;
 
-	UPROPERTY(EditAnywhere, AdvancedDisplay)
+	UPROPERTY(EditAnywhere, Category = "Export")
 	FString ExportName = TEXT("Segment");
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment")
 	bool bAutoUpdate = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate"))
 	bool bEnableMeshBuild = false;
-
-	UPROPERTY(EditAnywhere)
+	
+	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableMeshBuild", EditConditionHides))
 	bool bBuildMeshByPoints = true;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate"))
 	bool bEnableSnap = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
 	bool bEnableSnapRotation = false;
 
-	UPROPERTY(EditAnywhere, AdvancedDisplay)
-	bool bClearMeshAfterBuild = true;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
 	float SnapOffset = 10.0f;
 
-	UPROPERTY(EditAnywhere)
-	float SegmentSize = 200.0f;
+	UPROPERTY(EditAnywhere, Category = "Export")
+	bool bClearSplineMeshesAfterBake = true;
 
-	UPROPERTY(EditAnywhere)
-	float SideOffset = 0.0f;
+	UPROPERTY(EditAnywhere, Category = "Export")
+	bool bCombineBakedMesh = true;
 
-	UPROPERTY(EditAnywhere)
-	float VerticalOffset = 0.0f;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment")
 	FSegmentData StartPoint;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Segment")
 	FSegmentData EndPoint;
 
 
@@ -198,6 +229,16 @@ protected:
 	void AddSegment(ULandscapeSplineControlPoint* Start, ULandscapeSplineControlPoint* End, bool bAutoRotateStart, bool bAutoRotateEnd);
 
 	bool GetSplineData(USplineComponent* InSpline, ESegmentSplinePosition InSplinePosition, FVector& OutLocation, FRotator& OutRotation, FVector& OutTangent);
+
+
+
+	void AddStaticMeshComponent(UObject* MeshObject);
+
+	void BakePrimitiveComponents(FString Name, TArray<UPrimitiveComponent*> MeshComponents, TArray<UObject*>& OutObjects);
+
+	void BakeSplineMeshSeparately();
+	void BakeSplineMeshIntoSingle();
+
 
 #endif
 

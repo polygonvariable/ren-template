@@ -38,7 +38,7 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Meta = (UIMin = "5.0", UIMax = "60.0", ClampMin = "5.0", ClampMax = "60.0"))
+	UPROPERTY(EditAnywhere, Meta = (UIMin = "5.0", UIMax = "60.0", ClampMin = "1.0", ClampMax = "60.0"))
 	float ScanInterval = 10.0f;
 
 	UPROPERTY(EditAnywhere, Meta = (UIMin = "250.0", UIMax = "3500.0", ClampMin = "250.0", ClampMax = "3500.0"))

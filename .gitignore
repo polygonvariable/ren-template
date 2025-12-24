@@ -82,7 +82,5 @@ Plugins/**/**/Intermediate/*
 # Cache files for the editor to use
 DerivedDataCache/*
 
-# Folders
-Flowchart/*
+# Custom
 Asset/*
-Package/*

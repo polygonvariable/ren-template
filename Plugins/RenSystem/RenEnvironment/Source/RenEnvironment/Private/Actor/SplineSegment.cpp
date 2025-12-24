@@ -52,17 +52,7 @@ ASplineSegment::ASplineSegment()
 			SplineComponent->EditorSelectedSplineSegmentColor = FColor::FromHex("#0026FFFF");
 			SplineComponent->EditorTangentColor = FColor::FromHex("#FF0056FF");
 		}
-
-#endif
-
-		StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-		if (IsValid(StaticMeshComponent))
-		{
-			StaticMeshComponent->SetupAttachment(SceneComponent);
-		}
 	}
-
-#if WITH_EDITOR
 
 	ExportPath.Path = TEXT("/Game");
 
@@ -219,50 +209,57 @@ void ASplineSegment::BuildSplineMeshByPoints()
 {
 	RemoveSplineMeshes();
 
-	if (!IsValid(SegmentMesh))
-	{
-		LOG_ERROR(LogEnvironment, TEXT("SegmentMesh is invalid"));
-		return;
-	}
-
 	int Num = SplineComponent->GetNumberOfSplinePoints() - 1;
 	if (Num == 0)
 	{
 		return;
 	}
 
-	for (int i = 0; i < Num; i++)
+	for (const FSegmentMesh& Mesh : SegmentMeshes)
 	{
-		USplineMeshComponent* NewMesh = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
-		if (IsValid(NewMesh))
+		if (!Mesh.IsValid())
 		{
-			FVector StartLocation = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
-			FVector StartTangent = SplineComponent->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
-			FVector StartRight = SplineComponent->GetRightVectorAtSplinePoint(i, ESplineCoordinateSpace::Local);
-			float StartRoll = SplineComponent->GetRollAtSplinePoint(i, ESplineCoordinateSpace::Local);
+			continue;
+		}
 
-			FVector EndLocation = SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
-			FVector EndTangent = SplineComponent->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
-			FVector EndRight = SplineComponent->GetRightVectorAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
-			float EndRoll = SplineComponent->GetRollAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+		for (int i = 0; i < Num; i++)
+		{
+			USplineMeshComponent* NewMesh = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
+			if (IsValid(NewMesh))
+			{
+				FVector StartLocation = SplineComponent->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
+				FVector StartTangent = SplineComponent->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
+				FVector StartRight = SplineComponent->GetRightVectorAtSplinePoint(i, ESplineCoordinateSpace::Local);
+				FVector StartUp = SplineComponent->GetUpVectorAtSplinePoint(i, ESplineCoordinateSpace::Local);
+				float StartRoll = SplineComponent->GetRollAtSplinePoint(i, ESplineCoordinateSpace::Local);
 
-			StartLocation += StartRight * SideOffset;
-			EndLocation += EndRight * SideOffset;
+				FVector EndLocation = SplineComponent->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+				FVector EndTangent = SplineComponent->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+				FVector EndRight = SplineComponent->GetRightVectorAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+				FVector EndUp = SplineComponent->GetUpVectorAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
+				float EndRoll = SplineComponent->GetRollAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
 
-			NewMesh->SetStaticMesh(SegmentMesh);
-			NewMesh->SetForwardAxis(ESplineMeshAxis::X);
-			NewMesh->SetCollisionProfileName(TEXT("BlockAll"));
+				StartLocation += StartRight * Mesh.SideOffset;
+				EndLocation += EndRight * Mesh.SideOffset;
 
-			NewMesh->RegisterComponent();
-			AddInstanceComponent(NewMesh);
+				StartLocation += StartUp * Mesh.VerticalOffset;
+				EndLocation += EndUp * Mesh.VerticalOffset;
 
-			NewMesh->SetMobility(EComponentMobility::Movable);
-			NewMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
+				NewMesh->SetStaticMesh(Mesh.StaticMesh);
+				NewMesh->SetForwardAxis(ESplineMeshAxis::X);
+				NewMesh->SetCollisionProfileName(TEXT("BlockAll"));
 
-			NewMesh->SetStartRollDegrees(StartRoll);
-			NewMesh->SetEndRollDegrees(EndRoll);
+				NewMesh->RegisterComponent();
+				AddInstanceComponent(NewMesh);
 
-			NewMesh->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
+				NewMesh->SetMobility(EComponentMobility::Movable);
+				NewMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+				NewMesh->SetStartRollDegrees(StartRoll);
+				NewMesh->SetEndRollDegrees(EndRoll);
+
+				NewMesh->SetStartAndEnd(StartLocation, StartTangent, EndLocation, EndTangent);
+			}
 		}
 	}
 }
@@ -271,68 +268,64 @@ void ASplineSegment::BuildSplineMeshByDistance()
 {
 	RemoveSplineMeshes();
 
-	if (!IsValid(SegmentMesh))
-	{
-		LOG_ERROR(LogEnvironment, TEXT("SegmentMesh is invalid"));
-		return;
-	}
-
 	float SplineLength = SplineComponent->GetSplineLength();
-	int SegmentCount = FMath::TruncToInt(SplineLength / SegmentSize);
 
-	for (int i = 0; i < SegmentCount; i++)
+	for (const FSegmentMesh& Mesh : SegmentMeshes)
 	{
-		USplineMeshComponent* NewMesh = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
-		if (IsValid(NewMesh))
+		if (!Mesh.IsValid())
 		{
-			float StartDistance = i * SegmentSize;
-			FVector StartLocation = SplineComponent->GetLocationAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
-			FVector StartTangent = SplineComponent->GetTangentAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
-			FVector StartRight = SplineComponent->GetRightVectorAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
-			float StartRoll = SplineComponent->GetRollAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
-
-			float EndDistance = (i + 1) * SegmentSize;
-			FVector EndLocation = SplineComponent->GetLocationAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
-			FVector EndTangent = SplineComponent->GetTangentAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
-			FVector EndRight = SplineComponent->GetRightVectorAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
-			float EndRoll = SplineComponent->GetRollAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
-
-			StartLocation += StartRight * SideOffset;
-			EndLocation += EndRight * SideOffset;
-
-			NewMesh->SetStaticMesh(SegmentMesh);
-			NewMesh->SetForwardAxis(ESplineMeshAxis::X);
-			NewMesh->SetCollisionProfileName(TEXT("BlockAll"));
-
-			NewMesh->RegisterComponent();
-			AddInstanceComponent(NewMesh);
-
-			NewMesh->SetMobility(EComponentMobility::Movable);
-			NewMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
-
-			NewMesh->SetStartRollDegrees(StartRoll);
-			NewMesh->SetEndRollDegrees(EndRoll);
-
-			FVector ClampedStartTangent = UKismetMathLibrary::ClampVectorSize(StartTangent, 1.0f, SegmentSize);
-			FVector ClampedEndTangent = UKismetMathLibrary::ClampVectorSize(EndTangent, 1.0f, SegmentSize);
-
-			NewMesh->SetStartAndEnd(StartLocation, ClampedStartTangent, EndLocation, ClampedEndTangent);
+			continue;
 		}
-	}
+
+		int SegmentCount = FMath::TruncToInt(SplineLength / Mesh.Size);
+
+		for (int i = 0; i < SegmentCount; i++)
+		{
+			USplineMeshComponent* NewMesh = NewObject<USplineMeshComponent>(this, USplineMeshComponent::StaticClass());
+			if (IsValid(NewMesh))
+			{
+				float StartDistance = i * Mesh.Size;
+				FVector StartLocation = SplineComponent->GetLocationAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
+				FVector StartTangent = SplineComponent->GetTangentAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
+				FVector StartRight = SplineComponent->GetRightVectorAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
+				FVector StartUp = SplineComponent->GetUpVectorAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
+				float StartRoll = SplineComponent->GetRollAtDistanceAlongSpline(StartDistance, ESplineCoordinateSpace::Local);
+
+				float EndDistance = (i + 1) * Mesh.Size;
+				FVector EndLocation = SplineComponent->GetLocationAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
+				FVector EndTangent = SplineComponent->GetTangentAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
+				FVector EndRight = SplineComponent->GetRightVectorAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
+				FVector EndUp = SplineComponent->GetUpVectorAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
+				float EndRoll = SplineComponent->GetRollAtDistanceAlongSpline(EndDistance, ESplineCoordinateSpace::Local);
+
+				StartLocation += StartRight * Mesh.SideOffset;
+				EndLocation += EndRight * Mesh.SideOffset;
+
+				StartLocation += StartUp * Mesh.VerticalOffset;
+				EndLocation += EndUp * Mesh.VerticalOffset;
+
+				NewMesh->SetStaticMesh(Mesh.StaticMesh);
+				NewMesh->SetForwardAxis(ESplineMeshAxis::X);
+				NewMesh->SetCollisionProfileName(TEXT("BlockAll"));
+
+				NewMesh->RegisterComponent();
+				AddInstanceComponent(NewMesh);
+
+				NewMesh->SetMobility(EComponentMobility::Movable);
+				NewMesh->AttachToComponent(SplineComponent, FAttachmentTransformRules::KeepRelativeTransform);
+
+				NewMesh->SetStartRollDegrees(StartRoll);
+				NewMesh->SetEndRollDegrees(EndRoll);
+
+				FVector ClampedStartTangent = UKismetMathLibrary::ClampVectorSize(StartTangent, 1.0f, Mesh.Size);
+				FVector ClampedEndTangent = UKismetMathLibrary::ClampVectorSize(EndTangent, 1.0f, Mesh.Size);
+
+				NewMesh->SetStartAndEnd(StartLocation, ClampedStartTangent, EndLocation, ClampedEndTangent);
+			}
+		}
+	}	
 }
 
-
-void ASplineSegment::BuildSplineMeshes()
-{
-	if (bBuildMeshByPoints)
-	{
-		BuildSplineMeshByPoints();
-	}
-	else
-	{
-		BuildSplineMeshByDistance();
-	}
-}
 
 
 void ASplineSegment::RemoveSplineMeshes()
@@ -441,7 +434,7 @@ void ASplineSegment::SnapSplineToSurface(bool bEnableRotation)
 
 void ASplineSegment::RecenterActor()
 {
-	if (!SplineComponent)
+	if (!IsValid(SplineComponent))
 	{
 		return;
 	}
@@ -686,24 +679,60 @@ void ASplineSegment::BuildLandscapeSpline()
 	// bAutoUpdate = bOldAutoUpdate;
 }
 
-void ASplineSegment::BakeSplineMesh()
-{
-	bAutoUpdate = false;
 
-	TArray<UPrimitiveComponent*> MeshComponents;
+
+void ASplineSegment::AddStaticMeshComponent(UObject* MeshObject)
+{
+	UStaticMesh* NewStaticMesh = Cast<UStaticMesh>(MeshObject);
+	if (!IsValid(NewStaticMesh))
+	{
+		LOG_ERROR(LogEnvironment, TEXT("Failed to fetch created StaticMesh"));
+		return;
+	}
+
+	UStaticMeshComponent* MeshComponent = NewObject<UStaticMeshComponent>(this, UStaticMeshComponent::StaticClass(), NAME_None, RF_Transactional);
+	if (!IsValid(MeshComponent))
+	{
+		LOG_ERROR(LogEnvironment, TEXT("Failed to create StaticMeshComponent"));
+		return;
+	}
+
+	AddInstanceComponent(MeshComponent);
+	MeshComponent->AttachToComponent(SceneComponent, FAttachmentTransformRules::KeepRelativeTransform);
+	MeshComponent->SetStaticMesh(NewStaticMesh);
+}
+
+void ASplineSegment::RemoveStaticMeshComponents()
+{
+	TArray<UStaticMeshComponent*> MeshComponents;
 
 	const TSet<UActorComponent*>& Components = GetComponents();
 	for (UActorComponent* Component : Components)
 	{
-		if (USplineMeshComponent* Mesh = Cast<USplineMeshComponent>(Component))
+		if (Component->IsA(USplineMeshComponent::StaticClass()))
 		{
-			MeshComponents.Add(Mesh);
+			continue;
+		}
+
+		UStaticMeshComponent* StaticMesh = Cast<UStaticMeshComponent>(Component);
+		if (IsValid(StaticMesh))
+		{
+			MeshComponents.Add(StaticMesh);
 		}
 	}
 
-	if (MeshComponents.Num() == 0 || ExportName.IsEmpty())
+	for (UStaticMeshComponent* MeshComponent : MeshComponents)
 	{
-		LOG_ERROR(LogEnvironment, TEXT("MeshComponents, ExportName is empty"));
+		MeshComponent->DestroyComponent();
+		MeshComponent->MarkAsGarbage();
+	}
+}
+
+void ASplineSegment::BakePrimitiveComponents(FString Name, TArray<UPrimitiveComponent*> MeshComponents, TArray<UObject*>& OutObjects)
+{
+	if (MeshComponents.Num() == 0 || ExportPath.Path.IsEmpty() || ExportName.IsEmpty() || Name.IsEmpty())
+	{
+		LOG_ERROR(LogEnvironment, TEXT("MeshComponents, ExportPath, ExportName, Name is empty"));
 		return;
 	}
 
@@ -711,10 +740,18 @@ void ASplineSegment::BakeSplineMesh()
 
 	FVector Location = GetActorLocation();
 
-	FString LocationX = TEXT("x") + FString::FromInt(Location.X).Replace(TEXT("-"), TEXT("n"));
-	FString LocationY = TEXT("y") + FString::FromInt(Location.Y).Replace(TEXT("-"), TEXT("n"));
+	int X = FMath::RoundToInt(Location.X);
+	FString XString = TEXT("x") + FString::FromInt(X).Replace(TEXT("-"), TEXT("n"));
 
-	FString PackageName = TEXT("/Game/") + ExportName + TEXT("_") + LocationX + TEXT("_") + LocationY;
+	int Y = FMath::RoundToInt(Location.Y);
+	FString YString = TEXT("y") + FString::FromInt(Y).Replace(TEXT("-"), TEXT("n"));
+
+	FString BaseName = Name.Replace(TEXT("SM_"), TEXT(""));
+	FString FileName = ExportName + TEXT("_") + BaseName + TEXT("_") + XString + TEXT("_") + YString;
+
+	FPaths::MakeValidFileName(FileName);
+
+	FString PackageName = ExportPath.Path + TEXT("/") + FileName;
 	FVector MergeLocation = FVector::ZeroVector;
 
 	constexpr float ScreenSize = TNumericLimits<float>::Max();
@@ -726,28 +763,117 @@ void ASplineSegment::BakeSplineMesh()
 	Settings.bAllowDistanceField = true;
 	Settings.bMergePhysicsData = true;
 
-	LOG_INFO(LogEnvironment, TEXT("Baked Package: %s"), *PackageName);
+	LOG_INFO(LogEnvironment, TEXT("Baked Mesh: %s"), *PackageName);
+
+	MeshUtilities.MergeComponentsToStaticMesh(MeshComponents, World, Settings, nullptr, nullptr, PackageName, OutObjects, MergeLocation, ScreenSize, true);
+}
+
+void ASplineSegment::BakeSplineMeshIntoSingle()
+{
+	TArray<UPrimitiveComponent*> ComponentCollection;
+	const TSet<UActorComponent*>& Components = GetComponents();
+	for (UActorComponent* Component : Components)
+	{
+		USplineMeshComponent* SplineMesh = Cast<USplineMeshComponent>(Component);
+		if (!IsValid(SplineMesh))
+		{
+			continue;
+		}
+
+		UStaticMesh* StaticMesh = SplineMesh->GetStaticMesh();
+		if (!IsValid(StaticMesh))
+		{
+			continue;
+		}
+
+		ComponentCollection.Add(SplineMesh);
+	}
 
 	TArray<UObject*> MergedAssets;
-	MeshUtilities.MergeComponentsToStaticMesh(MeshComponents, World, Settings, nullptr, nullptr, PackageName, MergedAssets, MergeLocation, ScreenSize, true);
+	BakePrimitiveComponents(TEXT("MERGED"), ComponentCollection, MergedAssets);
 
 	if (MergedAssets.IsValidIndex(0))
 	{
-		UObject* NewAsset = MergedAssets[0];
-		UStaticMesh* NewMesh = Cast<UStaticMesh>(NewAsset);
-		if (!IsValid(NewMesh))
+		AddStaticMeshComponent(MergedAssets[0]);
+	}
+}
+
+void ASplineSegment::BakeSplineMeshSeparately()
+{
+	TMultiMap<FName, UPrimitiveComponent*> ComponentCollection;
+	const TSet<UActorComponent*>& Components = GetComponents();
+	for (UActorComponent* Component : Components)
+	{
+		USplineMeshComponent* SplineMesh = Cast<USplineMeshComponent>(Component);
+		if (!IsValid(SplineMesh))
 		{
-			LOG_ERROR(LogEnvironment, TEXT("NewMesh is invalid"));
-			return;
+			continue;
 		}
 
-		StaticMeshComponent->SetStaticMesh(NewMesh);
-
-		if (bClearMeshAfterBuild)
+		UStaticMesh* StaticMesh = SplineMesh->GetStaticMesh();
+		if (!IsValid(StaticMesh))
 		{
-			RemoveSplineMeshes();
+			continue;
+		}
+
+		FName Name = StaticMesh->GetFName();
+		ComponentCollection.Add(Name, SplineMesh);
+	}
+
+	TArray<FName> Keys;
+	ComponentCollection.GetKeys(Keys);
+
+	for (FName Name : Keys)
+	{
+		TArray<UPrimitiveComponent*> PrimitiveComponents;
+		ComponentCollection.MultiFind(Name, PrimitiveComponents);
+
+		TArray<UObject*> MergedAssets;
+		BakePrimitiveComponents(Name.ToString(), PrimitiveComponents, MergedAssets);
+
+		if (MergedAssets.IsValidIndex(0))
+		{
+			AddStaticMeshComponent(MergedAssets[0]);
 		}
 	}
+}
+
+void ASplineSegment::BuildSplineMeshes()
+{
+	if (bBuildMeshByPoints)
+	{
+		BuildSplineMeshByPoints();
+	}
+	else
+	{
+		BuildSplineMeshByDistance();
+	}
+}
+
+void ASplineSegment::BakeSplineMesh()
+{
+	bAutoUpdate = false;
+
+	RemoveStaticMeshComponents();
+
+	if (bCombineBakedMesh)
+	{
+		BakeSplineMeshIntoSingle();
+	}
+	else
+	{
+		BakeSplineMeshSeparately();
+	}
+
+	if (bClearSplineMeshesAfterBake)
+	{
+		RemoveSplineMeshes();
+	}
+
+	ReregisterAllComponents();
+
+	MarkComponentsRenderStateDirty();
+	MarkPackageDirty();
 
 	FEditorFileUtils::SaveDirtyPackages(true, true, true, false);
 }

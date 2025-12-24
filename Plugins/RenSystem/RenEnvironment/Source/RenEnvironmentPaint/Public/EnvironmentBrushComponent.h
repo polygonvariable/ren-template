@@ -23,7 +23,7 @@ class UCharacterMovementComponent;
  * Can affect performance with too many brushes, use ComputeCanvas & ComputeBrush instead.
  * 
  */
-UCLASS()
+UCLASS(ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
 class UEnvironmentBrushComponent : public USceneComponent, public IEnvironmentBrushInterface
 {
 
