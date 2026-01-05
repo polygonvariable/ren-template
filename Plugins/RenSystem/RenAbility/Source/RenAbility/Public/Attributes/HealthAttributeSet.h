@@ -21,15 +21,15 @@
  * 
  */
 UCLASS()
-class UHealthAttributeSet : public UAttributeSet
+class UHealthAttribute : public UAttributeSet
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, Health);
-	ATTRIBUTE_ACCESSORS(UHealthAttributeSet, MaxHealth);
+	ATTRIBUTE_ACCESSORS(UHealthAttribute, Health);
+	ATTRIBUTE_ACCESSORS(UHealthAttribute, MaxHealth);
 
 public:
 
@@ -69,22 +69,22 @@ protected:
  * 
  */
 UCLASS()
-class UStaminaAttributeSet : public UAttributeSet
+class UStaminaAttribute : public UAttributeSet
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UStaminaAttributeSet, Stamina);
-	ATTRIBUTE_ACCESSORS(UStaminaAttributeSet, MaxStamina);
+	ATTRIBUTE_ACCESSORS(UStaminaAttribute, Stamina);
+	ATTRIBUTE_ACCESSORS(UStaminaAttribute, MaxStamina);
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina)
 	FGameplayAttributeData Stamina;
 
-	UPROPERTY(ReplicatedUsing = OnRep_MaxStamina)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_MaxStamina)
 	FGameplayAttributeData MaxStamina;
 
 

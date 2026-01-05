@@ -26,7 +26,12 @@ struct FInventorySortEntry;
 
 
 /**
- *
+ * TODO:
+ * - Make inventory storage separate,
+ * 	 where each container is saved separately.
+ * 
+ * - Add support for instanced items to support items like bullets etc.
+ * 
  */
 UCLASS(MinimalAPI)
 class UInventorySubsystem : public UGameInstanceSubsystem

@@ -20,7 +20,7 @@
 
 
 
-bool UHealthAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
+bool UHealthAttribute::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
 	if (!Super::PreGameplayEffectExecute(Data))
 	{
@@ -38,7 +38,7 @@ bool UHealthAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackDat
 	return true;
 }
 
-void UHealthAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UHealthAttribute::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
@@ -53,7 +53,7 @@ void UHealthAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 }
 
 
-void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UHealthAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -134,22 +134,22 @@ void UHealthAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	}
 }
 
-void UHealthAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UHealthAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UHealthAttributeSet, Health, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UHealthAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UHealthAttribute, Health, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UHealthAttribute, MaxHealth, COND_None, REPNOTIFY_Always);
 }
 
-void UHealthAttributeSet::OnRep_Health(const FGameplayAttributeData& OldValue)
+void UHealthAttribute::OnRep_Health(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthAttributeSet, Health, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthAttribute, Health, OldValue);
 }
 
-void UHealthAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
+void UHealthAttribute::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthAttributeSet, MaxHealth, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthAttribute, MaxHealth, OldValue);
 }
 
 
@@ -158,7 +158,7 @@ void UHealthAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue
 
 
 
-void UStaminaAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UStaminaAttribute::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	
@@ -172,7 +172,7 @@ void UStaminaAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribut
 	}
 }
 
-void UStaminaAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UStaminaAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -180,27 +180,32 @@ void UStaminaAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCal
 
 	if (Attribute == GetStaminaAttribute())
 	{
-		float NewStamina = FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina());
-		SetStamina(NewStamina);
+		float NewValue = FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina());
+		SetStamina(NewValue);
+	}
+	else if (Attribute == GetMaxStaminaAttribute())
+	{
+		float NewValue = FMath::Clamp(GetMaxStamina(), 0.0f, FLT_MAX);
+		SetMaxStamina(NewValue);
 	}
 }
 
-void UStaminaAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UStaminaAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttributeSet, Stamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttributeSet, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttribute, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttribute, MaxStamina, COND_None, REPNOTIFY_Always);
 }
 
-void UStaminaAttributeSet::OnRep_Stamina(const FGameplayAttributeData& OldValue)
+void UStaminaAttribute::OnRep_Stamina(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttributeSet, Stamina, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttribute, Stamina, OldValue);
 }
 
-void UStaminaAttributeSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
+void UStaminaAttribute::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttributeSet, MaxStamina, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttribute, MaxStamina, OldValue);
 }
 
 
