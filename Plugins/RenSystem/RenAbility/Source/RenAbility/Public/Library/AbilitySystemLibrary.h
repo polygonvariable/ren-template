@@ -33,20 +33,31 @@ public:
 	static void ApplyGameplayEffectToTarget(AActor* Target, AActor* Caster, AActor* Causer, TSubclassOf<UGameplayEffect> EffectClass, int Level = 1, TFunctionRef<void(FGameplayEffectContextHandle&)> CustomizeEffectContext = [](FGameplayEffectContextHandle& Context) {});
 
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
 	static void CancelAbilityWithTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
 	static void CancelAbilityWithoutTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
+	static bool AddGameplayTag(AActor* Target, FGameplayTag Tag);
+
+	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
+	static bool RemoveGameplayTag(AActor* Target, FGameplayTag Tag);
+
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
+	static bool IsGameplayEffectInhibited(AActor* Target, UPARAM(ref) FActiveGameplayEffectHandle& Handle);
+
+	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "InTarget"))
 	static void InhibitGameplayEffect(AActor* InTarget, UPARAM(ref) FActiveGameplayEffectHandle& InHandle, bool bInInhibit, bool bInInvokeCue, FActiveGameplayEffectHandle& OutHandle);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static bool IsGameplayEffectValid(AActor* Target, UPARAM(ref) FActiveGameplayEffectHandle& Handle);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static int GetGameplayEffectCount(AActor* Target);
 
 protected:

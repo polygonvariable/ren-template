@@ -81,6 +81,16 @@ public:
 
 public:
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaExhausted);
+	UPROPERTY(EditAnywhere, BlueprintAssignable)
+	FOnStaminaExhausted OnStaminaExhausted;
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaRefilled);
+	UPROPERTY(EditAnywhere, BlueprintAssignable)
+	FOnStaminaRefilled OnStaminaRefilled;
+
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina)
 	FGameplayAttributeData Stamina;
 

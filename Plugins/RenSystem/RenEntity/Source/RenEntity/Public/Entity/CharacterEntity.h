@@ -8,6 +8,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagAssetInterface.h"
 #include "GameplayEffectTypes.h"
+#include "AttributeSet.h"
 
 // Project Headers
 #include "Entity.h"
@@ -97,7 +98,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void CancelAbility(FGameplayTagContainer WithTags);
-
 
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

@@ -6,17 +6,31 @@
 
 
 // Gameplay Tags
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Base_Walk, "Movement.Base.Walk");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Base_Fall, "Movement.Base.Fall");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Base_Fly, "Movement.Base.Fly");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Base_Swim, "Movement.Base.Swim");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Mode_Walk, "State.Movement.Mode.Walk");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Mode_Fall, "State.Movement.Mode.Fall");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Mode_Fly, "State.Movement.Mode.Fly");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Mode_Swim, "State.Movement.Mode.Swim");
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Action_Jump, "Movement.Action.Jump");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Action_Sprint, "Movement.Action.Sprint");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Jump, "Event.Movement.Jump");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Sprint, "Event.Movement.Sprint");
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Ground_Idle, "Movement.Ground.Idle");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Ground_Sprint, "Movement.Ground.Sprint");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Ground_Idle, "State.Movement.Ground.Idle");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Ground_Sprint, "State.Movement.Ground.Sprint");
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Consume_Stamina, "Movement.Consume.Stamina");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Movement_Recover_Stamina, "Movement.Recover.Stamina");
 
+// Deprecated
+// UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Consume, "Stamina.Consume");
+// UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Recover, "Stamina.Recover");
+// ~ Deprecated
+
+
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Ability, "Ability.Uses.Stamina");
+
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Draining, "State.Stamina.Draining");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerating, "State.Stamina.Regenerating");
+
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Start, "Event.Stamina.Drain.Start");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Stop, "Event.Stamina.Drain.Stop");
+
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerate_Start, "Event.Stamina.Regenerate.Start");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerate_Stop, "Event.Stamina.Regenerate.Stop");

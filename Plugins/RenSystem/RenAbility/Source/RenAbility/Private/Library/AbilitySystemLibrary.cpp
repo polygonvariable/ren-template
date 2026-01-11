@@ -75,6 +75,33 @@ void UAbilitySystemLibrary::CancelAbilityWithoutTags(AActor* Target, UPARAM(ref)
 
 
 
+bool UAbilitySystemLibrary::AddGameplayTag(AActor* Target, FGameplayTag Tag)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+
+	ASC->AddReplicatedLooseGameplayTag(Tag);
+	return true;
+}
+
+bool UAbilitySystemLibrary::RemoveGameplayTag(AActor* Target, FGameplayTag Tag)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+
+	ASC->RemoveReplicatedLooseGameplayTag(Tag);
+	return true;
+}
+
+
+
+
 
 
 int UAbilitySystemLibrary::GetGameplayEffectCount(AActor* Target)
@@ -113,6 +140,24 @@ bool UAbilitySystemLibrary::IsGameplayEffectValid(AActor* Target, FActiveGamepla
 
 	const FActiveGameplayEffect* Effect = ASC->GetActiveGameplayEffect(Handle);
 	return (Effect != nullptr);
+}
+
+
+bool UAbilitySystemLibrary::IsGameplayEffectInhibited(AActor* Target, UPARAM(ref)FActiveGameplayEffectHandle& Handle)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+	
+	const FActiveGameplayEffect* Effect = ASC->GetActiveGameplayEffect(Handle);
+	if (!Effect)
+	{
+		return false;
+	}
+
+	return Effect->bIsInhibited;
 }
 
 void UAbilitySystemLibrary::InhibitGameplayEffect(AActor* InTarget, FActiveGameplayEffectHandle& InHandle, bool bInInhibit, bool bInInvokeCue, FActiveGameplayEffectHandle& OutHandle)

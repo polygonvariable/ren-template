@@ -26,7 +26,7 @@ bool UHealthAttribute::PreGameplayEffectExecute(FGameplayEffectModCallbackData& 
 	{
 		return false;
 	}
-
+	
 	//if (UAbilitySystemComponent* AbilityComponent = GetOwningAbilitySystemComponent())
 	//{
 	//	FGameplayTagContainer Tags;
@@ -187,6 +187,15 @@ void UStaminaAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		float NewValue = FMath::Clamp(GetMaxStamina(), 0.0f, FLT_MAX);
 		SetMaxStamina(NewValue);
+	}
+
+	if (GetStamina() <= 0.f)
+	{
+		OnStaminaExhausted.Broadcast();
+	}
+	if (GetStamina() >= GetMaxStamina())
+	{
+		OnStaminaRefilled.Broadcast();
 	}
 }
 

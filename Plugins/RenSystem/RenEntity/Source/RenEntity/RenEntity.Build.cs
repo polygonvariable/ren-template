@@ -34,6 +34,7 @@ public class RenEntity : ModuleRules
                 "RCoreCommon",
                 "RenStorage",
                 "RenAbility",
+                "GameplayAbilities",
             }
 			);
 			
@@ -46,7 +47,6 @@ public class RenEntity : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "GameplayAbilities",
                 "GameplayTags",
                 "GameplayTasks",
                 "RCoreLibrary",
