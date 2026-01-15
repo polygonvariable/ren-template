@@ -47,6 +47,10 @@ public:
 	static bool RemoveGameplayTag(AActor* Target, FGameplayTag Tag);
 
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	static FGameplayTag GetFirstGameplayTag(const FGameplayTagContainer& Container);
+
+
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
 	static bool IsGameplayEffectInhibited(AActor* Target, UPARAM(ref) FActiveGameplayEffectHandle& Handle);

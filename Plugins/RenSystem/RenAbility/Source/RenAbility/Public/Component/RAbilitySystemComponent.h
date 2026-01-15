@@ -48,9 +48,8 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Ability By Tags"))
+	UFUNCTION(BlueprintCallable)
 	void BP_CancelAbilitiesByTags(const FGameplayTagContainer& WithTags);
-
 
 
 	UFUNCTION()

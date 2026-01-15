@@ -99,6 +99,11 @@ bool UAbilitySystemLibrary::RemoveGameplayTag(AActor* Target, FGameplayTag Tag)
 	return true;
 }
 
+FGameplayTag UAbilitySystemLibrary::GetFirstGameplayTag(const FGameplayTagContainer& Container)
+{
+	return Container.First();
+}
+
 
 
 

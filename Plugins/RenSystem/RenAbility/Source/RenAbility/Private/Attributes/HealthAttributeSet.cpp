@@ -158,7 +158,7 @@ void UHealthAttribute::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 
 
 
-void UStaminaAttribute::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UStaminaSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 	
@@ -172,7 +172,7 @@ void UStaminaAttribute::PreAttributeChange(const FGameplayAttribute& Attribute, 
 	}
 }
 
-void UStaminaAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UStaminaSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -189,32 +189,32 @@ void UStaminaAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		SetMaxStamina(NewValue);
 	}
 
-	if (GetStamina() <= 0.f)
+	if (GetStamina() <= 0.0f)
 	{
-		OnStaminaExhausted.Broadcast();
+		//OnStaminaExhausted.Broadcast();
 	}
 	if (GetStamina() >= GetMaxStamina())
 	{
-		OnStaminaRefilled.Broadcast();
+		//OnStaminaRefilled.Broadcast();
 	}
 }
 
-void UStaminaAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UStaminaSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttribute, Stamina, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaAttribute, MaxStamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaSet, Stamina, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UStaminaSet, MaxStamina, COND_None, REPNOTIFY_Always);
 }
 
-void UStaminaAttribute::OnRep_Stamina(const FGameplayAttributeData& OldValue)
+void UStaminaSet::OnRep_Stamina(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttribute, Stamina, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaSet, Stamina, OldValue);
 }
 
-void UStaminaAttribute::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
+void UStaminaSet::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaAttribute, MaxStamina, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UStaminaSet, MaxStamina, OldValue);
 }
 
 
@@ -227,7 +227,7 @@ void UStaminaAttribute::OnRep_MaxStamina(const FGameplayAttributeData& OldValue)
 
 
 
-void UMovementAttribute::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void UMovementSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
@@ -241,7 +241,7 @@ void UMovementAttribute::PreAttributeChange(const FGameplayAttribute& Attribute,
 	}
 }
 
-void UMovementAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void UMovementSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -259,21 +259,21 @@ void UMovementAttribute::PostGameplayEffectExecute(const FGameplayEffectModCallb
 	}
 }
 
-void UMovementAttribute::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+void UMovementSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION_NOTIFY(UMovementAttribute, GroundSpeed, COND_None, REPNOTIFY_Always);
-	DOREPLIFETIME_CONDITION_NOTIFY(UMovementAttribute, MaxGroundSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UMovementSet, GroundSpeed, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UMovementSet, MaxGroundSpeed, COND_None, REPNOTIFY_Always);
 }
 
-void UMovementAttribute::OnRep_GroundSpeed(const FGameplayAttributeData& OldValue)
+void UMovementSet::OnRep_GroundSpeed(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UMovementAttribute, GroundSpeed, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMovementSet, GroundSpeed, OldValue);
 }
 
-void UMovementAttribute::OnRep_MaxGroundSpeed(const FGameplayAttributeData& OldValue)
+void UMovementSet::OnRep_MaxGroundSpeed(const FGameplayAttributeData& OldValue)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UMovementAttribute, MaxGroundSpeed, OldValue);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UMovementSet, MaxGroundSpeed, OldValue);
 }
 

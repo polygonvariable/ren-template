@@ -69,27 +69,23 @@ protected:
  * 
  */
 UCLASS()
-class UStaminaAttribute : public UAttributeSet
+class UStaminaSet : public UAttributeSet
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UStaminaAttribute, Stamina);
-	ATTRIBUTE_ACCESSORS(UStaminaAttribute, MaxStamina);
+	ATTRIBUTE_ACCESSORS(UStaminaSet, Stamina);
+	ATTRIBUTE_ACCESSORS(UStaminaSet, MaxStamina);
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaExhausted);
-	UPROPERTY(EditAnywhere, BlueprintAssignable)
-	FOnStaminaExhausted OnStaminaExhausted;
+	//DECLARE_MULTICAST_DELEGATE(FOnStaminaExhausted);
+	//FOnStaminaExhausted OnStaminaExhausted;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaRefilled);
-	UPROPERTY(EditAnywhere, BlueprintAssignable)
-	FOnStaminaRefilled OnStaminaRefilled;
-
-
+	//DECLARE_MULTICAST_DELEGATE(FOnStaminaRefilled);
+	//FOnStaminaRefilled OnStaminaRefilled;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina)
 	FGameplayAttributeData Stamina;
@@ -128,15 +124,15 @@ protected:
  *
  */
 UCLASS()
-class UMovementAttribute : public UAttributeSet
+class UMovementSet : public UAttributeSet
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UMovementAttribute, GroundSpeed);
-	ATTRIBUTE_ACCESSORS(UMovementAttribute, MaxGroundSpeed);
+	ATTRIBUTE_ACCESSORS(UMovementSet, GroundSpeed);
+	ATTRIBUTE_ACCESSORS(UMovementSet, MaxGroundSpeed);
 
 public:
 

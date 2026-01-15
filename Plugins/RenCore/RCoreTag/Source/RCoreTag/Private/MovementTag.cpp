@@ -30,7 +30,9 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Draining, "State.Stamina.Draining");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerating, "State.Stamina.Regenerating");
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Start, "Event.Stamina.Drain.Start");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Started, "Event.Stamina.Drain.Started");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Stop, "Event.Stamina.Drain.Stop");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Drain_Stopped, "Event.Stamina.Drain.Stopped");
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerate_Start, "Event.Stamina.Regenerate.Start");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Stamina_Regenerate_Stop, "Event.Stamina.Regenerate.Stop");
