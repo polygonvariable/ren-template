@@ -12,7 +12,7 @@
 #include "AbilityMacro.h"
 
 // Generated Headers
-#include "LevelAttributeSet.generated.h"
+#include "LevelSet.generated.h"
 
 
 
@@ -20,7 +20,7 @@
  *
  */
 UCLASS()
-class ULevelAttributeSet : public UAttributeSet
+class ULevelSet : public UAttributeSet
 {
 
 	GENERATED_BODY()
@@ -76,13 +76,13 @@ public:
 
 public:
 
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, Level)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, LevelMax)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, Rank)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, RankMax)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, RankInterval)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, Experience)
-	ATTRIBUTE_ACCESSORS(ULevelAttributeSet, ExperienceMax)
+	ATTRIBUTE_ACCESSORS(ULevelSet, Level)
+	ATTRIBUTE_ACCESSORS(ULevelSet, LevelMax)
+	ATTRIBUTE_ACCESSORS(ULevelSet, Rank)
+	ATTRIBUTE_ACCESSORS(ULevelSet, RankMax)
+	ATTRIBUTE_ACCESSORS(ULevelSet, RankInterval)
+	ATTRIBUTE_ACCESSORS(ULevelSet, Experience)
+	ATTRIBUTE_ACCESSORS(ULevelSet, ExperienceMax)
 
 };
 
@@ -105,7 +105,7 @@ public:
 
 protected:
 
-	static const ULevelAttributeSet* GetLevelAttributeSet(AActor* Target);
+	static const ULevelSet* GetLevelAttributeSet(AActor* Target);
 
 };
 

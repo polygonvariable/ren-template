@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Attributes/LevelAttributeSet.h"
+#include "Attributes/LevelSet.h"
 
 // Engine Headers
 #include "GameplayEffectExtension.h"
@@ -16,12 +16,12 @@
 
 
 
-int ULevelAttributeSet::GetRankLevelCap() const
+int ULevelSet::GetRankLevelCap() const
 {
 	return GetRank() * GetRankInterval();
 }
 
-bool ULevelAttributeSet::CanExperienceUp() const
+bool ULevelSet::CanExperienceUp() const
 {
 	// int LevelCap = CurrentLevel * RankInterval;
 	// return CurrentLevel < LevelCap || CurrentExperience < ExperienceMax;
@@ -30,13 +30,13 @@ bool ULevelAttributeSet::CanExperienceUp() const
 	return GetLevel() < GetRankLevelCap() || GetExperience() < GetExperienceMax();
 }
 
-bool ULevelAttributeSet::CanRankUp() const
+bool ULevelSet::CanRankUp() const
 {
 	// return ULevelCalculationLibrary::CanRankUp(GetLevel(), GetRankInterval(), GetExperience(), GetExperienceMax());
 	return GetLevel() >= GetRankLevelCap() && GetExperience() >= GetExperienceMax();
 }
 
-bool ULevelAttributeSet::TryAddExperience(float Value)
+bool ULevelSet::TryAddExperience(float Value)
 {
 	//if (!CanExperienceUp())
 	//{
@@ -71,7 +71,7 @@ bool ULevelAttributeSet::TryAddExperience(float Value)
 	return bLeveledUp || Value > 0.0f;
 }
 
-bool ULevelAttributeSet::TryAddRank()
+bool ULevelSet::TryAddRank()
 {
 	//if (!CanRankUp())
 	//{
@@ -90,7 +90,7 @@ bool ULevelAttributeSet::TryAddRank()
 	return true;
 }
 
-bool ULevelAttributeSet::TrySetLevel(float Value)
+bool ULevelSet::TrySetLevel(float Value)
 {
 	if (Value < 1.0f || Value > GetLevelMax())
 	{
@@ -111,7 +111,7 @@ bool ULevelAttributeSet::TrySetLevel(float Value)
 
 
 
-bool ULevelAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
+bool ULevelSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 {
 	if (!Super::PreGameplayEffectExecute(Data))
 	{
@@ -136,7 +136,7 @@ bool ULevelAttributeSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData
 	return true;
 }
 
-void ULevelAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+void ULevelSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
@@ -168,7 +168,7 @@ void ULevelAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute,
 	}
 }
 
-void ULevelAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
+void ULevelSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
 
@@ -188,36 +188,36 @@ void ULevelAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallb
 
 bool ULevelAttributeLibrary::CanExperienceUp(AActor* Target)
 {
-	const ULevelAttributeSet* LevelAttributeSet = GetLevelAttributeSet(Target);
+	const ULevelSet* LevelAttributeSet = GetLevelAttributeSet(Target);
 	return LevelAttributeSet && LevelAttributeSet->CanExperienceUp();
 }
 
 bool ULevelAttributeLibrary::CanRankUp(AActor* Target)
 {
-	const ULevelAttributeSet* LevelAttributeSet = GetLevelAttributeSet(Target);
+	const ULevelSet* LevelAttributeSet = GetLevelAttributeSet(Target);
 	return LevelAttributeSet && LevelAttributeSet->CanRankUp();
 }
 
-const ULevelAttributeSet* ULevelAttributeLibrary::GetLevelAttributeSet(AActor* Target)
+const ULevelSet* ULevelAttributeLibrary::GetLevelAttributeSet(AActor* Target)
 {
 	if (!IsValid(Target)) return nullptr;
 
 	UAbilitySystemComponent* AbilityComponent = Target->FindComponentByClass<UAbilitySystemComponent>();
 	if (!IsValid(AbilityComponent)) return nullptr;
 
-	const UAttributeSet* AttributeSet = AbilityComponent->GetAttributeSet(ULevelAttributeSet::StaticClass());
+	const UAttributeSet* AttributeSet = AbilityComponent->GetAttributeSet(ULevelSet::StaticClass());
 	if (!IsValid(AttributeSet)) return nullptr;
 
 	//AActor* Owner = AbilityComponent->GetOwner();
-	//UAttributeSet* GrantedSet = NewObject<UAttributeSet>(Owner, ULevelAttributeSet::StaticClass());
+	//UAttributeSet* GrantedSet = NewObject<UAttributeSet>(Owner, ULevelSet::StaticClass());
 	//AbilityComponent->AddAttributeSetSubobject(GrantedSet);
 	//AbilityComponent->RemoveSpawnedAttribute(GrantedSet);
-	//const ULevelAttributeSet* LevelAttributeSet = AbilityComponent->GetSet<ULevelAttributeSet>();
+	//const ULevelSet* LevelAttributeSet = AbilityComponent->GetSet<ULevelSet>();
 	//TArray<UAttributeSet*> Sets = AbilityComponent->GetSpawnedAttributes();
 	//UAttributeSet* FoundSet = nullptr;
 	//for(UAttributeSet* Set : Sets)
 	//{
-	//	if (Set->IsA(ULevelAttributeSet::StaticClass()))
+	//	if (Set->IsA(ULevelSet::StaticClass()))
 	//	{
 	//		FoundSet = Set;
 	//		break;
@@ -225,7 +225,7 @@ const ULevelAttributeSet* ULevelAttributeLibrary::GetLevelAttributeSet(AActor* T
 	//}
 	//if(FoundSet) AbilityComponent->RemoveSpawnedAttribute(FoundSet);
 
-	return Cast<ULevelAttributeSet>(AttributeSet);
+	return Cast<ULevelSet>(AttributeSet);
 }
 
 bool ULevelCalculationLibrary::CanExperienceUp(int CurrentLevel, int RankInterval, int CurrentExperience, int ExperienceMax)

@@ -4,8 +4,9 @@
 #include "Async/WaitForAttributePerChange.h"
 
 // Engine Headers
+#include "Abilities/GameplayAbility.h"
 #include "AbilitySystemComponent.h"
-
+#include "Misc/DataValidation.h"
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
 
@@ -89,3 +90,27 @@ void UWaitForAttributePerChange::Activate()
 	ASC = TargetASC;
 }
 
+void USendEventGameplayEffectComponent::OnGameplayEffectApplied(FActiveGameplayEffectsContainer& ActiveGEContainer, FGameplayEffectSpec& GESpec, FPredictionKey& PredictionKey) const
+{
+	if (ActiveGEContainer.IsNetAuthority())
+	{
+		UAbilitySystemComponent* ASC = ActiveGEContainer.Owner;
+		if (IsValid(ASC) && EventTag.IsValid())
+		{
+			ASC->HandleGameplayEvent(EventTag, &Payload);
+		}
+	}
+}
+
+EDataValidationResult USendEventGameplayEffectComponent::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+	if (!EventTag.IsValid())
+	{
+		Context.AddError(FText::FromString("EventTag is not valid"));
+		Result = EDataValidationResult::Invalid;
+	}
+
+	return Result;
+}

@@ -16,7 +16,7 @@ class UInstancedStaticMeshComponent;
 class UStaticMesh;
 class USplineComponent;
 class USceneComponent;
-
+class UDynamicMeshComponent;
 
 
 UENUM(BlueprintType)
@@ -105,3 +105,55 @@ public:
 
 };
 
+
+
+USTRUCT(BlueprintType)
+struct FBuildingDataControl
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<int> Indices;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector Position;
+
+};
+
+USTRUCT(BlueprintType)
+struct FBuildingParameters
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FVector> Vertices;
+
+};
+
+
+
+/**
+ *
+ *
+ */
+UCLASS()
+class ABuildingActor2 : public AActor
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FBuildingParameters BuildingParameters;
+
+	UFUNCTION(BlueprintCallable)
+	void BuildDynamicMesh(UDynamicMeshComponent* DynamicMeshComponent);
+
+};

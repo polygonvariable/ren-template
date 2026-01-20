@@ -22,7 +22,7 @@ FGameplayAbilitySpecHandle URAbilitySystemComponent::GiveAbilityWithDynamicTags(
 	{
 		return FGameplayAbilitySpecHandle(); 
 	}
-	
+
 	AbilitySpec.DynamicAbilityTags.AppendTags(DynamicTags);
 	
 	return GiveAbility(AbilitySpec);

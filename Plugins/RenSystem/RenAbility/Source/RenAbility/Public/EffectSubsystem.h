@@ -8,6 +8,10 @@
 #include "NativeGameplayTags.h"
 #include "InstancedStruct.h"
 #include "UObject/Interface.h"
+#include "AbilitySystemComponent.h"
+#include "GameplayEffectTypes.h"
+#include "Abilities/GameplayAbilityTypes.h"
+#include "Kismet/BlueprintAsyncActionBase.h"
 
 #include "RCoreLibrary/Public/LogMacro.h"
 
@@ -15,9 +19,10 @@
 #include "EffectSubsystem.generated.h"
 
 // Forward Declarations
+struct FGameplayEventData;
 
 
-
+/*
 UINTERFACE(MinimalAPI, Blueprintable)
 class UGameplayEventInterface : public UInterface
 {
@@ -73,12 +78,18 @@ public:
 
 
 UCLASS()
-class UGameplayEventSubsystem : public UWorldSubsystem
+class UGameplayNotifySubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
 
+
 public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnGameplayEvent, FGameplayTag, EventTag, FGameplayEventData, Payload);
+	UPROPERTY(BlueprintAssignable)
+	FOnGameplayEvent OnGameplayEvent;
+
 
 	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Listener"))
 	void RegisterListener(FGameplayTag EventTag, UObject* Listener);
@@ -97,6 +108,21 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SendTextEvent(const FGameplayTag& EventTag, const FText& Payload);
 
+
+
+
+	void SendGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload);
+
+
+	static UGameplayNotifySubsystem* Get(const UWorld* World)
+	{
+		if (!IsValid(World))
+		{
+			return nullptr;
+		}
+		return World->GetSubsystem<UGameplayNotifySubsystem>();
+	}
+
 protected:
 
 	TMap<FGameplayTag, FGameplayEventListeners> ListenerMap;
@@ -109,7 +135,7 @@ protected:
 };
 
 template<typename InterfaceType, typename FuncType>
-inline void UGameplayEventSubsystem::BroadcastEvent(const FGameplayTag& EventTag, FuncType Func)
+inline void UGameplayNotifySubsystem::BroadcastEvent(const FGameplayTag& EventTag, FuncType Func)
 {
 	if (FGameplayEventListeners* EventListeners = ListenerMap.Find(EventTag))
 	{
@@ -213,3 +239,161 @@ inline void UGameplayEventHandlerSubsystem::BroadcastEvent(const FGameplayTag& E
 		}
 	}
 }
+*/
+
+
+/*
+ * 
+ * 
+ * 
+ */
+USTRUCT(BlueprintType)
+struct FGameplayNotifyPacket
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FGameplayNotifyPacket() {};
+	FGameplayNotifyPacket(float InMagnitude) : Magnitude(InMagnitude) {};
+	FGameplayNotifyPacket(float InMagnitude, const FGameplayTagContainer& InTags) : Magnitude(InMagnitude), Tags(InTags) {};
+	
+
+	UPROPERTY(BlueprintReadOnly)
+	float Magnitude = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayTagContainer Tags;
+
+	UPROPERTY()
+	TObjectPtr<const UObject> OptionalObject;
+
+};
+
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FGameplayNotifyDelegate, const FGameplayNotifyPacket& /* Data */);
+
+/*
+ * 
+ * 
+ * 
+ */
+UCLASS()
+class UGameplayNotifySubsystem : public UWorldSubsystem
+{
+
+	GENERATED_BODY()
+
+public:
+
+	void SendNotify(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data, bool bReliable);
+	void BroadcastNotify(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+
+	FGameplayNotifyDelegate& GetNotifyDelegate(FGameplayTag NotifyTag);
+	FGameplayNotifyDelegate* FindNotifyDelegate(FGameplayTag NotifyTag);
+
+	// ~ UWorldSubsystem
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
+	virtual void Deinitialize() override;
+	// ~ End of UWorldSubsystem
+
+protected:
+
+	TMap<FGameplayTag, FGameplayNotifyDelegate> RegisteredNotifies;
+
+	UPROPERTY()
+	TObjectPtr<AGameplayNotifyNetworkActor> NetworkActor;
+
+};
+
+
+
+/*
+ * Actor to manage event replication send by the UGameplayNotifySubsystem.
+ * 
+ * 
+ */
+UCLASS()
+class AGameplayNotifyNetworkActor : public AInfo
+{
+
+	GENERATED_BODY()
+
+public:
+
+	AGameplayNotifyNetworkActor();
+
+	void SendNotify(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data, bool bReliable);
+
+	// ~ AInfo
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// ~ End of AInfo
+
+protected:
+
+	UPROPERTY()
+	TWeakObjectPtr<UGameplayNotifySubsystem> NotifySubsystem;
+
+
+	UFUNCTION(NetMulticast, Reliable)
+	void SendNotifyReliable(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+	virtual void SendNotifyReliable_Implementation(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void SendNotifyUnreliable(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+	virtual void SendNotifyUnreliable_Implementation(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+
+	void SendNotifyInternal(FGameplayTag NotifyTag, const FGameplayNotifyPacket& Data);
+
+	// ~ AInfo
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	// ~ End of AInfo
+
+};
+
+
+
+/**
+ * 
+ * 
+ * 
+ */
+UCLASS(BlueprintType, Meta = (ExposedAsyncProxy = AsyncTask))
+class UWaitForGameplayNotify : public UBlueprintAsyncActionBase
+{
+
+	GENERATED_BODY()
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNotifyReceived, FGameplayNotifyPacket, Data);
+	UPROPERTY(BlueprintAssignable)
+	FOnNotifyReceived OnReceived;
+
+
+	UFUNCTION(BlueprintCallable, Meta = (BlueprintInternalUseOnly = "true", WorldContext = "InWorldContext"))
+	static UWaitForGameplayNotify* WaitForGameplayNotify(FGameplayTag InNotifyTag, UObject* InWorldContext);
+
+	UFUNCTION(BlueprintCallable)
+	void EndTask();
+
+protected:
+
+	FGameplayTag NotifyTag;
+
+	UPROPERTY()
+	TWeakObjectPtr<UObject> WorldContext;
+
+
+	UFUNCTION()
+	void HandleNotifyReceived(const FGameplayNotifyPacket& Data);
+
+	// ~ UBlueprintAsyncActionBase
+	virtual void Activate() override;
+	// ~ End of UBlueprintAsyncActionBase
+
+};
+

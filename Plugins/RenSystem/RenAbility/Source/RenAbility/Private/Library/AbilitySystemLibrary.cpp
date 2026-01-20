@@ -75,29 +75,6 @@ void UAbilitySystemLibrary::CancelAbilityWithoutTags(AActor* Target, UPARAM(ref)
 
 
 
-bool UAbilitySystemLibrary::AddGameplayTag(AActor* Target, FGameplayTag Tag)
-{
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
-	if (!IsValid(ASC))
-	{
-		return false;
-	}
-
-	ASC->AddReplicatedLooseGameplayTag(Tag);
-	return true;
-}
-
-bool UAbilitySystemLibrary::RemoveGameplayTag(AActor* Target, FGameplayTag Tag)
-{
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
-	if (!IsValid(ASC))
-	{
-		return false;
-	}
-
-	ASC->RemoveReplicatedLooseGameplayTag(Tag);
-	return true;
-}
 
 FGameplayTag UAbilitySystemLibrary::GetFirstGameplayTag(const FGameplayTagContainer& Container)
 {

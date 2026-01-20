@@ -40,12 +40,6 @@ public:
 	static void CancelAbilityWithoutTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
-	static bool AddGameplayTag(AActor* Target, FGameplayTag Tag);
-
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
-	static bool RemoveGameplayTag(AActor* Target, FGameplayTag Tag);
-
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	static FGameplayTag GetFirstGameplayTag(const FGameplayTagContainer& Container);

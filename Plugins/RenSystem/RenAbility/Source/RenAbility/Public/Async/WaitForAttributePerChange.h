@@ -8,6 +8,8 @@
 #include "Kismet/BlueprintAsyncActionBase.h"
 #include "AttributeSet.h"
 #include "GameplayEffectTypes.h"
+#include "GameplayEffectComponent.h"
+#include "Abilities/GameplayAbilityTypes.h"
 
 // Project Headers
 
@@ -73,6 +75,29 @@ protected:
 protected:
 
 	virtual void Activate() override;
+
+};
+
+
+UCLASS(CollapseCategories, DisplayName = "Send Event", MinimalAPI)
+class USendEventGameplayEffectComponent : public UGameplayEffectComponent
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditDefaultsOnly)
+	FGameplayTag EventTag;
+
+	FGameplayEventData Payload;
+
+	virtual void OnGameplayEffectApplied(FActiveGameplayEffectsContainer& ActiveGEContainer, FGameplayEffectSpec& GESpec, FPredictionKey& PredictionKey) const override;
+
+
+#if WITH_EDITOR
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+#endif // WITH_EDITOR
 
 };
 

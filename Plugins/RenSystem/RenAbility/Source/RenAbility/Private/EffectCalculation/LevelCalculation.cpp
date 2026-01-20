@@ -10,14 +10,14 @@
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
 
-#include "Attributes/LevelAttributeSet.h"
+#include "Attributes/LevelSet.h"
 
 
 
 ULevelMagnitudeCalculation::ULevelMagnitudeCalculation()
 {
 	LevelCaptureDef.AttributeSource = EGameplayEffectAttributeCaptureSource::Target;
-	LevelCaptureDef.AttributeToCapture = ULevelAttributeSet::GetLevelAttribute();
+	LevelCaptureDef.AttributeToCapture = ULevelSet::GetLevelAttribute();
 	LevelCaptureDef.bSnapshot = false;
 
 	RelevantAttributesToCapture.Add(LevelCaptureDef);

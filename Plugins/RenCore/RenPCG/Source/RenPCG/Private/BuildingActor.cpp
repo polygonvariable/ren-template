@@ -6,6 +6,9 @@
 // Engine Headers
 #include "Components/SplineComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
+#include "Components/DynamicMeshComponent.h"
+#include "UDynamicMesh.h"
+#include "GeometryScript/MeshPrimitiveFunctions.h"
 
 // Project Headers
 
@@ -23,7 +26,6 @@ ABuildingActor::ABuildingActor()
 		SetRootComponent(SceneComponent);
 	}
 }
-
 
 
 void ABuildingActor::GetAllStaticMeshes(TSet<UStaticMesh*>& OutMeshes) const
@@ -142,3 +144,42 @@ void ABuildingActor::ConstructBuilding()
 	}
 
 }
+
+
+
+void ABuildingActor2::BuildDynamicMesh(UDynamicMeshComponent* DynamicMeshComponent)
+{
+	if (!IsValid(DynamicMeshComponent))
+	{
+		return;
+	}
+
+	UDynamicMesh* DynamicMesh = DynamicMeshComponent->GetDynamicMesh();
+	if (!IsValid(DynamicMesh))
+	{
+		return;
+	}
+
+	FGeometryScriptPrimitiveOptions PrimitiveOptions;
+	FTransform Transform;
+
+	const TArray<FVector>& Vertices = BuildingParameters.Vertices;
+
+	int Num = Vertices.Num();
+	if (Num % 3 != 0)
+	{
+		return;
+	}
+	int TriCount = Num / 3;
+
+	for (int i = 0; i < TriCount - 1; i++)
+	{
+		int Index = i * 3;
+		TArray<FVector> Tri;
+		Tri.Add(Vertices[Index]);
+		Tri.Add(Vertices[Index + 1]);
+		Tri.Add(Vertices[Index + 2]);
+		UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(DynamicMesh, PrimitiveOptions, Transform, Tri);
+	}
+}
+

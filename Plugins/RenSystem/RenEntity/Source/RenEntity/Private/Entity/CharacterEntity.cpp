@@ -15,7 +15,7 @@
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
 #include "WeaponTest.h"
-#include "RenAbility/Public/Attributes/DamageAttributeSet.h"
+#include "RenAbility/Public/Attributes/DamageSet.h"
 #include "RenAbility/Public/Library/AbilitySystemLibrary.h"
 #include "RenAbility/Public/Component/RAbilitySystemComponent.h"
 
@@ -113,23 +113,22 @@ void ARCharacter::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* T
 	// If the target has lazy loading of ASC, try to call the function
 	// to load the ASC and then apply the effect here
 
+	/*
+	UAbilitySystemComponent* TargetASC = Target->GetComponentByClass<UAbilitySystemComponent>();
 
-	//UAbilitySystemComponent* TargetASC = Target->GetComponentByClass<UAbilitySystemComponent>();
-
-	//if (IsValid(RAbilitySystemComponent) && IsValid(TargetASC))
-//	{
-		/*TArray<TWeakObjectPtr<AActor>> ContextActors;
+	if (IsValid(RAbilitySystemComponent) && IsValid(TargetASC))
+	{
+		TArray<TWeakObjectPtr<AActor>> ContextActors;
 		for (AActor* Actor : OwnedActors)
 		{
 			ContextActors.Add(TWeakObjectPtr<AActor>(Actor));
-		}*/
+		}
 
-		/*UAbilitySystemLibrary::ApplyGameplayEffectToTarget(Target, this, this, EffectClass, 1.0f, [&](FGameplayEffectContextHandle& EffectContext) {
+		UAbilitySystemLibrary::ApplyGameplayEffectToTarget(Target, this, this, EffectClass, 1.0f, [&](FGameplayEffectContextHandle& EffectContext) {
 			EffectContext.AddActors(ContextActors);
 			EffectContext.AddOrigin(GetActorLocation());
-		});*/
+		});
 
-		/*
 		TArray<TWeakObjectPtr<AActor>> TargetActors;
 		TargetActors.Add(TWeakObjectPtr<AActor>(Target));
 
@@ -151,6 +150,8 @@ void ARCharacter::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* T
 			PRINT_ERROR(LogTemp, 1.0f, TEXT("Failed to create effect spec handle"));
 			return;
 		}
+		// Damage type
+		// SpecHandle.Data->AddDynamicAssetTag();
 
 		RAbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*SpecHandle.Data.Get(), TargetASC);
 	}*/
@@ -163,7 +164,7 @@ void ARCharacter::CancelAbility(FGameplayTagContainer WithTags)
 
 
 void ARCharacter::SpawnWeapon()
-{
+{/*
 	if (IsValid(Weapon) || !GetWorld())
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Weapon is already spawned or World is not valid"));
@@ -182,7 +183,7 @@ void ARCharacter::SpawnWeapon()
 		RAbilitySystemComponent->AddAggregatedActor(PhysicalDamageAttribute, Weapon);
 	}
 
-	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weapon spawned"));
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("Weapon spawned"));*/
 }
 
 
@@ -195,35 +196,36 @@ bool ARCharacter::IsMoving(float Threshold) const
 	return Speed > Threshold;
 }
 
-
-//void ARCharacter::Tick(float DeltaTime)
-//{
-//	Super::Tick(DeltaTime);
-//	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
-//	{
-//		EMovementMode Mode = MovementComponent->MovementMode;
-//		switch (Mode)
-//		{
-//			case EMovementMode::MOVE_Walking:
-//				if (GetVelocity().IsNearlyZero(50.0f))
-//				{
-//					CurrentSubMovement = ESubMovement::Idle;
-//				}
-//				else if (GetVelocity().Size2D() > 50.0f && GetVelocity().Size2D() < 500.0f || !bCanSprint)
-//				{
-//					CurrentSubMovement = ESubMovement::Walk;
-//				}
-//				else if (GetVelocity().Size2D() > 500.0f && bCanSprint)
-//				{
-//					CurrentSubMovement = ESubMovement::Sprint;
-//				}
-//				break;
-//			case EMovementMode::MOVE_Falling:
-//				CurrentSubMovement = ESubMovement::Fall;
-//				break;
-//		}
-//	}
-//}
-// On_Jump_Pressed -> Give jump ability
-// On_Jump_Released -> Remove jump ability
+/*
+void ARCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
+	{
+		EMovementMode Mode = MovementComponent->MovementMode;
+		switch (Mode)
+		{
+			case EMovementMode::MOVE_Walking:
+				if (GetVelocity().IsNearlyZero(50.0f))
+				{
+					CurrentSubMovement = ESubMovement::Idle;
+				}
+				else if (GetVelocity().Size2D() > 50.0f && GetVelocity().Size2D() < 500.0f || !bCanSprint)
+				{
+					CurrentSubMovement = ESubMovement::Walk;
+				}
+				else if (GetVelocity().Size2D() > 500.0f && bCanSprint)
+				{
+					CurrentSubMovement = ESubMovement::Sprint;
+				}
+				break;
+			case EMovementMode::MOVE_Falling:
+				CurrentSubMovement = ESubMovement::Fall;
+				break;
+		}
+	}
+}
+On_Jump_Pressed -> Give jump ability
+On_Jump_Released -> Remove jump ability
+*/
 

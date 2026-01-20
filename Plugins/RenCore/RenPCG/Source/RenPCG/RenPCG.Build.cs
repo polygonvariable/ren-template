@@ -39,6 +39,12 @@ public class RenPCG : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				 "GeometryCore",
+				"DynamicMesh",
+				"GeometryCore",
+				"GeometryScriptingCore",
+				"GeometryFramework",
+				"DynamicMesh"
             }
 			);
 		
