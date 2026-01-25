@@ -19,27 +19,16 @@
 // Forward Declarations
 class USpringArmComponent;
 class UCameraComponent;
-class URAbilitySystemComponent;
+class UAbilitySystemComponent;
 class AWeaponTest;
 class UGameplayEffect;
 
-/**
- *
- */
-//UENUM(BlueprintType, DisplayName = "Sub Movement Type")
-//enum ESubMovement
-//{
-//	Idle UMETA(DisplayName = "Idle"),
-//	Walk UMETA(DisplayName = "Walk"),
-//	Sprint UMETA(DisplayName = "Sprint"),
-//	Fall UMETA(DisplayName = "Fall")
-//};
-
-
 
 
 /**
  *
+ * 
+ * 
  */
 UCLASS(Abstract, MinimalAPI)
 class ARCharacter : public AEntity, public IAbilitySystemInterface, public IGameplayTagAssetInterface
@@ -59,13 +48,16 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
-	TObjectPtr<URAbilitySystemComponent> RAbilitySystemComponent;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 
 
 
 	// ~ IGameplayTagAssetInterface
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	// ~ End of IGameplayTagAssetInterface
 
 
@@ -114,12 +106,8 @@ protected:
 
 
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsMoving(float Threshold = 0.0f) const;
-
-
-
-	//virtual void Tick(float DeltaTime) override;
 
 };
 

@@ -5,13 +5,18 @@
 
 
 
-// Gameplay Tags
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Base, "Attribute.Base");
+// ~ Life State
+UE_DEFINE_GAMEPLAY_TAG(TAG_State_Life_Alive, "State.Life.Alive");
+UE_DEFINE_GAMEPLAY_TAG(TAG_State_Life_Dead, "State.Life.Dead");
+// ~ End of Life State
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_State_Life_Death, "Attribute.State.Life.Dead");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_State_Life_Alive, "Attribute.State.Life.Alive");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_State_Life_Immortal, "Attribute.State.Life.Immortal");
+// ~ Abilities That Use Life
+UE_DEFINE_GAMEPLAY_TAG(TAG_Effect_Life_Alive, "Effect.Life.Alive");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Effect_Life_Dead, "Effect.Life.Dead");
+// ~ End of Abilities That Use Life
 
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_State_Mana_Depleted, "Attribute.State.Mana.Depleted");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_State_Mana_Available, "Attribute.State.Mana.Available");
+// ~ Abilities That Use Life
+UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Life_Alive, "Ability.Uses.Life.Alive");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Life_Dead, "Ability.Uses.Life.Dead");
+// ~ End of Abilities That Use Life
 

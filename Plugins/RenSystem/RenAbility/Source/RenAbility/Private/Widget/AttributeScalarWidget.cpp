@@ -19,7 +19,7 @@
 
 
 void UAttributeScalarWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
-{
+{/*
 	CleanUpASC();
 
 	if (!IsValid(TargetASC))
@@ -34,11 +34,11 @@ void UAttributeScalarWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
 	HandleValueChanged();
 
 	ASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
-	ASC->OnAggregatedRefresh.AddDynamic(this, &UAttributeScalarWidget::OnAggregatedRefresh);
+	ASC->OnAggregatedRefresh.AddDynamic(this, &UAttributeScalarWidget::OnAggregatedRefresh);*/
 }
 
 void UAttributeScalarWidget::OnAggregatedRefresh()
-{
+{/*
 	if (!ASC.IsValid())
 	{
 		LOG_ERROR(LogTemp, TEXT("AbilitySystemComponent is not valid"));
@@ -46,7 +46,7 @@ void UAttributeScalarWidget::OnAggregatedRefresh()
 	}
 
 	CurrentValue = ASC->GetAggregatedNumericAttribute(BaseAttribute);
-	HandleValueChanged();
+	HandleValueChanged();*/
 }
 
 void UAttributeScalarWidget::HandleValueChanged_Implementation()
@@ -58,13 +58,13 @@ void UAttributeScalarWidget::HandleValueChanged_Implementation()
 }
 
 void UAttributeScalarWidget::CleanUpASC()
-{
+{/*
 	if (ASC.IsValid())
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
 		ASC->OnAggregatedRefresh.RemoveAll(this);
 		ASC.Reset();
-	}
+	}*/
 }
 
 void UAttributeScalarWidget::NativePreConstruct()

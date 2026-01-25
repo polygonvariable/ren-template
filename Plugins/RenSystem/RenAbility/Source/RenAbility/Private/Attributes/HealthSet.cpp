@@ -10,12 +10,16 @@
 
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
-#include "RenAbility/Public/EffectSubsystem.h"
+#include "RenAbility/Public/Notify/GameplayNotifyPacket.h"
+#include "RenAbility/Public/Notify/GameplayNotifySubsystem.h"
 
 // Declare Gameplay Tags
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Damage, "Event.Attribute.Health.Damage");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Heal, "Event.Attribute.Health.Heal");
-UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Immunity, "Event.Attribute.Health.Immunity");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Damaged, "Attribute.Health.Damaged");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Healed, "Attribute.Health.Healed");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Immunity, "Attribute.Health.Immunity");
+
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Fallen, "Attribute.Health.Fallen");
+UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Restored, "Attribute.Health.Restored");
 
 
 
@@ -29,20 +33,6 @@ bool UHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
 	return true;
 }
 
-void UHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
-{
-	Super::PreAttributeChange(Attribute, NewValue);
-
-	if (Attribute == GetMinHealthAttribute())
-	{
-		NewValue = FMath::Max(NewValue, 0.0f);
-	}
-	else if (Attribute == GetMaxHealthAttribute())
-	{
-		NewValue = FMath::Max(NewValue, 1.0f);
-	}
-}
-
 void UHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
@@ -51,34 +41,11 @@ void UHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData&
 
 	if (Attribute == GetDamageAttribute())
 	{
-		float CachedValue = GetDamage();
-		SetDamage(0.0f);
-
-		UpdateHealth(CachedValue, -1.0f);
-
-		UGameplayNotifySubsystem* GameplayNotify = GetGameplayNotifySubsystem();
-		if (IsValid(GameplayNotify))
-		{
-			FGameplayNotifyPacket Packet = FGameplayNotifyPacket(CachedValue);
-			GameplayNotify->SendNotify(TAG_Attribute_Health_Damage, Packet, false);
-		}
-
-		UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
-		if (IsValid(ASC))
-		{
-			FGameplayEventData EventData = FGameplayEventData();
-			EventData.EventMagnitude = CachedValue;
-			EventData.ContextHandle = Data.EffectSpec.GetContext();
-
-			ASC->HandleGameplayEvent(TAG_Attribute_Health_Damage, &EventData);
-		}
+		HandleDamage(Data);
 	}
 	else if (Attribute == GetHealAttribute())
 	{
-		float CachedValue = GetHeal();
-		SetHeal(0.0f);
-		
-		UpdateHealth(CachedValue, 1.0f);
+		HandleHeal(Data);
 	}
 	else if (Attribute == GetMinHealthAttribute())
 	{
@@ -95,6 +62,22 @@ void UHealthSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData&
 
 		float NewHealth = FMath::Min(GetHealth(), NewMax);
 		SetHealth(NewHealth);
+	}
+
+	UpdateHealthState();
+}
+
+void UHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetMinHealthAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.0f);
+	}
+	else if (Attribute == GetMaxHealthAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 1.0f);
 	}
 }
 
@@ -122,6 +105,94 @@ void UHealthSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthSet, MaxHealth, OldValue);
 }
 
+
+
+
+void UHealthSet::UpdateHealthState()
+{
+	const bool bShouldBeDead = GetHealth() <= GetMinHealth() && GetMinHealth() <= 0.0f;
+
+	if (bIsDead == bShouldBeDead)
+	{
+		return;
+	}
+
+	bIsDead = bShouldBeDead;
+
+	BroadcastHealthState();
+}
+
+void UHealthSet::BroadcastHealthState()
+{
+	FGameplayEventData EventData;
+	EventData.Target = GetOwningActor();
+
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+
+	if (IsValid(ASC))
+	{
+		if (bIsDead)
+		{
+			ASC->HandleGameplayEvent(TAG_Attribute_Health_Fallen, &EventData);
+		}
+		else
+		{
+			ASC->HandleGameplayEvent(TAG_Attribute_Health_Restored, &EventData);
+		}
+	}
+}
+
+
+
+void UHealthSet::HandleDamage(const FGameplayEffectModCallbackData& Data)
+{
+	float PreviousHealth = GetHealth();
+	float CachedDamage = GetDamage();
+	SetDamage(0.0f);
+
+	UpdateHealth(CachedDamage, -1.0f);
+
+	float ChangedHealth = PreviousHealth - GetHealth();
+	if (FMath::IsNearlyEqual(ChangedHealth, 0.0f))
+	{
+		return;
+	}
+
+	BroadcastHealthChanged(Data, CachedDamage, TAG_Attribute_Health_Damaged);
+}
+
+void UHealthSet::HandleHeal(const FGameplayEffectModCallbackData& Data)
+{
+	float PreviousHealth = GetHealth();
+	float CachedHeal = GetHeal();
+	SetHeal(0.0f);
+
+	UpdateHealth(CachedHeal, 1.0f);
+
+	float ChangedHealth = PreviousHealth - GetHealth();
+	if (FMath::IsNearlyEqual(ChangedHealth, 0.0f))
+	{
+		return;
+	}
+
+	BroadcastHealthChanged(Data, CachedHeal, TAG_Attribute_Health_Healed);
+}
+
+void UHealthSet::BroadcastHealthChanged(const FGameplayEffectModCallbackData& Data, float Magnitude, const FGameplayTag& EventTag)
+{
+	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	if (IsValid(ASC))
+	{
+		FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+
+		FGameplayEventData EventData;
+		EventData.EventMagnitude = Magnitude;
+		EventData.ContextHandle = Context;
+
+		ASC->HandleGameplayEvent(EventTag, &EventData);
+	}
+}
+
 void UHealthSet::UpdateHealth(float Value, float Multiplier)
 {
 	if (Value > 0)
@@ -132,24 +203,7 @@ void UHealthSet::UpdateHealth(float Value, float Multiplier)
 	}
 }
 
-bool UHealthSet::IsDead() const
-{
-	return bIsDead;
-}
-
-void UHealthSet::UpdateDeathState()
-{
-	const bool bShouldBeDead = GetHealth() <= GetMinHealth() && GetMinHealth() <= 0.0f;
-
-	if (bIsDead == bShouldBeDead)
-	{
-		return;
-	}
-
-	bIsDead = bShouldBeDead;
-}
-
-UGameplayNotifySubsystem* UHealthSet::GetGameplayNotifySubsystem()
+/*UGameplayNotifySubsystem* UHealthSet::GetGameplayNotifySubsystem()
 {
 	UGameplayNotifySubsystem* GameplayNotify = GameplayNotifySubsystem.Get();
 
@@ -164,5 +218,5 @@ UGameplayNotifySubsystem* UHealthSet::GetGameplayNotifySubsystem()
 	}
 
 	return GameplayNotify;
-}
+}*/
 

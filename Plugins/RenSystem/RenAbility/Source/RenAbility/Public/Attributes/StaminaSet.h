@@ -32,17 +32,11 @@ public:
 	ATTRIBUTE_ACCESSORS(UStaminaSet, MaxStamina);
 
 public:
-
-	//DECLARE_MULTICAST_DELEGATE(FOnStaminaExhausted);
-	//FOnStaminaExhausted OnStaminaExhausted;
-
-	//DECLARE_MULTICAST_DELEGATE(FOnStaminaRefilled);
-	//FOnStaminaRefilled OnStaminaRefilled;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Stamina)
+	
+	UPROPERTY(ReplicatedUsing = OnRep_Stamina)
 	FGameplayAttributeData Stamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_MaxStamina)
+	UPROPERTY(ReplicatedUsing = OnRep_MaxStamina)
 	FGameplayAttributeData MaxStamina;
 
 

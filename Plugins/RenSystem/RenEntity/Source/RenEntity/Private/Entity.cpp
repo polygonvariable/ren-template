@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "Components/CapsuleComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 

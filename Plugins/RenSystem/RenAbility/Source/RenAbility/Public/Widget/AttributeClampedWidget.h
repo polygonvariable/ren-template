@@ -46,7 +46,7 @@ public:
 
 
 	UFUNCTION()
-	void RegisterASC(URAbilitySystemComponent* TargetASC);
+	void RegisterASC(UAbilitySystemComponent* TargetASC);
 
 protected:
 
@@ -70,7 +70,7 @@ protected:
 
 
 	UPROPERTY(BlueprintReadOnly)
-	TWeakObjectPtr<URAbilitySystemComponent> ASC;
+	TWeakObjectPtr<UAbilitySystemComponent> ASC;
 
 
 
@@ -109,7 +109,7 @@ class UPlayerAttributeClampedWidget : public UAttributeClampedWidget
 protected:
 
 	UFUNCTION()
-	URAbilitySystemComponent* GetASCFromPlayer(AActor* Player);
+	UAbilitySystemComponent* GetASCFromPlayer(AActor* Player);
 
 	UFUNCTION()
 	void RegisterPlayer();

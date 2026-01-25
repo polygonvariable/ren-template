@@ -14,13 +14,16 @@
 // Generated Headers
 #include "HealthSet.generated.h"
 
+// Forward Declarations
+// class UGameplayNotifySubsystem;
+
 // Declare Gameplay Tags
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Damage);
-UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Heal);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Damaged);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Healed);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Immunity);
 
-// Forward Declarations
-class UGameplayNotifySubsystem;
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Fallen);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Restored);
 
 
 
@@ -45,46 +48,44 @@ public:
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE(FOnDamaged)
-	FOnDamaged OnDamage;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_Health)
+	UPROPERTY(ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_MinHealth)
+	UPROPERTY(ReplicatedUsing = OnRep_MinHealth)
 	FGameplayAttributeData MinHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_MaxHealth)
+	UPROPERTY(ReplicatedUsing = OnRep_MaxHealth)
 	FGameplayAttributeData MaxHealth;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	FGameplayAttributeData Damage;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	FGameplayAttributeData Heal;
 
 
 	// ~ UAttributeSet
 	virtual bool PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data) override;
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	// ~ End of UAttributeSet
 
 protected:
 
-	bool bIsDead = false;
+	bool bIsDead = true;
 
-	UPROPERTY()
-	TWeakObjectPtr<UGameplayNotifySubsystem> GameplayNotifySubsystem;
-
+	void UpdateHealthState();
 	void UpdateHealth(float Value, float Multiplier);
+	void BroadcastHealthState();
 
-	bool IsDead() const;
+	void HandleDamage(const FGameplayEffectModCallbackData& Data);
+	void HandleHeal(const FGameplayEffectModCallbackData& Data);
+	void BroadcastHealthChanged(const FGameplayEffectModCallbackData& Data, float Magnitude, const FGameplayTag& EventTag);
 
-	void UpdateDeathState();
 
-	UGameplayNotifySubsystem* GetGameplayNotifySubsystem();
+	//UPROPERTY()
+	//TWeakObjectPtr<UGameplayNotifySubsystem> GameplayNotifySubsystem;
+	//UGameplayNotifySubsystem* GetGameplayNotifySubsystem();
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldValue);

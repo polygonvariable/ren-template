@@ -17,7 +17,7 @@
 
 
 
-void UAttributeClampedWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
+void UAttributeClampedWidget::RegisterASC(UAbilitySystemComponent* TargetASC)
 {
 	CleanUpASC();
 
@@ -29,13 +29,15 @@ void UAttributeClampedWidget::RegisterASC(URAbilitySystemComponent* TargetASC)
 
 	ASC = TargetASC;
 
-	CurrentValue = ASC->GetAggregatedNumericAttribute(BaseAttribute);
-	CurrentMax = ASC->GetAggregatedNumericAttribute(MaxAttribute);
+	CurrentValue = ASC->GetNumericAttribute(BaseAttribute);
+	CurrentMax = ASC->GetNumericAttribute(MaxAttribute);
 	HandleValueChanged();
 
-	ASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
-	ASC->GetGameplayAttributeValueChangeDelegate(MaxAttribute).AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
-	ASC->OnAggregatedRefresh.AddDynamic(this, &UAttributeClampedWidget::OnAggregatedRefresh);
+	FOnGameplayAttributeValueChange& DelegateBase = ASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute);
+	DelegateBase.AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
+
+	FOnGameplayAttributeValueChange& DelegateMax = ASC->GetGameplayAttributeValueChangeDelegate(MaxAttribute);
+	DelegateMax.AddWeakLambda(this, [&](const FOnAttributeChangeData& Data) { OnAggregatedRefresh(); });
 }
 
 void UAttributeClampedWidget::OnAggregatedRefresh()
@@ -46,8 +48,8 @@ void UAttributeClampedWidget::OnAggregatedRefresh()
 		return;
 	}
 
-	CurrentValue = ASC->GetAggregatedNumericAttribute(BaseAttribute);
-	CurrentMax = ASC->GetAggregatedNumericAttribute(MaxAttribute);
+	CurrentValue = ASC->GetNumericAttribute(BaseAttribute);
+	CurrentMax = ASC->GetNumericAttribute(MaxAttribute);
 	HandleValueChanged();
 }
 
@@ -75,7 +77,6 @@ void UAttributeClampedWidget::CleanUpASC()
 	if (ASC.IsValid())
 	{
 		ASC->GetGameplayAttributeValueChangeDelegate(BaseAttribute).RemoveAll(this);
-		ASC->OnAggregatedRefresh.RemoveAll(this);
 		ASC.Reset();
 	}
 }
@@ -102,11 +103,11 @@ void UAttributeClampedWidget::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-URAbilitySystemComponent* UPlayerAttributeClampedWidget::GetASCFromPlayer(AActor* Player)
+UAbilitySystemComponent* UPlayerAttributeClampedWidget::GetASCFromPlayer(AActor* Player)
 {
 	if (!IsValid(Player)) return nullptr;
 
-	URAbilitySystemComponent* PlayerASC = Player->FindComponentByClass<URAbilitySystemComponent>();
+	UAbilitySystemComponent* PlayerASC = Player->FindComponentByClass<UAbilitySystemComponent>();
 	if (!IsValid(PlayerASC)) return nullptr;
 
 	return PlayerASC;

@@ -157,3 +157,4 @@ public:
 	void BuildDynamicMesh(UDynamicMeshComponent* DynamicMeshComponent);
 
 };
+

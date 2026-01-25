@@ -83,7 +83,7 @@ void UBaseAttributeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		PRINT_INFO(LogTemp, 2.0f, TEXT("TargetEffectClass applied"));
 
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(LevelAttribute).AddUObject(this, &UBaseAttributeAbility::OnLevelAttributeChanged);
-		AbilityComponent->AddLooseGameplayTag(TAG_Attribute_Base);
+		//AbilityComponent->AddLooseGameplayTag(TAG_Attribute_Base);
 	}
 }
 
@@ -96,7 +96,7 @@ void UBaseAttributeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 			AbilityComponent->RemoveActiveGameplayEffect(ActiveEffectHandle);
 		}
 		AbilityComponent->GetGameplayAttributeValueChangeDelegate(LevelAttribute).RemoveAll(this);
-		AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_Base);
+		//AbilityComponent->RemoveLooseGameplayTag(TAG_Attribute_Base);
 	}
 
 	PRINT_INFO(LogTemp, 2.0f, TEXT("TargetEffectClass removed"));

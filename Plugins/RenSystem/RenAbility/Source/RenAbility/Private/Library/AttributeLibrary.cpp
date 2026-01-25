@@ -21,7 +21,7 @@ float UAttributeLibrary::GetAggregateAttributeValue(UAbilitySystemComponent* ASC
 
 	if (URAbilitySystemComponent* CastedInstigatorASC = Cast<URAbilitySystemComponent>(ASC))
 	{
-		AggregateValue = CastedInstigatorASC->GetAggregatedNumericAttribute(Attribute);
+		AggregateValue = CastedInstigatorASC->GetNumericAttribute(Attribute);
 	}
 	else
 	{

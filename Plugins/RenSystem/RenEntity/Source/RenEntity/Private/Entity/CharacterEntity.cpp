@@ -40,8 +40,8 @@ ARCharacter::ARCharacter() : Super()
 	{
 		Camera->SetupAttachment(SpringArm);
 	}
-
-	RAbilitySystemComponent = CreateDefaultSubobject<URAbilitySystemComponent>(TEXT("RAbilitySystemComponent"));
+	
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (IsValid(MovementComponent))
@@ -73,11 +73,41 @@ void ARCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) cons
 	}
 }
 
+bool ARCharacter::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	const UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+	return ASC->HasMatchingGameplayTag(TagToCheck);
+}
+
+bool ARCharacter::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	const UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+	return ASC->HasAllMatchingGameplayTags(TagContainer);
+}
+
+bool ARCharacter::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	const UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	if (!IsValid(ASC))
+	{
+		return false;
+	}
+	return ASC->HasAnyMatchingGameplayTags(TagContainer);
+}
+
 
 
 UAbilitySystemComponent* ARCharacter::GetAbilitySystemComponent() const
 {
-	return RAbilitySystemComponent;
+	return AbilitySystemComponent;
 }
 
 void ARCharacter::CameraPan(FVector2D Axis)
@@ -159,7 +189,7 @@ void ARCharacter::DealDamage(TSubclassOf<UGameplayEffect> EffectClass, AActor* T
 
 void ARCharacter::CancelAbility(FGameplayTagContainer WithTags)
 {
-	RAbilitySystemComponent->CancelAbilities(&WithTags, nullptr, nullptr);
+	AbilitySystemComponent->CancelAbilities(&WithTags, nullptr, nullptr);
 }
 
 
@@ -195,37 +225,4 @@ bool ARCharacter::IsMoving(float Threshold) const
 
 	return Speed > Threshold;
 }
-
-/*
-void ARCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	if (UCharacterMovementComponent* MovementComponent = GetCharacterMovement())
-	{
-		EMovementMode Mode = MovementComponent->MovementMode;
-		switch (Mode)
-		{
-			case EMovementMode::MOVE_Walking:
-				if (GetVelocity().IsNearlyZero(50.0f))
-				{
-					CurrentSubMovement = ESubMovement::Idle;
-				}
-				else if (GetVelocity().Size2D() > 50.0f && GetVelocity().Size2D() < 500.0f || !bCanSprint)
-				{
-					CurrentSubMovement = ESubMovement::Walk;
-				}
-				else if (GetVelocity().Size2D() > 500.0f && bCanSprint)
-				{
-					CurrentSubMovement = ESubMovement::Sprint;
-				}
-				break;
-			case EMovementMode::MOVE_Falling:
-				CurrentSubMovement = ESubMovement::Fall;
-				break;
-		}
-	}
-}
-On_Jump_Pressed -> Give jump ability
-On_Jump_Released -> Remove jump ability
-*/
 

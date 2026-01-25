@@ -9,6 +9,7 @@
 
 
 // Gameplay Tags
+// ~ Deprecated
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack01_End);
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack02_End);
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Attack03_End);
@@ -30,4 +31,10 @@ RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_02
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_03);
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_04);
 RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Equipment_Weapon_Slot_05);
+// ~ End of Deprecated
+
+
+// ~ Camera
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Combat_Camera_Aim);
+// ~ End of Camera
 

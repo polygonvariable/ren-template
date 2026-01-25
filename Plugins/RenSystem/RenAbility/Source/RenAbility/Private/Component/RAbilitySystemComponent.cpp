@@ -10,129 +10,73 @@
 #include "RCoreLibrary/Public/LogMacro.h"
 
 
-FGameplayAbilitySpecHandle URAbilitySystemComponent::GiveAbilityWithDynamicTags(TSubclassOf<UGameplayAbility> AbilityClass, int Level, int InputID, const FGameplayTagContainer& DynamicTags)
+
+void URAbilitySystemComponent::BP_CancelAbilitiesByTags(const FGameplayTagContainer& Tags)
 {
-	if (!IsValid(AbilityClass))
-	{
-		return FGameplayAbilitySpecHandle();
-	}
-
-	FGameplayAbilitySpec AbilitySpec = BuildAbilitySpecFromClass(AbilityClass, Level, InputID);
-	if (!IsValid(AbilitySpec.Ability))
-	{
-		return FGameplayAbilitySpecHandle(); 
-	}
-
-	AbilitySpec.DynamicAbilityTags.AppendTags(DynamicTags);
-	
-	return GiveAbility(AbilitySpec);
+	CancelAbilities(&Tags);
 }
 
-void URAbilitySystemComponent::AddAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor)
+void URAbilitySystemComponent::BP_CancelAbilitiesWithoutTags(const FGameplayTagContainer& Tags)
 {
-	if (!IsValid(Actor)) return;
-
-	TSet<TWeakObjectPtr<AActor>>& Actors = AggregatedActors.FindOrAdd(Attribute);
-	Actors.Add(Actor);
-
-	OnAggregatedRefresh.Broadcast();
-	OnAggregatedActorAdded.Broadcast(Actor);
+	CancelAbilities(nullptr, &Tags);
 }
 
-void URAbilitySystemComponent::RemoveAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor)
+void URAbilitySystemComponent::BP_CancelAbilitiesWithDynamicTags(const FGameplayTagContainer& Tags)
 {
-	if (!IsValid(Actor)) return;
+	const TArray<FGameplayAbilitySpec>& AbilitieSpecs = ActivatableAbilities.Items;
 
-	TSet<TWeakObjectPtr<AActor>>& Actors = AggregatedActors.FindOrAdd(Attribute);
-	Actors.Remove(Actor);
+	TArray<FGameplayAbilitySpecHandle> ToRemove;
 
-	OnAggregatedRefresh.Broadcast();
-	OnAggregatedActorRemoved.Broadcast(Actor);
-}
-
-float URAbilitySystemComponent::GetAggregatedNumericAttribute(const FGameplayAttribute& Attribute)
-{
-	float Value = GetNumericAttribute(Attribute);
-
-	const TSet<TWeakObjectPtr<AActor>>& Actors = AggregatedActors.FindRef(Attribute);
-
-	for (TWeakObjectPtr<AActor> Actor : Actors)
+	for (const FGameplayAbilitySpec& Spec : AbilitieSpecs)
 	{
-		if (!Actor.IsValid()) continue;
-		if (UAbilitySystemComponent* ASC = Actor->GetComponentByClass<UAbilitySystemComponent>())
+		if (Spec.DynamicAbilityTags.HasAnyExact(Tags))
 		{
-			Value += ASC->GetNumericAttribute(Attribute);
+			ToRemove.Add(Spec.Handle);
 		}
 	}
 
-	return Value;
-}
-
-void URAbilitySystemComponent::BP_AddReplicatedGameplayTags(const FGameplayTagContainer& Tags)
-{
-	AddReplicatedLooseGameplayTags(Tags);
-}
-
-void URAbilitySystemComponent::BP_RemoveReplicatedGameplayTags(const FGameplayTagContainer& Tags)
-{
-	RemoveReplicatedLooseGameplayTags(Tags);
-}
-
-
-
-
-
-void URAbilitySystemComponent::BP_CancelAbilitiesByTags(const FGameplayTagContainer& WithTags)
-{/*
-	TArray<FGameplayAbilitySpecHandle> Abilities;
-	this->GetAllAbilities(Abilities);
-
-	for(FGameplayAbilitySpecHandle& SpecHandle : Abilities)
+	for (const FGameplayAbilitySpecHandle& Handle : ToRemove)
 	{
-		if (SpecHandle.IsValid())
+		CancelAbilityHandle(Handle);
+	}
+}
+
+void URAbilitySystemComponent::BP_CancelAbilityWithHandle(const FGameplayAbilitySpecHandle& Handle)
+{
+	CancelAbilityHandle(Handle);
+}
+
+
+int32 URAbilitySystemComponent::HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload)
+{
+	int Result = Super::HandleGameplayEvent(EventTag, Payload);
+
+	TriggerGameplayCue(EventTag, Payload);
+
+	return Result;
+}
+
+void URAbilitySystemComponent::TriggerGameplayCue(FGameplayTag EventTag, const FGameplayEventData* Payload)
+{
+	if (bUseCueBinding && IsValid(CueBindingAsset))
+	{
+		const FGameplayCueTag* CueTag = CueBindingAsset->GetGameplayCueTag(EventTag);
+		if (CueTag && CueTag->IsValid())
 		{
-			FGameplayAbilitySpec* AbilitySpec = this->FindAbilitySpecFromHandle(SpecHandle, EConsiderPending::None);
-			if (!AbilitySpec)
+			FGameplayCueParameters CueParameters;
+			if (Payload)
 			{
-				continue;
+				CueParameters.EffectContext = Payload->ContextHandle;
 			}
-			AbilitySpec->Level++;
-			MarkAbilitySpecDirty(*AbilitySpec);
-		}
-	}*/
-
-	CancelAbilities(&WithTags);
-}
-
-
-
-UAnimInstance* URAbilitySystemComponent::GetActorAnimInstance()
-{
-	if (!AbilityActorInfo.IsValid())
-	{
-		return nullptr;
-	}
-	return AbilityActorInfo->GetAnimInstance();
-}
-
-
-float URAbilitySystemComponent::AnimPlayMontage(UAnimMontage* Montage, float PlayRate, float StartTime, bool bStopAllMontages)
-{
-	if (UAnimInstance* AnimInstance = GetActorAnimInstance())
-	{
-		if (!AnimInstance->Montage_IsPlaying(Montage))
-		{
-			return AnimInstance->Montage_Play(Montage, PlayRate, EMontagePlayReturnType::MontageLength, StartTime, bStopAllMontages);
+			
+			ExecuteGameplayCue(CueTag->GameplayCueTag, CueParameters);
 		}
 	}
-	return 0.0f;
 }
 
-void URAbilitySystemComponent::AnimStopMontage(UAnimMontage* Montage, float BlendOutTime)
+
+
+const FGameplayCueTag* UGameplayCueBinding::GetGameplayCueTag(FGameplayTag Tag) const
 {
-	if (UAnimInstance* AnimInstance = GetActorAnimInstance())
-	{
-		AnimInstance->Montage_Stop(BlendOutTime, Montage);
-	}
+	return TagRedirects.Find(Tag);
 }
-

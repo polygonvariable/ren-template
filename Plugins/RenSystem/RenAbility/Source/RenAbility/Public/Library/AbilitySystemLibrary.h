@@ -18,8 +18,8 @@ class UAbilitySystemComponent;
 
 
 /**
- * 
- * 
+ *
+ * Blueprint helper library for AbilitySystem
  * 
  */
 UCLASS()
@@ -30,7 +30,7 @@ class RENABILITY_API UAbilitySystemLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	static void ApplyGameplayEffectToTarget(AActor* Target, AActor* Caster, AActor* Causer, TSubclassOf<UGameplayEffect> EffectClass, int Level = 1, TFunctionRef<void(FGameplayEffectContextHandle&)> CustomizeEffectContext = [](FGameplayEffectContextHandle& Context) {});
+	static void ApplyGameplayEffectToTarget(AActor* Target, AActor* Caster, AActor* Causer, TSubclassOf<UGameplayEffect> EffectClass, int Level, TFunctionRef<void(FGameplayEffectContextHandle&)> CustomizeEffectContext = [](FGameplayEffectContextHandle& Context) {});
 
 
 	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
@@ -39,6 +39,12 @@ public:
 	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
 	static void CancelAbilityWithoutTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
+	static FGameplayTagContainer GetDynamicGameplayTags(AActor* Target, UPARAM(ref) const FGameplayAbilitySpecHandle& Handle);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Ability"))
+	static FGameplayTagContainer GetDynamicGameplayTagsFromAbility(UGameplayAbility* Ability);
 
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)

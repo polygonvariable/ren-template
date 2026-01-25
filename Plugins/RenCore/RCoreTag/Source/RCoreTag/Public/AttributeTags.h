@@ -8,13 +8,19 @@
 
 
 
-// Gameplay Tags
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Base);
+// ~ Life State
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Life_Alive);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_State_Life_Dead);
+// ~ End of Life State
 
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_State_Life_Death);
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_State_Life_Alive);
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_State_Life_Immortal);
+// ~ Abilities That Use Life
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Effect_Life_Alive);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Effect_Life_Dead);
+// ~ End of Abilities That Use Life
 
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_State_Mana_Depleted);
-RCORETAG_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_State_Mana_Available);
+
+// ~ Abilities That Use Life
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Life_Alive);
+UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Ability_Life_Dead);
+// ~ End of Abilities That Use Life
 

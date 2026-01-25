@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "Engine/DataAsset.h"
 
 // Project Headers
 
@@ -15,71 +16,67 @@
 // Forward Declarations
 
 
+
 /**
  * 
+ * 
+ * 
  */
-UCLASS()
-class RENABILITY_API URAbilitySystemComponent : public UAbilitySystemComponent
+UCLASS(MinimalAPI)
+class URAbilitySystemComponent : public UAbilitySystemComponent
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	FGameplayAbilitySpecHandle GiveAbilityWithDynamicTags(TSubclassOf<UGameplayAbility> AbilityClass, int Level = 1, int InputID = -1, const FGameplayTagContainer& DynamicTags = FGameplayTagContainer());
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities By Tags"))
+	void BP_CancelAbilitiesByTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION()
-	void AddAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor);
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities Without Tags"))
+	void BP_CancelAbilitiesWithoutTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION()
-	void RemoveAggregatedActor(const FGameplayAttribute& Attribute, AActor* Actor);
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities With Dynamic Tags"))
+	void BP_CancelAbilitiesWithDynamicTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION()
-	float GetAggregatedNumericAttribute(const FGameplayAttribute& Attribute);
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities With Handle"))
+	void BP_CancelAbilityWithHandle(const FGameplayAbilitySpecHandle& Handle);
 
-
-
-	UFUNCTION(BlueprintCallable)
-	void BP_AddReplicatedGameplayTags(const FGameplayTagContainer& Tags);
-
-	UFUNCTION(BlueprintCallable)
-	void BP_RemoveReplicatedGameplayTags(const FGameplayTagContainer& Tags);
-
-
-
-	UFUNCTION(BlueprintCallable)
-	void BP_CancelAbilitiesByTags(const FGameplayTagContainer& WithTags);
-
-
-	UFUNCTION()
-	UAnimInstance* GetActorAnimInstance();
-
-	UFUNCTION(BlueprintCallable)
-	float AnimPlayMontage(UAnimMontage* Montage, float PlayRate = 1.0f, float StartTime = 0.0f, bool bStopAllMontages = false);
-
-	UFUNCTION(BlueprintCallable)
-	void AnimStopMontage(UAnimMontage* Montage, float BlendOutTime = 0.0f);
+	// ~ UAbilitySystemComponent
+	virtual int32 HandleGameplayEvent(FGameplayTag EventTag, const FGameplayEventData* Payload) override;
+	// ~ End of UAbilitySystemComponent
 
 protected:
 
-	TSet<TObjectPtr<UAnimMontage>> ActiveMontages;
+	UPROPERTY(EditAnywhere)
+	bool bUseCueBinding = false;
 
-	TMap<FGameplayAttribute, TSet<TWeakObjectPtr<AActor>>> AggregatedActors;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UGameplayCueBinding> CueBindingAsset = nullptr;
+
+
+	void TriggerGameplayCue(FGameplayTag EventTag, const FGameplayEventData* Payload);
+
+};
+
+
+/**
+ * 
+ * 
+ */
+UCLASS()
+class UGameplayCueBinding : public UPrimaryDataAsset
+{
+
+	GENERATED_BODY()
 
 public:
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAggregatedActorAdded, AActor*, Actor);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnAggregatedActorAdded OnAggregatedActorAdded;
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayTag, FGameplayCueTag> TagRedirects;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAggregatedActorRemoved, AActor*, Actor);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnAggregatedActorRemoved OnAggregatedActorRemoved;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAggregatedRefresh);
-	UPROPERTY(BlueprintAssignable, BlueprintCallable)
-	FOnAggregatedRefresh OnAggregatedRefresh;
+	const FGameplayCueTag* GetGameplayCueTag(FGameplayTag Tag) const;
 
 };
 

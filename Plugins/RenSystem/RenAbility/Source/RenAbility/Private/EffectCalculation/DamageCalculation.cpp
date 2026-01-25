@@ -109,11 +109,11 @@ float UAggregateDamageMMC::GetAggregateValue(UAbilitySystemComponent* ASC, const
 	
 	if (URAbilitySystemComponent* CastedASC = Cast<URAbilitySystemComponent>(ASC))
 	{
-		AggregateValue = CastedASC->GetAggregatedNumericAttribute(Attribute);
+		//AggregateValue = CastedASC->GetAggregatedNumericAttribute(Attribute);
 	}
 	else
 	{
-		AggregateValue = CastedASC->GetNumericAttribute(Attribute);
+		//AggregateValue = CastedASC->GetNumericAttribute(Attribute);
 	}
 
 	return AggregateValue;
@@ -136,103 +136,3 @@ float UAggregateDamageMMC::CalculateBaseMagnitude_Implementation(const FGameplay
 	);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-float UMapMagnitudeByTagsEffectComponent::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
-{
-	float NewMagnitude = 0.0f;
-
-	const FTagContainerAggregator& ContainerAggregator = Spec.CapturedTargetTags;
-	const FGameplayTagContainer& TagContainer = ContainerAggregator.GetActorTags();
-
-	for (const TPair<FGameplayTag, float>& Tag : MagnitudeByTag)
-	{
-		if (TagContainer.HasTag(Tag.Key))
-		{
-			NewMagnitude = Tag.Value;
-			break;
-		}
-	}
-
-	return NewMagnitude;
-}
-
-
-
-
-
-
-
-float UResistanceMagnitudeCalculation::CalculateBaseMagnitude_Implementation(const FGameplayEffectSpec& Spec) const
-{
-	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
-	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
-
-	FAggregatorEvaluateParameters EvaluateParameters;
-	EvaluateParameters.SourceTags = SourceTags;
-	EvaluateParameters.TargetTags = TargetTags;
-
-	float Resistance = 0;
-
-	const TArray<FGameplayEffectAttributeCaptureDefinition>& Attributes = RelevantAttributesToCapture;
-	for (const FGameplayEffectAttributeCaptureDefinition& Attribute : Attributes)
-	{
-		float AttributeValue = 0;
-		GetCapturedAttributeMagnitude(Attribute, Spec, EvaluateParameters, AttributeValue);
-
-		Resistance += AttributeValue;
-	}
-
-	return Resistance * -1.0f;
-}
-
-void UResistanceExecutionCalculation::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
-{
-#if WITH_SERVER_CODE
-
-	FGameplayTag TemporaryTag = ValidTransientAggregatorIdentifiers.First();
-
-	if (TargetAttribute.IsValid() && TemporaryTag.IsValid())
-	{
-		const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
-
-		const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
-		const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
-
-		FAggregatorEvaluateParameters EvaluateParameters;
-		EvaluateParameters.SourceTags = SourceTags;
-		EvaluateParameters.TargetTags = TargetTags;
-
-		float CapturedValue = 0;
-
-		const TArray<FGameplayEffectAttributeCaptureDefinition>& Attributes = RelevantAttributesToCapture;
-		for (const FGameplayEffectAttributeCaptureDefinition& Attribute : Attributes)
-		{
-			float Value = 0;
-			ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(Attribute, EvaluateParameters, Value);
-
-			CapturedValue += Value;
-		}
-
-		float TargetValue = 0.0f;
-		ExecutionParams.AttemptCalculateTransientAggregatorMagnitude(TemporaryTag, EvaluateParameters, TargetValue);
-
-		float NewValue = FMath::Max(TargetValue - CapturedValue, 0);
-
-		if (NewValue > 0.0f)
-		{
-			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(TargetAttribute, EGameplayModOp::Additive, NewValue));
-		}
-	}
-
-#endif
-}

@@ -6,6 +6,7 @@
 
 
 // Gameplay Tags
+// ~ Deprecated
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Attack01_End, "Ability.Attack01.End");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Attack02_End, "Ability.Attack02.End");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Attack03_End, "Ability.Attack03.End");
@@ -26,4 +27,10 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Equipment_Weapon_Slot_02, "Ability.Equipment.
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Equipment_Weapon_Slot_03, "Ability.Equipment.Weapon.Slot.03");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Equipment_Weapon_Slot_04, "Ability.Equipment.Weapon.Slot.04");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Ability_Equipment_Weapon_Slot_05, "Ability.Equipment.Weapon.Slot.05");
+// ~ End of Deprecated
+
+
+// ~ Camera
+UE_DEFINE_GAMEPLAY_TAG(TAG_State_Combat_Camera_Aim, "State.Combat.Camera.Aim");
+// ~ End of Camera
 

@@ -19,7 +19,7 @@ FGameplayTagContainer URGameplayAbility::GetDynamicTags(bool& bSuccess) const
 		bSuccess = false;
 		return FGameplayTagContainer();
 	}
-
+	
 	bSuccess = true;
 	return Spec->DynamicAbilityTags;
 }

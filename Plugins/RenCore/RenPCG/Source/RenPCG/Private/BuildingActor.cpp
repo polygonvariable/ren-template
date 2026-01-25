@@ -8,12 +8,15 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/DynamicMeshComponent.h"
 #include "UDynamicMesh.h"
+#include "DynamicMesh/MeshNormals.h"
 #include "GeometryScript/MeshPrimitiveFunctions.h"
+#include "GeometryScript/MeshNormalsFunctions.h"
 
 // Project Headers
 
 
 
+using namespace UE::Geometry;
 
 ABuildingActor::ABuildingActor()
 {
@@ -160,26 +163,31 @@ void ABuildingActor2::BuildDynamicMesh(UDynamicMeshComponent* DynamicMeshCompone
 		return;
 	}
 
-	FGeometryScriptPrimitiveOptions PrimitiveOptions;
-	FTransform Transform;
+	DynamicMesh->EditMesh([&](FDynamicMesh3& EditMesh)
+		{
+			EditMesh.Clear();
 
-	const TArray<FVector>& Vertices = BuildingParameters.Vertices;
+			const TArray<FVector>& Vertices = BuildingParameters.Vertices;
 
-	int Num = Vertices.Num();
-	if (Num % 3 != 0)
-	{
-		return;
-	}
-	int TriCount = Num / 3;
+			int Num = Vertices.Num();
+			if (Num % 3 != 0)
+			{
+				return;
+			}
+			int TriCount = Num / 3;
 
-	for (int i = 0; i < TriCount - 1; i++)
-	{
-		int Index = i * 3;
-		TArray<FVector> Tri;
-		Tri.Add(Vertices[Index]);
-		Tri.Add(Vertices[Index + 1]);
-		Tri.Add(Vertices[Index + 2]);
-		UGeometryScriptLibrary_MeshPrimitiveFunctions::AppendTriangulatedPolygon3D(DynamicMesh, PrimitiveOptions, Transform, Tri);
-	}
+			for (int i = 0; i < TriCount - 1; i++)
+			{
+				int Index = i * 3;
+				TArray<FVector> Tri;
+
+				EditMesh.AppendVertex(Vertices[Index]);
+				EditMesh.AppendVertex(Vertices[Index + 1]);
+				EditMesh.AppendVertex(Vertices[Index + 2]);
+
+				EditMesh.AppendTriangle(Index, Index + 1, Index + 2);
+			}
+
+		}, EDynamicMeshChangeType::MeshVertexChange, EDynamicMeshAttributeChangeFlags::Unknown, false);
 }
 

@@ -45,7 +45,7 @@ UAnimPlayMontage* UAnimPlayMontage::AnimPlayMontage(URAbilitySystemComponent* In
 void UAnimPlayMontage::EndTask()
 {
 	if (RASC.IsValid())
-	{
+	{/*
 		if (UAnimInstance* AnimInstance = RASC->GetActorAnimInstance())
 		{
 			if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(Montage))
@@ -55,7 +55,7 @@ void UAnimPlayMontage::EndTask()
 				MontageInstance->OnMontageEnded.Unbind();
 			}
 		}
-		RASC->AnimStopMontage(Montage, BlendOutTime);
+		RASC->AnimStopMontage(Montage, BlendOutTime);*/
 	}
 	RASC.Reset();
 
@@ -66,7 +66,7 @@ void UAnimPlayMontage::EndTask()
 void UAnimPlayMontage::Activate()
 {
 	if (RASC.IsValid())
-	{
+	{/*
 		UAnimInstance* AnimInstance = RASC->GetActorAnimInstance();
 
 		if (IsValid(AnimInstance) && RASC->AnimPlayMontage(Montage, PlayRate) > 0.0f)
@@ -83,7 +83,7 @@ void UAnimPlayMontage::Activate()
 			AnimInstance->Montage_SetEndDelegate(MontageEndedDelegate, Montage);
 
 			return;
-		}
+		}*/
 	}
 
 	OnCancelled.Broadcast();

@@ -15,7 +15,7 @@
 void UEquipmentAbility::OnTagChanged(const FGameplayTag Tag, int NewCount)
 {
 	if (RASC.IsValid())
-	{
+	{/*
 		if (NewCount > 0)
 		{
 			RASC->AnimStopMontage(UnequipMontage, BlendOut);
@@ -25,7 +25,7 @@ void UEquipmentAbility::OnTagChanged(const FGameplayTag Tag, int NewCount)
 		{
 			RASC->AnimStopMontage(EquipMontage, BlendOut);
 			RASC->AnimPlayMontage(UnequipMontage, PlayRate, StartTime, bStopAllMontages);
-		}
+		}*/
 	}
 }
 
@@ -72,9 +72,9 @@ void UEquipmentAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 void UEquipmentAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	if (RASC.IsValid())
-	{
+	{/*
 		RASC->AnimStopMontage(EquipMontage, BlendOut);
-		RASC->AnimStopMontage(UnequipMontage, BlendOut);
+		RASC->AnimStopMontage(UnequipMontage, BlendOut);*/
 		RASC->RegisterGameplayTagEvent(SlotTag).RemoveAll(this);
 	}
 	RASC.Reset();

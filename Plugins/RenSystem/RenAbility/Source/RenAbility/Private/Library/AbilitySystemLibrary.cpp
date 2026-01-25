@@ -6,6 +6,7 @@
 // Engine Headers
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
+#include "Abilities/GameplayAbility.h"
 
 // Project Headers
 #include "RCoreLibrary/Public/LogMacro.h"
@@ -75,6 +76,39 @@ void UAbilitySystemLibrary::CancelAbilityWithoutTags(AActor* Target, UPARAM(ref)
 
 
 
+
+FGameplayTagContainer UAbilitySystemLibrary::GetDynamicGameplayTags(AActor* Target, UPARAM(ref) const FGameplayAbilitySpecHandle& Handle)
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent(Target);
+	if (!IsValid(ASC))
+	{
+		return FGameplayTagContainer();
+	}
+
+	FGameplayAbilitySpec* Spec = ASC->FindAbilitySpecFromHandle(Handle);
+	if (!Spec)
+	{
+		return FGameplayTagContainer();
+	}
+
+	return Spec->DynamicAbilityTags;
+}
+
+FGameplayTagContainer UAbilitySystemLibrary::GetDynamicGameplayTagsFromAbility(UGameplayAbility* Ability)
+{
+	if (!IsValid(Ability))
+	{
+		return FGameplayTagContainer();
+	}
+
+	FGameplayAbilitySpec* Spec = Ability->GetCurrentAbilitySpec();
+	if (!Spec)
+	{
+		return FGameplayTagContainer();
+	}
+
+	return Spec->DynamicAbilityTags;
+}
 
 FGameplayTag UAbilitySystemLibrary::GetFirstGameplayTag(const FGameplayTagContainer& Container)
 {
