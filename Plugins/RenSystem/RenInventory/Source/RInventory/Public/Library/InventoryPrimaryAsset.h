@@ -2,25 +2,19 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/InventoryItemRarity.h"
 #include "Definition/InventoryItemType.h"
 
-// Generated Headers
-
-// Forward Declarations
-
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 
 
 /**
  *
  */
-class RSYSTEM_API FInventoryPrimaryAsset
+class REN_API FInventoryPrimaryAsset
 {
 
 public:
@@ -43,7 +37,6 @@ public:
 };
 
 
-
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

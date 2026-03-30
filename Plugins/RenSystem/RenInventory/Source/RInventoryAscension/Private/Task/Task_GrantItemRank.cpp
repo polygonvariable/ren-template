@@ -7,9 +7,9 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/InventoryInstance.h"
-#include "Interface/IAscensionProvider.h"
+#include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
@@ -63,7 +63,7 @@ void UTask_GrantItemRank::OnCleanup()
 
 void UTask_GrantItemRank::Step_LoadAsset()
 {
-	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(FGuid::NewGuid(), TargetAssetId);
+	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(FGuid::NewGuid(), TargetAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -71,7 +71,7 @@ void UTask_GrantItemRank::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UTask_GrantItemRank> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{
 			UTask_GrantItemRank* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())

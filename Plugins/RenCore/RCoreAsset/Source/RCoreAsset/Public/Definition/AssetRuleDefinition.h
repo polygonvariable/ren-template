@@ -9,7 +9,6 @@
 #include "AssetRuleDefinition.generated.h"
 
 
-
 USTRUCT()
 struct FAssetRuleContext
 {

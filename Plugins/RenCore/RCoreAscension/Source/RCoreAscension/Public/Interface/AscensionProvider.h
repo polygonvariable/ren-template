@@ -5,33 +5,27 @@
 // Engine Headers
 #include "UObject/Interface.h"
 
-// Project Headers
-
 // Generated Headers
-#include "IAscensionProvider.generated.h"
+#include "AscensionProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASCENSION_API
+#define REN_API RCOREASCENSION_API
 
 // Forward Declarations
 class UAssetCollection;
-
 struct FAscensionData;
-
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
 class UAscensionProvider : public UInterface
 {
-
 	GENERATED_BODY()
-
 };
 
 /**
  *
  */
-class RCORE_API IAscensionProvider
+class REN_API IAscensionProvider
 {
 
 	GENERATED_BODY()
@@ -48,8 +42,6 @@ public:
 
 };
 
-
-
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

@@ -2,27 +2,21 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 
 // Generated Headers
 #include "MetadataAsset.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
-
-// Forward Declarations
+#define REN_API RCOREASSET_API
 
 
 /**
- *
- *
- *
+ * 
  */
 UCLASS(Abstract, MinimalAPI)
-class UMetadataAsset : public URPrimaryDataAsset
+class UMetadataAsset : public UCoreDataAsset
 {
 
 	GENERATED_BODY()
@@ -30,14 +24,12 @@ class UMetadataAsset : public URPrimaryDataAsset
 public:
 
 	// ~ UPrimaryDataAsset
-	RCORE_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
-
 
 };
 
 
-
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

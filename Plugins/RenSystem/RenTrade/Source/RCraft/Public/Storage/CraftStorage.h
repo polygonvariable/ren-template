@@ -15,7 +15,7 @@
 #include "CraftStorage.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCRAFT_API
+#define REN_API RCRAFT_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -23,7 +23,7 @@ class UStorage;
 class IStorageProvider;
 class UCraftStorage;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 struct FAssetDetail_Trade;
 struct FInstancedStruct;
@@ -46,11 +46,11 @@ public:
 	FOnCraftUpdated OnCraftUpdated;
 
 
-	RSYSTEM_API const FCraftData* GetItem(const FTradeKey& TradeKey) const;
-	RSYSTEM_API bool AddItem(const FTradeKey& TradeKey, FTimespan BatchProcessingTime);
-	RSYSTEM_API void ResetItems();
+	REN_API const FCraftData* GetItem(const FTradeKey& TradeKey) const;
+	REN_API bool AddItem(const FTradeKey& TradeKey, FTimespan BatchProcessingTime);
+	REN_API void ResetItems();
 
-	RSYSTEM_API int ClaimCraftedItems(const FTradeKey& TradeKey);
+	REN_API int ClaimCraftedItems(const FTradeKey& TradeKey);
 
 protected:
 
@@ -62,5 +62,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

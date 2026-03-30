@@ -9,7 +9,7 @@
 #include "ActorFreeListSubsystem.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREPOOL_API
+#define REN_API RCOREPOOL_API
 
 
 
@@ -26,9 +26,9 @@ class UActorFreeListSubsystem : public UWorldSubsystem
 
 public:
 
-	RCORE_API AActor* AcquireFromList(TSubclassOf<AActor> ActorClass, const FTransform& Transform, AActor* Owner);
-	RCORE_API void ReturnToList(AActor* Actor);
-	RCORE_API void ClearList();
+	REN_API AActor* AcquireFromList(TSubclassOf<AActor> ActorClass, const FTransform& Transform, AActor* Owner);
+	REN_API void ReturnToList(AActor* Actor);
+	REN_API void ClearList();
 
 	template<class T>
 	T* AcquireFromList(TSubclassOf<AActor> ActorClass, const FTransform& Transform, AActor* Owner)
@@ -49,11 +49,11 @@ protected:
 
 public:
 
-	static RCORE_API UActorFreeListSubsystem* Get(UWorld* World);
+	static REN_API UActorFreeListSubsystem* Get(UWorld* World);
 
 };
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

@@ -9,7 +9,6 @@
 #include "EquipmentInstance.generated.h"
 
 
-
 /**
  *
  *

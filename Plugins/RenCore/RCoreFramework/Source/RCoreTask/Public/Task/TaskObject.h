@@ -11,7 +11,7 @@
 #include "TaskObject.generated.h"
 
 // Module Macros
-#define RCORE_API RCORETASK_API
+#define REN_API RCORETASK_API
 
 // Forward Declarations
 
@@ -32,8 +32,8 @@ public:
 
 	FTaskCallback Callback;
 
-	RCORE_API void StartTask();
-	RCORE_API void StopTask();
+	REN_API void StartTask();
+	REN_API void StopTask();
 
 	void Cleanup();
 
@@ -50,12 +50,12 @@ protected:
 	FOnTaskFinished OnFinished;
 	FGuid TaskId;
 
-	RCORE_API virtual void OnStarted() {};
-	RCORE_API virtual void OnStopped() {};
-	RCORE_API virtual void OnCleanup() {};
+	REN_API virtual void OnStarted() {};
+	REN_API virtual void OnStopped() {};
+	REN_API virtual void OnCleanup() {};
 
-	RCORE_API void Success();
-	RCORE_API void Fail(const FString& Reason);
+	REN_API void Success();
+	REN_API void Fail(const FString& Reason);
 
 };
 
@@ -70,5 +70,5 @@ class UNetworkTaskObject : public UTaskObject
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

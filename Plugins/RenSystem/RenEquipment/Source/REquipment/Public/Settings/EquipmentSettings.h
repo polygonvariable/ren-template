@@ -13,12 +13,11 @@
 #include "EquipmentSettings.generated.h"
 
 // Module Macros
-#define RSYSTEM_API REQUIPMENT_API
+#define REN_API REQUIPMENT_API
 
 // Forward Declarations
 class UEquipmentStorage;
 class UEquipmentSubsystem;
-
 
 
 /**
@@ -59,17 +58,20 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TArray<FName> EquipmentBundles;
 
+	//UPROPERTY(Config, EditDefaultsOnly, Meta = (MetaClass = "CoreDataAsset"))
+	//TMap<FGameplayTag, FSoftClassPath> SupportedSlotClasses;
+
 
 	// ~ IStorageSettingsProvider
 	virtual const FName& GetStorageId() const override;
 	virtual TSubclassOf<UStorage> GetStorageClass() const override;
 	// ~ End of IStorageSettingsProvider
 
-	RSYSTEM_API static const UEquipmentSettings* Get();
+	REN_API static const UEquipmentSettings* Get();
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

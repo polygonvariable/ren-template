@@ -4,7 +4,7 @@
 #include "Subsystem/ActorFreeListSubsystem.h"
 
 // Project Headers
-#include "Interface/IActorFreeList.h"
+#include "Interface/IActorLinkedNode.h"
 
 
 
@@ -16,7 +16,7 @@ AActor* UActorFreeListSubsystem::AcquireFromList(TSubclassOf<AActor> ActorClass,
 	if (StartingNode)
 	{
 		AActor* Actor = StartingNode->Get();
-		IActorFreeList* Task = Cast<IActorFreeList>(Actor);
+		IActorLinkedNode* Task = Cast<IActorLinkedNode>(Actor);
 		if (Task)
 		{
 			ActorList.Add(ActorClass, Task->GetNextNode());
@@ -31,7 +31,7 @@ AActor* UActorFreeListSubsystem::AcquireFromList(TSubclassOf<AActor> ActorClass,
 
 void UActorFreeListSubsystem::ReturnToList(AActor* Actor)
 {
-	IActorFreeList* Task = Cast<IActorFreeList>(Actor);
+	IActorLinkedNode* Task = Cast<IActorLinkedNode>(Actor);
 	if (!Task)
 	{
 		return;

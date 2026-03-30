@@ -2,23 +2,18 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 
 // Generated Headers
-#include "TransactionalAsset.generated.h"
-
-// Forward Declarations
-
+#include "InstancedDataAsset.generated.h"
 
 
 /**
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UTransactionalAsset : public URPrimaryDataAsset
+class UInstancedDataAsset : public UCoreDataAsset
 {
 
 	GENERATED_BODY()

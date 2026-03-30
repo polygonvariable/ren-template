@@ -3,10 +3,6 @@
 // Parent Header
 #include "Filter/FilterCriterion.h"
 
-// Engine Headers
-
-// Project Headers
-
 
 
 bool UFilterCriterion::Evaluate(const FFilterContext& Context) const
@@ -22,5 +18,13 @@ FName UFilterCriterion::GetPropertyName() const
 bool UFilterCriterion::GetIsLeaf() const
 {
 	return false;
+}
+
+void UFilterCriterion::ClearEvaluationData()
+{
+}
+
+void UFilterCriterion::CopyEvaluationData(const UFilterCriterion* Other)
+{
 }
 

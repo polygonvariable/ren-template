@@ -12,14 +12,14 @@
 #include "ShopSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RSHOP_API
+#define REN_API RSHOP_API
 
 // Forward Declarations
 class UAssetCollection;
 class UStorage;
 class UShopStorage;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class IStorageProvider;
 
 struct FAssetDetail_Trade;
@@ -38,14 +38,14 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API UShopStorage* GetShop(const FName& ShopId);
+	REN_API UShopStorage* GetShop(const FName& ShopId);
 
-	RSYSTEM_API void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+	REN_API void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
 
-	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const;
-	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
 
-	RSYSTEM_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback);
+	REN_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&)> Callback);
 
 protected:
 
@@ -62,13 +62,13 @@ protected:
 
 public:
 
-	RSYSTEM_API static UShopSubsystem* Get(UWorld* World);
-	RSYSTEM_API static UShopSubsystem* Get(UGameInstance* GameInstance);
+	REN_API static UShopSubsystem* Get(UWorld* World);
+	REN_API static UShopSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

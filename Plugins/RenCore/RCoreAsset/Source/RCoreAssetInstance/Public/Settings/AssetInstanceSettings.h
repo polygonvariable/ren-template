@@ -9,7 +9,6 @@
 #include "AssetInstanceSettings.generated.h"
 
 
-
 /**
  *
  */
@@ -27,8 +26,7 @@ public:
 	}
 
 	UPROPERTY(Config, EditDefaultsOnly)
-	TMap<FPrimaryAssetType, TSubclassOf<UGameInstanceSubsystem>> InterchangeProviders;
-
+	TMap<FPrimaryAssetType, TSoftClassPtr<UGameInstanceSubsystem>> InstanceProviders;
 
 	static const UAssetInstanceSettings* Get()
 	{

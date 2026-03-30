@@ -7,8 +7,6 @@ public class REquipment : ModuleRules
 	public REquipment(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		//PCHUsage = ModuleRules.PCHUsageMode.NoPCHs;
-        //OptimizeCode = CodeOptimization.Never;
 
         PublicIncludePaths.AddRange(
 			new string[] {

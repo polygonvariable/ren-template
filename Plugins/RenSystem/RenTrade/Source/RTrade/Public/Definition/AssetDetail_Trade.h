@@ -11,7 +11,7 @@
 #include "AssetDetail_Trade.generated.h"
 
 // Forward Declarations
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 

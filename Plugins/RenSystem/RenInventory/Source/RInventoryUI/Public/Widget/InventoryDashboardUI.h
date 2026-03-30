@@ -13,6 +13,8 @@
 // Forward Declarations
 class UAssetCollectionUI;
 class UAssetDetailUI;
+class UAssetFilterCollectionUI;
+class UAssetEntry;
 class UInventoryAsset;
 
 
@@ -30,7 +32,6 @@ public:
 
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
-	virtual void InitializeAssetDetail(const URPrimaryDataAsset* Asset) override;
 	virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
@@ -42,8 +43,13 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
 
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UAssetFilterCollectionUI> InventoryFilter = nullptr;
+
 
 	// ~ UAssetDashboardUI
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
 	// ~ End of UAssetDashboardUI
 

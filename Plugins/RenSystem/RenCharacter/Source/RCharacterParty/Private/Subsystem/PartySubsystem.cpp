@@ -3,10 +3,7 @@
 // Parent Header
 #include "Subsystem/PartySubsystem.h"
 
-// Engine Headers
-
 // Project Headers
-#include "Component/PartyManagerComponent.h"
 #include "Delegate/GameLifecycleDelegates.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
@@ -16,38 +13,27 @@
 #include "Util/SubsystemUtil.h"
 
 
-
-void UPartySubsystem::RegisterManager(UPartyManagerComponent* Manager)
+UPartyStorage* UPartySubsystem::GetPartyStorage()
 {
-	ManagerComponent = TWeakObjectPtr<UPartyManagerComponent>(Manager);
-}
-
-void UPartySubsystem::UnregisterManager()
-{
-	ManagerComponent.Reset();
-}
-
-UPartyStorage* UPartySubsystem::GetPartyCollection()
-{
-	IStorageProvider* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
+	if (!IsValid(_CachedStorage))
 	{
-		return nullptr;
+		IStorageProvider* StorageInterface = StorageProvider.Get();
+		if (!StorageInterface)
+		{
+			return nullptr;
+		}
+
+		FName StorageId = UPartySettings::Get()->StorageId;
+		UStorage* Storage = StorageInterface->GetStorage(StorageId);
+
+		_CachedStorage = Cast<UPartyStorage>(Storage);
 	}
-
-	FName StorageId = UPartySettings::Get()->StorageId;
-	UStorage* Storage = StorageInterface->GetStorage(StorageId);
-
-	return Cast<UPartyStorage>(Storage);
+	return _CachedStorage;
 }
 
-void UPartySubsystem::RequestSpawnParty()
+void UPartySubsystem::SyncParty()
 {
-	UPartyManagerComponent* Manager = ManagerComponent.Get();
-	if (IsValid(Manager))
-	{
-		Manager->SpawnParty();
-	}
+	OnSyncParty.Broadcast();
 }
 
 void UPartySubsystem::OnPreGameInitialized()
@@ -77,12 +63,11 @@ void UPartySubsystem::Deinitialize()
 {
 	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
 	StorageProvider.Reset();
+	_CachedStorage = nullptr;
 
 	LOG_WARNING(LogCharacterParty, TEXT("PartySubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
-
 
 UPartySubsystem* UPartySubsystem::Get(UWorld* World)
 {

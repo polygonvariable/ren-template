@@ -12,7 +12,7 @@
 #include "TradeEntry.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADEUI_API
+#define REN_API RTRADEUI_API
 
 // Forward Declarations
 
@@ -32,7 +32,7 @@ public:
 	FAssetDetail_Trade TradeDetail;
 
 	// ~ UAssetEntry
-	RSYSTEM_API virtual void ResetData() override
+	REN_API virtual void ResetData() override
 	{
 		TradeDetail.Reset();
 		Super::ResetData();
@@ -44,5 +44,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

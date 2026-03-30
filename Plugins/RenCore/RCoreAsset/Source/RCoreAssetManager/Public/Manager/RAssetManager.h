@@ -12,7 +12,7 @@
 #include "RAssetManager.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETMANAGER_API
+#define REN_API RCOREASSETMANAGER_API
 
 // Forward Declarations
 struct FLatentHandle;
@@ -30,13 +30,13 @@ class URAssetManager : public UAssetManager
 
 public:
 
-	RCORE_API void CancelFetch(const FGuid& LatentId);
+	REN_API void CancelFetch(const FGuid& LatentId);
 
-	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths, UClass* Type);
+	REN_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type);
+	REN_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftClassPath>& Paths, UClass* Type);
 
-	RCORE_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type);
-	RCORE_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths, UClass* Type);
+	REN_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type);
+	REN_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths, UClass* Type);
 
 
 	template<typename T>
@@ -81,5 +81,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

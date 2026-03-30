@@ -11,7 +11,7 @@
 // Forward Declarations
 class UAscensionDetailUI;
 class UAvatarStorage;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 struct FAvatarInstance;
 
@@ -45,7 +45,7 @@ protected:
 	virtual void SetCustomDetails(const FAvatarInstance* Instance);
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDetailUI
 

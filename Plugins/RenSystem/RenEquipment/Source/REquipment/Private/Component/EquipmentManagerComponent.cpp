@@ -7,32 +7,18 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Interface/IAssetInstanceData.h"
+#include "Actor/EquipmentActor.h"
+#include "Asset/CoreDataAsset.h"
+#include "Interface/AssetInstanceData.h"
 #include "Interface/IEquipmentProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Manager/RAssetManager.inl"
-#include "Storage/EquipmentStorage.h"
-#include "Subsystem/EquipmentSubsystem.h"
 #include "Settings/EquipmentSettings.h"
+#include "Storage/EquipmentStorage.h"
 #include "Subsystem/ActorFreeListSubsystem.h"
-#include "Interface/IAssetInstanceCollection.h"
-#include "Interface/IAssetInstanceCollectionProvider.h"
-#include "Library/AssetInstanceUtil.h"
-#include "Interface/IAscensionInstanceData.h"
+#include "Subsystem/EquipmentSubsystem.h"
 
-
-
-void FEquipmentSpawnData::Reset()
-{
-#if WITH_EDITOR
-	DataAsset.Reset();
-#endif
-
-	EquipmentId.Invalidate();
-	AscensionData.Reset();
-}
 
 UEquipmentManagerComponent::UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -55,10 +41,10 @@ void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext
 
 	for (FEquipmentSpawnData Data : SpawnDataEd)
 	{
-		URPrimaryDataAsset* DataAsset = Data.DataAsset.LoadSynchronous();
+		UCoreDataAsset* DataAsset = Data.DataAsset.LoadSynchronous();
 		if (!IsValid(DataAsset) || !DataAsset->Implements<UEquipmentProvider>())
 		{
-			LOG_ERROR(LogTemp, TEXT("Invalid asset or asset does not implement EquipmentProvider"));
+			LOG_ERROR(LogEquipment, TEXT("Invalid asset or asset does not implement EquipmentProvider"));
 			continue;
 		}
 
@@ -66,15 +52,6 @@ void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext
 		SpawnData.Add(Data);
 	}
 #endif
-}
-
-void UEquipmentManagerComponent::SyncOwnerEquipment(const FGuid& InOwnerId)
-{
-	if (OwnerId == InOwnerId)
-	{
-		RemoveEquipment();
-		SpawnEquipment();
-	}
 }
 
 void UEquipmentManagerComponent::BeginPlay()
@@ -124,12 +101,12 @@ void UEquipmentManagerComponent::SpawnEquipment()
 {
 	if (EquipmentSource == EAssetQuerySource::Instance)
 	{
-		FetchSpawnDataFromInstance();
+		GetInstancedSpawnData();
 	}
 
 	if (!IsValid(AssetManager) || SpawnData.Num() == 0)
 	{
-		LOG_ERROR(LogTemp, TEXT("ActorFreeList, AssetManager is invalid or EquipmentSpawnData is empty"));
+		LOG_ERROR(LogEquipment, TEXT("ActorFreeList, AssetManager is invalid or EquipmentSpawnData is empty"));
 		return;
 	}
 
@@ -147,15 +124,15 @@ void UEquipmentManagerComponent::SpawnEquipment()
 
 	const TArray<FName> AssetBundles = Settings->EquipmentBundles;
 
-	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(_EquipmentSpawnId, AssetIds, AssetBundles);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(_EquipmentSpawnId, AssetIds, AssetBundles);
 	if (!Future.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to initialize load equipment assets"));
+		LOG_ERROR(LogEquipment, TEXT("Failed to initialize load equipment assets"));
 		return;
 	}
 
 	TWeakObjectPtr<UEquipmentManagerComponent> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
 		{
 			UEquipmentManagerComponent* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
@@ -165,37 +142,6 @@ void UEquipmentManagerComponent::SpawnEquipment()
 		}
 	);
 }
-
-void UEquipmentManagerComponent::FetchSpawnDataFromInstance()
-{
-	if (!IsValid(EquipmentStorage))
-	{
-		LOG_ERROR(LogTemp, TEXT("EquipmentStorage is invalid"));
-		return;
-	}
-
-	SpawnData.Empty();
-
-	const TMap<FGameplayTag, FEquipmentKey>* OwnedEquipment = EquipmentStorage->GetOwnedEquipment(OwnerId);
-	if (!OwnedEquipment)
-	{
-		LOG_ERROR(LogTemp, TEXT("OwnedEquipment is invalid"));
-		return;
-	}
-
-	for (const TPair<FGameplayTag, FEquipmentKey>& Kv : *OwnedEquipment)
-	{
-		const FEquipmentKey& EquipmentKey = Kv.Value;
-
-		FEquipmentSpawnData Data;
-		Data.AssetId = EquipmentKey.AssetId;
-		Data.EquipmentId = EquipmentKey.AssetInstanceId;
-		Data.EquipmentSlot = Kv.Key;
-
-		SpawnData.Add(Data);
-	}
-}
-
 
 void UEquipmentManagerComponent::RemoveEquipment()
 {
@@ -212,6 +158,45 @@ void UEquipmentManagerComponent::RemoveEquipment()
 	SpawnedEquipment.Empty();
 }
 
+void UEquipmentManagerComponent::SyncOwnerEquipment(const FGuid& InOwnerId)
+{
+	if (OwnerId == InOwnerId)
+	{
+		RemoveEquipment();
+		SpawnEquipment();
+	}
+}
+
+void UEquipmentManagerComponent::GetInstancedSpawnData()
+{
+	SpawnData.Empty();
+
+	if (!IsValid(EquipmentStorage))
+	{
+		LOG_ERROR(LogEquipment, TEXT("EquipmentStorage is invalid"));
+		return;
+	}
+
+	const TMap<FGameplayTag, FEquipmentKey>* OwnedEquipment = EquipmentStorage->GetOwnedEquipment(OwnerId);
+	if (!OwnedEquipment)
+	{
+		LOG_ERROR(LogEquipment, TEXT("OwnedEquipment is invalid"));
+		return;
+	}
+
+	for (const TPair<FGameplayTag, FEquipmentKey>& Kv : *OwnedEquipment)
+	{
+		const FEquipmentKey& EquipmentKey = Kv.Value;
+
+		FEquipmentSpawnData Data;
+		Data.AssetId = EquipmentKey.AssetId;
+		Data.EquipmentId = EquipmentKey.AssetInstanceId;
+		Data.EquipmentSlot = Kv.Key;
+
+		SpawnData.Add(Data);
+	}
+}
+
 void UEquipmentManagerComponent::SpawnEquipment_Internal()
 {
 	UWorld* World = GetWorld();
@@ -219,32 +204,32 @@ void UEquipmentManagerComponent::SpawnEquipment_Internal()
 
 	for (const FEquipmentSpawnData& Data : SpawnData)
 	{
-		URPrimaryDataAsset* Asset = Cast<URPrimaryDataAsset>(AssetManager->GetPrimaryAssetObject(Data.AssetId));
+		UCoreDataAsset* Asset = Cast<UCoreDataAsset>(AssetManager->GetPrimaryAssetObject(Data.AssetId));
 		const IEquipmentProvider* EquipmentProvider = Cast<IEquipmentProvider>(Asset);
 		if (!EquipmentProvider)
 		{
-			LOG_ERROR(LogTemp, TEXT("Asset does not implement IEquipmentProvider"));
+			LOG_ERROR(LogEquipment, TEXT("Asset does not implement IEquipmentProvider"));
 			continue;
 		}
 
 		const FGameplayTag& EquipmentSlot = Data.EquipmentSlot;
 		if (SpawnedEquipment.Contains(EquipmentSlot))
 		{
-			LOG_ERROR(LogTemp, TEXT("Slot is already in use"));
+			LOG_ERROR(LogEquipment, TEXT("Slot is already in use"));
 			continue;
 		}
 		
 		UClass* EquipmentClass = EquipmentProvider->GetEquipmentClass().Get();
 		if (!IsValid(EquipmentClass) || !EquipmentClass->IsChildOf(AEquipmentActor::StaticClass()))
 		{
-			LOG_ERROR(LogTemp, TEXT("Class is invalid or not child of EquipmentActor"));
+			LOG_ERROR(LogEquipment, TEXT("Class is invalid or not child of EquipmentActor"));
 			continue;
 		}
 
 		AEquipmentActor* EquipmentActor = ActorFreeList->AcquireFromList<AEquipmentActor>(EquipmentClass, SpawnTransform, GetOwner());
 		if (!IsValid(EquipmentActor))
 		{
-			LOG_ERROR(LogTemp, TEXT("Spawned character is invalid"));
+			LOG_ERROR(LogEquipment, TEXT("Spawned character is invalid"));
 			return;
 		}
 
@@ -254,7 +239,6 @@ void UEquipmentManagerComponent::SpawnEquipment_Internal()
 
 		if (!EquipmentActor->HasActorBegunPlay())
 		{
-			EquipmentActor->PreInitializeEquipment();
 			EquipmentActor->FinishSpawning(SpawnTransform);
 		}
 
@@ -264,123 +248,3 @@ void UEquipmentManagerComponent::SpawnEquipment_Internal()
 	}
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-AActor* AEquipmentActor::GetNextNode() const
-{
-	return _NextNode;
-}
-
-void AEquipmentActor::SetNextNode(AActor* Node)
-{
-	_NextNode = Cast<AEquipmentActor>(Node);
-}
-
-void AEquipmentActor::PreInitializeEquipment()
-{
-	IAssetInstanceCollectionProvider* CollectionProvider = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), SpawnData.AssetId);
-	if (!CollectionProvider)
-	{
-		return;
-	}
-
-	FName CollectionId = CollectionProvider->GetDefaultCollectionId();
-	InstanceCollection = CollectionProvider->GetInstanceCollection(CollectionId);
-	if (!InstanceCollection)
-	{
-		return;
-	}
-
-	InstanceCollection->GetOnAssetInstanceCollectionUpdated().AddUObject(this, &AEquipmentActor::RefreshEquipment);
-
-	IAscensionInstanceData* AscensionInterface = Cast<IAscensionInstanceData>(InstanceCollection);
-	if (!AscensionInterface)
-	{
-		return;
-	}
-	
-	const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(SpawnData.AssetId, SpawnData.EquipmentId);
-	if (!AscensionData)
-	{
-		return;
-	}
-
-	SpawnData.AscensionData = *AscensionData;
-}
-
-void AEquipmentActor::InitializeEquipment()
-{
-	AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-}
-
-void AEquipmentActor::DeinitializeEquipment()
-{
-	if (InstanceCollection)
-	{
-		InstanceCollection->GetOnAssetInstanceCollectionUpdated().RemoveAll(this);
-	}
-
-	EquipmentAsset = nullptr;
-	OwnerId.Invalidate();
-	SpawnData.Reset();
-
-	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-}
-
-void AEquipmentActor::RefreshEquipment()
-{
-	IAscensionInstanceData* AscensionInterface = Cast<IAscensionInstanceData>(InstanceCollection);
-	if (!AscensionInterface)
-	{
-		return;
-	}
-
-	const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(SpawnData.AssetId, SpawnData.EquipmentId);
-	if (!AscensionData)
-	{
-		return;
-	}
-
-	SpawnData.AscensionData = *AscensionData;
-}
-
-void AEquipmentActor::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AEquipmentActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	DeinitializeEquipment();
-
-	Super::EndPlay(EndPlayReason);
-}

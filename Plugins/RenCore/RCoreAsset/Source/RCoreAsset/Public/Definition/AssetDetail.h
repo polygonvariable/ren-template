@@ -6,12 +6,10 @@
 #include "AssetDetail.generated.h"
 
 // Forward Declarations
-class URPrimaryDataAsset;
-
+class UCoreDataAsset;
 
 
 /**
- *
  *
  */
 USTRUCT(BlueprintType)
@@ -28,7 +26,7 @@ public:
 #if WITH_EDITORONLY_DATA
 
 	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
+	TSoftObjectPtr<UCoreDataAsset> DataAsset;
 
 #endif
 
@@ -47,9 +45,7 @@ public:
 };
 
 
-
 /**
- *
  *
  */
 USTRUCT(BlueprintType)

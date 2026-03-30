@@ -9,7 +9,7 @@
 #include "EquipmentSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API REQUIPMENT_API
+#define REN_API REQUIPMENT_API
 
 // Forward Declarations
 class IStorageProvider;
@@ -33,8 +33,8 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnSyncEquipment, const FGuid& /* Owner Id */);
 	FOnSyncEquipment OnSyncEquipment;
 
-	RSYSTEM_API void SyncEquipment(const FGuid& OwnerId) const;
-	RSYSTEM_API UEquipmentStorage* GetEquipment() const;
+	REN_API void SyncEquipment(const FGuid& OwnerId) const;
+	REN_API UEquipmentStorage* GetEquipment() const;
 
 protected:
 
@@ -51,12 +51,12 @@ protected:
 
 public:
 
-	static RSYSTEM_API UEquipmentSubsystem* Get(UWorld* World);
-	static RSYSTEM_API UEquipmentSubsystem* Get(UGameInstance* GameInstance);
+	static REN_API UEquipmentSubsystem* Get(UWorld* World);
+	static REN_API UEquipmentSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

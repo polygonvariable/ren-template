@@ -15,7 +15,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UAvatarStorage;
 class UAvatarAscensionSubsystem;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class IAscensionProvider;
 
 struct FAvatarInstance;
@@ -87,7 +87,7 @@ protected:
 	void HandleRankUp();
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 

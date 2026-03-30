@@ -11,7 +11,7 @@
 #include "IAssetComposition.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
+#define REN_API RCOREASSET_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -29,7 +29,7 @@ class UAssetCompositionInterface : public UInterface
 /**
  *
  */
-class RCORE_API IAssetCompositionInterface
+class REN_API IAssetCompositionInterface
 {
 
 	GENERATED_BODY()
@@ -44,5 +44,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

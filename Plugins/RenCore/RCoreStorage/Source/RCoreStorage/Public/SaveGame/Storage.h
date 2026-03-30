@@ -9,8 +9,7 @@
 #include "Storage.generated.h"
 
 // Module Macros
-#define RCORE_API RCORESTORAGE_API
-
+#define REN_API RCORESTORAGE_API
 
 
 /**
@@ -27,12 +26,12 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnStorageUpdated);
 	FOnStorageUpdated OnStorageUpdated;
 
-	RCORE_API virtual void InitializeDefaults();
-	RCORE_API virtual void InitializeStorage();
-	RCORE_API virtual void DeinitializeStorage();
+	REN_API virtual void InitializeDefaults();
+	REN_API virtual void InitializeStorage();
+	REN_API virtual void DeinitializeStorage();
 
-	RCORE_API virtual void NetDeserialize(TSharedPtr<FJsonObject>& JsonObject);
-	RCORE_API bool GetForceSave() const;
+	REN_API virtual void NetDeserialize(TSharedPtr<FJsonObject>& JsonObject);
+	REN_API bool GetForceSave() const;
 
 protected:
 
@@ -42,7 +41,6 @@ protected:
 };
 
 
-
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

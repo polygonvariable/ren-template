@@ -25,7 +25,7 @@ void UAvatarDashboardUI::ResetDetail()
 	AvatarDetail->ResetDetail();
 }
 
-void UAvatarDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UAvatarDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	AvatarDetail->InitializeAssetDetail(Asset);
 }

@@ -12,7 +12,7 @@
 class UAssetCollectionUI;
 class UAssetDetailUI;
 class UAssetEntry;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -42,7 +42,7 @@ protected:
 
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
 	// ~ End of UAssetDashboardUI

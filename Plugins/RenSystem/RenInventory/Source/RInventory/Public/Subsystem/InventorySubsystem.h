@@ -6,13 +6,13 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Interface/IAssetInstanceCollectionProvider.h"
+#include "Interface/AssetInstanceCollectionProvider.h"
 
 // Generated Headers
 #include "InventorySubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 class UStorage;
@@ -33,7 +33,7 @@ class UInventorySubsystem : public UGameInstanceSubsystem, public IAssetInstance
 
 public:
 
-	RSYSTEM_API UInventoryStorage* GetInventory(const FName& InventoryId) const;
+	REN_API UInventoryStorage* GetInventory(const FName& InventoryId) const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
@@ -56,12 +56,12 @@ protected:
 
 public:
 
-	static RSYSTEM_API UInventorySubsystem* Get(UWorld* World);
-	static RSYSTEM_API UInventorySubsystem* Get(UGameInstance* GameInstance);
+	static REN_API UInventorySubsystem* Get(UWorld* World);
+	static REN_API UInventorySubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -7,7 +7,6 @@
 #include "Storage/EquipmentStorage.h"
 
 
-
 UEquipmentSettings::UEquipmentSettings(const FObjectInitializer& ObjectInitializer)
 {
 	CategoryName = TEXT("Ren Project");

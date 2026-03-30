@@ -3,14 +3,13 @@
 #pragma once
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
-
+#define REN_API RCOREASSET_API
 
 
 /**
  *
  */
-class RCORE_API FAssetFilterProperty
+class REN_API FAssetFilterProperty
 {
 
 public:
@@ -21,5 +20,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

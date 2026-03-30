@@ -10,7 +10,7 @@
 #include "FilterContext.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREFILTER_API
+#define REN_API RCOREFILTER_API
 
 // Forward Declarations
 
@@ -51,14 +51,14 @@ private:
 	bool GetTypedValue(FName Key, int& OutValue) const;
 	bool GetTypedValue(FName Key, FPrimaryAssetId& OutValue) const;
 
-	RCORE_API void SetTypedValue(FName Key, FName Value);
-	RCORE_API void SetTypedValue(FName Key, int Value);
-	RCORE_API void SetTypedValue(FName Key, FPrimaryAssetId Value);
+	REN_API void SetTypedValue(FName Key, FName Value);
+	REN_API void SetTypedValue(FName Key, int Value);
+	REN_API void SetTypedValue(FName Key, FPrimaryAssetId Value);
 
 };
 
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

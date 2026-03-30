@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Engine Headers
+#include "GameplayTagContainer.h"
+
 // Project Headers
 #include "Asset/Category/EnhanceableAsset.h"
 #include "Interface/IEquipmentProvider.h"

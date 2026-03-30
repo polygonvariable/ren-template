@@ -9,7 +9,7 @@
 #include "TaskSubsystem.generated.h"
 
 // Module Macros
-#define RCORE_API RCORETASK_API
+#define REN_API RCORETASK_API
 
 // Forward Declarations
 class UTaskObject;
@@ -29,7 +29,7 @@ class UTaskSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RCORE_API UTaskObject* CreateTask(FGuid TaskId, TSubclassOf<UTaskObject> TaskClass);
+	REN_API UTaskObject* CreateTask(FGuid TaskId, TSubclassOf<UTaskObject> TaskClass);
 
 	template<class T>
 	T* CreateTask(FGuid TaskId)
@@ -37,8 +37,8 @@ public:
 		return Cast<T>(CreateTask(TaskId, T::StaticClass()));
 	}
 
-	RCORE_API void StartTask(FGuid TaskId);
-	RCORE_API void StopTask(FGuid TaskId);
+	REN_API void StartTask(FGuid TaskId);
+	REN_API void StopTask(FGuid TaskId);
 
 protected:
 
@@ -65,12 +65,12 @@ protected:
 
 public:
 
-	RCORE_API static UTaskSubsystem* Get(UWorld* World);
-	RCORE_API static UTaskSubsystem* Get(UGameInstance* GameInstance);
+	REN_API static UTaskSubsystem* Get(UWorld* World);
+	REN_API static UTaskSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

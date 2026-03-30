@@ -9,7 +9,7 @@
 #include "AssetDragUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
 class UImage;
@@ -44,5 +44,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

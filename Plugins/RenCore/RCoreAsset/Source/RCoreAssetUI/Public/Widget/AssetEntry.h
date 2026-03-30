@@ -9,7 +9,7 @@
 #include "AssetEntry.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 
 
@@ -28,16 +28,16 @@ public:
 	FInstancedStruct AssetSubDetail;
 
 
-	RCORE_API virtual FGuid GetAssetInstanceId() const;
-	RCORE_API virtual void ResetData();
+	REN_API virtual FGuid GetAssetInstanceId() const;
+	REN_API virtual void ResetData();
 
 	// ~ UObject
-	RCORE_API virtual void BeginDestroy() override;
+	REN_API virtual void BeginDestroy() override;
 	// ~ End of UObject
 
 };
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

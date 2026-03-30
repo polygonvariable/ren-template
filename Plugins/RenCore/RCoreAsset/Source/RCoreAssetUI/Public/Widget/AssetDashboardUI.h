@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetUI.h"
 
@@ -11,7 +9,7 @@
 #include "AssetDashboardUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
 class UButton;
@@ -27,23 +25,34 @@ class UAssetDashboardUI : public UAssetUI
 
 	GENERATED_BODY()
 
+public:
+
+	// ~ IAssetWidget
+	REN_API virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
+	REN_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
+	// ~ End of IAssetWidget
+
 protected:
 
 	UPROPERTY(Meta = (BindWidgetOptional))
 	TObjectPtr<UButton> CloseButton = nullptr;
 
 
+	UFUNCTION(BlueprintNativeEvent)
+	REN_API void GetAssetWidgets(TArray<UWidget*>& Widgets);
+	REN_API virtual void GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets);
+
 	UFUNCTION(BlueprintCallable)
-	RCORE_API virtual void RedirectToWidget(UPARAM(Meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
+	REN_API virtual void RedirectToWidget(UPARAM(Meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
 
 	// ~ UUserWidget
-	RCORE_API virtual void NativeConstruct() override;
-	RCORE_API virtual void NativeDestruct() override;
+	REN_API virtual void NativeConstruct() override;
+	REN_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 };
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

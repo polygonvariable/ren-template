@@ -8,12 +8,12 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/InventoryInstance.h"
-#include "Filter/FilterLeafCriterion.h"
-#include "Interface/IAscensionProvider.h"
+#include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -121,7 +121,7 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryInstance* Item
 
 	RankItemCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetFilter = RankItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+	UFilterCriterion_Asset* AssetFilter = RankItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetFilter))
 	{
 		AssetFilter->Included.Empty();
@@ -196,7 +196,7 @@ void UInventoryAscensionDashboardUI::HandleOnItemUpdated()
 
 
 
-void UInventoryAscensionDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	InventoryDetail->InitializeAssetDetail(Asset);
 
@@ -205,7 +205,7 @@ void UInventoryAscensionDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* 
 	{
 		ActiveAscensionProvider = AscensionProvider;
 
-		UFilterAssetCriterion* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+		UFilterCriterion_Asset* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 		if (IsValid(AssetIdFilter))
 		{
 			AssetIdFilter->Included.Empty();

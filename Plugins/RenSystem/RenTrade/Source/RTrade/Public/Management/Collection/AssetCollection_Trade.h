@@ -12,7 +12,7 @@
 #include "AssetCollection_Trade.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADE_API
+#define REN_API RTRADE_API
 
 // Forward Declarations
 class FObjectPreSaveContext;
@@ -31,15 +31,15 @@ class UAssetCollection_Trade : public UAssetCollection
 
 public:
 
-	RSYSTEM_API virtual const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& GetAssetList() const;
-	RSYSTEM_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail_Trade& OutDetail) const;
+	REN_API virtual const TMap<UCoreDataAsset*, FAssetDetail_Trade>& GetAssetList() const;
+	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail_Trade& OutDetail) const;
 
 	// ~ UAssetCollection
-	RSYSTEM_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
-	RSYSTEM_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
-	RSYSTEM_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
-	RSYSTEM_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
-	RSYSTEM_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
+	REN_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
+	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
+	REN_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
 	// ~ End of UAssetCollection
 
 	// ~ UObject
@@ -56,12 +56,12 @@ protected:
 #endif
 
 	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List"))
-	TMap<URPrimaryDataAsset*, FAssetDetail_Trade> AssetList;
+	TMap<UCoreDataAsset*, FAssetDetail_Trade> AssetList;
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

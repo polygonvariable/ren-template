@@ -8,9 +8,9 @@
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/InventoryAsset.h"
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/InventoryInstance.h"
-#include "Interface/IAscensionProvider.h"
+#include "Interface/AscensionProvider.h"
 #include "Interface/IAssetComposition.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
@@ -78,7 +78,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -86,7 +86,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UTask_GrantItemExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
 		{
 			UTask_GrantItemExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -95,7 +95,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 				return;
 			}
 
-			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
+			const TArray<UCoreDataAsset*>& Assets = Result.Get();
 			This->TargetAsset = Cast<UInventoryAsset>(Assets[0]);
 			This->MaterialAsset = Assets[1];
 

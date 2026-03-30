@@ -25,6 +25,8 @@ void UAssetCollectionUI::DisplayEntries()
 
 void UAssetCollectionUI::ClearEntries(bool bRegenerate)
 {
+	EntryList->ClearSelection();
+
 	const TArray<UObject*>& Items = EntryList->GetListItems();
 	for (UObject* Item : Items)
 	{
@@ -163,25 +165,25 @@ UAssetEntry* UAssetCollectionUI::GetEntryFromPool(const TSubclassOf<UAssetEntry>
 
 void UAssetCollectionUI::HandleOnItemSelectionChanged(UObject* Object)
 {
-	if (_SelectedEntry.Get() == Object)
-	{
-		PRINT_WARNING(LogTemp, 2.0f, TEXT("already selected"));
-		return;
-	}
-
 	const UAssetEntry* Entry = Cast<UAssetEntry>(Object);
 	if (IsValid(Entry))
 	{
-		_SelectedEntry = TWeakObjectPtr<const UAssetEntry>(Entry);
+		if (Entry->AssetId == _SelectedAssetId)
+		{
+			PRINT_WARNING(LogTemp, 2.0f, TEXT("already selected"));
+			return;
+		}
 
+		_SelectedAssetId = Entry->AssetId;
 		OnSelectionChanged.ExecuteIfBound(Entry);
 	}
 	else
 	{
-		_SelectedEntry.Reset();
-		_SelectedAssetId = FPrimaryAssetId();
-
-		OnSelectionCleared.ExecuteIfBound();
+		if (bAutoClearSelection)
+		{
+			_SelectedAssetId = FPrimaryAssetId();
+			OnSelectionCleared.ExecuteIfBound();
+		}
 	}
 }
 

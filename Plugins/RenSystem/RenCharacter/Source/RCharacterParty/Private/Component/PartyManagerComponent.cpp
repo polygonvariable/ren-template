@@ -5,7 +5,6 @@
 
 // Engine Headers
 #include "GameFramework/Character.h"
-#include "UObject/ObjectSaveContext.h"
 
 // Project Headers
 #include "Actor/RCharacterBase.h"
@@ -16,7 +15,6 @@
 #include "Settings/PartySettings.h"
 #include "Storage/PartyStorage.h"
 #include "Subsystem/PartySubsystem.h"
-
 
 
 UPartyManagerComponent::UPartyManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -38,8 +36,8 @@ void UPartyManagerComponent::BeginPlay()
 	PartySubsystem = UPartySubsystem::Get(GetWorld());
 	if (IsValid(PartySubsystem))
 	{
-		PartySubsystem->RegisterManager(this);
-		PartyStorage = PartySubsystem->GetPartyCollection();
+		PartySubsystem->OnSyncParty.AddUObject(this, &UPartyManagerComponent::SpawnParty);
+		PartyStorage = PartySubsystem->GetPartyStorage();
 	}
 
 	Super::BeginPlay();
@@ -49,7 +47,7 @@ void UPartyManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (IsValid(PartySubsystem))
 	{
-		PartySubsystem->UnregisterManager();
+		PartySubsystem->OnSyncParty.RemoveAll(this);
 	}
 
 	AssetManager = nullptr;
@@ -178,7 +176,6 @@ void UPartyManagerComponent::SpawnCharacter(UWorld* World, const UCharacterAsset
 	}
 
 	FTransform SpawnTransform;
-
 	ARCharacterBase* Character = World->SpawnActorDeferred<ARCharacterBase>(CharacterClass, SpawnTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (!IsValid(Character))
 	{

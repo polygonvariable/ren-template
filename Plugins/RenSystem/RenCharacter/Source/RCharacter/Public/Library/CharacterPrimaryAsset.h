@@ -3,14 +3,14 @@
 #pragma once
 
 // Module Macros
-#define RSYSTEM_API RCHARACTER_API
+#define REN_API RCHARACTER_API
 
 
 
 /**
  *
  */
-class RSYSTEM_API FCharacterPrimaryAsset
+class REN_API FCharacterPrimaryAsset
 {
 
 public:
@@ -27,5 +27,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

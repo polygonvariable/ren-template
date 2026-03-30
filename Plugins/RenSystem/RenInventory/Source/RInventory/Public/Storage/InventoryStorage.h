@@ -4,30 +4,28 @@
 
 // Project Headers
 #include "Definition/Runtime/InventoryStack.h"
-#include "Interface/IAscensionInstanceData.h"
-#include "Interface/IAssetInstanceCollection.h"
+#include "Interface/AscensionInstanceProvider.h"
+#include "Interface/AssetInstanceCollection.h"
 #include "SaveGame/Storage.h"
 
 // Generated Headers
 #include "InventoryStorage.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 class UAssetManager;
 class UFilterCriterion;
-
 struct FInventoryQueryRule;
 struct FInventorySortEntry;
-
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UInventoryStorage : public UStorage, public IAssetInstanceCollection, public IAscensionInstanceData
+class UInventoryStorage : public UStorage, public IAssetInstanceCollection, public IAscensionInstanceProvider
 {
 
 	GENERATED_BODY()
@@ -35,37 +33,38 @@ class UInventoryStorage : public UStorage, public IAssetInstanceCollection, publ
 public:
 
 	// ~ UStorage
-	RSYSTEM_API virtual void InitializeDefaults() override;
+	virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
 	// ~ IAssetInstanceCollection
-	RSYSTEM_API virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+	REN_API virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	REN_API virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
 
-	RSYSTEM_API virtual bool RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
-	RSYSTEM_API virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
+	REN_API virtual bool RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
+	REN_API virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) override;
 
-	RSYSTEM_API virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
-	RSYSTEM_API virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) override;
+	REN_API virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) override;
+	REN_API virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) override;
 
-	RSYSTEM_API virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
-	RSYSTEM_API virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
+	REN_API virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
+	REN_API virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
 
 	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() override;
 	// ~ End of IAssetInstanceCollection
 
-	// ~ IAscensionInstanceData
+	// ~ IAscensionInstanceProvider
 	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const override;
-	// ~ End of IAscensionInstanceData
+	virtual bool UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback) override;
+	// ~ End of IAscensionInstanceProvider
 
-	RSYSTEM_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback);
-	RSYSTEM_API bool UpdateInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FInventoryInstance*)> Callback);
+	REN_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback);
+	REN_API bool UpdateInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FInventoryInstance*)> Callback);
 
-	RSYSTEM_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
-	RSYSTEM_API const FInventoryInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
-	RSYSTEM_API const FInventoryInstance* GetInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const;
+	REN_API int GetTotalQuantity(const FPrimaryAssetId& AssetId) const;
+	REN_API const FInventoryInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
+	REN_API const FInventoryInstance* GetInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const;
 
-	RSYSTEM_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
+	REN_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
 
 protected:
 
@@ -100,7 +99,6 @@ protected:
 };
 
 
-
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

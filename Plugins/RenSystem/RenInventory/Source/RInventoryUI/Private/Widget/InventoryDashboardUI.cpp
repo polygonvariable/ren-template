@@ -3,13 +3,12 @@
 // Parent Header
 #include "Widget/InventoryDashboardUI.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"
+#include "Widget/AssetFilterUI.h"
 
 
 
@@ -23,17 +22,19 @@ void UInventoryDashboardUI::InitializeDetail()
 	InventoryCollection->DisplayEntries();
 }
 
-void UInventoryDashboardUI::InitializeAssetDetail(const URPrimaryDataAsset* Asset)
-{
-	UAssetEntry* Entry = InventoryCollection->GetSelectedEntry();
-
-	InventoryDetail->InitializeEntryDetail(Entry);
-	InventoryDetail->InitializeAssetDetail(Asset);
-}
-
 void UInventoryDashboardUI::ResetDetail()
 {
 	InventoryDetail->ResetDetail();
+}
+
+void UInventoryDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+{
+	InventoryDetail->InitializeAssetDetail(Asset);
+}
+
+void UInventoryDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
+{
+	InventoryDetail->InitializeEntryDetail(Entry);
 }
 
 void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
@@ -60,6 +61,8 @@ void UInventoryDashboardUI::NativeConstruct()
 {
 	InventoryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
 	InventoryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
+
+	InventoryFilter->SetTargetCollectionUI(InventoryCollection);
 	
 	Super::NativeConstruct();
 }

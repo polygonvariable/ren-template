@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Module Macros
-#define RCORE_API RCOREMATERIAL_API
+#define REN_API RCOREMATERIAL_API
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
@@ -21,13 +21,13 @@ class MaterialLibrary
 
 public:
 
-	RCORE_API static void LerpScalarParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, float Target, float Alpha);
-	RCORE_API static void LerpVectorParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, const FLinearColor& Target, float Alpha);
+	REN_API static void LerpScalarParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, float Target, float Alpha);
+	REN_API static void LerpVectorParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, const FLinearColor& Target, float Alpha);
 
 };
 
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

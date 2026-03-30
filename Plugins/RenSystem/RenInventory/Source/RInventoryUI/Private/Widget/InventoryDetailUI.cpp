@@ -8,7 +8,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/InventoryInstance.h"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
@@ -52,7 +52,7 @@ void UInventoryDetailUI::RefreshDetail()
 	SetCustomDetails(Item, Quantity);
 }
 
-void UInventoryDetailUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UInventoryDetailUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

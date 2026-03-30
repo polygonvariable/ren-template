@@ -11,7 +11,7 @@
 // Generated Headers
 
 // Module Macros
-#define RCORE_API RCORESTORAGE_API
+#define REN_API RCORESTORAGE_API
 
 // Forward Declarations
 class UStorage;
@@ -33,13 +33,13 @@ public:
     FString Url;
     FTaskCallback Callback;
 
-    RCORE_API bool IsValid() const;
-    RCORE_API bool IsUrlValid() const;
+    REN_API bool IsValid() const;
+    REN_API bool IsUrlValid() const;
 
 };
 
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

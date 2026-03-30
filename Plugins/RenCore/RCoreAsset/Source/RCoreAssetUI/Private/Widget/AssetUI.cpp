@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Manager/RAssetManager.inl"
@@ -50,7 +50,7 @@ void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
 	_ActiveAssetId = AssetId;
 	_ActiveLoadId = FGuid::NewGuid();
 
-	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(_ActiveLoadId, _ActiveAssetId);
+	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(_ActiveLoadId, _ActiveAssetId);
 	if (!Future.IsValid())
 	{
 		LOG_ERROR(LogAsset, TEXT("Failed to create Future"));
@@ -58,12 +58,12 @@ void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
 	}
 
 	TWeakObjectPtr<UAssetUI> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{
 			UAssetUI* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
-				const URPrimaryDataAsset* Asset = Result.Get();
+				const UCoreDataAsset* Asset = Result.Get();
 
 				This->_ActiveAsset = Asset;
 				This->InitializeAssetDetail(Asset);
@@ -72,7 +72,7 @@ void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
 	);
 }
 
-void UAssetUI::InitializeAssetDetail(const URPrimaryDataAsset* Asset)
+void UAssetUI::InitializeAssetDetail(const UCoreDataAsset* Asset)
 {
 	if (IsValid(Asset))
 	{
@@ -91,12 +91,12 @@ const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 	return _ActiveAssetId;
 }
 
-const URPrimaryDataAsset* UAssetUI::GetActiveAsset() const
+const UCoreDataAsset* UAssetUI::GetActiveAsset() const
 {
 	return _ActiveAsset.Get();
 }
 
-void UAssetUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UAssetUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 
 }

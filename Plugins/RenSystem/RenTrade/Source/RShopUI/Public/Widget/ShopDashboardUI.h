@@ -12,7 +12,7 @@
 
 // Forward Declarations
 class UAssetCollection;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class UShopSubsystem;
 
 
@@ -39,7 +39,7 @@ protected:
 	void HandlePurchase();
 
 	// ~ UTradeDashboardUI
-	virtual const UAssetCollection* GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const override;
+	virtual const UAssetCollection* GetTradeMaterialCollection(const UCoreDataAsset* Asset) const override;
 	// ~ End of UTradeDashboardUI
 
 	// ~ UUserWidget

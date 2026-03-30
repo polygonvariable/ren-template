@@ -8,6 +8,8 @@
 // Project Headers
 
 
+DEFINE_LOG_CATEGORY(LogAscension);
+
 // ~ Storage
 DEFINE_LOG_CATEGORY(LogStorage);
 // ~ End of Storage
@@ -55,4 +57,8 @@ DEFINE_LOG_CATEGORY(LogAvatar);
 DEFINE_LOG_CATEGORY(LogAvatarAscension);
 DEFINE_LOG_CATEGORY(LogCharacterParty);
 // ~ End of Avatar Categories
+
+// ~ Equipment Categories
+DEFINE_LOG_CATEGORY(LogEquipment);
+// ~ End of Equipment Categories
 

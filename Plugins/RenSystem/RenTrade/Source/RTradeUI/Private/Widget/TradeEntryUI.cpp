@@ -8,12 +8,12 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Widget/TradeEntry.h"
 
 
 
-void UTradeEntryUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UTradeEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

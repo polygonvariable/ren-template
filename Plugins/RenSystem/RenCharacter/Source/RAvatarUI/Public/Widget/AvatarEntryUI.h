@@ -9,7 +9,7 @@
 #include "AvatarEntryUI.generated.h"
 
 // Forward Declarations
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -25,7 +25,7 @@ class UAvatarEntryUI : public UAssetEntryUI
 protected:
 
 	// ~ UAssetEntryUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	// ~ End of UAssetEntryUI
 
 };

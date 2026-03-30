@@ -11,7 +11,7 @@
 #include "InventoryFilterUI.generated.h"
 
 // Forward Declarations
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -29,7 +29,7 @@ class UInventoryFilterUI : public UAssetFilterUI
 protected:
 
 	// ~ UAssetFilterUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	// virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	// ~ End of UAssetFilterUI
 
 };

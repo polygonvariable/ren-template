@@ -2,24 +2,15 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Generated Headers
 #include "PartyManagerComponent.generated.h"
 
 // Forward Declarations
-class UAbilitySystemComponent;
-class UGameplayEffect;
 class UCharacterAsset;
 class URAssetManager;
 class UPartySubsystem;
 class UPartyStorage;
 class ARCharacterBase;
-class FObjectPreSaveContext;
-class UCharacterAsset;
-
-struct FGameplayEventData;
 
 
 /**
@@ -55,7 +46,7 @@ public:
 protected:
 
 	UPROPERTY()
-	URAssetManager* AssetManager;
+	TObjectPtr<URAssetManager> AssetManager;
 
 	UPROPERTY()
 	TObjectPtr<UPartySubsystem> PartySubsystem;

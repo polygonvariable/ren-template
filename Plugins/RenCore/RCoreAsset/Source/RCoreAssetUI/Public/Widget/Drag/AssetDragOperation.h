@@ -9,7 +9,7 @@
 #include "AssetDragOperation.generated.h"
 
 // Forward Declarations
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -31,7 +31,7 @@ public:
 	FGuid AssetInstanceId;
 
 	UPROPERTY(BlueprintReadOnly)
-	TObjectPtr<const URPrimaryDataAsset> DataAsset;
+	TObjectPtr<const UCoreDataAsset> DataAsset;
 
 };
 

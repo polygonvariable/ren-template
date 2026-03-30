@@ -13,8 +13,7 @@ class UButton;
 class UAssetCollectionUI;
 class UAssetDetailUI;
 class UAssetEntry;
-class URPrimaryDataAsset;
-
+class UCoreDataAsset;
 
 
 /**
@@ -28,12 +27,8 @@ class UPartyDashboardUI : public UAssetDashboardUI
 
 public:
 
-	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UButton> SpawnButton = nullptr;
-
-
 	UFUNCTION()
-	void ConfirmParty();
+	void SyncParty();
 
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
@@ -42,7 +37,11 @@ public:
 protected:
 
 	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UButton> SyncButton = nullptr;
+
+	UPROPERTY()
 	TObjectPtr<UAssetCollectionUI> AvatarCollection = nullptr;
+
 
 	// ~ UUserWidget
 	virtual void NativeConstruct() override;

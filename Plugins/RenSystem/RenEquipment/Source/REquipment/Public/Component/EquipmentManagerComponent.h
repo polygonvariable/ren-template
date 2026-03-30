@@ -3,13 +3,12 @@
 #pragma once
 
 // Engine Headers
-#include "Definition/AscensionData.h"
 #include "GameFramework/Actor.h"
 #include "GameplayTagContainer.h"
 
 // Project Headers
 #include "Definition/AssetQuerySource.h"
-#include "Interface/IActorFreeList.h"
+#include "Definition/EquipmentSpawnData.h"
 
 // Generated Headers
 #include "EquipmentManagerComponent.generated.h"
@@ -17,67 +16,10 @@
 // Forward Declarations
 class FObjectPreSaveContext;
 class URAssetManager;
-class URPrimaryDataAsset;
 class UEquipmentStorage;
 class UEquipmentSubsystem;
 class UActorFreeListSubsystem;
-class IAssetInstanceCollection;
-
-
-
-USTRUCT(BlueprintType)
-struct FEquipmentSpawnData
-{
-
-	GENERATED_BODY()
-
-public:
-
-	FEquipmentSpawnData() {};
-
-#if WITH_EDITORONLY_DATA
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<URPrimaryDataAsset> DataAsset;
-
-#endif
-
-	UPROPERTY()
-	FPrimaryAssetId AssetId;
-
-	UPROPERTY(EditAnywhere)
-	FGameplayTag EquipmentSlot;
-
-	UPROPERTY(EditAnywhere)
-	FGuid EquipmentId;
-
-	UPROPERTY(EditAnywhere)
-	FAscensionData AscensionData;
-
-
-	void Reset();
-
-};
-
-
-USTRUCT(BlueprintType)
-struct FEquipmentSpawnedData
-{
-
-	GENERATED_BODY()
-
-public:
-
-	FEquipmentSpawnedData() {};
-
-	UPROPERTY(VisibleAnywhere)
-	FEquipmentSpawnData Data;
-
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<AEquipmentActor> Actor;
-
-};
-
+class AEquipmentActor;
 
 
 /**
@@ -147,8 +89,7 @@ protected:
 
 	void SyncOwnerEquipment(const FGuid& InOwnerId);
 
-
-	void FetchSpawnDataFromInstance();
+	void GetInstancedSpawnData();
 	void SpawnEquipment_Internal();
 
 private:
@@ -157,48 +98,3 @@ private:
 
 };
 
-
-UCLASS(Abstract)
-class AEquipmentActor : public AActor, public IActorFreeList
-{
-
-	GENERATED_BODY()
-
-public:
-	
-	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<const URPrimaryDataAsset> EquipmentAsset;
-
-	UPROPERTY(VisibleAnywhere)
-	FGuid OwnerId;
-
-	UPROPERTY(VisibleAnywhere)
-	FEquipmentSpawnData SpawnData;
-
-
-	void PreInitializeEquipment();
-	void InitializeEquipment();
-	void DeinitializeEquipment();
-
-	void RefreshEquipment();
-
-	// ~ IActorFreeList
-	virtual AActor* GetNextNode() const override;
-	virtual void SetNextNode(AActor* Node) override;
-	// ~ End of IActorFreeList
-	
-	// ~ AActor
-	virtual void BeginPlay() override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	// ~ End of AActor
-
-protected:
-
-	IAssetInstanceCollection* InstanceCollection;
-
-private:
-
-	UPROPERTY()
-	AEquipmentActor* _NextNode = nullptr;
-
-};

@@ -13,7 +13,7 @@
 #include "ShopStorage.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RSHOP_API
+#define REN_API RSHOP_API
 
 // Forward Declarations
 
@@ -34,9 +34,9 @@ public:
 	FOnShopUpdated OnShopUpdated;
 
 
-	RSYSTEM_API const FShopData* GetItem(const FTradeKey& TradeKey) const;
-	RSYSTEM_API bool AddItem(const FTradeKey& TradeKey);
-	RSYSTEM_API void ResetItems();
+	REN_API const FShopData* GetItem(const FTradeKey& TradeKey) const;
+	REN_API bool AddItem(const FTradeKey& TradeKey);
+	REN_API void ResetItems();
 
 protected:
 
@@ -48,5 +48,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -9,7 +9,10 @@
 #include "IEquipmentProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREEQUIPMENT_API
+#define REN_API RCOREEQUIPMENT_API
+
+// Forward Declarations
+struct FGameplayTag;
 
 
 
@@ -24,7 +27,7 @@ class UEquipmentProvider : public UInterface
 /**
  * 
  */
-class RCORE_API IEquipmentProvider
+class REN_API IEquipmentProvider
 {
 
 	GENERATED_BODY()
@@ -40,5 +43,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

@@ -10,7 +10,7 @@
 #include "AssetGroup.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
+#define REN_API RCOREASSET_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -31,8 +31,8 @@ class UAssetGroup : public UObject
 
 public:
 
-	RCORE_API virtual const UAssetCollection* GetCollectionRule() const;
-	RCORE_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const;
+	REN_API virtual const UAssetCollection* GetCollectionRule() const;
+	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const;
 
 	template<typename T>
 	const T* GetCollectionRule() const
@@ -63,8 +63,8 @@ class UAssetGroup_Single : public UAssetGroup
 public:
 
 	// ~ UAssetCollectionGroup
-	RCORE_API virtual const UAssetCollection* GetCollectionRule() const override;
-	RCORE_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
+	REN_API virtual const UAssetCollection* GetCollectionRule() const override;
+	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
 	// ~ End of UAssetCollectionGroup
 
 protected:
@@ -89,8 +89,8 @@ class UAssetGroup_List : public UAssetGroup
 public:
 
 	// ~ UAssetCollectionGroup
-	RCORE_API virtual const UAssetCollection* GetCollectionRule() const override;
-	RCORE_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
+	REN_API virtual const UAssetCollection* GetCollectionRule() const override;
+	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
 	// ~ End of UAssetCollectionGroup
 
 protected:
@@ -103,5 +103,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

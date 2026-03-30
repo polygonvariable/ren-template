@@ -10,7 +10,7 @@
 #include "Asset/TradeAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
-#include "Filter/FilterLeafCriterion.h"
+#include "Filter/Criterion/FilterCriterion_Leaf.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
@@ -29,7 +29,7 @@ void UTradeDashboardUI::ResetDetail()
 }
 
 
-const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
+const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
 {
 	return nullptr;
 }
@@ -82,7 +82,7 @@ void UTradeDashboardUI::InitializeDetail()
 	);
 }
 
-void UTradeDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UTradeDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
 
@@ -97,7 +97,7 @@ void UTradeDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 
 	SecondaryCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+	UFilterCriterion_Asset* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetCriterion))
 	{
 		AssetCriterion->Included.Empty();

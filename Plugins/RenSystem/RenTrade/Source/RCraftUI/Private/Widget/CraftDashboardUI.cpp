@@ -30,7 +30,7 @@ void UCraftBuildDashboardUI::HandleCraft()
 	CraftSubsystem->CraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
 }
 
-const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
+const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
 {
 	if (!IsValid(CraftSubsystem))
 	{

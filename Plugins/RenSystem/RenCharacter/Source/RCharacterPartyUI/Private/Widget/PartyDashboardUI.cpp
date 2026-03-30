@@ -7,12 +7,8 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Settings/AvatarSettings.h"
 #include "Subsystem/PartySubsystem.h"
 #include "Widget/AssetCollectionUI.h"
-#include "Widget/AssetDetailUI.h"
-#include "Widget/AssetEntry.h"
-
 
 
 void UPartyDashboardUI::InitializeDetail()
@@ -22,25 +18,25 @@ void UPartyDashboardUI::InitializeDetail()
 	AvatarCollection->DisplayEntries();
 }
 
-void UPartyDashboardUI::ConfirmParty()
+void UPartyDashboardUI::SyncParty()
 {
 	UPartySubsystem* PartySubsystem = UPartySubsystem::Get(GetWorld());
-	if(IsValid(PartySubsystem))
+	if (IsValid(PartySubsystem))
 	{
-		PartySubsystem->RequestSpawnParty();
+		PartySubsystem->SyncParty();
 	}
 }
 
 void UPartyDashboardUI::NativeConstruct()
 {
-	SpawnButton->OnClicked.AddDynamic(this, &UPartyDashboardUI::ConfirmParty);
-
 	Super::NativeConstruct();
+
+	SyncButton->OnClicked.AddDynamic(this, &UPartyDashboardUI::SyncParty);
 }
 
 void UPartyDashboardUI::NativeDestruct()
 {
-	SpawnButton->OnClicked.RemoveAll(this);
+	SyncButton->OnClicked.RemoveAll(this);
 
 	Super::NativeDestruct();
 }

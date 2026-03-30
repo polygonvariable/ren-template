@@ -11,7 +11,7 @@
 #include "AscensionAsset.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASCENSION_API
+#define REN_API RCOREASCENSION_API
 
 // Forward Declarations
 
@@ -30,7 +30,7 @@ class UExperiencePointAsset : public UMetadataAsset
 
 public:
 
-	RCORE_API virtual int GetPoints(int Quantity) const;
+	REN_API virtual int GetPoints(int Quantity) const;
 
 protected:
 
@@ -42,5 +42,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

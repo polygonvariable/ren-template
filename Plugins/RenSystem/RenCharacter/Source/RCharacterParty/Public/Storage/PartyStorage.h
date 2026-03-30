@@ -9,8 +9,7 @@
 #include "PartyStorage.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCHARACTERPARTY_API
-
+#define REN_API RCHARACTERPARTY_API
 
 
 /**
@@ -24,19 +23,19 @@ class UPartyStorage : public UStorage
 
 public:
 
-	RSYSTEM_API FVector GetPartyLocation(const FName& Level) const;
-	RSYSTEM_API void SetPartyLocation(const FName& Level, const FVector& Location);
+	REN_API FVector GetPartyLocation(const FName& Level) const;
+	REN_API void SetPartyLocation(const FName& Level, const FVector& Location);
 
-	RSYSTEM_API const TArray<FPrimaryAssetId>& GetCharacters() const;
-	RSYSTEM_API const TArray<FPrimaryAssetId>& GetTemporaryCharacters() const;
-	RSYSTEM_API void GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) const;
+	REN_API const TArray<FPrimaryAssetId>& GetCharacters() const;
+	REN_API const TArray<FPrimaryAssetId>& GetTemporaryCharacters() const;
+	REN_API void GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) const;
 
-	RSYSTEM_API FPrimaryAssetId GetCharacterAtSlot(int Slot) const;
-	RSYSTEM_API bool SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId);
-	RSYSTEM_API bool ClearSlot(int Slot);
+	REN_API bool GetCharacterAtSlot(int Slot, FPrimaryAssetId& AssetId) const;
+	REN_API bool SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId);
+	REN_API bool RemoveCharacterFromSlot(int Slot);
 
 	// ~ UStorage
-	RSYSTEM_API virtual void InitializeDefaults() override;
+	virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
 protected:
@@ -55,5 +54,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -7,14 +7,14 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Asset/TradeAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/CraftData.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Interface/IAssetInstanceCollection.h"
-#include "Interface/IAssetInstanceCollectionProvider.h"
+#include "Interface/AssetInstanceCollection.h"
+#include "Interface/AssetInstanceCollectionProvider.h"
 #include "Interface/ICraftProvider.h"
 #include "Library/AssetInstanceUtil.h"
 #include "Management/AssetCollection.h"
@@ -64,7 +64,7 @@ void UTask_CraftItem::Step_LoadAsset()
 	Assets.Add(CraftAssetId);
 	Assets.Add(TargetAssetId);
 
-	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -72,7 +72,7 @@ void UTask_CraftItem::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UTask_CraftItem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
 		{
 			UTask_CraftItem* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -81,7 +81,7 @@ void UTask_CraftItem::Step_LoadAsset()
 				return;
 			}
 
-			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
+			const TArray<UCoreDataAsset*>& Assets = Result.Get();
 
 			This->TradeAsset = Cast<UTradeAsset>(Assets[0]);
 			This->TargetAsset = Assets[1];
@@ -156,7 +156,7 @@ void UTask_CraftItem::Step_CheckMaterialAsset()
 
 void UTask_CraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), MaterialAssetType);
+	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
@@ -229,7 +229,7 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 
 void UTask_CraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get target transaction interface"));

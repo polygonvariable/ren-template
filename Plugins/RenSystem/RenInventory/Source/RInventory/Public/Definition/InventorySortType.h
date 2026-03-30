@@ -40,13 +40,13 @@ struct FInventorySortEntry
 
 public:
 
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity) {}
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity, const FInventoryInstance* InItem) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity), Item(InItem) {}
+
 	FPrimaryAssetId AssetId;
 	FText ItemName;
 	int Quantity = 0;
 	const FInventoryInstance* Item = nullptr;
-
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity) {}
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity, const FInventoryInstance* InItem) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity), Item(InItem) {}
 
 };
 

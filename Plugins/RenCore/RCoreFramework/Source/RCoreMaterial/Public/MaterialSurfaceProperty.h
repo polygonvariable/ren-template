@@ -9,7 +9,7 @@
 #include "MaterialSurfaceProperty.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREMATERIAL_API
+#define REN_API RCOREMATERIAL_API
 
 
 
@@ -18,7 +18,7 @@
  * 
  */
 USTRUCT(BlueprintType)
-struct RCORE_API FMaterialSurfaceProperty
+struct REN_API FMaterialSurfaceProperty
 {
 
     GENERATED_BODY()
@@ -50,5 +50,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

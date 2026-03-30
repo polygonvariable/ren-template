@@ -11,7 +11,7 @@
 #include "ICraftProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCORECRAFT_API
+#define REN_API RCORECRAFT_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -31,7 +31,7 @@ class UCraftProvider : public UInterface
 /**
  *
  */
-class RCORE_API ICraftProvider
+class REN_API ICraftProvider
 {
 
 	GENERATED_BODY()
@@ -47,5 +47,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

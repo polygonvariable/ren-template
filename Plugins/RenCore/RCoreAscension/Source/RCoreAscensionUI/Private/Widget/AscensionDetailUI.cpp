@@ -10,7 +10,6 @@
 #include "Definition/AscensionData.h"
 
 
-
 void UAscensionDetailUI::InitializeDetail(const FAscensionData& Data)
 {
 	if (RankText) RankText->SetText(FText::FromString(FString::FromInt(Data.Rank)));

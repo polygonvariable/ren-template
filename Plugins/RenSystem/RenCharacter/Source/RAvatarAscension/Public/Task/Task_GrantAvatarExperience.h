@@ -15,7 +15,7 @@
 class UAvatarAsset;
 class UAvatarStorage;
 class URAssetManager;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -46,7 +46,7 @@ protected:
 	TObjectPtr<const UAvatarAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const URPrimaryDataAsset> MaterialAsset = nullptr;
+	TObjectPtr<const UCoreDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;

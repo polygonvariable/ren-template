@@ -9,12 +9,12 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Widget/InventoryEntry.h"
 
 
 
-void UInventoryEntryUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UInventoryEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
 	if (IsValid(InventoryAsset))

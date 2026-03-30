@@ -10,11 +10,11 @@
 #include "EquipmentStorage.generated.h"
 
 // Module Macros
-#define RSYSTEM_API REQUIPMENT_API
+#define REN_API REQUIPMENT_API
 
 // Forward Declarations
+class UAssetManager;
 struct FGameplayTag;
-
 
 
 /**
@@ -28,32 +28,27 @@ class UEquipmentStorage : public UStorage
 
 public:
 
-	// ~ UStorage
-	RSYSTEM_API virtual void InitializeDefaults();
-	// ~ End of UStorage
-
-
-	bool EquipmentHasOwner(const FGuid& EquipmentId) const;
-	FGuid GetEquipmentOwner(const FGuid& EquipmentId) const;
-
 	const TMap<FGameplayTag, FEquipmentKey>* GetOwnedEquipment(const FGuid& OwnerId) const;
 
-	RSYSTEM_API bool GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FPrimaryAssetId& OutEquipmentAssetId) const;
-	RSYSTEM_API bool GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FGuid& OutEquipmentId, FPrimaryAssetId& OutEquipmentAssetId) const;
-	RSYSTEM_API bool SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& EquipmentSlot, const FGuid& EquipmentId, const FPrimaryAssetId& EquipmentAssetId);
-	RSYSTEM_API bool RemoveEquipmentAtSlot(const FGuid& OwnerId, const FGameplayTag& SlotTag);
+	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FPrimaryAssetId& OutEquipmentAssetId) const;
+	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& EquipmentSlot, const FGuid& EquipmentId, const FPrimaryAssetId& EquipmentAssetId);
+	REN_API bool RemoveEquipmentFromSlot(const FGuid& OwnerId, const FGameplayTag& SlotTag);
+
+	// ~ UStorage
+	virtual void InitializeDefaults();
+	// ~ End of UStorage
 
 protected:
 
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FEquipmentInstance> EquipmentInstances; // InstanceId -> Equipment Instance
+	TMap<FGuid, FEquipmentInstance> EquipmentInstances; // OwnerId -> Equipment Instance
 
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FGuid> EquipmentRelation; // EquipmentId -> InstanceId
+	TMap<FGuid, FGuid> EquipmentRelation; // EquipmentId -> OwnerId
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

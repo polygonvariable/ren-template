@@ -8,12 +8,12 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/AvatarInstance.h"
-#include "Filter/FilterLeafCriterion.h"
-#include "Interface/IAscensionProvider.h"
+#include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -118,7 +118,7 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 
 	RankItemCollection->ClearSubDetails();
 
-	UFilterAssetCriterion* AssetFilter = RankItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+	UFilterCriterion_Asset* AssetFilter = RankItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 	if (IsValid(AssetFilter))
 	{
 		AssetFilter->Included.Empty();
@@ -188,7 +188,7 @@ void UAvatarAscensionDashboardUI::HandleRankUp()
 
 
 
-void UAvatarAscensionDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	AvatarDetail->InitializeAssetDetail(Asset);
 
@@ -197,7 +197,7 @@ void UAvatarAscensionDashboardUI::SetPrimaryDetail(const URPrimaryDataAsset* Ass
 	{
 		ActiveAscensionProvider = AscensionProvider;
 
-		UFilterAssetCriterion* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterAssetCriterion>(FAssetFilterProperty::AssetId);
+		UFilterCriterion_Asset* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 		if (IsValid(AssetIdFilter))
 		{
 			AssetIdFilter->Included.Empty();

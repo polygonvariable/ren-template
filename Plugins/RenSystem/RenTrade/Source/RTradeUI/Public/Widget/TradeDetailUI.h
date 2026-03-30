@@ -11,11 +11,11 @@
 #include "TradeDetailUI.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADEUI_API
+#define REN_API RTRADEUI_API
 
 // Forward Declarations
 class UAssetEntry;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -34,13 +34,13 @@ public:
 	FGuid TradeCollectionId;
 
 	// ~ UAssetDetailUI
-	RSYSTEM_API virtual void ResetDetail() override;
+	REN_API virtual void ResetDetail() override;
 	// ~ End of UAssetDetailUI
 
 protected:
 
 	// ~ UAssetDetailUI
-	RSYSTEM_API virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
 };
@@ -48,5 +48,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -6,28 +6,25 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "IAssetInstanceCollectionProvider.generated.h"
+#include "AssetInstanceCollectionProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETINSTANCE_API
+#define REN_API RCOREASSETINSTANCE_API
 
 // Forward Declarations
 class IAssetInstanceCollection;
 
 
-
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceCollectionProvider : public UInterface
 {
-
 	GENERATED_BODY()
-
 };
 
 /**
  *
  */
-class RCORE_API IAssetInstanceCollectionProvider
+class REN_API IAssetInstanceCollectionProvider
 {
 
 	GENERATED_BODY()
@@ -42,5 +39,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

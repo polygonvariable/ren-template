@@ -10,7 +10,7 @@
 #include "CraftData.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCRAFT_API
+#define REN_API RCRAFT_API
 
 
 
@@ -39,17 +39,17 @@ public:
 	FTimespan BatchProcessingTime;
 
 
-	RSYSTEM_API bool IsValid() const;
-	RSYSTEM_API void Reset();
-	RSYSTEM_API void Sanitize();
+	REN_API bool IsValid() const;
+	REN_API void Reset();
+	REN_API void Sanitize();
 
-	RSYSTEM_API int GetCompletedQuantity() const;
-	RSYSTEM_API FTimespan GetRemainingTime() const;
+	REN_API int GetCompletedQuantity() const;
+	REN_API FTimespan GetRemainingTime() const;
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

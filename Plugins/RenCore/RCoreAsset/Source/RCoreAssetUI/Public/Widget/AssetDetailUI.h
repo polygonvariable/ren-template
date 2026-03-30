@@ -11,7 +11,7 @@
 #include "AssetDetailUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
 class UImage;
@@ -32,7 +32,7 @@ class UAssetDetailUI : public UAssetUI
 public:
 
 	// ~ UAssetUI
-	RCORE_API virtual void ResetDetail() override;
+	REN_API virtual void ResetDetail() override;
 	// ~ End of UAssetUI
 
 protected:
@@ -54,7 +54,7 @@ protected:
 
 
 	// ~ UAssetUI
-	RCORE_API virtual void SwitchDetail(bool bPrimary);
+	REN_API virtual void SwitchDetail(bool bPrimary);
 	// ~ End of UAssetUI
 
 };
@@ -62,5 +62,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

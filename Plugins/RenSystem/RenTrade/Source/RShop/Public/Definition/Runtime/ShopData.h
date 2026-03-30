@@ -10,7 +10,7 @@
 #include "ShopData.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RSHOP_API
+#define REN_API RSHOP_API
 
 // Forward Declarations
 
@@ -35,14 +35,14 @@ public:
 	int PurchaseCount;
 
 
-	RSYSTEM_API bool IsValid() const;
-	RSYSTEM_API void Reset();
-	RSYSTEM_API void Sanitize();
+	REN_API bool IsValid() const;
+	REN_API void Reset();
+	REN_API void Sanitize();
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

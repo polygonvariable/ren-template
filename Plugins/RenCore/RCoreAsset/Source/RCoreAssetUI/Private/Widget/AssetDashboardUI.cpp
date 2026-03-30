@@ -15,6 +15,45 @@ void UAssetDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetCl
 
 }
 
+void UAssetDashboardUI::InitializeAssetDetail(const UCoreDataAsset* Asset)
+{
+	Super::InitializeAssetDetail(Asset);
+
+	TArray<UWidget*> Widgets;
+	GetAssetWidgets(Widgets);
+
+	for (UWidget* Widget : Widgets)
+	{
+		IAssetWidget* AssetWidget = Cast<IAssetWidget>(Widget);
+		if (AssetWidget)
+		{
+			AssetWidget->InitializeAssetDetail(Asset);
+		}
+	}
+}
+
+void UAssetDashboardUI::InitializeEntryDetail(const UAssetEntry* Entry)
+{
+	Super::InitializeEntryDetail(Entry);
+
+	//TArray<UWidget*> Widgets;
+	//GetAssetWidgets(Widgets);
+
+	//for (UWidget* Widget : Widgets)
+	//{
+	//	IAssetWidget* AssetWidget = Cast<IAssetWidget>(Widget);
+	//	if (AssetWidget)
+	//	{
+	//		AssetWidget->InitializeEntryDetail(Entry);
+	//	}
+	//}
+}
+
+void UAssetDashboardUI::GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets)
+{
+
+}
+
 void UAssetDashboardUI::NativeConstruct()
 {
 	if (IsValid(CloseButton)) CloseButton->OnClicked.AddDynamic(this, &UAssetDashboardUI::CloseWidget);

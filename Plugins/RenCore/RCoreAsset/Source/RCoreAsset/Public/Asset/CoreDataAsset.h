@@ -6,15 +6,14 @@
 #include "Engine/DataAsset.h"
 
 // Generated Headers
-#include "RPrimaryDataAsset.generated.h"
-
+#include "CoreDataAsset.generated.h"
 
 
 /**
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class URPrimaryDataAsset : public UPrimaryDataAsset
+class UCoreDataAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()

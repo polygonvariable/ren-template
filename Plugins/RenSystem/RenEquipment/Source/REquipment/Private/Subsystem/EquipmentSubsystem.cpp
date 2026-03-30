@@ -14,8 +14,6 @@
 #include "Storage/EquipmentStorage.h"
 
 
-
-
 void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerId) const
 {
 	return OnSyncEquipment.Broadcast(OwnerId);
@@ -53,7 +51,7 @@ bool UEquipmentSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 void UEquipmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	LOG_WARNING(LogTemp, TEXT("EquipmentSubsystem initialized"));
+	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem initialized"));
 
 	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::OnPreGameInitialized);
 }
@@ -63,7 +61,7 @@ void UEquipmentSubsystem::Deinitialize()
 	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
 	StorageProvider.Reset();
 
-	LOG_WARNING(LogTemp, TEXT("EquipmentSubsystem deinitialized"));
+	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem deinitialized"));
 	Super::Deinitialize();
 }
 

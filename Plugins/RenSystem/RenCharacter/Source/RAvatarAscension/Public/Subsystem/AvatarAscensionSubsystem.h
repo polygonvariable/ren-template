@@ -12,7 +12,7 @@
 #include "AvatarAscensionSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RAVATARASCENSION_API
+#define REN_API RAVATARASCENSION_API
 
 // Forward Declarations
 
@@ -29,8 +29,8 @@ class UAvatarAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API void AddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
-	RSYSTEM_API void AddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FTaskCallback Callback);
+	REN_API void AddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
+	REN_API void AddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FTaskCallback Callback);
 
 protected:
 
@@ -42,13 +42,13 @@ protected:
 
 public:
 
-	RSYSTEM_API static UAvatarAscensionSubsystem* Get(UWorld* World);
-	RSYSTEM_API static UAvatarAscensionSubsystem* Get(UGameInstance* GameInstance);
+	REN_API static UAvatarAscensionSubsystem* Get(UWorld* World);
+	REN_API static UAvatarAscensionSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

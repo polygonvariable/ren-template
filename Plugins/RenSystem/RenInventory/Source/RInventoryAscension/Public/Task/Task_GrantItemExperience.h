@@ -15,7 +15,7 @@
 class UInventoryAsset;
 class UInventoryStorage;
 class URAssetManager;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 struct FGameplayTagContainer;
 
 
@@ -46,7 +46,7 @@ protected:
 	TObjectPtr<const UInventoryAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const URPrimaryDataAsset> MaterialAsset = nullptr;
+	TObjectPtr<const UCoreDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UInventoryStorage> Inventory = nullptr;

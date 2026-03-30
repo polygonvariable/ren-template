@@ -2,10 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "FilterCriterion.generated.h"
 
@@ -26,8 +22,12 @@ class UFilterCriterion : public UObject
 public:
 
 	virtual bool Evaluate(const FFilterContext& Context) const;
+
 	virtual FName GetPropertyName() const;
 	virtual bool GetIsLeaf() const;
+
+	virtual void ClearEvaluationData();
+	virtual void CopyEvaluationData(const UFilterCriterion* Other);
 
 };
 

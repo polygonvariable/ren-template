@@ -7,9 +7,9 @@
 
 // Project Headers
 #include "Asset/AvatarAsset.h"
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/AvatarInstance.h"
-#include "Interface/IAscensionProvider.h"
+#include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
@@ -64,7 +64,7 @@ void UTask_GrantAvatarRank::OnCleanup()
 
 void UTask_GrantAvatarRank::Step_LoadAsset()
 {
-	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(FGuid::NewGuid(), TargetAssetId);
+	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(FGuid::NewGuid(), TargetAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -72,7 +72,7 @@ void UTask_GrantAvatarRank::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UTask_GrantAvatarRank> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{
 			UTask_GrantAvatarRank* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -133,7 +133,7 @@ void UTask_GrantAvatarRank::Step_CheckTarget()
 
 void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>& Materials, FPrimaryAssetType MaterialType)
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), MaterialType);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialType);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));

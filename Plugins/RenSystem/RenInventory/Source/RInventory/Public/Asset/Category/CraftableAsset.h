@@ -12,7 +12,7 @@
 #include "CraftableAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 class UAssetGroup;
@@ -33,9 +33,9 @@ class UCraftableAsset : public UPurchasableAsset, public ICraftProvider
 public:
 
 	// ~ ICraftProvider
-	RSYSTEM_API virtual FTimespan GetCraftingTime() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
+	REN_API virtual FTimespan GetCraftingTime() const override;
+	REN_API virtual const UAssetCollection* GetCraftingMaterial() const override;
+	REN_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
 	// ~ End of ICraftProvider
 
 protected:
@@ -51,5 +51,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

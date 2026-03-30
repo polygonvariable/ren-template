@@ -12,9 +12,8 @@
 class UImage;
 class UButton;
 class UTextBlock;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class UPartyStorage;
-
 
 
 /**
@@ -35,11 +34,20 @@ public:
 
 protected:
 
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UImage> AssetIcon = nullptr;
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UTextBlock> AssetDisplayName = nullptr;
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UButton> ClearButton = nullptr;
+
 	UPROPERTY(EditAnywhere)
 	int CharacterSlot = 0;
 
 	UPROPERTY(EditAnywhere)
-	bool bAllowSlotEdit = false;
+	bool bAllowEdit = false;
 
 	UPROPERTY(EditAnywhere)
 	bool bHideOnEmpty = false;
@@ -50,15 +58,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UTexture2D> EmptyIcon = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UImage> AssetIcon = nullptr;
-
-	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UTextBlock> AssetDisplayName = nullptr;
-
-	UPROPERTY(Meta = (BindWidgetOptional))
-	TObjectPtr<UButton> ClearSlotButton = nullptr;
-
 	UPROPERTY()
 	TObjectPtr<UPartyStorage> PartyStorage = nullptr;
 
@@ -67,10 +66,11 @@ protected:
 	void ClearSlot();
 
 	// ~ UAssetUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;

@@ -8,9 +8,9 @@
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/AvatarAsset.h"
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/AvatarInstance.h"
-#include "Interface/IAscensionProvider.h"
+#include "Interface/AscensionProvider.h"
 #include "Interface/IAssetComposition.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
@@ -79,7 +79,7 @@ void UTask_GrantAvatarExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentLoadedAssets<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAssets<URPrimaryDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -87,7 +87,7 @@ void UTask_GrantAvatarExperience::Step_LoadAssets()
 	}
 
 	TWeakObjectPtr<UTask_GrantAvatarExperience> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAssets<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
 		{
 			UTask_GrantAvatarExperience* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -96,7 +96,7 @@ void UTask_GrantAvatarExperience::Step_LoadAssets()
 				return;
 			}
 
-			const TArray<URPrimaryDataAsset*>& Assets = Result.Get();
+			const TArray<UCoreDataAsset*>& Assets = Result.Get();
 			This->TargetAsset = Cast<UAvatarAsset>(Assets[0]);
 			This->MaterialAsset = Assets[1];
 
@@ -215,7 +215,7 @@ void UTask_GrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId&
 
 void UTask_GrantAvatarExperience::Step_RemoveMaterial()
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetAssetInterchange(GetWorld(), MaterialAssetId);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialAssetId);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));

@@ -6,15 +6,15 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "IActorFreeList.generated.h"
+#include "IActorLinkedNode.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREPOOL_API
+#define REN_API RCOREPOOL_API
 
 
 
 UINTERFACE(MinimalAPI)
-class UActorFreeList : public UInterface
+class UActorLinkedNode : public UInterface
 {
 
 	GENERATED_BODY()
@@ -24,7 +24,7 @@ class UActorFreeList : public UInterface
 /**
  *
  */
-class RCORE_API IActorFreeList
+class REN_API IActorLinkedNode
 {
 	
 	GENERATED_BODY()
@@ -37,5 +37,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

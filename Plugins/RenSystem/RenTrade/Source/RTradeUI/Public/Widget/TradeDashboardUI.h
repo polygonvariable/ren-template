@@ -11,7 +11,7 @@
 #include "TradeDashboardUI.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADEUI_API
+#define REN_API RTRADEUI_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -20,7 +20,7 @@ class UTradeCollectionUI;
 class UTradeDetailUI;
 class UAssetEntry;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -36,7 +36,7 @@ class UTradeDashboardUI : public UAssetDashboardUI
 public:
 
 	// ~ UAssetDashboardUI
-	RSYSTEM_API virtual void ResetDetail() override;
+	REN_API virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
 protected:
@@ -57,17 +57,17 @@ protected:
 	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
 
 
-	RSYSTEM_API virtual void InitializeTradeDetails(const UTradeAsset* Asset);
-	RSYSTEM_API virtual const UAssetCollection* GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const;
+	REN_API virtual void InitializeTradeDetails(const UTradeAsset* Asset);
+	REN_API virtual const UAssetCollection* GetTradeMaterialCollection(const UCoreDataAsset* Asset) const;
 
 	// ~ UAssetDashboardUI
-	RSYSTEM_API virtual void InitializeDetail() override;
-	RSYSTEM_API virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	REN_API virtual void InitializeDetail() override;
+	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	// ~ End of UAssetDashboardUI
 	
 	// ~ UUserWidget
-	RSYSTEM_API virtual void NativeConstruct() override;
-	RSYSTEM_API virtual void NativeDestruct() override;
+	REN_API virtual void NativeConstruct() override;
+	REN_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 private:
@@ -79,5 +79,5 @@ private:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

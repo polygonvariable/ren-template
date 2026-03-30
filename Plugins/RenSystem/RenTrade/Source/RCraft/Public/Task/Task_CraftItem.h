@@ -13,7 +13,7 @@
 // Forward Declarations
 class URAssetManager;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class IAssetInstanceCollection;
 
 
@@ -48,7 +48,7 @@ protected:
 	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const URPrimaryDataAsset> TargetAsset = nullptr;
+	TObjectPtr<const UCoreDataAsset> TargetAsset = nullptr;
 
 	IAssetInstanceCollection* MaterialTransaction = nullptr;
 

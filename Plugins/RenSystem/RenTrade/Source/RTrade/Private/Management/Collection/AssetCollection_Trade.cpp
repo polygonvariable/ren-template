@@ -7,22 +7,22 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
 
-const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& UAssetCollection_Trade::GetAssetList() const
+const TMap<UCoreDataAsset*, FAssetDetail_Trade>& UAssetCollection_Trade::GetAssetList() const
 {
 	return AssetList;
 }
 
 bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail_Trade& OutDetail) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		const URPrimaryDataAsset* Asset = Kv.Key;
+		const UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -39,9 +39,9 @@ bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAss
 
 bool UAssetCollection_Trade::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		URPrimaryDataAsset* Asset = Kv.Key;
+		UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -58,9 +58,9 @@ bool UAssetCollection_Trade::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>
 
 bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		const URPrimaryDataAsset* Asset = Kv.Key;
+		const UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -77,9 +77,9 @@ bool UAssetCollection_Trade::GetAssetDetail(const FPrimaryAssetId& AssetId, FAss
 
 void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		const URPrimaryDataAsset* Asset = Kv.Key;
+		const UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -92,9 +92,9 @@ void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& O
 
 void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		const URPrimaryDataAsset* Asset = Kv.Key;
+		const UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -107,9 +107,9 @@ void UAssetCollection_Trade::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets)
 
 void UAssetCollection_Trade::GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const
 {
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& Kv : AssetList)
 	{
-		const URPrimaryDataAsset* Asset = Kv.Key;
+		const UCoreDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -131,8 +131,8 @@ void UAssetCollection_Trade::PreSave(FObjectPreSaveContext ObjectSaveContext)
 
 	for (const FAssetDetail_Trade& Item : AssetListEd)
 	{
-		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
-		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();
+		TSoftObjectPtr<UCoreDataAsset> Asset = Item.DataAsset;
+		UCoreDataAsset* DataAsset = Asset.LoadSynchronous();
 		if (!IsValid(DataAsset))
 		{
 			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));

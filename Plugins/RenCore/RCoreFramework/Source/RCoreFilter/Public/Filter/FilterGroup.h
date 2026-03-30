@@ -2,15 +2,11 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "FilterGroup.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREFILTER_API
+#define REN_API RCOREFILTER_API
 
 // Forward Declarations
 class UFilterCriterion;
@@ -32,7 +28,7 @@ public:
 	TObjectPtr<UFilterCriterion> CriterionRoot;
 
 
-	RCORE_API UFilterCriterion* GetCriterionByName(FName PropertyName) const;
+	REN_API UFilterCriterion* GetCriterionByName(FName PropertyName) const;
 
 	template<typename T>
 	T* GetCriterionByName(FName PropertyName) const
@@ -49,5 +45,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

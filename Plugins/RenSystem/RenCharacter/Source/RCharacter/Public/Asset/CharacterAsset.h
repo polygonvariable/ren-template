@@ -3,14 +3,14 @@
 #pragma once
 
 // Project Headers
-#include "Asset/TransactionalAsset.h"
-#include "Interface/IAscensionProvider.h"
+#include "Asset/InstancedDataAsset.h"
+#include "Interface/AscensionProvider.h"
 
 // Generated Headers
 #include "CharacterAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCHARACTER_API
+#define REN_API RCHARACTER_API
 
 // Forward Declarations
 class UGameplayAbility;
@@ -28,7 +28,7 @@ struct FAscensionData;
  * 
  */
 UCLASS(MinimalAPI)
-class UCharacterAsset : public UTransactionalAsset, public IAscensionProvider
+class UCharacterAsset : public UInstancedDataAsset, public IAscensionProvider
 {
 
 	GENERATED_BODY()
@@ -52,16 +52,16 @@ public:
 
 
 	// ~ IAscensionProviderInterface
-	RSYSTEM_API virtual int GetExperienceInterval(int Level) const override;
-	RSYSTEM_API virtual int GetLevelInterval(int Rank) const override;
-	RSYSTEM_API virtual int GetMaxLevel() const override;
-	RSYSTEM_API virtual int GetMaxRank() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
-	RSYSTEM_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
+	REN_API virtual int GetExperienceInterval(int Level) const override;
+	REN_API virtual int GetLevelInterval(int Rank) const override;
+	REN_API virtual int GetMaxLevel() const override;
+	REN_API virtual int GetMaxRank() const override;
+	REN_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
+	REN_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
 	// ~ End of IAscensionProviderInterface
 
 	// ~ UPrimaryDataAsset
-	RSYSTEM_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
 protected:
@@ -86,11 +86,11 @@ protected:
 
 public:
 
-	RSYSTEM_API static FPrimaryAssetType GetPrimaryAssetType();
+	REN_API static FPrimaryAssetType GetPrimaryAssetType();
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

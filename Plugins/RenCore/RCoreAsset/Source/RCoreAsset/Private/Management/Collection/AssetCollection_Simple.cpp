@@ -7,7 +7,7 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
@@ -72,8 +72,8 @@ void UAssetCollection_Simple::PreSave(FObjectPreSaveContext ObjectSaveContext)
 
 	for (const FAssetDetail& Item : AssetListEd)
 	{
-		TSoftObjectPtr<URPrimaryDataAsset> Asset = Item.DataAsset;
-		URPrimaryDataAsset* DataAsset = Asset.LoadSynchronous();
+		TSoftObjectPtr<UCoreDataAsset> Asset = Item.DataAsset;
+		UCoreDataAsset* DataAsset = Asset.LoadSynchronous();
 		if (!IsValid(DataAsset))
 		{
 			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));

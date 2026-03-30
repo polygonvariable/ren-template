@@ -51,7 +51,7 @@ void UAvatarDetailUI::RefreshDetail()
 	SetCustomDetails(AvatarInstance);
 }
 
-void UAvatarDetailUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UAvatarDetailUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))

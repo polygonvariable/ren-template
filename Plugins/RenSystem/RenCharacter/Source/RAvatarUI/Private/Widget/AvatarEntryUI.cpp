@@ -13,7 +13,7 @@
 
 
 
-void UAvatarEntryUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UAvatarEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
 	if (!IsValid(AvatarAsset))

@@ -10,7 +10,7 @@
 #include "TimerUtil.generated.h"
 
 // Module Macros
-#define RCORE_API RCORELIBRARY_API
+#define REN_API RCORELIBRARY_API
 
 // Forward Declarations
 
@@ -116,22 +116,22 @@ public:
 	DECLARE_DELEGATE(FTimerFinished);
 	FTimerFinished OnFinished;
 
-	RCORE_API bool IsActive();
+	REN_API bool IsActive();
 
 
-	RCORE_API void Start(float InRate, float InDuration);
+	REN_API void Start(float InRate, float InDuration);
 
-	RCORE_API void Restart(float InRate, float InDuration);
-	RCORE_API void Resume();
-	RCORE_API void Pause();
-	RCORE_API void Clear();
+	REN_API void Restart(float InRate, float InDuration);
+	REN_API void Resume();
+	REN_API void Pause();
+	REN_API void Clear();
 
-	RCORE_API float GetRate() const;
-	RCORE_API float GetDuration() const;
-	RCORE_API float GetElapsedTime() const;
-	RCORE_API float GetRemainingTime() const;
+	REN_API float GetRate() const;
+	REN_API float GetDuration() const;
+	REN_API float GetElapsedTime() const;
+	REN_API float GetRemainingTime() const;
 
-	RCORE_API void UpdateElapsedTime(float DeltaSeconds);
+	REN_API void UpdateElapsedTime(float DeltaSeconds);
 
 protected:
 
@@ -150,5 +150,5 @@ private:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

@@ -7,13 +7,13 @@
 #include "InstancedStruct.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Asset/TradeAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Interface/IAssetInstanceCollection.h"
-#include "Interface/IAssetInstanceCollectionProvider.h"
+#include "Interface/AssetInstanceCollection.h"
+#include "Interface/AssetInstanceCollectionProvider.h"
 #include "Library/AssetInstanceUtil.h"
 #include "Management/AssetGroup.h"
 #include "Management/Collection/AssetCollection_Trade.h"
@@ -56,7 +56,7 @@ void UTask_ClaimCraftItem::Step_LoadAsset()
 		return;
 	}
 
-	TFuture<FLatentLoadedAsset<URPrimaryDataAsset>> Future = AssetManager->FetchPrimaryAsset<URPrimaryDataAsset>(TaskId, CraftAssetId);
+	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(TaskId, CraftAssetId);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -64,7 +64,7 @@ void UTask_ClaimCraftItem::Step_LoadAsset()
 	}
 
 	TWeakObjectPtr<UTask_ClaimCraftItem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<URPrimaryDataAsset>& Result)
+	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{
 			UTask_ClaimCraftItem* This = WeakThis.Get();
 			if (!IsValid(This) || !Result.IsValid())
@@ -149,7 +149,7 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetAssetInterchange(GameInstance, TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GameInstance, TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));

@@ -6,26 +6,22 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "IAssetInstanceData.generated.h"
+#include "AssetInstanceData.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETINSTANCE_API
-
+#define REN_API RCOREASSETINSTANCE_API
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceData : public UInterface
 {
-
 	GENERATED_BODY()
-
 };
 
 /**
- *
- *
+ * 
  */
-class RCORE_API IAssetInstanceData
+class REN_API IAssetInstanceData
 {
 
 	GENERATED_BODY()
@@ -39,5 +35,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

@@ -19,11 +19,11 @@
 #include "Settings/AvatarSettings.h"
 
 
-
 void UAvatarStorage::InitializeDefaults()
 {
 	AvatarCollection = UAvatarSettings::Get()->DefaultAvatars;
 }
+
 
 bool UAvatarStorage::AddInstance(const FPrimaryAssetId& AssetId, int Quantity)
 {
@@ -111,18 +111,16 @@ FOnAssetInstanceCollectionUpdated& UAvatarStorage::GetOnAssetInstanceCollectionU
 
 bool UAvatarStorage::UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback)
 {
-	FAvatarInstance* AvatarInstance = AvatarCollection.Find(AssetId);
-	if (!AvatarInstance)
+	FAvatarInstance* Instance = AvatarCollection.Find(AssetId);
+	if (!Instance)
 	{
 		return false;
 	}
 
-	Callback(AvatarInstance);
-
+	Callback(Instance);
 	OnStorageUpdated.Broadcast();
 	return true;
 }
-
 
 
 const FAscensionData* UAvatarStorage::GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const
@@ -134,6 +132,19 @@ const FAscensionData* UAvatarStorage::GetAscensionInstance(const FPrimaryAssetId
 	}
 	return &Instance->Ascension;
 }
+
+bool UAvatarStorage::UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback)
+{
+	FAvatarInstance* Instance = AvatarCollection.Find(AssetId);
+	if (!Instance)
+	{
+		return false;
+	}
+	Callback(Instance->Ascension);
+	OnStorageUpdated.Broadcast();
+	return true;
+}
+
 
 const FAvatarInstance* UAvatarStorage::GetInstance(const FPrimaryAssetId& AssetId) const
 {
@@ -188,7 +199,7 @@ void UAvatarStorage::HandleItemSorting(TArray<FAvatarSortEntry>& SortedItems, co
 	switch (SortType)
 	{
 	case EAvatarSortType::None:
-		LOG_WARNING(LogInventory, TEXT("No sort implemented"));
+		LOG_WARNING(LogAvatar, TEXT("No sort implemented"));
 		break;
 	case EAvatarSortType::Alphabetical:
 		SortedItems.Sort([SortDirection](const FAvatarSortEntry& A, const FAvatarSortEntry& B)
@@ -220,7 +231,7 @@ void UAvatarStorage::HandleItemSorting(TArray<FAvatarSortEntry>& SortedItems, co
 		);
 		break;
 	default:
-		LOG_WARNING(LogInventory, TEXT("No sort implemented"));
+		LOG_WARNING(LogAvatar, TEXT("No sort implemented"));
 		break;
 	}
 }
@@ -315,8 +326,8 @@ bool UAvatarStorage::AddInstance_Internal(UAssetManager* AssetManager, const FPr
 		return false;
 	}
 
-	FGuid ItemId = FGuid::NewGuid();
-	AvatarCollection.Add(AssetId, FAvatarInstance(ItemId, Health));
+	FGuid InstanceId = FGuid::NewGuid();
+	AvatarCollection.Add(AssetId, FAvatarInstance(InstanceId, Health));
 	return true;
 }
 

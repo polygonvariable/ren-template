@@ -61,7 +61,7 @@ void UShopSubsystem::PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& Sh
 }
 
 
-const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const
 {
 	const IShopProvider* ShopProvider = Cast<IShopProvider>(Asset);
 	if (!ShopProvider)
@@ -71,7 +71,7 @@ const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDat
 	return ShopProvider->GetPurchaseCost(Context);
 }
 
-const UAssetCollection* UShopSubsystem::GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const
 {
 	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
 }
@@ -98,11 +98,11 @@ void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collectio
 	}
 
 	FPrimaryAssetId ShopAssetId = Asset->GetPrimaryAssetId();
-	const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
+	const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
 
-	for (const TPair<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
+	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
 	{
-		const URPrimaryDataAsset* ItemDataAsset = AssetKv.Key;
+		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
 		FAssetDetail_Trade ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);

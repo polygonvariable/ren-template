@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Filter/FilterParentCriterion.h"
+#include "Filter/Criterion/FilterCriterion_Root.h"
 
 
 
@@ -22,7 +22,7 @@ UFilterCriterion* UFilterGroup::FindCriterionByName(UFilterCriterion* Criterion,
 		return Criterion;
 	}
 
-	UFilterGroupCriterion* GroupCriterion = Cast<UFilterGroupCriterion>(Criterion);
+	UFilterCriterion_Group* GroupCriterion = Cast<UFilterCriterion_Group>(Criterion);
 	if (IsValid(GroupCriterion))
 	{
 		TArray<UFilterCriterion*> Criteria = GroupCriterion->Criteria;
@@ -36,7 +36,7 @@ UFilterCriterion* UFilterGroup::FindCriterionByName(UFilterCriterion* Criterion,
 		}
 	}
 
-	UFilterNotCriterion* NotCriterion = Cast<UFilterNotCriterion>(Criterion);
+	UFilterCriterion_Not* NotCriterion = Cast<UFilterCriterion_Not>(Criterion);
 	if (IsValid(NotCriterion))
 	{
 		return FindCriterionByName(NotCriterion->Negate, PropertyName);

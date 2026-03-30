@@ -11,7 +11,7 @@
 #include "TradeCollectionUI.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADEUI_API
+#define REN_API RTRADEUI_API
 
 // Forward Declarations
 class UTradeAsset;
@@ -40,5 +40,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

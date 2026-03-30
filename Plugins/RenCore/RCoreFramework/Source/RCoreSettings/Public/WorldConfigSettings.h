@@ -10,7 +10,7 @@
 #include "WorldConfigSettings.generated.h"
 
 // Module Macros
-#define RCORE_API RCORESETTINGS_API
+#define REN_API RCORESETTINGS_API
 
 // Forward Declarations
 class UPrimaryDataAsset;
@@ -23,7 +23,7 @@ class UPrimaryDataAsset;
  * 
  */
 UCLASS()
-class RCORE_API AWorldConfigSettings : public AWorldSettings
+class REN_API AWorldConfigSettings : public AWorldSettings
 {
 
 	GENERATED_BODY()
@@ -44,5 +44,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

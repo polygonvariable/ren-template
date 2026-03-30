@@ -6,13 +6,13 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Interface/IAssetInstanceCollectionProvider.h"
+#include "Interface/AssetInstanceCollectionProvider.h"
 
 // Generated Headers
 #include "AvatarSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RAVATAR_API
+#define REN_API RAVATAR_API
 
 // Forward Declarations
 class IStorageProvider;
@@ -33,7 +33,7 @@ class UAvatarSubsystem : public UGameInstanceSubsystem, public IAssetInstanceCol
 
 public:
 
-	RSYSTEM_API UAvatarStorage* GetAvatarCollection() const;
+	REN_API UAvatarStorage* GetAvatarCollection() const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
@@ -56,12 +56,12 @@ protected:
 
 public:
 
-	static RSYSTEM_API UAvatarSubsystem* Get(UWorld* World);
-	static RSYSTEM_API UAvatarSubsystem* Get(UGameInstance* GameInstance);
+	static REN_API UAvatarSubsystem* Get(UWorld* World);
+	static REN_API UAvatarSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

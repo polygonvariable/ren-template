@@ -11,7 +11,7 @@
 #include "RCharacterBase.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCHARACTER_API
+#define REN_API RCHARACTER_API
 
 // Forward Declarations
 class UAbilitySystemComponent;
@@ -26,7 +26,7 @@ class UGameplayEffect;
  * 
  */
 UCLASS(Abstract)
-class RSYSTEM_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
+class REN_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
 {
 
 	GENERATED_BODY()
@@ -90,5 +90,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

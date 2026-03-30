@@ -6,18 +6,19 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "IAscensionInstanceData.generated.h"
+#include "AssetWidget.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASCENSION_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
-struct FAscensionData;
+class UCoreDataAsset;
+class UAssetEntry;
 
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
-class UAscensionInstanceData : public UInterface
+class UAssetWidget : public UInterface
 {
 
 	GENERATED_BODY()
@@ -27,19 +28,19 @@ class UAscensionInstanceData : public UInterface
 /**
  *
  */
-class RCORE_API IAscensionInstanceData
+class REN_API IAssetWidget
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const = 0;
+	virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) = 0;
+	virtual void InitializeEntryDetail(const UAssetEntry* Entry) = 0;
 
 };
 
 
-
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

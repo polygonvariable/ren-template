@@ -11,7 +11,7 @@
 #include "IShopProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCORESHOP_API
+#define REN_API RCORESHOP_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -31,7 +31,7 @@ class UShopProvider : public UInterface
 /**
  *
  */
-class RCORE_API IShopProvider
+class REN_API IShopProvider
 {
 
 	GENERATED_BODY()
@@ -46,5 +46,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

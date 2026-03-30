@@ -6,7 +6,7 @@
 #include "Engine/AssetManager.h"
 
 // Module Macros
-#define RCORE_API RCORELIBRARY_API
+#define REN_API RCORELIBRARY_API
 
 // Forward Declarations
 class UAssetManager;
@@ -25,22 +25,22 @@ public:
 	static TReturnType GetAssetTagValue(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, FName Tag);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static bool IsLoading(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
+	REN_API static bool IsLoading(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static bool WasCancelled(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
+	REN_API static bool WasCancelled(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static bool CancelAnyPending(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
+	REN_API static bool CancelAnyPending(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+	REN_API static void LoadPrimaryAsset(UObject* Outer, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static TSharedPtr<FStreamableHandle> LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
+	REN_API static TSharedPtr<FStreamableHandle> LoadPrimaryAsset(UObject* Outer, UAssetManager* AssetManager, const FPrimaryAssetId& AssetId, TFunction<void(bool, UObject*)> OnLoaded);
 
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
-	RCORE_API static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool)> OnLoaded);
+	REN_API static void LoadPrimaryAssets(UObject* Outer, UAssetManager* AssetManager, TArray<FPrimaryAssetId> AssetIds, TFunction<void(bool)> OnLoaded);
 
 	template <typename T>
 	UE_DEPRECATED(5.0, "Use RAssetManager instead")
@@ -135,5 +135,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

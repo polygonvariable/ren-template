@@ -12,11 +12,11 @@
 #include "AssetCollection_Unique.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
+#define REN_API RCOREASSET_API
 
 // Forward Declarations
 class FObjectPreSaveContext;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 
@@ -32,14 +32,14 @@ class UAssetCollection_Unique : public UAssetCollection
 
 public:
 
-	RCORE_API virtual const TMap<FPrimaryAssetId, FAssetDetail_Unique>& GetAssetList() const;
+	REN_API virtual const TMap<FPrimaryAssetId, FAssetDetail_Unique>& GetAssetList() const;
 
 	// ~ UAssetCollection
-	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
-	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
-	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
-	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
-	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
+	REN_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const override;
+	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const override;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const override;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const override;
+	REN_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const override;
 	// ~ End of UAssetCollection
 	
 	// ~ UObject
@@ -63,5 +63,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

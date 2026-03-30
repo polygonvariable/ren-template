@@ -11,10 +11,10 @@
 #include "AssetCollection.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSET_API
+#define REN_API RCOREASSET_API
 
 // Forward Declarations
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 struct FAssetDetail;
 
@@ -32,14 +32,14 @@ class UAssetCollection : public UObject
 
 public:
 
-	RCORE_API const FGuid& GetCollectionId() const;
-	RCORE_API const FPrimaryAssetType& GetCollectionType() const;
+	REN_API const FGuid& GetCollectionId() const;
+	REN_API const FPrimaryAssetType& GetCollectionType() const;
 
-	RCORE_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
-	RCORE_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const;
-	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const;
-	RCORE_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const;
-	RCORE_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const;
+	REN_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
+	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const;
+	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const;
+	REN_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const;
 
 protected:
 
@@ -54,5 +54,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

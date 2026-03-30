@@ -12,7 +12,7 @@
 #include "PurchasableAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 class UAssetGroup;
@@ -34,8 +34,8 @@ class UPurchasableAsset : public UInventoryAsset, public IShopProvider
 public:
 
 	// ~ IShopProvider
-	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const override;
+	REN_API virtual const UAssetCollection* GetPurchaseCost() const override;
+	REN_API virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const override;
 	// ~ End of IShopProvider
 
 protected:
@@ -48,5 +48,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -10,7 +10,6 @@
 #include "Settings/PartySettings.h"
 
 
-
 void UPartyStorage::InitializeDefaults()
 {
 	const UPartySettings* Settings = UPartySettings::Get();
@@ -68,16 +67,23 @@ void UPartyStorage::GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) con
 	}
 }
 
-FPrimaryAssetId UPartyStorage::GetCharacterAtSlot(int Slot) const
+bool UPartyStorage::GetCharacterAtSlot(int Slot, FPrimaryAssetId& AssetId) const
 {
-	return CharacterSlot.IsValidIndex(Slot) ? CharacterSlot[Slot] : FPrimaryAssetId();
+	if (!CharacterSlot.IsValidIndex(Slot) || !CharacterSlot[Slot].IsValid())
+	{
+		AssetId = FPrimaryAssetId();
+		return false;
+	}
+
+	AssetId = CharacterSlot[Slot];
+	return true;
 }
 
 bool UPartyStorage::SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId)
 {
 	if (!FCharacterPrimaryAsset::IsValid(AssetId))
 	{
-		LOG_ERROR(LogTemp, TEXT("Asset type is not character"));
+		LOG_ERROR(LogCharacterParty, TEXT("Asset type is not character"));
 		return false;
 	}
 
@@ -98,7 +104,7 @@ bool UPartyStorage::SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId)
 	return true;
 }
 
-bool UPartyStorage::ClearSlot(int Slot)
+bool UPartyStorage::RemoveCharacterFromSlot(int Slot)
 {
 	if (!CharacterSlot.IsValidIndex(Slot))
 	{

@@ -10,7 +10,7 @@
 // Project Headers
 
 // Module Macros
-#define RCORE_API RCORESETTINGS_API
+#define REN_API RCORESETTINGS_API
 
 // Generated Headers
 #include "GameMetadataSettings.generated.h"
@@ -21,7 +21,7 @@
  *
  */
 UCLASS(Config = Game, defaultconfig, Meta = (DisplayName = "Game Metadata"))
-class RCORE_API UGameMetadataSettings : public UDeveloperSettings
+class REN_API UGameMetadataSettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
@@ -36,5 +36,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

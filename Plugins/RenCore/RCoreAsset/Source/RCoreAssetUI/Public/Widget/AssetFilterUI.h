@@ -3,78 +3,133 @@
 #pragma once
 
 // Engine Headers
-#include "Components/PanelWidget.h"
-
-// Project Headers
-#include "Widget/AssetUI.h"
+#include "Blueprint/UserWidget.h"
 
 // Generated Headers
 #include "AssetFilterUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
-class UNamedSlot;
-class UFilterGroup;
+class UTextBlock;
+class UButton;
+class UAssetCollectionUI;
+class UFilterCriterion;
 
 
 
 /**
  *
  *
- *
  */
-UCLASS(Abstract, MinimalAPI)
-class UAssetFilterUI : public UAssetUI
+USTRUCT(BlueprintType)
+struct FAssetFilterCriterion
 {
 
 	GENERATED_BODY()
 
 public:
 
+	UPROPERTY(EditAnywhere)
+	FName FilterName = NAME_None;
+
 	UPROPERTY(EditAnywhere, Instanced)
-	TObjectPtr<UFilterGroup> FilterRule = nullptr;
-
-protected:
-
-	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UNamedSlot> Content = nullptr;
-
-	// ~ UAssetUI
-	RCORE_API virtual void SwitchDetail(bool bPrimary) override;
-	// ~ End of UAssetUI
+	TObjectPtr<UFilterCriterion> FilterCriterion = nullptr;
 
 };
 
 
 
+/**
+ *
+ *
+ */
+UCLASS(Abstract, MinimalAPI)
+class UAssetFilterUI : public UUserWidget
+{
 
-//UCLASS(BlueprintType, MinimalAPI)
-//class UAssetFilter2UI : public UPanelWidget
-//{
-//
-//	GENERATED_BODY()
-//
-//public:
-//
-//    UAssetFilter2UI(const FObjectInitializer& ObjectInitializer);
-//
-//protected:
-//
-//	virtual TSharedRef<SWidget> RebuildWidget() override;
-//	virtual void OnSlotAdded(UPanelSlot* InSlot) override;
-//	virtual void OnSlotRemoved(UPanelSlot* InSlot) override;
-//	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
-//
-//private:
-//
-//	TSharedPtr<SVerticalBox> BasePanel;
-//
-//};
+	GENERATED_BODY()
 
+public:
+
+	UPROPERTY(EditAnywhere)
+	FText TitleText = FText::GetEmpty();
+
+	DECLARE_DELEGATE(FOnSelected);
+	FOnSelected OnSelected;
+
+
+	// ~ UUserWidget
+	REN_API virtual void NativePreConstruct() override;
+	REN_API virtual void NativeConstruct() override;
+	REN_API virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
+
+protected:
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UTextBlock> FilterTitle = nullptr;
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UButton> FilterButton = nullptr;
+
+
+	UFUNCTION(BlueprintCallable)
+	void SetSelected();
+
+};
+
+
+/**
+ *
+ * 
+ */
+UCLASS(Abstract, MinimalAPI)
+class UAssetFilterCollectionUI : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+public:
+
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelected, int, Index);
+	UPROPERTY(BlueprintAssignable)
+	FOnSelected OnSelected;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FAssetFilterCriterion> FilterCriteria;
+
+
+	UFUNCTION(BlueprintCallable)
+	REN_API void SetTargetCollectionUI(UAssetCollectionUI* InCollectionUI);
+
+	// ~ UUserWidget
+	REN_API virtual void NativePreConstruct() override;
+	// ~ End of UUserWidget
+
+protected:
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UPanelWidget> FilterBox = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UAssetFilterUI> FilterClass = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	FMargin FilterSpacing;
+
+
+	void OnFilterSelected(int Index);
+
+private:
+
+	UPROPERTY()
+	TWeakObjectPtr<UAssetCollectionUI> _AssetCollection = nullptr;
+
+};
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

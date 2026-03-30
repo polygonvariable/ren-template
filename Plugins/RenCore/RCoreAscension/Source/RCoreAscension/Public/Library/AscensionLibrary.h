@@ -11,7 +11,7 @@
 #include "AscensionLibrary.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASCENSION_API
+#define REN_API RCOREASCENSION_API
 
 // Forward Declarations
 struct FAscensionData;
@@ -29,9 +29,9 @@ class UAscensionLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-    RCORE_API static bool AddExperience(const FAscensionData& CurrentData, int Amount, int ExperiencePerLevel, int LevelPerRank, int MaxLevel, int MaxRank, int& OutExperience, int& OutLevel);
-    RCORE_API static bool CanGainExperience(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank);
-    RCORE_API static bool IsRankUpRequired(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank);
+    REN_API static bool AddExperience(const FAscensionData& CurrentData, int Amount, int ExperiencePerLevel, int LevelPerRank, int MaxLevel, int MaxRank, int& OutExperience, int& OutLevel);
+    REN_API static bool CanGainExperience(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank);
+    REN_API static bool IsRankUpRequired(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank);
 
 private:
 
@@ -42,5 +42,5 @@ private:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

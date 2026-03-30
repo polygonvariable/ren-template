@@ -7,7 +7,6 @@
 #include "Storage/PartyStorage.h"
 
 
-
 UPartySettings::UPartySettings(const FObjectInitializer& ObjectInitializer)
 {
 	CategoryName = TEXT("Ren Project");

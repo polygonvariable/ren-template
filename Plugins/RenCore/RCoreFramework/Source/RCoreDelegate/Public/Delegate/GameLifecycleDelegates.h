@@ -3,14 +3,14 @@
 #pragma once
 
 // Module Macros
-#define RCORE_API RCOREDELEGATE_API
+#define REN_API RCOREDELEGATE_API
 
 
 
 /**
  *
  */
-class RCORE_API FGameLifecycleDelegates
+class REN_API FGameLifecycleDelegates
 {
 
 public:
@@ -24,5 +24,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

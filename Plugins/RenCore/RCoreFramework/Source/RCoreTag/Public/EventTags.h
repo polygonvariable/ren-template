@@ -7,15 +7,15 @@
 #include "NativeGameplayTags.h"
 
 // Module Macros
-#define RCORE_API RCORETAG_API
+#define REN_API RCORETAG_API
 
 
 
 // Gameplay Tags
-RCORE_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Damage);
+REN_API UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Event_Damage);
 
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

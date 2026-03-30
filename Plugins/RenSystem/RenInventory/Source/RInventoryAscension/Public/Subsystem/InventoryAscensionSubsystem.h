@@ -12,7 +12,7 @@
 #include "InventoryAscensionSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORYASCENSION_API
+#define REN_API RINVENTORYASCENSION_API
 
 // Forward Declarations
 
@@ -29,8 +29,8 @@ class UInventoryAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API void AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
-	RSYSTEM_API void AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback);
+	REN_API void AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
+	REN_API void AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback);
 
 protected:
 
@@ -42,13 +42,13 @@ protected:
 
 public:
 
-	RSYSTEM_API static UInventoryAscensionSubsystem* Get(UWorld* World);
-	RSYSTEM_API static UInventoryAscensionSubsystem* Get(UGameInstance* GameInstance);
+	REN_API static UInventoryAscensionSubsystem* Get(UWorld* World);
+	REN_API static UInventoryAscensionSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

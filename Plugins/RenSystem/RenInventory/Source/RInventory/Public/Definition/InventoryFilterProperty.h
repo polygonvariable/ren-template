@@ -3,14 +3,14 @@
 #pragma once
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 
 
 /**
  *
  */
-class RSYSTEM_API FInventoryFilterProperty
+class REN_API FInventoryFilterProperty
 {
 
 public:
@@ -27,5 +27,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

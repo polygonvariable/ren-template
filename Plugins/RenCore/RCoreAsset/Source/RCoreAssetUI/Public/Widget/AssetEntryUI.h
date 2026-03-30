@@ -12,7 +12,7 @@
 #include "AssetEntryUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
 class UImage;
@@ -35,7 +35,7 @@ class UAssetEntryUI : public UAssetUI, public IUserObjectListEntry
 public:
 
 	// ~ UAssetUI
-	RCORE_API virtual void ResetDetail() override;
+	REN_API virtual void ResetDetail() override;
 	// ~ End of UAssetUI
 
 protected:
@@ -54,12 +54,12 @@ protected:
 	void GetAssetSubDetail(FInstancedStruct& SubDetail) const;
 
 	// ~ IUserObjectListEntry
-	RCORE_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-	RCORE_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
+	REN_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	REN_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
 	// ~ End of IUserObjectListEntry
 
 	// ~ UWidget
-	RCORE_API virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation);
+	REN_API virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation);
 	// ~ End of UWidget
 
 };
@@ -67,5 +67,5 @@ protected:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

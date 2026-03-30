@@ -3,14 +3,14 @@
 #pragma once
 
 // Module Macros
-#define RSYSTEM_API RAVATAR_API
+#define REN_API RAVATAR_API
 
 
 
 /**
  *
  */
-class RSYSTEM_API FAvatarFilterProperty
+class REN_API FAvatarFilterProperty
 {
 
 public:
@@ -25,5 +25,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

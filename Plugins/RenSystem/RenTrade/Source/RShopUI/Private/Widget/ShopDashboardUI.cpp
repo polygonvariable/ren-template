@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
@@ -32,7 +32,7 @@ void UShopDashboardUI::HandlePurchase()
 	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
 }
 
-const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const URPrimaryDataAsset* Asset) const
+const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
 {
 	if (!IsValid(ShopSubsystem))
 	{

@@ -5,19 +5,15 @@
 // Engine Headers
 #include "Blueprint/UserWidget.h"
 
-// Project Headers
-
 // Generated Headers
 #include "AscensionDetailUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASCENSIONUI_API
+#define REN_API RCOREASCENSIONUI_API
 
 // Forward Declarations
 class UTextBlock;
-
 struct FAscensionData;
-
 
 
 /**
@@ -31,7 +27,7 @@ class UAscensionDetailUI : public UUserWidget
 
 public:
 	
-    RCORE_API void InitializeDetail(const FAscensionData& Data);
+    REN_API void InitializeDetail(const FAscensionData& Data);
 
 protected:
 
@@ -47,7 +43,6 @@ protected:
 };
 
 
-
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

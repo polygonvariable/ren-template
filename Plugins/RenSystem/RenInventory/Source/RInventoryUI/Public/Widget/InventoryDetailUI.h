@@ -14,7 +14,7 @@
 class UAscensionDetailUI;
 class UInventoryStorage;
 class UInventorySubsystem;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 struct FInventoryInstance;
 
@@ -55,7 +55,7 @@ protected:
 	virtual void SetCustomDetails(const FInventoryInstance* Item, int Quantity);
 
 	// ~ UAssetDetailUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDetailUI
 

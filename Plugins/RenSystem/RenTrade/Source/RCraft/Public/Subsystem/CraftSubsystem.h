@@ -13,7 +13,7 @@
 #include "CraftSubsystem.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RCRAFT_API
+#define REN_API RCRAFT_API
 
 // Forward Declarations
 class UAssetCollection;
@@ -21,7 +21,7 @@ class UStorage;
 class IStorageProvider;
 class UCraftStorage;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 struct FAssetDetail_Trade;
 struct FInstancedStruct;
@@ -40,23 +40,23 @@ class UCraftSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	RSYSTEM_API UCraftStorage* GetCraft(const FName& CraftId);
+	REN_API UCraftStorage* GetCraft(const FName& CraftId);
 
-	RSYSTEM_API void ClaimCraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
-	RSYSTEM_API void CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+	REN_API void ClaimCraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+	REN_API void CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
 
-	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FInstancedStruct& Context) const;
-	RSYSTEM_API const UAssetCollection* GetMaterialCollection(const URPrimaryDataAsset* Asset, const FGuid& CollectionId) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
 
-	RSYSTEM_API void QueryItems(const FName& CraftId, const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback);
+	REN_API void QueryItems(const FName& CraftId, const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback);
 
 protected:
 
 	TWeakInterfacePtr<IStorageProvider> StorageProvider;
 
 
-	void QueryAssetItems(const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback);
-	void HandleStorageItems(const TMap<URPrimaryDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback);
+	void QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback);
+	void HandleStorageItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback);
 
 	void OnPreGameInitialized();
 
@@ -68,12 +68,12 @@ protected:
 
 public:
 
-	RSYSTEM_API static UCraftSubsystem* Get(UWorld* World);
-	RSYSTEM_API static UCraftSubsystem* Get(UGameInstance* GameInstance);
+	REN_API static UCraftSubsystem* Get(UWorld* World);
+	REN_API static UCraftSubsystem* Get(UGameInstance* GameInstance);
 
 };
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

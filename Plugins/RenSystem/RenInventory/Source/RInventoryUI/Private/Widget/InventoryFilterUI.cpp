@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/FilterContext.h"
 #include "Definition/InventoryFilterProperty.h"
@@ -17,40 +17,40 @@
 
 
 
-void UInventoryFilterUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
-{
-	if (!IsValid(AssetManager) || !IsValid(FilterRule))
-	{
-		SwitchDetail(false);
-		return;
-	}
-
-	FAssetData AssetData;
-	if (!AssetManager->GetPrimaryAssetData(GetActiveAssetId(), AssetData))
-	{
-		SwitchDetail(false);
-		return;
-	}
-
-	FName ItemType = TEXT_EMPTY;
-	FInventoryPrimaryAsset::GetType(AssetData, ItemType);
-
-	FName ItemRarity = TEXT_EMPTY;
-	FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
-
-	FFilterContext Context;
-	Context.SetValue(FAssetFilterProperty::AssetId, GetActiveAssetId());
-	Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
-	Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
-
-	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
-	if (IsValid(FilterRoot))
-	{
-		SwitchDetail(FilterRoot->Evaluate(Context));
-	}
-	else
-	{
-		SwitchDetail(false);
-	}
-}
+//void UInventoryFilterUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+//{
+//	if (!IsValid(AssetManager) || !IsValid(FilterRule))
+//	{
+//		SwitchDetail(false);
+//		return;
+//	}
+//
+//	FAssetData AssetData;
+//	if (!AssetManager->GetPrimaryAssetData(GetActiveAssetId(), AssetData))
+//	{
+//		SwitchDetail(false);
+//		return;
+//	}
+//
+//	FName ItemType = TEXT_EMPTY;
+//	FInventoryPrimaryAsset::GetType(AssetData, ItemType);
+//
+//	FName ItemRarity = TEXT_EMPTY;
+//	FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
+//
+//	FFilterContext Context;
+//	Context.SetValue(FAssetFilterProperty::AssetId, GetActiveAssetId());
+//	Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
+//	Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
+//
+//	UFilterCriterion* FilterRoot = FilterRule->CriterionRoot;
+//	if (IsValid(FilterRoot))
+//	{
+//		SwitchDetail(FilterRoot->Evaluate(Context));
+//	}
+//	else
+//	{
+//		SwitchDetail(false);
+//	}
+//}
 

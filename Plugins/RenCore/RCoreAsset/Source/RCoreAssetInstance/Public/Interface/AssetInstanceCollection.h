@@ -6,29 +6,26 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "IAssetInstanceCollection.generated.h"
+#include "AssetInstanceCollection.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETINSTANCE_API
+#define REN_API RCOREASSETINSTANCE_API
 
 // Delegate Declarations
 DECLARE_MULTICAST_DELEGATE(FOnAssetInstanceCollectionUpdated);
 
 
-
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceCollection : public UInterface
 {
-
 	GENERATED_BODY()
-
 };
 
 /**
  * Asset instance is basically items created from asset.
  * like inventory item created from inventory asset
  */
-class RCORE_API IAssetInstanceCollection
+class REN_API IAssetInstanceCollection
 {
 
 	GENERATED_BODY()
@@ -53,5 +50,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

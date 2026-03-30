@@ -6,13 +6,13 @@
 
 // Project Headers
 #include "Asset/Category/CraftableAsset.h"
-#include "Interface/IAscensionProvider.h"
+#include "Interface/AscensionProvider.h"
 
 // Generated Headers
 #include "EnhanceableAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 class UAssetGroup;
@@ -34,12 +34,12 @@ class UEnhanceableAsset : public UCraftableAsset, public IAscensionProvider
 public:
 
 	// ~ IAscensionProvider
-	RSYSTEM_API virtual int GetExperienceInterval(int Level) const override;
-	RSYSTEM_API virtual int GetLevelInterval(int Rank) const override;
-	RSYSTEM_API virtual int GetMaxLevel() const override;
-	RSYSTEM_API virtual int GetMaxRank() const override;
-	RSYSTEM_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
-	RSYSTEM_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
+	REN_API virtual int GetExperienceInterval(int Level) const override;
+	REN_API virtual int GetLevelInterval(int Rank) const override;
+	REN_API virtual int GetMaxLevel() const override;
+	REN_API virtual int GetMaxRank() const override;
+	REN_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
+	REN_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
 	// ~ End of IAscensionProvider
 
 protected:
@@ -67,5 +67,5 @@ protected:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

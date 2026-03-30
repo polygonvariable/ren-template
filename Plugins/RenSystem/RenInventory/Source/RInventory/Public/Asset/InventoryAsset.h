@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Asset/TransactionalAsset.h"
+#include "Asset/InstancedDataAsset.h"
 #include "Definition/InventoryItemRarity.h"
 #include "Definition/InventoryItemType.h"
 #include "Interface/IAssetComposition.h"
@@ -14,7 +14,7 @@
 #include "InventoryAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RINVENTORY_API
+#define REN_API RINVENTORY_API
 
 // Forward Declarations
 
@@ -24,7 +24,7 @@
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UInventoryAsset : public UTransactionalAsset, public IAssetCompositionInterface
+class UInventoryAsset : public UInstancedDataAsset, public IAssetCompositionInterface
 {
 
 	GENERATED_BODY()
@@ -56,22 +56,22 @@ public:
 
 
 	// ~ IAssetCompositionInterface
-	RSYSTEM_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const override;
-	RSYSTEM_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const override;
+	REN_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const override;
+	REN_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const override;
 	// ~ End of IAssetCompositionInterface
 
 	// ~ UPrimaryDataAsset
-	RSYSTEM_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
 public:
 
-	RSYSTEM_API static FPrimaryAssetType GetPrimaryAssetType();
+	REN_API static FPrimaryAssetType GetPrimaryAssetType();
 
 };
 
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

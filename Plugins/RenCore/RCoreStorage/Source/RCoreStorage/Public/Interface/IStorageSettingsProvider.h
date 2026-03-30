@@ -9,7 +9,7 @@
 #include "IStorageSettingsProvider.generated.h"
 
 // Module Macros
-#define RCORE_API RCORESTORAGE_API
+#define REN_API RCORESTORAGE_API
 
 // Forward Declarations
 class UStorage;
@@ -27,7 +27,7 @@ class UStorageSettingsProvider : public UInterface
 /**
  * 
  */
-class RCORE_API IStorageSettingsProvider
+class REN_API IStorageSettingsProvider
 {
 
 	GENERATED_BODY()
@@ -42,5 +42,5 @@ public:
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

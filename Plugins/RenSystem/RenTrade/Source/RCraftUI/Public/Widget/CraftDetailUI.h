@@ -14,7 +14,7 @@
 // Forward Declarations
 class UTextBlock;
 class UAssetEntry;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class UCraftStorage;
 
 

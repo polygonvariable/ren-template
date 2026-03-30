@@ -9,13 +9,10 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
-#include "Manager/RAssetManager.inl"
+#include "Asset/CoreDataAsset.h"
 #include "Storage/PartyStorage.h"
 #include "Subsystem/PartySubsystem.h"
 #include "Widget/Drag/AssetDragOperation.h"
-
-
 
 
 void UPartySlotUI::ResetDetail()
@@ -31,31 +28,25 @@ void UPartySlotUI::ResetDetail()
 
 void UPartySlotUI::RefreshDetail()
 {
-	if (!IsValid(PartyStorage))
+	FPrimaryAssetId AssetId;
+	if (!IsValid(PartyStorage) || !PartyStorage->GetCharacterAtSlot(CharacterSlot, AssetId))
 	{
 		ResetDetail();
 		return;
 	}
-
-	FPrimaryAssetId AssetId = PartyStorage->GetCharacterAtSlot(CharacterSlot);
-	if (!AssetId.IsValid())
-	{
-		ResetDetail();
-		return;
-	}
-
+	
 	InitializeAssetById(AssetId);
 }
 
 void UPartySlotUI::ClearSlot()
 {
-	if (bAllowSlotEdit && IsValid(PartyStorage))
+	if (bAllowEdit && IsValid(PartyStorage))
 	{
-		PartyStorage->ClearSlot(CharacterSlot);
+		PartyStorage->RemoveCharacterFromSlot(CharacterSlot);
 	}
 }
 
-void UPartySlotUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UPartySlotUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	AssetDisplayName->SetText(Asset->DisplayName);
 	AssetIcon->SetBrushFromSoftTexture(Asset->Icon);
@@ -66,19 +57,33 @@ void UPartySlotUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
 	}
 }
 
+void UPartySlotUI::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (bAllowEdit)
+	{
+		ClearButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		ClearButton->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+
 void UPartySlotUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	if (bAllowSlotEdit && IsValid(ClearSlotButton))
+	if (bAllowEdit)
 	{
-		ClearSlotButton->OnClicked.AddDynamic(this, &UPartySlotUI::ClearSlot);
+		ClearButton->OnClicked.AddDynamic(this, &UPartySlotUI::ClearSlot);
 	}
 
 	UPartySubsystem* PartySubsystem = UPartySubsystem::Get(GetWorld());
 	if (IsValid(PartySubsystem))
 	{
-		PartyStorage = PartySubsystem->GetPartyCollection();
+		PartyStorage = PartySubsystem->GetPartyStorage();
 		if (IsValid(PartyStorage))
 		{
 			PartyStorage->OnStorageUpdated.AddUObject(this, &UPartySlotUI::RefreshDetail);
@@ -89,7 +94,10 @@ void UPartySlotUI::NativeConstruct()
 
 void UPartySlotUI::NativeDestruct()
 {
-	if (IsValid(ClearSlotButton)) ClearSlotButton->OnClicked.Clear();
+	if (bAllowEdit)
+	{
+		ClearButton->OnClicked.Clear();
+	}
 
 	if (IsValid(PartyStorage))
 	{
@@ -102,7 +110,7 @@ void UPartySlotUI::NativeDestruct()
 
 bool UPartySlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	if (!bAllowSlotEdit)
+	if (!bAllowEdit)
 	{
 		return false;
 	}

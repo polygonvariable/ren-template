@@ -10,7 +10,7 @@
 #include "AssetCollectionUI.generated.h"
 
 // Module Macros
-#define RCORE_API RCOREASSETUI_API
+#define REN_API RCOREASSETUI_API
 
 // Forward Declarations
 class UListView;
@@ -41,13 +41,13 @@ public:
 	FName PrimarySourceId = NAME_None;
 
 
-	RCORE_API virtual void InitializeCollection();
+	REN_API virtual void InitializeCollection();
 
-	RCORE_API virtual void DisplayEntries();
-	RCORE_API virtual void ClearEntries(bool bRegenerate);
-	RCORE_API virtual void RefreshEntries();
+	REN_API virtual void DisplayEntries();
+	REN_API virtual void ClearEntries(bool bRegenerate);
+	REN_API virtual void RefreshEntries();
 
-	RCORE_API UAssetEntry* GetSelectedEntry();
+	REN_API UAssetEntry* GetSelectedEntry();
 	template<typename T>
 	T* GetSelectedEntry()
 	{
@@ -55,12 +55,12 @@ public:
 	}
 
 
-	RCORE_API void AddSubDetails(const FPrimaryAssetId& Id, const FInstancedStruct& Detail);
-	RCORE_API void RemoveSubDetails(const FPrimaryAssetId& Id);
-	RCORE_API void ClearSubDetails();
+	REN_API void AddSubDetails(const FPrimaryAssetId& Id, const FInstancedStruct& Detail);
+	REN_API void RemoveSubDetails(const FPrimaryAssetId& Id);
+	REN_API void ClearSubDetails();
 
 
-	RCORE_API UFilterCriterion* GetCriterionByName(FName Name) const;
+	REN_API UFilterCriterion* GetCriterionByName(FName Name) const;
 
 	template<typename T>
 	T* GetCriterionByName(FName Name)
@@ -73,11 +73,14 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bAutoRefresh = false;
 
-	UPROPERTY()
-	TMap<FPrimaryAssetId, FInstancedStruct> SubDetails;
+	UPROPERTY(EditAnywhere)
+	bool bAutoClearSelection = false;
 
 	UPROPERTY(EditAnywhere)
 	bool bAutoSelectAfterRefresh = false;
+
+	UPROPERTY()
+	TMap<FPrimaryAssetId, FInstancedStruct> SubDetails;
 
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TObjectPtr<UFilterGroup> FilterRule = nullptr;
@@ -89,16 +92,16 @@ protected:
 	TArray<TObjectPtr<UAssetEntry>> EntryPool;
 
 
-	RCORE_API const UFilterCriterion* GetFilterRoot() const;
+	REN_API const UFilterCriterion* GetFilterRoot() const;
 
 
-	RCORE_API virtual void AutoSelectCaching();
-	RCORE_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;
+	REN_API virtual void AutoSelectCaching();
+	REN_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;
 
 
-	RCORE_API void AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry);
-	RCORE_API void ReturnEntryToPool(UAssetEntry* Item);
-	RCORE_API UAssetEntry* GetEntryFromPool(const TSubclassOf<UAssetEntry>& EntryClass);
+	REN_API void AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry);
+	REN_API void ReturnEntryToPool(UAssetEntry* Item);
+	REN_API UAssetEntry* GetEntryFromPool(const TSubclassOf<UAssetEntry>& EntryClass);
 
 	template<typename T>
 	T* GetEntryFromPool()
@@ -109,20 +112,18 @@ protected:
 
 	void HandleOnItemSelectionChanged(UObject* Object);
 
-
 	// ~ UUserWidget
-	RCORE_API virtual void NativeConstruct() override;
-	RCORE_API virtual void NativeDestruct() override;
+	REN_API virtual void NativeConstruct() override;
+	REN_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 private:
 
-	TWeakObjectPtr<const UAssetEntry> _SelectedEntry;
 	FPrimaryAssetId _SelectedAssetId;
 
 };
 
 
 // Module Macros
-#undef RCORE_API
+#undef REN_API
 

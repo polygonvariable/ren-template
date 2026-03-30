@@ -13,7 +13,7 @@
 // Forward Declarations
 class URAssetManager;
 class UTradeAsset;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 
 
 

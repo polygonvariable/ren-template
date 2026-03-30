@@ -9,23 +9,17 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/RPrimaryDataAsset.h"
+#include "Asset/CoreDataAsset.h"
 #include "Storage/EquipmentStorage.h"
 #include "Subsystem/EquipmentSubsystem.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/Drag/AssetDragOperation.h"
 
 
-
 void UEquipmentSlotUI::ResetDetail()
 {
 	AssetDisplayName->SetText(EmptyText);
 	AssetIcon->SetBrushFromSoftTexture(EmptyIcon);
-
-	if (bCollapseOnEmpty)
-	{
-		SetVisibility(ESlateVisibility::Collapsed);
-	}
 }
 
 void UEquipmentSlotUI::RefreshDetail()
@@ -50,19 +44,20 @@ void UEquipmentSlotUI::ClearSlot()
 {
 	if (IsValid(EquipmentStorage))
 	{
-		EquipmentStorage->RemoveEquipmentAtSlot(OwnerId, SlotTag);
+		EquipmentStorage->RemoveEquipmentFromSlot(OwnerId, SlotTag);
 	}
 }
 
-void UEquipmentSlotUI::SetPrimaryDetail(const URPrimaryDataAsset* Asset)
+void UEquipmentSlotUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
+	if (!IsValid(Asset))
+	{
+		ResetDetail();
+		return;
+	}
+
 	AssetDisplayName->SetText(Asset->DisplayName);
 	AssetIcon->SetBrushFromSoftTexture(Asset->Icon);
-
-	if (bCollapseOnEmpty)
-	{
-		SetVisibility(ESlateVisibility::Visible);
-	}
 }
 
 void UEquipmentSlotUI::SetSecondaryDetail(const UAssetEntry* Entry)
@@ -71,6 +66,7 @@ void UEquipmentSlotUI::SetSecondaryDetail(const UAssetEntry* Entry)
 	{
 		return;
 	}
+
 	OwnerId = Entry->GetAssetInstanceId();
 	OwnerAssetId = Entry->AssetId;
 
@@ -99,7 +95,10 @@ void UEquipmentSlotUI::NativeConstruct()
 
 void UEquipmentSlotUI::NativeDestruct()
 {
-	if (IsValid(ClearButton)) ClearButton->OnClicked.Clear();
+	if (IsValid(ClearButton))
+	{
+		ClearButton->OnClicked.Clear();
+	}
 
 	if (IsValid(EquipmentStorage))
 	{

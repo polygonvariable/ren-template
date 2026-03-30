@@ -11,11 +11,8 @@
 // Forward Declarations
 class UAssetCollectionUI;
 class UAssetDetailUI;
-class UAssetEntry;
-class URPrimaryDataAsset;
-class UEquipmentSlotUI;
-class UPanelWidget;
-
+class UEquipmentSlotCollectionUI;
+class UEquipmentSubsystem;
 
 
 /**
@@ -31,13 +28,9 @@ public:
 
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
-	virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
 protected:
-
-	UPROPERTY(EditAnywhere)
-	bool bRebuild = false;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> EquipmentCollection = nullptr;
@@ -46,16 +39,13 @@ protected:
 	TObjectPtr<UAssetDetailUI> OwnerDetail = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
-	TObjectPtr<UPanelWidget> SlotBox = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UEquipmentSlotUI> SlotClass = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FMargin SlotSpacing;
+	TObjectPtr<UEquipmentSlotCollectionUI> SlotCollection = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> SyncButton = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
 
 	FGuid OwnerId;
 
@@ -64,12 +54,11 @@ protected:
 	void SyncEquipment();
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 
 	// ~ UUserWidget
-	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

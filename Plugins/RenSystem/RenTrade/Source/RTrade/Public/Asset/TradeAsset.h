@@ -11,7 +11,7 @@
 #include "TradeAsset.generated.h"
 
 // Module Macros
-#define RSYSTEM_API RTRADE_API
+#define REN_API RTRADE_API
 
 // Forward Declarations
 class UAssetGroup;
@@ -34,7 +34,7 @@ public:
 
 
 	// ~ UObject
-	RSYSTEM_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UObject
 
 };
@@ -42,5 +42,5 @@ public:
 
 
 // Module Macros
-#undef RSYSTEM_API
+#undef REN_API
 

@@ -15,7 +15,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UInventoryStorage;
 class UInventoryAscensionSubsystem;
-class URPrimaryDataAsset;
+class UCoreDataAsset;
 class IAscensionProvider;
 
 struct FInventoryInstance;
@@ -90,7 +90,7 @@ protected:
 	void HandleOnItemUpdated();
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const URPrimaryDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 
