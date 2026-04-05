@@ -3,34 +3,26 @@
 #pragma once
 
 // Engine Headers
-#include "Definition/AscensionData.h"
 #include "GameplayTagContainer.h"
+
+// Project Headers
+#include "Definition/AssetQuerySource.h"
 
 // Generated Headers
 #include "EquipmentSpawnData.generated.h"
 
-// Forward Declarations
-class UCoreDataAsset;
-
 
 USTRUCT(BlueprintType)
-struct FEquipmentSpawnData
+struct FEquipmentData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FEquipmentSpawnData() {};
-
-#if WITH_EDITORONLY_DATA
+	FEquipmentData() {};
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UCoreDataAsset> DataAsset;
-
-#endif
-
-	UPROPERTY()
 	FPrimaryAssetId AssetId;
 
 	UPROPERTY(EditAnywhere)
@@ -40,17 +32,27 @@ public:
 	FGuid EquipmentId;
 
 	UPROPERTY(EditAnywhere)
-	FAscensionData AscensionData;
-
+	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
 
 	void Reset()
 	{
-#if WITH_EDITOR
-		DataAsset.Reset();
-#endif
+		AssetId = FPrimaryAssetId();
+		EquipmentSlot = FGameplayTag();
 		EquipmentId.Invalidate();
-		AscensionData.Reset();
 	}
+
+};
+
+USTRUCT(BlueprintType)
+struct FEquipmentDataList
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	TArray<FEquipmentData> EquipmentList;
 
 };
 

@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/AssetDetail.h"
 #include "Management/AssetCollection.h"
@@ -17,7 +15,6 @@
 // Forward Declarations
 class FObjectPreSaveContext;
 class UCoreDataAsset;
-
 
 
 /**

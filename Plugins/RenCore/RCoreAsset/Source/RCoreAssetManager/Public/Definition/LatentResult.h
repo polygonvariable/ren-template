@@ -2,15 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
-// Generated Headers
-
-// Forward Declarations
-
-
 
 /**
  *
@@ -29,6 +20,11 @@ public:
 	 * - bCancelled is false
 	 */
 	bool IsValid() const
+	{
+		return bSuccess && !bCancelled;
+	}
+
+	bool IsCompleted() const
 	{
 		return bSuccess && !bCancelled;
 	}

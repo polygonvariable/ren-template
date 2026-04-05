@@ -28,10 +28,12 @@ public class RCharacterParty : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
+                "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
                 "RCoreAscension",
                 "RCoreAsset",
+                "RCoreAssetInstance",
                 "RCoreAssetManager",
                 "RCoreStorage",
 				"RCharacter",

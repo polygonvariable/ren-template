@@ -110,7 +110,7 @@ void UTask_GrantAvatarRank::Step_CheckTarget()
 	MaxLevel = AscensionProvider->GetMaxLevel();
 	MaxRank = AscensionProvider->GetMaxRank();
 
-	if (!UAscensionLibrary::IsRankUpRequired(AscensionData, LevelPerRank, MaxLevel, MaxRank))
+	if (!FAscensionLibrary::IsRankUpRequired(AscensionData, LevelPerRank, MaxLevel, MaxRank))
 	{
 		Fail(TEXT("Cannot rank up"));
 		return;

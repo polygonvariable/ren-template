@@ -5,8 +5,6 @@
 // Engine Headers
 #include "GameplayTagContainer.h"
 
-// Project Headers
-
 // Generated Headers
 #include "AssetCollection.generated.h"
 
@@ -15,9 +13,7 @@
 
 // Forward Declarations
 class UCoreDataAsset;
-
 struct FAssetDetail;
-
 
 
 /**

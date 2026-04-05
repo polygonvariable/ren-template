@@ -53,6 +53,7 @@ DEFINE_LOG_CATEGORY(LogInventoryInstance);
 // ~ End of Inventory Categories
 
 // ~ Avatar Categories
+DEFINE_LOG_CATEGORY(LogCharacter);
 DEFINE_LOG_CATEGORY(LogAvatar);
 DEFINE_LOG_CATEGORY(LogAvatarAscension);
 DEFINE_LOG_CATEGORY(LogCharacterParty);

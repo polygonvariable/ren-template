@@ -106,7 +106,7 @@ bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, cons
 	FString Combined = InStorageClass->GetPathName() + TEXT("::") + InSlotName + TEXT("::") + FString::FromInt(InUserIndex);
 	uint32 Hash = GetTypeHash(Combined);
 
-	OutStorageId = FString::Printf(TEXT("Storage_%08X"), Hash);
+	OutStorageId = FString::Printf(TEXT("Storage%03d_%08X"), (InUserIndex + 1), Hash);
 
 	return true;
 }

@@ -2,10 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "AssetGroup.generated.h"
 
@@ -14,9 +10,7 @@
 
 // Forward Declarations
 class UAssetCollection;
-
 struct FInstancedStruct;
-
 
 
 /**

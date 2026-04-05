@@ -11,7 +11,7 @@
 #include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/AvatarInstance.h"
 #include "Interface/AscensionProvider.h"
-#include "Interface/IAssetComposition.h"
+#include "Interface/AssetComposition.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
@@ -42,7 +42,22 @@ void UTask_GrantAvatarExperience::OnStarted()
 
 	AvatarStorage = AvatarCollection;
 
-	Step_LoadAssets();
+#if WITH_EDITOR
+	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
+		{
+			if (Instance)
+			{
+				Instance->Ascension.Level++;
+				Instance->Sanitize();
+			}
+		}
+	);
+
+	Success();
+	return;
+#endif
+
+	// Step_LoadAssets();
 }
 
 void UTask_GrantAvatarExperience::OnStopped()
@@ -248,7 +263,7 @@ void UTask_GrantAvatarExperience::Step_AddExperience()
 	int NewExperience = 0;
 	int NewLevel = 0;
 
-	if (!UAscensionLibrary::AddExperience(AscensionData, Amount, ExperiencePerLevel, LevelPerRank, MaxLevel, MaxRank, NewExperience, NewLevel))
+	if (!FAscensionLibrary::AddExperience(AscensionData, Amount, ExperiencePerLevel, LevelPerRank, MaxLevel, MaxRank, NewExperience, NewLevel))
 	{
 		Fail(TEXT("Failed to add experience"));
 		return;

@@ -6,9 +6,14 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GameplayTagAssetInterface.h"
+#include "InstancedStruct.h"
+
+// Project Headers
+#include "Definition/AssetQuerySource.h"
+#include "Interface/SpawnContextProvider.h"
 
 // Generated Headers
-#include "RCharacterBase.generated.h"
+#include "CharacterBase.generated.h"
 
 // Module Macros
 #define REN_API RCHARACTER_API
@@ -19,21 +24,49 @@ class UCharacterAsset;
 class UGameplayEffect;
 
 
-
-/**
- *
- * 
- * 
- */
-UCLASS(Abstract)
-class REN_API ARCharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface
+USTRUCT()
+struct FCharacterData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ARCharacterBase();
+	UPROPERTY(EditAnywhere, Meta = (AllowedTypes = "Asset.Character"))
+	FPrimaryAssetId AssetId;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayTag, float> Attributes;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayTag, FInstancedStruct> Metadata;
+
+	UPROPERTY(EditAnywhere)
+	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Abstract)
+class REN_API ACharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public ISpawnContextProvider
+{
+
+	GENERATED_BODY()
+
+public:
+
+	ACharacterBase();
+
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<const UCharacterAsset>  CharacterAsset;
+
+	UPROPERTY(EditAnywhere)
+	FCharacterData CharacterData;
+
 
 
 	DECLARE_MULTICAST_DELEGATE(FOnCharacterDied);
@@ -42,19 +75,15 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnCharacterRevived);
 	FOnCharacterRevived OnCharacterRevived;
 
-
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 
 	virtual bool IsAlive() const;
 
-
-	virtual void InitializeCharacter(const UCharacterAsset* CharacterAsset);
-	virtual void InitializeAttributes(const TMap<FGameplayTag, float>& Attributes);
-	virtual void InitializeTags(const TMap<FGameplayTag, float>& Attributes);
-
+	virtual void InitializeCharacter();
 	virtual void DeinitializeCharacter();
+
 
 
 
@@ -73,10 +102,36 @@ public:
 	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	// ~ End of IGameplayTagAssetInterface
 
+	// ~ ISpawnContextProvider
+	virtual void GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& OutValue) const override;
+	// ~ End of ISpawnContextProvider
+
 protected:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayEffect> InitialAttributeEffectClass;
+
+
+	virtual void RefreshCharacter();
+
+
+
+
+	virtual void InitializeAttributes();
+	virtual void RefreshAttributes();
+
+	virtual void AddDefaultAttributes();
+	virtual void AddRuntimeAttributes();
+
+	virtual void ApplyAttributes();
+
+
+	virtual void InitializeTags();
+
+
+
+
+	virtual int GetCharacterLevel() const;
 
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))

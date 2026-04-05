@@ -60,6 +60,7 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogInventoryInstance, Log, All);
 // ~ End of Inventory Categories
 
 // ~ Avatar Categories
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatar, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatarAscension, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacterParty, Log, All);

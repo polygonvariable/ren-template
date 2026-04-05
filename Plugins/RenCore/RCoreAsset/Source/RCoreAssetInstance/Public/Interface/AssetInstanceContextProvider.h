@@ -6,14 +6,14 @@
 #include "UObject/Interface.h"
 
 // Generated Headers
-#include "AssetInstanceData.generated.h"
+#include "AssetInstanceContextProvider.generated.h"
 
 // Module Macros
 #define REN_API RCOREASSETINSTANCE_API
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
-class UAssetInstanceData : public UInterface
+class UAssetInstanceContextProvider : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -21,15 +21,16 @@ class UAssetInstanceData : public UInterface
 /**
  * 
  */
-class REN_API IAssetInstanceData
+class REN_API IAssetInstanceContextProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual FGuid GetInstanceId() const = 0;
-	virtual void SetInstanceId(const FGuid& InstanceId) = 0;
+	virtual FGuid GetAssetInstanceId() const = 0;
+	virtual FPrimaryAssetId GetAssetId() const = 0;
+	virtual FPrimaryAssetType GetAssetType() const = 0;
 
 };
 

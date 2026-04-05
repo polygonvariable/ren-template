@@ -10,6 +10,8 @@
 
 // Project Headers
 #include "Asset/CharacterAsset.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 #include "Settings/AvatarSettings.h"
 #include "Settings/CharacterSettings.h"
 #include "Storage/AvatarStorage.h"
@@ -39,16 +41,6 @@ AAvatarCharacter::AAvatarCharacter() : Super()
 	bUseControllerRotationYaw = false;
 }
 
-FGuid AAvatarCharacter::GetInstanceId() const
-{
-	return AvatarId;
-}
-
-void AAvatarCharacter::SetInstanceId(const FGuid& InstanceId)
-{
-	AvatarId = InstanceId;
-}
-
 void AAvatarCharacter::CameraPan(FVector2D Axis)
 {
 	AddControllerYawInput(Axis.X);
@@ -67,43 +59,105 @@ void AAvatarCharacter::CameraZoom(float Delta, float Multiplier)
 
 
 
-void AAvatarCharacter::InitializeCharacter(const UCharacterAsset* CharacterAsset)
+FGuid AAvatarCharacter::GetAssetInstanceId() const
 {
-	UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
-	if (!IsValid(CharacterAsset) || !IsValid(AvatarSubsystem))
+	return AvatarInstance.AvatarId;
+}
+
+FPrimaryAssetId AAvatarCharacter::GetAssetId() const
+{
+	return CharacterAsset->GetPrimaryAssetId();
+}
+
+FPrimaryAssetType AAvatarCharacter::GetAssetType() const
+{
+	return CharacterAsset->GetPrimaryAssetType();
+}
+
+void AAvatarCharacter::InitializeCharacter()
+{
+	if (CharacterData.SourceType == EAssetQuerySource::Asset)
 	{
+		Super::InitializeCharacter();
+		return;
+	}
+	
+	UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
+	if (!IsValid(AvatarSubsystem))
+	{
+		LOG_ERROR(LogAvatar, TEXT("AvatarSubsystem is invalid"));
 		return;
 	}
 
 	AvatarStorage = AvatarSubsystem->GetAvatarCollection();
 	if (!IsValid(AvatarStorage))
 	{
+		LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
+		return;
+	}
+	
+	const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
+	if (!FoundInstance)
+	{
+		LOG_ERROR(LogAvatar, TEXT("Avatar data not found"));
 		return;
 	}
 
-	FPrimaryAssetId AssetId = CharacterAsset->GetPrimaryAssetId();
-	const FAvatarInstance* AvatarInstance = AvatarStorage->GetInstance(AssetId);
-	if (AvatarInstance)
-	{
-		AvatarId = AvatarInstance->AvatarId;
+	AvatarInstance = *FoundInstance;
+	AvatarStorage->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
 
+	Super::InitializeCharacter();
+}
+
+void AAvatarCharacter::DeinitializeCharacter()
+{
+	if (IsValid(AvatarStorage))
+	{
+		AvatarStorage->OnStorageUpdated.RemoveAll(this);
+	}
+	AvatarStorage = nullptr;
+	AvatarInstance.Reset();
+
+	Super::DeinitializeCharacter();
+}
+
+void AAvatarCharacter::RefreshCharacter()
+{
+	if (!IsValid(AvatarStorage))
+	{
+		return;
+	}
+
+	const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
+	if (!FoundInstance || AvatarInstance == *FoundInstance)
+	{
+		LOG_ERROR(LogAvatar, TEXT("Avatar data not found or not changed"));
+		return;
+	}
+
+	AvatarInstance = *FoundInstance;
+
+	RefreshAttributes();
+}
+
+
+void AAvatarCharacter::AddRuntimeAttributes()
+{
+	if (CharacterData.SourceType == EAssetQuerySource::Instance)
+	{
 		const UCharacterSettings* Settings = UCharacterSettings::Get();
+		TMap<FGameplayTag, float>& Attributes = CharacterData.Attributes;
 
-		TMap<FGameplayTag, float> Attributes;
-		Attributes.Add(Settings->AttributeHealthTag, AvatarInstance->Health);
-
-		InitializeAttributes(Attributes);
-		InitializeTags(Attributes);
+		Attributes.Add(Settings->AttributeHealthTag, AvatarInstance.Health);
 	}
+}
 
-	TArray<UActorComponent*> Components = GetComponentsByInterface(UAssetInstanceData::StaticClass());
-	for (UActorComponent* Component : Components)
+int AAvatarCharacter::GetCharacterLevel() const
+{
+	if (CharacterData.SourceType == EAssetQuerySource::Instance)
 	{
-		IAssetInstanceData* AssetInstanceInterface = Cast<IAssetInstanceData>(Component);
-		if (AssetInstanceInterface)
-		{
-			AssetInstanceInterface->SetInstanceId(AvatarId);
-		}
+		return AvatarInstance.Ascension.Level;
 	}
+	return Super::GetCharacterLevel();
 }
 

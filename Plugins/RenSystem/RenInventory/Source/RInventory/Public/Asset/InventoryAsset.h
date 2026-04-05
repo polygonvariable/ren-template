@@ -8,7 +8,7 @@
 #include "Asset/InstancedDataAsset.h"
 #include "Definition/InventoryItemRarity.h"
 #include "Definition/InventoryItemType.h"
-#include "Interface/IAssetComposition.h"
+#include "Interface/AssetComposition.h"
 
 // Generated Headers
 #include "InventoryAsset.generated.h"

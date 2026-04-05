@@ -93,7 +93,7 @@ void UInventoryAscensionDashboardUI::ToggleAscension(const FInventoryInstance* I
 	int MaxLevel = ActiveAscensionProvider->GetMaxLevel();
 	int MaxRank = ActiveAscensionProvider->GetMaxRank();
 
-	if (UAscensionLibrary::IsRankUpRequired(Item->Ascension, LevelPerRank, MaxLevel, MaxRank))
+	if (FAscensionLibrary::IsRankUpRequired(Item->Ascension, LevelPerRank, MaxLevel, MaxRank))
 	{
 		ToggleRankUp(Item);
 	}

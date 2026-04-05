@@ -11,7 +11,7 @@
 #include "AbilityMacro.h"
 
 // Generated Headers
-#include "DefenceSet.generated.h"
+#include "DefenseSet.generated.h"
 
 
 
@@ -21,15 +21,15 @@
  * 
  */
 UCLASS()
-class UDefenceSet : public UAttributeSet
+class UDefenseSet : public UAttributeSet
 {
 
 	GENERATED_BODY()
 
 public:
 
-	ATTRIBUTE_ACCESSORS(UDefenceSet, Physical)
-	ATTRIBUTE_ACCESSORS(UDefenceSet, Elemental)
+	ATTRIBUTE_ACCESSORS(UDefenseSet, Physical)
+	ATTRIBUTE_ACCESSORS(UDefenseSet, Elemental)
 
 public:
 

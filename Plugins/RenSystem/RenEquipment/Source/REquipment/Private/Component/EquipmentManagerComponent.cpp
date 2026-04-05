@@ -3,13 +3,10 @@
 // Parent Header
 #include "Component/EquipmentManagerComponent.h"
 
-// Engine Headers
-#include "UObject/ObjectSaveContext.h"
-
 // Project Headers
 #include "Actor/EquipmentActor.h"
 #include "Asset/CoreDataAsset.h"
-#include "Interface/AssetInstanceData.h"
+#include "Interface/AssetInstanceContextProvider.h"
 #include "Interface/IEquipmentProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -32,41 +29,19 @@ void UEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext)
-{
-	Super::PreSave(ObjectSaveContext);
-
-#if WITH_EDITOR
-	SpawnData.Empty();
-
-	for (FEquipmentSpawnData Data : SpawnDataEd)
-	{
-		UCoreDataAsset* DataAsset = Data.DataAsset.LoadSynchronous();
-		if (!IsValid(DataAsset) || !DataAsset->Implements<UEquipmentProvider>())
-		{
-			LOG_ERROR(LogEquipment, TEXT("Invalid asset or asset does not implement EquipmentProvider"));
-			continue;
-		}
-
-		Data.AssetId = DataAsset->GetPrimaryAssetId();
-		SpawnData.Add(Data);
-	}
-#endif
-}
-
 void UEquipmentManagerComponent::BeginPlay()
 {
 	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
 
 	ActorFreeList = UActorFreeListSubsystem::Get(GetWorld());
 
-	IAssetInstanceData* InstanceData = Cast<IAssetInstanceData>(GetOwner());
+	IAssetInstanceContextProvider* InstanceData = Cast<IAssetInstanceContextProvider>(GetOwner());
 	if (InstanceData)
 	{
-		OwnerId = InstanceData->GetInstanceId();
+		OwnerId = InstanceData->GetAssetInstanceId();
 	}
 
-	if (EquipmentSource == EAssetQuerySource::Instance)
+	if (SourceType == EAssetQuerySource::Instance)
 	{
 		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 		if (IsValid(EquipmentSubsystem))
@@ -99,10 +74,7 @@ void UEquipmentManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReaso
 
 void UEquipmentManagerComponent::SpawnEquipment()
 {
-	if (EquipmentSource == EAssetQuerySource::Instance)
-	{
-		GetInstancedSpawnData();
-	}
+	UpdateSpawnData();
 
 	if (!IsValid(AssetManager) || SpawnData.Num() == 0)
 	{
@@ -117,21 +89,15 @@ void UEquipmentManagerComponent::SpawnEquipment()
 	_EquipmentSpawnId = FGuid::NewGuid();
 
 	TArray<FPrimaryAssetId> AssetIds;
-	for (const FEquipmentSpawnData& Data : SpawnData)
+	for (const FEquipmentData& Data : SpawnData)
 	{
 		AssetIds.Add(Data.AssetId);
 	}
 
 	const TArray<FName> AssetBundles = Settings->EquipmentBundles;
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(_EquipmentSpawnId, AssetIds, AssetBundles);
-	if (!Future.IsValid())
-	{
-		LOG_ERROR(LogEquipment, TEXT("Failed to initialize load equipment assets"));
-		return;
-	}
-
 	TWeakObjectPtr<UEquipmentManagerComponent> WeakThis(this);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(_EquipmentSpawnId, AssetIds, AssetBundles);
 	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
 		{
 			UEquipmentManagerComponent* This = WeakThis.Get();
@@ -167,8 +133,13 @@ void UEquipmentManagerComponent::SyncOwnerEquipment(const FGuid& InOwnerId)
 	}
 }
 
-void UEquipmentManagerComponent::GetInstancedSpawnData()
+void UEquipmentManagerComponent::UpdateSpawnData()
 {
+	if (SourceType == EAssetQuerySource::Asset)
+	{
+		return;
+	}
+
 	SpawnData.Empty();
 
 	if (!IsValid(EquipmentStorage))
@@ -188,7 +159,7 @@ void UEquipmentManagerComponent::GetInstancedSpawnData()
 	{
 		const FEquipmentKey& EquipmentKey = Kv.Value;
 
-		FEquipmentSpawnData Data;
+		FEquipmentData Data;
 		Data.AssetId = EquipmentKey.AssetId;
 		Data.EquipmentId = EquipmentKey.AssetInstanceId;
 		Data.EquipmentSlot = Kv.Key;
@@ -202,7 +173,7 @@ void UEquipmentManagerComponent::SpawnEquipment_Internal()
 	UWorld* World = GetWorld();
 	FTransform SpawnTransform;
 
-	for (const FEquipmentSpawnData& Data : SpawnData)
+	for (const FEquipmentData& Data : SpawnData)
 	{
 		UCoreDataAsset* Asset = Cast<UCoreDataAsset>(AssetManager->GetPrimaryAssetObject(Data.AssetId));
 		const IEquipmentProvider* EquipmentProvider = Cast<IEquipmentProvider>(Asset);
@@ -234,8 +205,8 @@ void UEquipmentManagerComponent::SpawnEquipment_Internal()
 		}
 
 		EquipmentActor->EquipmentAsset = Asset;
+		EquipmentActor->EquipmentData = Data;
 		EquipmentActor->OwnerId = OwnerId;
-		EquipmentActor->SpawnData = Data;
 
 		if (!EquipmentActor->HasActorBegunPlay())
 		{

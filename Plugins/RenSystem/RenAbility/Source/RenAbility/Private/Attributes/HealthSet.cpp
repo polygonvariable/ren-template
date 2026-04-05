@@ -69,13 +69,25 @@ void UHealthSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& 
 {
 	Super::PreAttributeChange(Attribute, NewValue);
 
-	if (Attribute == GetMinHealthAttribute())
+	if (Attribute == GetHealthAttribute())
 	{
-		NewValue = FMath::Max(NewValue, 0.0f);
+		NewValue = FMath::Clamp(NewValue, GetMinHealth(), GetMaxHealth());
+	}
+	else if (Attribute == GetMinHealthAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
 	}
 	else if (Attribute == GetMaxHealthAttribute())
 	{
-		NewValue = FMath::Max(NewValue, 1.0f);
+		NewValue = FMath::Max(NewValue, GetMinHealth());
+	}
+	else if (Attribute == GetHealAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.0f);
+	}
+	else if (Attribute == GetDamageAttribute())
+	{
+		NewValue = FMath::Max(NewValue, 0.0f);
 	}
 }
 

@@ -36,7 +36,7 @@ public:
 	FGuid OwnerId;
 
 	UPROPERTY(VisibleAnywhere)
-	FEquipmentSpawnData SpawnData;
+	FEquipmentData EquipmentData;
 
 
 	void InitializeEquipment();
@@ -45,8 +45,8 @@ public:
 	void RefreshEquipment();
 
 	// ~ IActorLinkedNode
-	virtual AActor* GetNextNode() const override;
-	virtual void SetNextNode(AActor* Node) override;
+	virtual AActor* GetNextNode() const override final;
+	virtual void SetNextNode(AActor* Node) override final;
 	// ~ End of IActorLinkedNode
 
 	// ~ AActor

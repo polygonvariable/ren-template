@@ -22,7 +22,7 @@ void UResistanceExecutionCalculation::Execute_Implementation(const FGameplayEffe
 		// FRGameplayEffectContext* Context = FRGameplayEffectContext::Resolve(Spec.GetContext());
 		//
 		//
-
+		
 		const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 		const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
@@ -49,6 +49,40 @@ void UResistanceExecutionCalculation::Execute_Implementation(const FGameplayEffe
 		if (NewValue > 0.0f)
 		{
 			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(TargetAttribute, EGameplayModOp::Additive, NewValue));
+		}
+	}
+
+#endif
+}
+
+
+
+
+
+
+void UAttributeInitializationExecutionCalculation::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
+{
+#if WITH_SERVER_CODE
+
+	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	int Level = FMath::Clamp(Spec.GetLevel(), 1, MaxLevel);
+
+	for (const FAttributeInitializationData& Item : InitializationData)
+	{
+		const FGameplayTag& Tag = Item.Tag;
+		const FGameplayAttribute& Attribute = Item.Attribute;
+
+		if (!Tag.IsValid() || !Attribute.IsValid())
+		{
+			continue;
+		}
+
+		float Value = Spec.GetSetByCallerMagnitude(Tag, false, 0.0f);
+		float ScaledValue = Value * ((bApplyLevel) ? Level : 1.0f);
+
+		if (ScaledValue > 0.0f)
+		{
+			OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(Attribute, EGameplayModOp::Override, ScaledValue));
 		}
 	}
 

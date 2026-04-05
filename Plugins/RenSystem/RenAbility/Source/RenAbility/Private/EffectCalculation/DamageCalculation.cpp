@@ -9,7 +9,7 @@
 
 // Project Headers
 #include "Log/LogMacro.h"
-#include "Attributes/DefenceSet.h"
+#include "Attributes/DefenseSet.h"
 #include "Attributes/DamageSet.h"
 #include "Attributes/LevelSet.h"
 #include "Attributes/HealthSet.h"
@@ -64,7 +64,7 @@ UPhysicalDamageMagnitudeCalculation::UPhysicalDamageMagnitudeCalculation()
 {
 	InitializeAttributes(
 		UDamageSet::GetPhysicalAttribute(),
-		UDefenceSet::GetPhysicalAttribute()
+		UDefenseSet::GetPhysicalAttribute()
 	);
 }
 
@@ -72,7 +72,7 @@ UMagicalDamageMagnitudeCalculation::UMagicalDamageMagnitudeCalculation()
 {
 	InitializeAttributes(
 		UDamageSet::GetElementalAttribute(),
-		UDefenceSet::GetElementalAttribute()
+		UDefenseSet::GetElementalAttribute()
 	);
 }
 
@@ -128,10 +128,10 @@ float UAggregateDamageMMC::CalculateBaseMagnitude_Implementation(const FGameplay
 	if (!Context) return 0.0f;
 
 	float SourceDamage = GetAggregateValue(GetSourceASC(Context), UDamageSet::GetPhysicalAttribute());
-	float TargetDefence = GetAggregateValue(GetTargetASC(Context), UDefenceSet::GetPhysicalAttribute());
+	float TargetDefense = GetAggregateValue(GetTargetASC(Context), UDefenseSet::GetPhysicalAttribute());
 
 	return FMath::RoundToInt(
-		FMath::Max(0.0f, SourceDamage - TargetDefence)
+		FMath::Max(0.0f, SourceDamage - TargetDefense)
 	);
 }
 

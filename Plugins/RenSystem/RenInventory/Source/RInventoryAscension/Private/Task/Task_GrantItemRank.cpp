@@ -109,7 +109,7 @@ void UTask_GrantItemRank::Step_CheckTarget()
 	MaxLevel = AscensionProvider->GetMaxLevel();
 	MaxRank = AscensionProvider->GetMaxRank();
 
-	bool bRankUpRequired = UAscensionLibrary::IsRankUpRequired(AscensionData, LevelPerRank, MaxLevel, MaxRank);
+	bool bRankUpRequired = FAscensionLibrary::IsRankUpRequired(AscensionData, LevelPerRank, MaxLevel, MaxRank);
 	if (!bRankUpRequired)
 	{
 		Fail(TEXT("Item cannot rank up"));

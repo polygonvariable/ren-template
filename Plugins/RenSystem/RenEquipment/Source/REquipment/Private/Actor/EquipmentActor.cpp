@@ -26,22 +26,25 @@ void AEquipmentActor::InitializeEquipment()
 {
 	AttachToActor(GetOwner(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-	IAssetInstanceCollectionProvider* CollectionProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), SpawnData.AssetId);
-	if (CollectionProvider)
+	if (EquipmentData.SourceType == EAssetQuerySource::Instance)
 	{
-		FName CollectionId = CollectionProvider->GetDefaultCollectionId();
-		InstanceCollection = CollectionProvider->GetInstanceCollection(CollectionId);
-		if (InstanceCollection)
+		IAssetInstanceCollectionProvider* CollectionProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), EquipmentData.AssetId);
+		if (CollectionProvider)
 		{
-			InstanceCollection->GetOnAssetInstanceCollectionUpdated().AddUObject(this, &AEquipmentActor::RefreshEquipment);
-
-			IAscensionInstanceProvider* AscensionInterface = Cast<IAscensionInstanceProvider>(InstanceCollection);
-			if (AscensionInterface)
+			FName CollectionId = CollectionProvider->GetDefaultCollectionId();
+			InstanceCollection = CollectionProvider->GetInstanceCollection(CollectionId);
+			if (InstanceCollection)
 			{
-				const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(SpawnData.AssetId, SpawnData.EquipmentId);
-				if (AscensionData)
+				InstanceCollection->GetOnAssetInstanceCollectionUpdated().AddUObject(this, &AEquipmentActor::RefreshEquipment);
+
+				IAscensionInstanceProvider* AscensionInterface = Cast<IAscensionInstanceProvider>(InstanceCollection);
+				if (AscensionInterface)
 				{
-					SpawnData.AscensionData = *AscensionData;
+					const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(EquipmentData.AssetId, EquipmentData.EquipmentId);
+					if (AscensionData)
+					{
+						// SpawnData.AscensionData = *AscensionData;
+					}
 				}
 			}
 		}
@@ -62,7 +65,7 @@ void AEquipmentActor::DeinitializeEquipment()
 	InstanceCollection = nullptr;
 	EquipmentAsset = nullptr;
 	OwnerId.Invalidate();
-	SpawnData.Reset();
+	EquipmentData.Reset();
 
 	DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 }
@@ -75,13 +78,13 @@ void AEquipmentActor::RefreshEquipment()
 		return;
 	}
 
-	const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(SpawnData.AssetId, SpawnData.EquipmentId);
+	const FAscensionData* AscensionData = AscensionInterface->GetAscensionInstance(EquipmentData.AssetId, EquipmentData.EquipmentId);
 	if (!AscensionData)
 	{
 		return;
 	}
 
-	SpawnData.AscensionData = *AscensionData;
+	// SpawnData.AscensionData = *AscensionData;
 }
 
 void AEquipmentActor::BeginPlay()

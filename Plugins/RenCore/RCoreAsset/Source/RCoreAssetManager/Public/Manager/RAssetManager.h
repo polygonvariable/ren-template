@@ -43,7 +43,7 @@ public:
 	TFuture<FLatentLoadedAsset<T>> FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId, const TArray<FName>& AssetBundles = TArray<FName>());
 
 	template<typename T>
-	TFuture<FLatentLoadedAssets<T>> FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles = TArray<FName>());
+	TFuture<FLatentLoadedAssets<T>> FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles = TArray<FName>(), bool bResolveObjects = true);
 
 
 	template<typename T>

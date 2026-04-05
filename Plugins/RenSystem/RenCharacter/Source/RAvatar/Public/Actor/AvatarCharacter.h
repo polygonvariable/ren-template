@@ -3,8 +3,9 @@
 #pragma once
 
 // Project Headers
-#include "Actor/RCharacterBase.h"
-#include "Interface/AssetInstanceData.h"
+#include "Actor/CharacterBase.h"
+#include "Interface/AssetInstanceContextProvider.h"
+#include "Definition/Runtime/AvatarInstance.h"
 
 // Generated Headers
 #include "AvatarCharacter.generated.h"
@@ -23,7 +24,7 @@ class UAvatarStorage;
  * 
  */
 UCLASS(Abstract, MinimalAPI)
-class AAvatarCharacter : public ARCharacterBase, public IAssetInstanceData
+class AAvatarCharacter : public ACharacterBase, public IAssetInstanceContextProvider
 {
 
 	GENERATED_BODY()
@@ -39,19 +40,21 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 
-	// ~ IAssetInstanceData
-	virtual FGuid GetInstanceId() const override;
-	virtual void SetInstanceId(const FGuid& InstanceId) override;
-	// ~ End of IAssetInstanceData
+	// ~ ISpawnContextProvider
+	virtual FGuid GetAssetInstanceId() const override;
+	virtual FPrimaryAssetId GetAssetId() const override;
+	virtual FPrimaryAssetType GetAssetType() const override;
+	// ~ End of ISpawnContextProvider
 
-	// ~ ARCharacterBase
-	virtual void InitializeCharacter(const UCharacterAsset* CharacterAsset) override;
-	// ~ End of ARCharacterBase
+	// ~ ACharacterBase
+	virtual void InitializeCharacter() override;
+	virtual void DeinitializeCharacter() override;
+	// ~ End of ACharacterBase
 
 protected:
 
 	UPROPERTY(VisibleAnywhere)
-	FGuid AvatarId;
+	FAvatarInstance AvatarInstance;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarStorage> AvatarStorage;
@@ -61,6 +64,13 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float CameraMaxZoom = 400.0f;
+
+
+	// ~ ACharacterBase
+	virtual void RefreshCharacter() override;
+	virtual void AddRuntimeAttributes() override;
+	virtual int GetCharacterLevel() const override;
+	// ~ End of ACharacterBase
 
 
 	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))

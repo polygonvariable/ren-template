@@ -37,3 +37,50 @@ public:
 
 };
 
+
+USTRUCT()
+struct FAttributeInitializationData
+{
+	
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag Tag;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayAttribute Attribute;
+
+};
+
+
+/**
+ * 
+ */
+UCLASS(Abstract, DisplayName = "Attribute Initialization", Within = GameplayEffect)
+class UAttributeInitializationExecutionCalculation : public UGameplayEffectExecutionCalculation
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ UGameplayEffectExecutionCalculation
+	void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const;
+	// ~ End of UGameplayEffectExecutionCalculation
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	bool bApplyLevel = false;
+
+	UPROPERTY(EditAnywhere, Meta = (ClampMin = 1, ClampMax = 10000, EditCondition = "bApplyLevel==true", EditConditionHides))
+	int MaxLevel = 100;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FAttributeInitializationData> InitializationData;
+
+};
+
+

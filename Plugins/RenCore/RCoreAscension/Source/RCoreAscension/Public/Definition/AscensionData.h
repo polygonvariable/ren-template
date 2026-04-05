@@ -53,5 +53,18 @@ public:
 		return FString::Printf(TEXT("Experience: %d, Level: %d, Rank: %d"), Experience, Level, Rank);
 	}
 
+	friend inline bool operator == (const FAscensionData& A, const FAscensionData& B)
+	{
+		return A.Experience == B.Experience && A.Level == B.Level && A.Rank == B.Rank;
+	}
+
+	friend inline uint32 GetTypeHash(const FAscensionData& A)
+	{
+		uint32 Hash = GetTypeHash(A.Experience);
+		Hash = HashCombineFast(Hash, GetTypeHash(A.Level));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.Rank));
+		return Hash;
+	}
+
 };
 

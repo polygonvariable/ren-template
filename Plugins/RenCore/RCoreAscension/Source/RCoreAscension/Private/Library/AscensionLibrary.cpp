@@ -3,14 +3,16 @@
 // Parent Header
 #include "Library/AscensionLibrary.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/AscensionData.h"
 
 
+int FAscensionLibrary::ScaleByLevel(int Value, int Level)
+{
+    return FMath::Clamp(Value * Level, 0, INT32_MAX); // Linear
+}
 
-bool UAscensionLibrary::AddExperience(const FAscensionData& CurrentData, int Amount, int ExperiencePerLevel, int LevelPerRank, int MaxLevel, int MaxRank, int& OutExperience, int& OutLevel)
+bool FAscensionLibrary::AddExperience(const FAscensionData& CurrentData, int Amount, int ExperiencePerLevel, int LevelPerRank, int MaxLevel, int MaxRank, int& OutExperience, int& OutLevel)
 {
     OutExperience = CurrentData.Experience;
 	OutLevel = CurrentData.Level;
@@ -50,7 +52,7 @@ bool UAscensionLibrary::AddExperience(const FAscensionData& CurrentData, int Amo
     return true;
 }
 
-bool UAscensionLibrary::CanGainExperience(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank)
+bool FAscensionLibrary::CanGainExperience(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank)
 {
     if (Data.Rank > MaxRank)
     {
@@ -67,7 +69,7 @@ bool UAscensionLibrary::CanGainExperience(const FAscensionData& Data, int LevelP
     return Data.Level < MaxLevelForRank;
 }
 
-bool UAscensionLibrary::IsRankUpRequired(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank)
+bool FAscensionLibrary::IsRankUpRequired(const FAscensionData& Data, int LevelPerRank, int MaxLevel, int MaxRank)
 {
     if (Data.Rank >= MaxRank)
     {
@@ -79,7 +81,7 @@ bool UAscensionLibrary::IsRankUpRequired(const FAscensionData& Data, int LevelPe
     return Data.Level >= MaxLevelForRank;
 }
 
-int UAscensionLibrary::GetMaxLevelForRank(int Rank, int LevelPerRank, int MaxLevel)
+int FAscensionLibrary::GetMaxLevelForRank(int Rank, int LevelPerRank, int MaxLevel)
 {
     const int32 CalculatedMax = Rank * LevelPerRank;
     return FMath::Min(CalculatedMax, MaxLevel);

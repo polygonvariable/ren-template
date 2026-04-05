@@ -19,10 +19,14 @@
 void UStaminaSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
-	
-	if (Attribute == GetMaxStaminaAttribute())
+
+	if (Attribute == GetStaminaAttribute())
 	{
-		NewValue = FMath::Max(NewValue, 1.0f);
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxStamina());
+	}
+	else if (Attribute == GetMaxStaminaAttribute())
+	{
+		NewValue = FMath::Clamp(NewValue, 1.0f, 1000.0f);
 	}
 }
 

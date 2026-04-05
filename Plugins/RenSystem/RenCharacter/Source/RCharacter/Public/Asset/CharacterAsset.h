@@ -16,7 +16,7 @@
 class UGameplayAbility;
 class UAssetGroup;
 class UAssetCollection;
-class ARCharacterBase;
+class ACharacterBase;
 
 struct FAscensionData;
 
@@ -38,14 +38,23 @@ public:
 	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
 	int Health = 500;
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
-	int Attack = 100;
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
-	int Defense = 100;
+	UPROPERTY(EditDefaultsOnly)
+	int PhysicalDamage = 60;
+
+	UPROPERTY(EditDefaultsOnly)
+	int PhysicalDefense = 70;
+
+
+	UPROPERTY(EditDefaultsOnly)
+	int ElementalDamage = 40;
+
+	UPROPERTY(EditDefaultsOnly)
+	int ElementalDefense = 50;
+
 
 	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Character"))
-	TSoftClassPtr<ARCharacterBase> CharacterClass;
+	TSoftClassPtr<ACharacterBase> CharacterClass;
 
 	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Ability"))
 	TArray<TSoftClassPtr<UGameplayAbility>> CharacterAbilities;

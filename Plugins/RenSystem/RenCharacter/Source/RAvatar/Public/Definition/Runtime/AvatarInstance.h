@@ -37,6 +37,13 @@ public:
 	UPROPERTY(EditAnywhere, SaveGame)
 	FAscensionData Ascension;
 
+	void Reset()
+	{
+		AvatarId.Invalidate();
+		Health = 0;
+		Ascension.Reset();
+	}
+
 	void Sanitize()
 	{
 		Health = FMath::Max(0, Health);
@@ -45,10 +52,23 @@ public:
 
 	FString ToString() const
 	{
-		FString Detail = TEXT("Item Id: ") + AvatarId.ToString();
+		FString Detail = TEXT("Avatar Id: ") + AvatarId.ToString();
 		Detail += TEXT("\nHealth: ") + FString::FromInt(Health);
 		Detail += TEXT("\nAscension: ") + Ascension.ToString();
 		return Detail;
+	}
+
+	friend inline bool operator == (const FAvatarInstance& A, const FAvatarInstance& B)
+	{
+		return A.AvatarId == B.AvatarId && A.Health == B.Health && A.Ascension == B.Ascension;
+	}
+
+	friend inline uint32 GetTypeHash(const FAvatarInstance& A)
+	{
+		uint32 Hash = GetTypeHash(A.AvatarId);
+		Hash = HashCombineFast(Hash, GetTypeHash(A.Health));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.Ascension));
+		return Hash;
 	}
 
 };

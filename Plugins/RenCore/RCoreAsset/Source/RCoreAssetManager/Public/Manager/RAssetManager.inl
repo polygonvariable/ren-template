@@ -66,7 +66,7 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 }
 
 template<typename T>
-TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles)
+TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles, bool bResolveObjects)
 {
 	TSharedPtr<TPromise<FLatentLoadedAssets<T>>> Promise = MakeShared<TPromise<FLatentLoadedAssets<T>>>();
 	TFuture<FLatentLoadedAssets<T>> Future = Promise->GetFuture();
@@ -77,10 +77,8 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 		LatentHandles.Add(LatentId, Handle);
 	};
 
-	// LoadingAssetsIds.Append(AssetIds);
-
 	TWeakPtr<FLatentHandle> WeakHandle(Handle);
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetIds, LatentId, WeakHandle, Promise]()
+	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, bResolveObjects, AssetIds, LatentId, WeakHandle, Promise]()
 		{
 			FLatentLoadedAssets<T> Result;
 			TSharedPtr<FLatentHandle> Handle = WeakHandle.Pin();
@@ -92,20 +90,27 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 			}
 			else
 			{
-				TArray<T*> Objects;
-				for (const FPrimaryAssetId& AssetId : AssetIds)
+				if (bResolveObjects)
 				{
-					T* Object = Cast<T>(GetPrimaryAssetObject(AssetId));
-					if (Object)
+					TArray<T*> Objects;
+					for (const FPrimaryAssetId& AssetId : AssetIds)
 					{
-						Objects.Add(Object);
+						T* Object = Cast<T>(GetPrimaryAssetObject(AssetId));
+						if (Object)
+						{
+							Objects.Add(Object);
+						}
 					}
-					// LoadingAssetsIds.Remove(AssetId);
-				}
 
-				Result.bSuccess = (Objects.Num() == AssetIds.Num());
-				Result.bCancelled = false;
-				Result.Assets = MoveTemp(Objects);
+					Result.bSuccess = (Objects.Num() == AssetIds.Num());
+					Result.bCancelled = false;
+					Result.Assets = MoveTemp(Objects);
+				}
+				else
+				{
+					Result.bSuccess = true;
+					Result.bCancelled = false;
+				}
 			}
 
 			Promise->SetValue(MoveTemp(Result));

@@ -5,17 +5,14 @@
 // Engine Headers
 #include "UObject/Interface.h"
 
-// Project Headers
-
 // Generated Headers
-#include "IAssetComposition.generated.h"
+#include "AssetComposition.generated.h"
 
 // Module Macros
 #define REN_API RCOREASSET_API
 
 // Forward Declarations
 class UAssetCollection;
-
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
@@ -40,7 +37,6 @@ public:
 	virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const = 0;
 
 };
-
 
 
 // Module Macros

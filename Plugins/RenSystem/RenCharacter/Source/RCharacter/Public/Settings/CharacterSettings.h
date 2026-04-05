@@ -31,6 +31,27 @@ public:
 	FGameplayTag AttributeHealthTag;
 
 	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributeMaxHealthTag;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributeLevelTag;
+
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributePhysicalDamageTag;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributePhysicalDefenseTag;
+
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributeElementalDamageTag;
+
+	UPROPERTY(Config, EditDefaultsOnly)
+	FGameplayTag AttributeElementalDefenseTag;
+
+
+	UPROPERTY(Config, EditDefaultsOnly)
 	FGameplayTag StateAliveTag;
 
 	UPROPERTY(Config, EditDefaultsOnly)

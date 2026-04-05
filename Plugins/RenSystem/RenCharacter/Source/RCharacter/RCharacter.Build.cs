@@ -29,9 +29,12 @@ public class RCharacter : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
                 "GameplayAbilities",
+				"StructUtils",
                 "GameplayTags",
+				"RCoreCommon",
                 "RCoreAscension",
                 "RCoreAsset",
+                "RCoreAssetInstance",
             }
 			);
 			

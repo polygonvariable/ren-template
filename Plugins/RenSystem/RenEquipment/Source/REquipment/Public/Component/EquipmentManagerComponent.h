@@ -14,7 +14,6 @@
 #include "EquipmentManagerComponent.generated.h"
 
 // Forward Declarations
-class FObjectPreSaveContext;
 class URAssetManager;
 class UEquipmentStorage;
 class UEquipmentSubsystem;
@@ -36,8 +35,8 @@ public:
 
 	UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TArray<FEquipmentSpawnData> SpawnData;
+	UPROPERTY(EditAnywhere)
+	TArray<FEquipmentData> SpawnData;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -52,25 +51,14 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// ~ End of UActorComponent
 
-	// ~ UObject
-	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
-	// ~ End of UObject
-
 protected:
 
 	UPROPERTY(VisibleAnywhere)
 	FGuid OwnerId;
 
 	UPROPERTY(EditAnywhere)
-	EAssetQuerySource EquipmentSource = EAssetQuerySource::Instance;
+	EAssetQuerySource SourceType = EAssetQuerySource::Instance;
 
-#if WITH_EDITORONLY_DATA
-
-	UPROPERTY(EditAnywhere, Meta = (DisplayName = "Spawn Data (Editor)"))
-	TArray<FEquipmentSpawnData> SpawnDataEd;
-
-#endif
-	
 	UPROPERTY()
 	URAssetManager* AssetManager = nullptr;
 
@@ -89,7 +77,7 @@ protected:
 
 	void SyncOwnerEquipment(const FGuid& InOwnerId);
 
-	void GetInstancedSpawnData();
+	void UpdateSpawnData();
 	void SpawnEquipment_Internal();
 
 private:

@@ -90,7 +90,7 @@ void UAvatarAscensionDashboardUI::ToggleAscension(const FAvatarInstance* Instanc
 	int MaxLevel = ActiveAscensionProvider->GetMaxLevel();
 	int MaxRank = ActiveAscensionProvider->GetMaxRank();
 
-	if (UAscensionLibrary::IsRankUpRequired(Instance->Ascension, LevelPerRank, MaxLevel, MaxRank))
+	if (FAscensionLibrary::IsRankUpRequired(Instance->Ascension, LevelPerRank, MaxLevel, MaxRank))
 	{
 		ToggleRankUp(Instance);
 	}

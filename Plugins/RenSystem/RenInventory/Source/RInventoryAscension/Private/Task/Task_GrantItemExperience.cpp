@@ -11,7 +11,7 @@
 #include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/InventoryInstance.h"
 #include "Interface/AscensionProvider.h"
-#include "Interface/IAssetComposition.h"
+#include "Interface/AssetComposition.h"
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
@@ -240,7 +240,7 @@ void UTask_GrantItemExperience::Step_AddExperience()
 	int NewExperience = 0;
 	int NewLevel = 0;
 
-	bool bAdded = UAscensionLibrary::AddExperience(AscensionData, Amount, ExperiencePerLevel, LevelPerRank, MaxLevel, MaxRank, NewExperience, NewLevel);
+	bool bAdded = FAscensionLibrary::AddExperience(AscensionData, Amount, ExperiencePerLevel, LevelPerRank, MaxLevel, MaxRank, NewExperience, NewLevel);
 	if (!bAdded)
 	{
 		Fail(TEXT("Failed to add experience"));
