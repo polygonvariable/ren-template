@@ -18,7 +18,6 @@
 struct FLatentHandle;
 
 
-
 /**
  *
  */
@@ -76,8 +75,14 @@ protected:
 	TWeakPtr<FLatentHandle> CreateHandle(const FGuid& LatentId);
 	void RemoveHandle(const FGuid& LatentId);
 
-};
+public:
 
+	static REN_API URAssetManager* Get()
+	{
+		return Cast<URAssetManager>(UAssetManager::GetIfInitialized());
+	}
+
+};
 
 
 // Module Macros

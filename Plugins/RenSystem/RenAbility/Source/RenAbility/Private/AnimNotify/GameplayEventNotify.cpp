@@ -7,13 +7,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 
-
 void UGameplayEventNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);
 
 	AActor* Owner = MeshComp->GetOwner();
-	if (Owner)
+	if (IsValid(Owner) && EventTag.IsValid())
 	{
 		UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Owner, EventTag, EventPayload);
 	}

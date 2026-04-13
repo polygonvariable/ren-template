@@ -3,11 +3,9 @@
 // Parent Header
 #include "Subsystem/AvatarSubsystem.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/AvatarAsset.h"
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -15,9 +13,7 @@
 #include "Storage/AvatarStorage.h"
 
 
-
-
-UAvatarStorage* UAvatarSubsystem::GetAvatarCollection() const
+UAvatarStorage* UAvatarSubsystem::GetAvatarStorage() const
 {
 	IStorageProvider* Storage = StorageProvider.Get();
 	if (!Storage)
@@ -33,7 +29,7 @@ UAvatarStorage* UAvatarSubsystem::GetAvatarCollection() const
 
 IAssetInstanceCollection* UAvatarSubsystem::GetInstanceCollection(const FName& CollectionId) const
 {
-	return Cast<IAssetInstanceCollection>(GetAvatarCollection());
+	return Cast<IAssetInstanceCollection>(GetAvatarStorage());
 }
 
 FPrimaryAssetType UAvatarSubsystem::GetSupportedAssetType() const
@@ -41,12 +37,10 @@ FPrimaryAssetType UAvatarSubsystem::GetSupportedAssetType() const
 	return UAvatarAsset::GetPrimaryAssetType();
 }
 
-FName UAvatarSubsystem::GetDefaultCollectionId() const
+FName UAvatarSubsystem::GetPrimaryCollectionId() const
 {
 	return UAvatarSettings::Get()->StorageId;
 }
-
-
 
 void UAvatarSubsystem::OnPreGameInitialized()
 {
@@ -68,19 +62,17 @@ void UAvatarSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::OnPreGameInitialized);
 }
 
 void UAvatarSubsystem::Deinitialize()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 	StorageProvider.Reset();
 
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
-
 
 UAvatarSubsystem* UAvatarSubsystem::Get(UWorld* World)
 {

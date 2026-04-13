@@ -38,7 +38,7 @@ public:
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
 	virtual FPrimaryAssetType GetSupportedAssetType() const override;
-	virtual FName GetDefaultCollectionId() const override;
+	virtual FName GetPrimaryCollectionId() const override;
 	// ~ End of IAssetInstanceCollectionProvider
 
 protected:

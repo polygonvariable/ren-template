@@ -156,7 +156,7 @@ void UTask_ClaimCraftItem::Step_PerformTransaction()
 		return;
 	}
 
-	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	FName TargetSourceId = TargetInterchange->GetPrimaryCollectionId();
 	IAssetInstanceCollection* TargetTransaction = TargetInterchange->GetInstanceCollection(TargetSourceId);
 	if (!TargetTransaction)
 	{

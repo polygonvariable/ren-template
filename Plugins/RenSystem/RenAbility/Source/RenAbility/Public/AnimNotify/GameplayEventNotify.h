@@ -3,18 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
+#include "Abilities/GameplayAbilityTypes.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "GameplayTagContainer.h"
-#include "Abilities/GameplayAbilityTypes.h"
 
 // Generated Headers
 #include "GameplayEventNotify.generated.h"
 
 
-
 /**
- * 
  * 
  */
 UCLASS()
@@ -28,11 +25,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag EventTag;
 
-	FGameplayEventData EventPayload;
-
-public:
-
+	// ~ UAnimNotify
 	void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference) override;
+	// ~ End of UAnimNotify
+
+protected:
+
+	FGameplayEventData EventPayload;
 
 };
 

@@ -8,6 +8,12 @@
 // Generated Headers
 #include "CoreDataAsset.generated.h"
 
+// Module Macros
+#define REN_API RCOREASSET_API
+
+// Forward Declarations
+class UAssetFragment;
+
 
 /**
  *
@@ -29,5 +35,29 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Fragments")
+	TArray<TObjectPtr<UAssetFragment>> Fragments;
+
+
+	REN_API const UAssetFragment* FindFragmentByClass(TSubclassOf<UAssetFragment> InClass) const;
+
+	template<typename T>
+	const T* FindFragmentByClass() const
+	{
+		return Cast<T>(FindFragmentByClass(T::StaticClass()));
+	}
+
+#if WITH_EDITORONLY_DATA
+
+	// ~ UPrimaryDataAsset
+	REN_API virtual void UpdateAssetBundleData() override;
+	// ~ End of UPrimaryDataAsset
+
+#endif
+
 };
+
+
+// Module Macros
+#undef REN_API
 

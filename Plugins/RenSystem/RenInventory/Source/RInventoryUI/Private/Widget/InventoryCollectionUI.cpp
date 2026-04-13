@@ -3,15 +3,12 @@
 // Parent Header
 #include "Widget/InventoryCollectionUI.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Storage/InventoryStorage.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/InventoryEntry.h"
-
 
 
 void UInventoryCollectionUI::InitializeCollection()
@@ -22,18 +19,15 @@ void UInventoryCollectionUI::InitializeCollection()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
+	InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
 		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
 	}
-
-	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
 }
 
 void UInventoryCollectionUI::DisplayEntries()
 {
-	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (!IsValid(InventoryStorage))
 	{
 		LOG_ERROR(LogInventory, TEXT("InventoryStorage is invalid"));
@@ -56,12 +50,11 @@ void UInventoryCollectionUI::DisplayEntries()
 
 void UInventoryCollectionUI::NativeDestruct()
 {
-	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (IsValid(InventoryStorage))
 	{
 		InventoryStorage->OnStorageUpdated.RemoveAll(this);
 	}
-	Inventory.Reset();
+	InventoryStorage = nullptr;
 
 	Super::NativeDestruct();
 }

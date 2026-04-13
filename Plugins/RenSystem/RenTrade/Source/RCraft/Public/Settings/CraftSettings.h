@@ -17,13 +17,18 @@ class UCraftSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = Game, DefaultConfig)
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Trade Craft"))
 class UCraftSettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
 
 public:
+
+	UCraftSettings(const FObjectInitializer& ObjectInitializer)
+	{
+		CategoryName = TEXT("Ren Project");
+	}
 
 	UPROPERTY(Config, EditDefaultsOnly)
 	FName StorageId;

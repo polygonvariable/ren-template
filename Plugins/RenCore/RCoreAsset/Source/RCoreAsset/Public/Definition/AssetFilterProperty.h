@@ -15,6 +15,7 @@ class REN_API FAssetFilterProperty
 public:
 
 	static const FName AssetId;
+	static const FName InstanceId;
 
 };
 

@@ -39,8 +39,21 @@ void UTask_GrantItemExperience::OnStarted()
 		return;
 	}
 
-	Inventory = InventoryStorage;
+#if WITH_EDITOR
+	bool bSuccess = InventoryStorage->UpdateInstanceById(TargetAssetId, TargetId, [](FInventoryInstance* Item)
+		{
+			if (Item)
+			{
+				Item->Ascension.Level++;
+				Item->Sanitize();
+			}
+		}
+	);
+	Success();
+	return;
+#endif
 
+	Inventory = InventoryStorage;
 	Step_LoadAssets();
 }
 
@@ -225,7 +238,6 @@ void UTask_GrantItemExperience::Step_RemoveItem()
 	Step_AddExperience();
 }
 
-// UE_DISABLE_OPTIMIZATION
 void UTask_GrantItemExperience::Step_AddExperience()
 {
 	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
@@ -265,5 +277,4 @@ void UTask_GrantItemExperience::Step_AddExperience()
 	}
 	Success();
 }
-// UE_ENABLE_OPTIMIZATION
 

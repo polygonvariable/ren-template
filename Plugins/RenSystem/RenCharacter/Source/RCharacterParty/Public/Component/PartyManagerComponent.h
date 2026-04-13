@@ -2,13 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-#include "InstancedStruct.h"
-
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Definition/AscensionData.h"
 #include "Definition/AssetQuerySource.h"
 
 // Generated Headers
@@ -16,7 +11,6 @@
 
 // Forward Declarations
 class FObjectPreSaveContext;
-class UCharacterAsset;
 class URAssetManager;
 class UPartySubsystem;
 class UPartyStorage;
@@ -37,35 +31,12 @@ public:
 
 	UPartyManagerComponent(const FObjectInitializer& ObjectInitializer);
 
-
-	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FCharacterData> SpawnData;
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Asset", EditConditionHides))
+	TArray<FCharacterData> CharacterSpawnData;
 
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnParty();
-
-	void SpawnParty_Internal();
-
-
-	void SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterData& Data);
-
-	void RegisterCharacter(const FPrimaryAssetId& AssetId, ACharacterBase* Character);
-	void UnregisterCharacter(const FPrimaryAssetId& AssetId);
-
-
-	//UFUNCTION(BlueprintCallable)
-	//void SpawnParty();
-
-	//UFUNCTION(BlueprintCallable)
-	//void ClearParty();
-
-	//UFUNCTION(BlueprintCallable)
-	//void SwitchCharacter(int Index);
-
 
 	// ~ UActorComponent
 	virtual void BeginPlay() override;
@@ -79,8 +50,14 @@ public:
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager;
+	UPROPERTY(EditAnywhere)
+	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TArray<FPrimaryAssetId> CharacterAssetIds;
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TMap<FPrimaryAssetId, TObjectPtr<ACharacterBase>> PartyCharacters;
 
 	UPROPERTY()
 	TObjectPtr<UPartySubsystem> PartySubsystem;
@@ -88,35 +65,23 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UPartyStorage> PartyStorage;
 
-	UPROPERTY(VisibleAnywhere)
-	TArray<FPrimaryAssetId> PartyOrder;
-
-
-	void UpdatePartyOrder();
-	void UpdateSpawnData();
-	void RemovePreviousParty();
-
-
 	UPROPERTY()
-	TMap<FPrimaryAssetId, TObjectPtr<ACharacterBase>> PartyCharacters;
-
-	//TArray<FPrimaryAssetId> PartyOrder;
+	TObjectPtr<URAssetManager> AssetManager;
 
 
-	//void SpawnParty_Internal(const TArray<UCharacterAsset*>& Assets);
+	void SpawnPartyCharacters();
+	void SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterData& Data);
 
-	//void SpawnCharacter(UWorld* World, const UCharacterAsset* CharacterAsset);
-	//void RemoveCharacter(ACharacterBase* Character);
+	void RegisterCharacter(const FPrimaryAssetId& AssetId, ACharacterBase* Character);
+	void UnregisterCharacter(const FPrimaryAssetId& AssetId);
 
-	//void RegisterCharacter(ACharacterBase* Character);
-	//void UnregisterCharacter(ACharacterBase* Character);
-
-	//void HandleOnCharacterDied();
+	void RefreshPartyOrder();
+	void RefreshSpawnData();
+	void CleanupPartyCharacters();
 
 	void PossessAliveCharacter();
 	ACharacter* GetAliveCharacter() const;
-
-	APlayerController* GetControllerWithAuthority() const;
+	APlayerController* GetController() const;
 
 private:
 

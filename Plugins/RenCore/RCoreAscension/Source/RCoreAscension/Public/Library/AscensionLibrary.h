@@ -18,6 +18,8 @@ class FAscensionLibrary
 
 public:
 
+    REN_API static int ClampLevel(int Level);
+
     REN_API static int ScaleByLevel(int Value, int Level);
 
     REN_API static bool AddExperience(const FAscensionData& CurrentData, int Amount, int ExperiencePerLevel, int LevelPerRank, int MaxLevel, int MaxRank, int& OutExperience, int& OutLevel);

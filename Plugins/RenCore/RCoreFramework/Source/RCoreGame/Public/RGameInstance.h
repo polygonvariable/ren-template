@@ -3,12 +3,10 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 
 // Generated Headers
 #include "RGameInstance.generated.h"
-
 
 
 /**
@@ -22,7 +20,9 @@ class URGameInstance : public UGameInstance
 
 public:
 
+	// ~ URGameInstance
 	virtual void Init() override;
+	// ~ End of URGameInstance
 
 protected:
 

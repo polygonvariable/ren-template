@@ -28,6 +28,7 @@ public class RCoreStorage : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"RCoreTask",
+                "RCoreDelegate",
             }
 			);
 			

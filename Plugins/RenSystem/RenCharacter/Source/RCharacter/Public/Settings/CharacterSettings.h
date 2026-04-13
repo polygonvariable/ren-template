@@ -14,7 +14,7 @@
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig)
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character"))
 class UCharacterSettings : public UDeveloperSettings
 {
 
@@ -27,34 +27,34 @@ public:
 		CategoryName = TEXT("Ren Project");
 	}
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributeHealthTag;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
+	FGameplayTag DataHealthTag;
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributeMaxHealthTag;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
+	FGameplayTag DataMaxHealthTag;
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributeLevelTag;
-
-
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributePhysicalDamageTag;
-
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributePhysicalDefenseTag;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Level Tags")
+	FGameplayTag DataLevelTag;
 
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributeElementalDamageTag;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags")
+	FGameplayTag DataPhysicalDamageTag;
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FGameplayTag AttributeElementalDefenseTag;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags")
+	FGameplayTag DataElementalDamageTag;
 
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags")
+	FGameplayTag DataPhysicalDefenseTag;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags")
+	FGameplayTag DataElementalDefenseTag;
+
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "State Tags")
 	FGameplayTag StateAliveTag;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "State Tags")
 	FGameplayTag StateDeadTag;
 
 

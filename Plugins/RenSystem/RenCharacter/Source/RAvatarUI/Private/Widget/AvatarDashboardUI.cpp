@@ -9,7 +9,6 @@
 #include "Widget/AssetEntry.h"
 
 
-
 void UAvatarDashboardUI::InitializeDetail()
 {
 	AvatarDetail->PrimarySourceId = PrimarySourceId;
@@ -52,7 +51,8 @@ void UAvatarDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetC
 	Widget->PrimarySourceId = PrimarySourceId;
 	Widget->AddToViewport();
 	Widget->InitializeDetail();
-	Widget->InitializeAssetByEntry(Entry);
+	Widget->InitializeAssetDetail(GetActiveAsset());
+	Widget->InitializeEntryDetail(Entry);
 }
 
 void UAvatarDashboardUI::NativeConstruct()

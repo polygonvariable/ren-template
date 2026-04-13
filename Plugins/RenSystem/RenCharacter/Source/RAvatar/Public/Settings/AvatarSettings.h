@@ -24,7 +24,7 @@ class UAvatarSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig)
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Avatar"))
 class UAvatarSettings : public UDeveloperSettings, public IStorageSettingsProvider
 {
 

@@ -32,7 +32,6 @@ class REN_API IAscensionInstanceProvider
 public:
 
 	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const = 0;
-	virtual bool UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback) = 0;
 
 };
 

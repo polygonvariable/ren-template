@@ -33,7 +33,18 @@ public:
 
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const = 0;
 	virtual FPrimaryAssetType GetSupportedAssetType() const = 0;
-	virtual FName GetDefaultCollectionId() const = 0;
+	virtual FName GetPrimaryCollectionId() const = 0;
+
+	IAssetInstanceCollection* GetPrimaryCollection() const
+	{
+		return GetInstanceCollection(GetPrimaryCollectionId());
+	}
+
+	template<typename T>
+	T* GetPrimaryCollection() const
+	{
+		return Cast<T>(GetPrimaryCollection());
+	}
 
 };
 

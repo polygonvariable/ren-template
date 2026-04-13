@@ -27,7 +27,6 @@
 #include "Widget/AvatarEntry.h"
 
 
-
 void UAvatarAscensionDashboardUI::InitializeDetail()
 {
 	AvatarDetail->PrimarySourceId = PrimarySourceId;
@@ -42,27 +41,23 @@ void UAvatarAscensionDashboardUI::InitializeDetail()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection();
-	if (IsValid(AvatarCollection) && !bAutoRefresh)
+	AvatarStorage = AvatarSubsystem->GetAvatarStorage();
+	if (IsValid(AvatarStorage) && bAutoRefresh)
 	{
-		AvatarCollection->OnStorageUpdated.AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
+		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
 	}
-
-	AvatarStorage = TWeakObjectPtr<UAvatarStorage>(AvatarCollection);
 }
 
 void UAvatarAscensionDashboardUI::RefreshDetail()
 {
-	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
-	if (!IsValid(AvatarCollection))
+	if (!IsValid(AvatarStorage))
 	{
 		return;
 	}
 
-	const FAvatarInstance* Instance = AvatarCollection->GetInstance(GetActiveAssetId());
+	const FAvatarInstance* Instance = AvatarStorage->GetInstance(GetActiveAssetId());
 	ToggleAscension(Instance);
 }
-
 
 
 void UAvatarAscensionDashboardUI::EnableControls()
@@ -78,19 +73,18 @@ void UAvatarAscensionDashboardUI::DisableControls()
 }
 
 
-
 void UAvatarAscensionDashboardUI::ToggleAscension(const FAvatarInstance* Instance)
 {
-	if (!ActiveAscensionProvider || !Instance)
+	if (!AscensionProvider || !Instance)
 	{
 		return;
 	}
 
-	int LevelPerRank = ActiveAscensionProvider->GetLevelInterval(Instance->Ascension.Rank);
-	int MaxLevel = ActiveAscensionProvider->GetMaxLevel();
-	int MaxRank = ActiveAscensionProvider->GetMaxRank();
+	int LevelInterval = AscensionProvider->GetLevelInterval(Instance->Ascension.Rank);
+	int MaxLevel = AscensionProvider->GetMaxLevel();
+	int MaxRank = AscensionProvider->GetMaxRank();
 
-	if (FAscensionLibrary::IsRankUpRequired(Instance->Ascension, LevelPerRank, MaxLevel, MaxRank))
+	if (FAscensionLibrary::IsRankUpRequired(Instance->Ascension, LevelInterval, MaxLevel, MaxRank))
 	{
 		ToggleRankUp(Instance);
 	}
@@ -111,7 +105,7 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 	LevelUpButton->SetVisibility(ESlateVisibility::Collapsed);
 	RankUpButton->SetVisibility(ESlateVisibility::Visible);
 
-	if (!ActiveAscensionProvider || !Instance)
+	if (!AscensionProvider || !Instance)
 	{
 		return;
 	}
@@ -123,18 +117,18 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 	{
 		AssetFilter->Included.Empty();
 
-		const UAssetCollection* ItemCollection = ActiveAscensionProvider->GetRankAssets(Instance->Ascension);
+		const UAssetCollection* ItemCollection = AscensionProvider->GetRankAssets(Instance->Ascension);
 		if (IsValid(ItemCollection))
 		{
 			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
 			ItemCollection->GetAssetList(AssetList);
 
-			for (const TPair<FPrimaryAssetId, FAssetDetail>& AssetKv : AssetList)
+			for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
 			{
-				const FPrimaryAssetId& AssetId = AssetKv.Key;
+				const FPrimaryAssetId& AssetId = Kv.Key;
 
 				AssetFilter->Included.Add(AssetId);
-				RankItemCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
+				RankItemCollection->AddSubDetails(AssetId, FInstancedStruct::Make(Kv.Value));
 			}
 		}
 	}
@@ -143,22 +137,17 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 }
 
 
-
 void UAvatarAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Result)
 {
 	if (Result.State == ETaskState::Pending)
 	{
 		DisableControls();
-		LOG_WARNING(LogAvatarAscension, TEXT("Task Started"));
 	}
 	else
 	{
 		EnableControls();
-		LOG_WARNING(LogAvatarAscension, TEXT("Task Finished, Message: %s"), *Result.Message);
 	}
 }
-
-
 
 void UAvatarAscensionDashboardUI::HandleLevelUp()
 {
@@ -187,28 +176,25 @@ void UAvatarAscensionDashboardUI::HandleRankUp()
 }
 
 
-
 void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	AvatarDetail->InitializeAssetDetail(Asset);
 
-	const IAscensionProvider* AscensionProvider = Cast<IAscensionProvider>(Asset);
+	AscensionProvider = Cast<IAscensionProvider>(Asset);
 	if (AscensionProvider)
 	{
-		ActiveAscensionProvider = AscensionProvider;
-
-		UFilterCriterion_Asset* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
-		if (IsValid(AssetIdFilter))
+		UFilterCriterion_Asset* AssetFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
+		if (IsValid(AssetFilter))
 		{
-			AssetIdFilter->Included.Empty();
+			AssetFilter->Included.Empty();
 
-			const UAssetCollection* ExperienceCollection = AscensionProvider->GetExperienceAssets(AscensionData);
-			if (IsValid(ExperienceCollection))
+			const UAssetCollection* ItemCollection = AscensionProvider->GetExperienceAssets(AscensionInstance);
+			if (IsValid(ItemCollection))
 			{
 				TArray<FPrimaryAssetId> AssetList;
-				ExperienceCollection->GetAssetIds(AssetList);
+				ItemCollection->GetAssetIds(AssetList);
 
-				AssetIdFilter->Included.Append(AssetList);
+				AssetFilter->Included.Append(AssetList);
 			}
 		}
 
@@ -221,7 +207,7 @@ void UAvatarAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 	AvatarDetail->InitializeEntryDetail(Entry);
 
 	const UAvatarEntry* AvatarEntry = Cast<UAvatarEntry>(Entry);
-	if (IsValid(AvatarEntry))
+	if (!IsValid(AvatarEntry))
 	{
 		return;
 	}
@@ -232,10 +218,9 @@ void UAvatarAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 		return;
 	}
 
-	AscensionData = AvatarInstance->Ascension;
+	AscensionInstance = AvatarInstance->Ascension;
 	ToggleAscension(AvatarInstance);
 }
-
 
 
 void UAvatarAscensionDashboardUI::NativeConstruct()
@@ -253,15 +238,14 @@ void UAvatarAscensionDashboardUI::NativeDestruct()
 	RankUpButton->OnClicked.RemoveAll(this);
 	LevelUpButton->OnClicked.RemoveAll(this);
 
-	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
-	if (IsValid(AvatarCollection))
+	if (IsValid(AvatarStorage))
 	{
-		AvatarCollection->OnStorageUpdated.RemoveAll(this);
+		AvatarStorage->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage.Reset();
+	AvatarStorage = nullptr;
 
 	AscensionSubsystem = nullptr;
-	ActiveAscensionProvider = nullptr;
+	AscensionProvider = nullptr;
 
 	Super::NativeDestruct();
 }

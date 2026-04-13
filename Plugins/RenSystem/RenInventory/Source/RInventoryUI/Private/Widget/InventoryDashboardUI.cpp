@@ -11,7 +11,6 @@
 #include "Widget/AssetFilterUI.h"
 
 
-
 void UInventoryDashboardUI::InitializeDetail()
 {
 	InventoryDetail->PrimarySourceId = PrimarySourceId;
@@ -54,7 +53,8 @@ void UInventoryDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> Widg
 	Widget->PrimarySourceId = PrimarySourceId;
 	Widget->AddToViewport();
 	Widget->InitializeDetail();
-	Widget->InitializeAssetByEntry(SelectedEntry);
+	Widget->InitializeAssetDetail(GetActiveAsset());
+	Widget->InitializeEntryDetail(SelectedEntry);
 }
 
 void UInventoryDashboardUI::NativeConstruct()

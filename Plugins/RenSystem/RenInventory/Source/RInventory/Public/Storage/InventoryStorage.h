@@ -49,12 +49,11 @@ public:
 	REN_API virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
 	REN_API virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
 
-	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() override;
+	virtual FGameEventDelegate& GetOnAssetInstanceCollectionUpdated() override;
 	// ~ End of IAssetInstanceCollection
 
 	// ~ IAscensionInstanceProvider
 	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const override;
-	virtual bool UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback) override;
 	// ~ End of IAscensionInstanceProvider
 
 	REN_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback);
@@ -67,8 +66,6 @@ public:
 	REN_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TFunctionRef<void(const FInventorySortEntry&)> Callback);
 
 protected:
-
-	FOnAssetInstanceCollectionUpdated OnCollectionUpdated;
 
 	UPROPERTY(SaveGame)
 	TMap<FPrimaryAssetId, FInventoryStack> InventoryStack;

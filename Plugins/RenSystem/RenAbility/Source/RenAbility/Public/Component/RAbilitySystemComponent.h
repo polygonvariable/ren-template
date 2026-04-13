@@ -58,6 +58,8 @@ public:
 
 
 
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Owned Gameplay Tags"))
+	const FGameplayTagContainer& BP_GetOwnedGameplayTags() const { return GetOwnedGameplayTags(); }
 
 
 	// ~ UAbilitySystemComponent

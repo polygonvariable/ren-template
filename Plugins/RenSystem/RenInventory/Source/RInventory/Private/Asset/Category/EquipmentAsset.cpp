@@ -4,19 +4,13 @@
 #include "Asset/Category/EquipmentAsset.h"
 
 
-
-const TSoftClassPtr<AActor>& UEquipmentAsset::GetEquipmentClass() const
-{
-	return EquipmentClass;
-}
-
-const TArray<FSoftClassPath>& UEquipmentAsset::GetEquipmentAbilities() const
-{
-	return EquipmentAbilities;
-}
-
-const FName& UEquipmentAsset::GetEquipmentSocket() const
-{
-	return SocketName;
-}
+//const FSoftClassPath& UEquipmentAsset::GetEquipmentActorClass() const
+//{
+//	return EquipmentActorClass;
+//}
+//
+//const TSoftObjectPtr<UPrimaryDataAsset>& UEquipmentAsset::GetEquipmentDataAsset() const
+//{
+//	return EquipmentDataAsset;
+//}
 

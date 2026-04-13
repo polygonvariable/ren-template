@@ -46,7 +46,7 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> AssetDisplayName = nullptr;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> ClearButton = nullptr;
 
 	UPROPERTY(EditAnywhere)
@@ -61,7 +61,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
 
-	FGuid OwnerId;
+	FGuid OwnerInstanceId;
 	FPrimaryAssetId OwnerAssetId;
 
 
@@ -74,6 +74,7 @@ protected:
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget
+	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation) override;

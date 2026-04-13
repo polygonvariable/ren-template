@@ -4,8 +4,8 @@
 
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Interface/AssetInstanceContextProvider.h"
 #include "Definition/Runtime/AvatarInstance.h"
+#include "Interface/Actor/AssetInstanceContextProvider.h"
 
 // Generated Headers
 #include "AvatarCharacter.generated.h"
@@ -17,10 +17,7 @@ class UCharacterAsset;
 class UAvatarStorage;
 
 
-
 /**
- *
- * 
  * 
  */
 UCLASS(Abstract, MinimalAPI)
@@ -40,11 +37,11 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 
-	// ~ ISpawnContextProvider
+	// ~ IAssetInstanceContextProvider
 	virtual FGuid GetAssetInstanceId() const override;
 	virtual FPrimaryAssetId GetAssetId() const override;
 	virtual FPrimaryAssetType GetAssetType() const override;
-	// ~ End of ISpawnContextProvider
+	// ~ End of IAssetInstanceContextProvider
 
 	// ~ ACharacterBase
 	virtual void InitializeCharacter() override;
@@ -69,7 +66,6 @@ protected:
 	// ~ ACharacterBase
 	virtual void RefreshCharacter() override;
 	virtual void AddRuntimeAttributes() override;
-	virtual int GetCharacterLevel() const override;
 	// ~ End of ACharacterBase
 
 

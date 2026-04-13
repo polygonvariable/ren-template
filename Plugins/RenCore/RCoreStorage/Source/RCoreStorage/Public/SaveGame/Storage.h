@@ -5,6 +5,9 @@
 // Engine Headers
 #include "GameFramework/SaveGame.h"
 
+// Project Headers
+#include "Delegate/GameEventDelegate.h" 
+
 // Generated Headers
 #include "Storage.generated.h"
 
@@ -23,8 +26,7 @@ class UStorage : public USaveGame
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE(FOnStorageUpdated);
-	FOnStorageUpdated OnStorageUpdated;
+	FGameEventDelegate OnStorageUpdated;
 
 	REN_API virtual void InitializeDefaults();
 	REN_API virtual void InitializeStorage();

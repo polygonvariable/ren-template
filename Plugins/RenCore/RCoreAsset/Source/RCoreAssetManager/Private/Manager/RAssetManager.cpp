@@ -4,7 +4,6 @@
 #include "Manager/RAssetManager.inl"
 
 
-
 TWeakPtr<FLatentHandle> URAssetManager::CreateHandle(const FGuid& LatentId)
 {
 	TSharedPtr<FLatentHandle> Handle = MakeShared<FLatentHandle, ESPMode::ThreadSafe>();

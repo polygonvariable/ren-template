@@ -6,8 +6,8 @@
 #include "Engine/DeveloperSettings.h"
 
 // Project Headers
-#include "Interface/IStorageSettingsProvider.h"
 #include "Definition/Runtime/InventoryStack.h"
+#include "Interface/IStorageSettingsProvider.h"
 
 // Generated Headers
 #include "InventorySettings.generated.h"
@@ -17,11 +17,10 @@ class UInventoryStorage;
 class UInventorySubsystem;
 
 
-
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig)
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Inventory"))
 class UInventorySettings : public UDeveloperSettings, public IStorageSettingsProvider
 {
 
@@ -31,7 +30,7 @@ public:
 
 	UInventorySettings(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly)
 	FName StorageId;
 
 	UPROPERTY(Config, EditDefaultsOnly)
@@ -40,7 +39,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TSubclassOf<UInventorySubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Meta = (AllowedTypes = "Asset.Inventory"))
 	TMap<FPrimaryAssetId, FInventoryStack> DefaultInventory;
 
 
@@ -49,6 +48,7 @@ public:
 	virtual TSubclassOf<UStorage> GetStorageClass() const override;
 	// ~ End of IStorageSettingsProvider
 
+	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Inventory Settings"))
 	static const UInventorySettings* Get();
 
 };

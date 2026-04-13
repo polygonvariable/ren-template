@@ -49,12 +49,11 @@ public:
 	virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const override;
 	virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const override;
 
-	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() override;
+	virtual FGameEventDelegate& GetOnAssetInstanceCollectionUpdated() override;
 	// ~ End of IAssetInstanceCollection
 
 	// ~ IAscensionInstanceProvider
 	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const override;
-	virtual bool UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback) override;
 	// ~ End of IAscensionInstanceProvider
 
 	REN_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
@@ -64,8 +63,6 @@ public:
 	REN_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TFunctionRef<void(const FAvatarSortEntry&)> Callback);
 
 protected:
-
-	FOnAssetInstanceCollectionUpdated OnCollectionUpdated;
 
 	UPROPERTY(SaveGame)
 	TMap<FPrimaryAssetId, FAvatarInstance> AvatarCollection;

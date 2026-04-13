@@ -4,11 +4,12 @@
 #include "Subsystem/StorageSubsystem.h"
 
 // Engine Headers
+#include "Http.h"
 #include "GameFramework/SaveGame.h"
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
 #include "Interface/IStorageSettingsProvider.h"
 #include "Log/LogCategory.h"
@@ -94,8 +95,18 @@ void UStorageSubsystem::SaveStorage(const FName& StorageId)
 }
 
 
+int UStorageSubsystem::GetSlotIndex()
+{
+	return _SlotIndex;
+}
 
-bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InUserIndex, FString& OutStorageId) const
+void UStorageSubsystem::SetSlotIndex(int Index)
+{
+	_SlotIndex = FMath::Clamp(Index, 0, 9);
+}
+
+
+bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InSlotIndex, FString& OutStorageId) const
 {
 	if (!IsValid(InStorageClass))
 	{
@@ -103,10 +114,10 @@ bool UStorageSubsystem::MakeStorageId(TSubclassOf<UStorage> InStorageClass, cons
 		return false;
 	}
 
-	FString Combined = InStorageClass->GetPathName() + TEXT("::") + InSlotName + TEXT("::") + FString::FromInt(InUserIndex);
+	FString Combined = InStorageClass->GetPathName() + TEXT("::") + InSlotName + TEXT("::") + FString::FromInt(InSlotIndex);
 	uint32 Hash = GetTypeHash(Combined);
 
-	OutStorageId = FString::Printf(TEXT("Storage%03d_%08X"), (InUserIndex + 1), Hash);
+	OutStorageId = FString::Printf(TEXT("Storage%03d_%08X"), (InSlotIndex + 1), Hash);
 
 	return true;
 }
@@ -133,7 +144,7 @@ UStorage* UStorageSubsystem::CreateStorage_Internal(TSubclassOf<UStorage> Storag
 	}
 
 	FString FileId;
-	bool bSuccess = MakeStorageId(StorageClass, StorageId.ToString(), 0, FileId);
+	bool bSuccess = MakeStorageId(StorageClass, StorageId.ToString(), GetSlotIndex(), FileId);
 	if (!bSuccess)
 	{
 		LOG_ERROR(LogStorage, TEXT("Failed to make storage id"));
@@ -167,7 +178,7 @@ bool UStorageSubsystem::SaveStorage_Internal(UStorage* Storage, const FName& Sto
 	}
 
 	FString FileId;
-	bool bSuccess = MakeStorageId(Storage->GetClass(), StorageId.ToString(), 0, FileId);
+	bool bSuccess = MakeStorageId(Storage->GetClass(), StorageId.ToString(), GetSlotIndex(), FileId);
 	if (!bSuccess)
 	{
 		LOG_ERROR(LogStorage, TEXT("Failed to make storage id"));
@@ -274,7 +285,7 @@ UStorage* UStorageSubsystem::LoadStorage_Internal(const FName& StorageId, TSubcl
 
 void UStorageSubsystem::OnPreGameInitialized()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 }
 
 void UStorageSubsystem::SaveAllStorages()
@@ -293,14 +304,14 @@ bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UStorageSubsystem::OnPreGameInitialized);
 }
 
 void UStorageSubsystem::Deinitialize()
 {
 	SaveAllStorages();
 
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 	Super::Deinitialize();
 }
 

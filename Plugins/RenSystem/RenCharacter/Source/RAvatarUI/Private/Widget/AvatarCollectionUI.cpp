@@ -23,7 +23,7 @@ void UAvatarCollectionUI::InitializeCollection()
 		return;
 	}
 
-	AvatarStorage = AvatarSubsystem->GetAvatarCollection();
+	AvatarStorage = AvatarSubsystem->GetAvatarStorage();
 	if (IsValid(AvatarStorage) && bAutoRefresh)
 	{
 		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);

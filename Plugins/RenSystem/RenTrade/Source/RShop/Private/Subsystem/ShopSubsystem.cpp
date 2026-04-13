@@ -11,7 +11,7 @@
 #include "Definition/AssetDetail_Trade.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IShopProvider.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
@@ -150,14 +150,14 @@ void UShopSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogShop, TEXT("ShopSubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UShopSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UShopSubsystem::OnPreGameInitialized);
 }
 
 void UShopSubsystem::Deinitialize()
 {
 	StorageProvider.Reset();
 
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	LOG_WARNING(LogShop, TEXT("ShopSubsystem deinitialized"));
 	Super::Deinitialize();

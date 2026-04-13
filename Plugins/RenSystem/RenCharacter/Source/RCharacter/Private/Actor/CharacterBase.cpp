@@ -80,7 +80,6 @@ void ACharacterBase::DeinitializeCharacter()
 void ACharacterBase::RefreshCharacter()
 {
 	RefreshAttributes();
-	InitializeAttributes();
 }
 
 
@@ -89,6 +88,8 @@ void ACharacterBase::RefreshCharacter()
 
 void ACharacterBase::InitializeAttributes()
 {
+	_CharacterAttributes = CharacterData.Attributes;
+
 	AddDefaultAttributes();
 	AddRuntimeAttributes();
 	ApplyAttributes();
@@ -109,15 +110,13 @@ void ACharacterBase::AddDefaultAttributes()
 
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
 
-	TMap<FGameplayTag, float>& Attributes = CharacterData.Attributes;
+	_CharacterAttributes.Add(Settings->DataMaxHealthTag, CharacterAsset->Health);
 
-	Attributes.Add(Settings->AttributeMaxHealthTag, CharacterAsset->Health);
+	_CharacterAttributes.Add(Settings->DataPhysicalDamageTag, CharacterAsset->PhysicalDamage);
+	_CharacterAttributes.Add(Settings->DataPhysicalDefenseTag, CharacterAsset->PhysicalDefense);
 
-	Attributes.Add(Settings->AttributePhysicalDamageTag, CharacterAsset->PhysicalDamage);
-	Attributes.Add(Settings->AttributePhysicalDefenseTag, CharacterAsset->PhysicalDefense);
-
-	Attributes.Add(Settings->AttributeElementalDamageTag, CharacterAsset->ElementalDamage);
-	Attributes.Add(Settings->AttributeElementalDefenseTag, CharacterAsset->ElementalDefense);
+	_CharacterAttributes.Add(Settings->DataElementalDamageTag, CharacterAsset->ElementalDamage);
+	_CharacterAttributes.Add(Settings->DataElementalDefenseTag, CharacterAsset->ElementalDefense);
 }
 
 void ACharacterBase::AddRuntimeAttributes()
@@ -132,31 +131,37 @@ void ACharacterBase::ApplyAttributes()
 		return;
 	}
 
-	const TMap<FGameplayTag, float>& Attributes = CharacterData.Attributes;
-
 	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
 	Context.AddSourceObject(this);
 
 	FGameplayEffectSpecHandle Spec = ASC->MakeOutgoingSpec(InitialAttributeEffectClass, GetCharacterLevel(), Context);
 	if (Spec.IsValid())
 	{
-		Spec.Data->SetByCallerTagMagnitudes = Attributes;
+		Spec.Data->SetByCallerTagMagnitudes = _CharacterAttributes;
 		ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
 }
 
 int ACharacterBase::GetCharacterLevel() const
 {
-	if (!IsValid(CharacterAsset))
+	const FGameplayTag& LevelTag = UCharacterSettings::Get()->DataLevelTag;
+	const float* Level = _CharacterAttributes.Find(LevelTag);
+	if (!Level || !IsValid(CharacterAsset))
 	{
-		LOG_WARNING(LogCharacter, TEXT("CharacterAsset is invalid"));
-		return 1;
+		return _CharacterLevel;
 	}
 
-	const TMap<FGameplayTag, float>& Attributes = CharacterData.Attributes;
-	const FGameplayTag& LevelTag = UCharacterSettings::Get()->AttributeLevelTag;
+	return FMath::Clamp(*Level, 1.0f, CharacterAsset->GetMaxLevel());
+}
 
-	return FMath::Clamp(Attributes.FindRef(LevelTag), 1.0f, CharacterAsset->GetMaxLevel());
+void ACharacterBase::SetCharacterLevel(int Level)
+{
+	_CharacterLevel = Level;
+}
+
+TMap<FGameplayTag, float>& ACharacterBase::GetCharacterAttributes()
+{
+	return _CharacterAttributes;
 }
 
 
@@ -174,7 +179,7 @@ void ACharacterBase::InitializeTags()
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
 
 	FGameplayTag HealthTag;
-	int Health = CharacterData.Attributes.FindRef(Settings->AttributeHealthTag);
+	int Health = _CharacterAttributes.FindRef(Settings->DataHealthTag);
 	if (Health > 0)
 	{
 		HealthTag = Settings->StateAliveTag;

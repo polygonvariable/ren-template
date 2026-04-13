@@ -121,19 +121,6 @@ const FAscensionData* UInventoryStorage::GetAscensionInstance(const FPrimaryAsse
 	return &Instance->Ascension;
 }
 
-bool UInventoryStorage::UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback)
-{
-	FInventoryInstance* Instance = GetMutableItemById(AssetId, InstanceId);
-	if (!Instance)
-	{
-		return false;
-	}
-
-	Callback(Instance->Ascension);
-	OnStorageUpdated.Broadcast();
-	return true;
-}
-
 bool UInventoryStorage::UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback)
 {
 	FInventoryInstance* Item = GetMutableItemByIndex(AssetId, 0);
@@ -263,9 +250,9 @@ bool UInventoryStorage::ContainAnyInstances(const TMap<FPrimaryAssetId, int>& In
 	return bResult;
 }
 
-FOnAssetInstanceCollectionUpdated& UInventoryStorage::GetOnAssetInstanceCollectionUpdated()
+FGameEventDelegate& UInventoryStorage::GetOnAssetInstanceCollectionUpdated()
 {
-	return OnCollectionUpdated;
+	return OnStorageUpdated;
 }
 
 

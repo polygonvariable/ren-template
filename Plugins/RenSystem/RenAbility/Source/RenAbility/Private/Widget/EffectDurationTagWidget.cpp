@@ -27,7 +27,6 @@ void UEffectDurationTagWidget::RegisterASC(UAbilitySystemComponent* TargetASC)
 	}
 
 	ASC = TargetASC;
-	PRINT_WARNING(LogTemp, 199.0f, TEXT("ASC Registered"));
 	ASC->RegisterGameplayTagEvent(CaptureDurationTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &UEffectDurationTagWidget::OnTagCountChanged);
 }
 

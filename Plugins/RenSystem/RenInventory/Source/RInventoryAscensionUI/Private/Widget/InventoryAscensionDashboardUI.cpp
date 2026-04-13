@@ -27,7 +27,6 @@
 #include "Widget/InventoryEntry.h"
 
 
-
 void UInventoryAscensionDashboardUI::InitializeDetail()
 {
 	InventoryDetail->PrimarySourceId = PrimarySourceId;
@@ -45,18 +44,15 @@ void UInventoryAscensionDashboardUI::InitializeDetail()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
+	InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
 	if (IsValid(InventoryStorage) && bAutoRefresh)
 	{
-		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryAscensionDashboardUI::HandleOnItemUpdated);
+		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryAscensionDashboardUI::RefreshDetail);
 	}
-
-	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
 }
 
 void UInventoryAscensionDashboardUI::RefreshDetail()
 {
-	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (!IsValid(InventoryStorage))
 	{
 		return;
@@ -65,7 +61,6 @@ void UInventoryAscensionDashboardUI::RefreshDetail()
 	const FInventoryInstance* Item = InventoryStorage->GetInstanceById(GetActiveAssetId(), ActiveItemId);
 	ToggleAscension(Item);
 }
-
 
 
 void UInventoryAscensionDashboardUI::EnableControls()
@@ -81,17 +76,16 @@ void UInventoryAscensionDashboardUI::DisableControls()
 }
 
 
-
 void UInventoryAscensionDashboardUI::ToggleAscension(const FInventoryInstance* Item)
 {
-	if (!ActiveAscensionProvider || !Item)
+	if (!AscensionProvider || !Item)
 	{
 		return;
 	}
 
-	int LevelPerRank = ActiveAscensionProvider->GetLevelInterval(Item->Ascension.Rank);
-	int MaxLevel = ActiveAscensionProvider->GetMaxLevel();
-	int MaxRank = ActiveAscensionProvider->GetMaxRank();
+	int LevelPerRank = AscensionProvider->GetLevelInterval(Item->Ascension.Rank);
+	int MaxLevel = AscensionProvider->GetMaxLevel();
+	int MaxRank = AscensionProvider->GetMaxRank();
 
 	if (FAscensionLibrary::IsRankUpRequired(Item->Ascension, LevelPerRank, MaxLevel, MaxRank))
 	{
@@ -114,7 +108,7 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryInstance* Item
 	LevelUpButton->SetVisibility(ESlateVisibility::Collapsed);
 	RankUpButton->SetVisibility(ESlateVisibility::Visible);
 
-	if (!ActiveAscensionProvider || !Item)
+	if (!AscensionProvider || !Item)
 	{
 		return;
 	}
@@ -126,7 +120,7 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryInstance* Item
 	{
 		AssetFilter->Included.Empty();
 
-		const UAssetCollection* ItemCollection = ActiveAscensionProvider->GetRankAssets(Item->Ascension);
+		const UAssetCollection* ItemCollection = AscensionProvider->GetRankAssets(Item->Ascension);
 		if (IsValid(ItemCollection))
 		{
 			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
@@ -146,22 +140,17 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryInstance* Item
 }
 
 
-
 void UInventoryAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Result)
 {
 	if (Result.State == ETaskState::Pending)
 	{
 		DisableControls();
-		LOG_WARNING(LogInventoryAscension, TEXT("Task Started"));
 	}
 	else
 	{
 		EnableControls();
-		LOG_WARNING(LogInventoryAscension, TEXT("Task Finished, Message: %s"), *Result.Message);
 	}
 }
-
-
 
 void UInventoryAscensionDashboardUI::HandleLevelUp()
 {
@@ -189,34 +178,26 @@ void UInventoryAscensionDashboardUI::HandleRankUp()
 	AscensionSubsystem->AddRankPoints(PrimarySourceId, GetActiveAssetId(), ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
 }
 
-void UInventoryAscensionDashboardUI::HandleOnItemUpdated()
-{
-	RefreshDetail();
-}
-
-
 
 void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	InventoryDetail->InitializeAssetDetail(Asset);
 
-	const IAscensionProvider* AscensionProvider = Cast<IAscensionProvider>(Asset);
+	AscensionProvider = Cast<IAscensionProvider>(Asset);
 	if (AscensionProvider)
 	{
-		ActiveAscensionProvider = AscensionProvider;
-
-		UFilterCriterion_Asset* AssetIdFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
-		if (IsValid(AssetIdFilter))
+		UFilterCriterion_Asset* AssetFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
+		if (IsValid(AssetFilter))
 		{
-			AssetIdFilter->Included.Empty();
+			AssetFilter->Included.Empty();
 
-			const UAssetCollection* ExperienceCollection = AscensionProvider->GetExperienceAssets(AscensionData);
-			if (IsValid(ExperienceCollection))
+			const UAssetCollection* ItemCollection = AscensionProvider->GetExperienceAssets(AscensionInstance);
+			if (IsValid(ItemCollection))
 			{
 				TArray<FPrimaryAssetId> AssetList;
-				ExperienceCollection->GetAssetIds(AssetList);
+				ItemCollection->GetAssetIds(AssetList);
 
-				AssetIdFilter->Included.Append(AssetList);
+				AssetFilter->Included.Append(AssetList);
 			}
 		}
 
@@ -240,10 +221,10 @@ void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry
 		return;
 	}
 
-	AscensionData = InventoryInstance->Ascension;
+	ActiveItemId = InventoryInstance->ItemId;
+	AscensionInstance = InventoryInstance->Ascension;
 	ToggleAscension(InventoryInstance);
 }
-
 
 
 void UInventoryAscensionDashboardUI::NativeConstruct()
@@ -261,15 +242,14 @@ void UInventoryAscensionDashboardUI::NativeDestruct()
 	RankUpButton->OnClicked.RemoveAll(this);
 	LevelUpButton->OnClicked.RemoveAll(this);
 
-	UInventoryStorage* InventoryStorage = Inventory.Get();
 	if (IsValid(InventoryStorage))
 	{
 		InventoryStorage->OnStorageUpdated.RemoveAll(this);
 	}
-	Inventory.Reset();
+	InventoryStorage = nullptr;
 
 	AscensionSubsystem = nullptr;
-	ActiveAscensionProvider = nullptr;
+	AscensionProvider = nullptr;
 
 	Super::NativeDestruct();
 }

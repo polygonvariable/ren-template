@@ -4,7 +4,7 @@
 #include "Subsystem/PartySubsystem.h"
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -56,12 +56,12 @@ void UPartySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogCharacterParty, TEXT("PartySubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::OnPreGameInitialized);
 }
 
 void UPartySubsystem::Deinitialize()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 	StorageProvider.Reset();
 	_CachedStorage = nullptr;
 

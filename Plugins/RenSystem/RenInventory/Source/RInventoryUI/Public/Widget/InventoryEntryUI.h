@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetEntryUI.h"
 
@@ -14,10 +12,7 @@
 class UCoreDataAsset;
 
 
-
 /**
- *
- * 
  * 
  */
 UCLASS(Abstract)

@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/MetadataAsset.h"
 
@@ -13,13 +11,8 @@
 // Module Macros
 #define REN_API RCOREASCENSION_API
 
-// Forward Declarations
-
-
 
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -30,7 +23,10 @@ class UExperiencePointAsset : public UMetadataAsset
 
 public:
 
-	REN_API virtual int GetPoints(int Quantity) const;
+	REN_API virtual int GetPoints(int Quantity) const
+	{
+		return Points;
+	}
 
 protected:
 
@@ -38,7 +34,6 @@ protected:
 	int Points = 0;
 
 };
-
 
 
 // Module Macros

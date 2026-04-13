@@ -17,10 +17,8 @@ class UAvatarStorage;
 class UAvatarAscensionSubsystem;
 class UCoreDataAsset;
 class IAscensionProvider;
-
 struct FAvatarInstance;
 struct FTaskResult;
-
 
 
 /**
@@ -44,15 +42,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bAutoRefresh = false;
 
-	FAscensionData AscensionData;
-
-	const IAscensionProvider* ActiveAscensionProvider = nullptr;
-
 	UPROPERTY()
 	TObjectPtr<UAvatarAscensionSubsystem> AscensionSubsystem = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
@@ -69,6 +63,9 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> RankUpButton = nullptr;
 
+	FAscensionData AscensionInstance;
+	const IAscensionProvider* AscensionProvider = nullptr;
+
 
 	void EnableControls();
 	void DisableControls();
@@ -78,7 +75,6 @@ protected:
 	void ToggleRankUp(const FAvatarInstance* Instance);
 
 	void HandleTaskCallback(const FTaskResult& Result);
-
 
 	UFUNCTION()
 	void HandleLevelUp();

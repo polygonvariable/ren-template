@@ -11,7 +11,41 @@
 
 void UEquipmentStorage::InitializeDefaults()
 {
-	EquipmentInstances = UEquipmentSettings::Get()->DefaultEquipment;
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	EquipmentInstances = Settings->DefaultEquipment;
+	EquipmentRelations = Settings->DefaultEquipmentRelations;
+}
+
+void UEquipmentStorage::GetOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const
+{
+	OutEquipmentIds.Empty();
+
+	const FEquipmentInstance* Instance = EquipmentInstances.Find(OwnerId);
+	if (!Instance)
+	{
+		return;
+	}
+
+	for (const TPair<FGameplayTag, FEquipmentKey>& Kv : Instance->EquipmentSlot)
+	{
+		OutEquipmentIds.Add(Kv.Value.AssetInstanceId);
+	}
+}
+
+void UEquipmentStorage::GetNonOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const
+{
+	OutEquipmentIds.Empty();
+
+	for (const TPair<FGuid, FEquipmentInstance>& KvInstance : EquipmentInstances)
+	{
+		if (KvInstance.Key != OwnerId)
+		{
+			for (const TPair<FGameplayTag, FEquipmentKey>& KvSlot : KvInstance.Value.EquipmentSlot)
+			{
+				OutEquipmentIds.Add(KvSlot.Value.AssetInstanceId);
+			}
+		}
+	}
 }
 
 const TMap<FGameplayTag, FEquipmentKey>* UEquipmentStorage::GetOwnedEquipment(const FGuid& OwnerId) const
@@ -66,7 +100,7 @@ bool UEquipmentStorage::SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryA
 		return false;
 	}
 
-	const FGuid* Found_OwnerId = EquipmentRelation.Find(EquipmentId);
+	const FGuid* Found_OwnerId = EquipmentRelations.Find(EquipmentId);
 	if (Found_OwnerId && *Found_OwnerId != OwnerId)
 	{
 		LOG_ERROR(LogEquipment, TEXT("Equipment is already owned by another owner"));
@@ -99,7 +133,7 @@ bool UEquipmentStorage::SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryA
 	}
 
 	Slots.Add(EquipmentSlot, FEquipmentKey(EquipmentAssetId, EquipmentId));
-	EquipmentRelation.Add(EquipmentId, OwnerId);
+	EquipmentRelations.Add(EquipmentId, OwnerId);
 
 	OnStorageUpdated.Broadcast();
 	return true;
@@ -119,7 +153,7 @@ bool UEquipmentStorage::RemoveEquipmentFromSlot(const FGuid& OwnerId, const FGam
 		return false;
 	}
 
-	EquipmentRelation.Remove(Key.AssetInstanceId);
+	EquipmentRelations.Remove(Key.AssetInstanceId);
 	OnStorageUpdated.Broadcast();
 
 	return true;

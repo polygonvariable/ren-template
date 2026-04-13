@@ -163,7 +163,7 @@ void UTask_CraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&&
 		return;
 	}
 
-	FName MaterialSourceId = MaterialInterchange->GetDefaultCollectionId();
+	FName MaterialSourceId = MaterialInterchange->GetPrimaryCollectionId();
 	MaterialTransaction = MaterialInterchange->GetInstanceCollection(MaterialSourceId);
 	if (!MaterialTransaction)
 	{
@@ -236,7 +236,7 @@ void UTask_CraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& Mater
 		return;
 	}
 
-	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	FName TargetSourceId = TargetInterchange->GetPrimaryCollectionId();
 	IAssetInstanceCollection* TargetTransaction = TargetInterchange->GetInstanceCollection(TargetSourceId);
 	if (!TargetTransaction || !MaterialTransaction)
 	{

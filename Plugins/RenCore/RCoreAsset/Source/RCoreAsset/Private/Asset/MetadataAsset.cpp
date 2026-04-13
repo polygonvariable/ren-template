@@ -3,11 +3,6 @@
 // Parent Header
 #include "Asset/MetadataAsset.h"
 
-// Engine Headers
-
-// Project Headers
-
-
 
 FPrimaryAssetId UMetadataAsset::GetPrimaryAssetId() const
 {

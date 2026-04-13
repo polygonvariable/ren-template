@@ -19,7 +19,7 @@ class UPartySubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig)
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Party"))
 class UPartySettings : public UDeveloperSettings, public IStorageSettingsProvider
 {
 

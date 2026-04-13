@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere, Meta = (AllowedTypes = "Asset.Character"))
 	FPrimaryAssetId AssetId;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Asset", EditConditionHides))
 	TMap<FGameplayTag, float> Attributes;
 
 	UPROPERTY(EditAnywhere)
@@ -122,7 +122,6 @@ protected:
 
 	virtual void AddDefaultAttributes();
 	virtual void AddRuntimeAttributes();
-
 	virtual void ApplyAttributes();
 
 
@@ -131,8 +130,11 @@ protected:
 
 
 
-	virtual int GetCharacterLevel() const;
+	UFUNCTION(BlueprintCallable)
+	int GetCharacterLevel() const;
+	void SetCharacterLevel(int Level);
 
+	TMap<FGameplayTag, float>& GetCharacterAttributes();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
 	void DirectionalMove(const FVector& Direction);
@@ -140,6 +142,14 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsMoving(float Threshold = 0.1f) const;
+
+private:
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	int _CharacterLevel = 1;
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TMap<FGameplayTag, float> _CharacterAttributes;
 
 };
 

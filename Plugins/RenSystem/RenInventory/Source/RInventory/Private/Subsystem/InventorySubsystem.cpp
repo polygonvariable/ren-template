@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -37,7 +37,7 @@ FPrimaryAssetType UInventorySubsystem::GetSupportedAssetType() const
 	return UInventoryAsset::GetPrimaryAssetType();
 }
 
-FName UInventorySubsystem::GetDefaultCollectionId() const
+FName UInventorySubsystem::GetPrimaryCollectionId() const
 {
 	return UInventorySettings::Get()->StorageId;
 }
@@ -64,14 +64,14 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
 }
 
 void UInventorySubsystem::Deinitialize()
 {
 	StorageProvider.Reset();
 
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem deinitialized"));
 	Super::Deinitialize();

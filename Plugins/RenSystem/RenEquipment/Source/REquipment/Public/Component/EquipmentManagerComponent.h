@@ -8,17 +8,20 @@
 
 // Project Headers
 #include "Definition/AssetQuerySource.h"
-#include "Definition/EquipmentSpawnData.h"
+#include "Definition/EquipmentData.h"
 
 // Generated Headers
 #include "EquipmentManagerComponent.generated.h"
 
 // Forward Declarations
+class FObjectPreSaveContext;
 class URAssetManager;
 class UEquipmentStorage;
 class UEquipmentSubsystem;
 class UActorFreeListSubsystem;
 class AEquipmentActor;
+class UAbilitySystemComponent;
+class UEquipmentController;
 
 
 /**
@@ -36,7 +39,7 @@ public:
 	UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(EditAnywhere)
-	TArray<FEquipmentData> SpawnData;
+	TArray<FEquipmentData> EquipmentSpawnData;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -45,25 +48,30 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveEquipment();
 
+
 	// ~ UActorComponent
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	// ~ End of UActorComponent
 
+	// ~ UObject
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+	// ~ End of UObject
+
 protected:
 
-	UPROPERTY(VisibleAnywhere)
-	FGuid OwnerId;
-
 	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Instance;
+	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
 
-	UPROPERTY()
-	URAssetManager* AssetManager = nullptr;
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	FGuid EquipmentOwnerId;
 
-	UPROPERTY()
-	TMap<FGameplayTag, TObjectPtr<AEquipmentActor>> SpawnedEquipment;
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TMap<FEquipmentData, TObjectPtr<UEquipmentController>> EquippedControllers;
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TArray<FPrimaryAssetId> EquippedAssetIds;
 
 	UPROPERTY()
 	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
@@ -74,15 +82,25 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UActorFreeListSubsystem> ActorFreeList = nullptr;
 
+	UPROPERTY()
+	TObjectPtr<URAssetManager> AssetManager = nullptr;
 
-	void SyncOwnerEquipment(const FGuid& InOwnerId);
+	UPROPERTY()
+	TObjectPtr<UAbilitySystemComponent> OwnerASC = nullptr;
 
-	void UpdateSpawnData();
-	void SpawnEquipment_Internal();
+
+	void SyncEquipment(const FGuid& InOwnerId);
+	void SpawnEquipmentActors();
+
+	void RefreshEquipmentData();
+	void CleanupEquipmentActors();
+
+	void RegisterEquipment(const FEquipmentData& Data, UEquipmentController* Controller);
+	void UnregisterEquipment(const FEquipmentData& Data);
 
 private:
 
-	FGuid _EquipmentSpawnId;
+	FGuid _SpawnId;
 
 };
 

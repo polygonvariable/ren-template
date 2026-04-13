@@ -8,20 +8,19 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/AvatarAsset.h"
-#include "Widget/AvatarEntry.h"
-
+#include "Asset/CoreDataAsset.h"
 
 
 void UAvatarEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
-	const UAvatarAsset* AvatarAsset = Cast<UAvatarAsset>(Asset);
-	if (!IsValid(AvatarAsset))
+	if (!IsValid(Asset))
 	{
 		return;
 	}
 
-	EntryName->SetText(AvatarAsset->DisplayName);
-	EntryIcon->SetBrushFromSoftTexture(AvatarAsset->Icon);
+	EntryName->SetText(Asset->DisplayName);
+	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
+
+	SetToolTipText(Asset->DisplayName);
 }
 

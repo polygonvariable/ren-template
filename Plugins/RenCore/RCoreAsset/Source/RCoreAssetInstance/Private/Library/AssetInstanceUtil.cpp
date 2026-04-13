@@ -68,3 +68,52 @@ IAssetInstanceCollectionProvider* FAssetInstanceUtil::GetInstanceCollectionProvi
 	//return nullptr;
 }
 
+
+
+
+
+
+IAssetInstanceCollection* FAssetInstanceUtil::GetInstanceCollection(UWorld* Context, const FPrimaryAssetType& AssetType, const FName& CollectionId)
+{
+	if (!IsValid(Context))
+	{
+		return nullptr;
+	}
+	return GetInstanceCollection(Context->GetGameInstance(), AssetType, CollectionId);
+}
+
+IAssetInstanceCollection* FAssetInstanceUtil::GetInstanceCollection(UGameInstance* Context, const FPrimaryAssetType& AssetType, const FName& CollectionId)
+{
+	IAssetInstanceCollectionProvider* CollectionProvider = GetInstanceCollectionProvider(Context, AssetType);
+	if (!CollectionProvider)
+	{
+		return nullptr;
+	}
+	return CollectionProvider->GetInstanceCollection(CollectionId);
+}
+
+
+
+
+
+
+IAssetInstanceCollection* FAssetInstanceUtil::GetPrimaryInstanceCollection(UWorld* Context, const FPrimaryAssetType& AssetType)
+{
+	if (!IsValid(Context))
+	{
+		return nullptr;
+	}
+	return GetPrimaryInstanceCollection(Context->GetGameInstance(), AssetType);
+}
+
+IAssetInstanceCollection* FAssetInstanceUtil::GetPrimaryInstanceCollection(UGameInstance* Context, const FPrimaryAssetType& AssetType)
+{
+	IAssetInstanceCollectionProvider* CollectionProvider = GetInstanceCollectionProvider(Context, AssetType);
+	if (!CollectionProvider)
+	{
+		return nullptr;
+	}
+	return CollectionProvider->GetPrimaryCollection();
+}
+
+

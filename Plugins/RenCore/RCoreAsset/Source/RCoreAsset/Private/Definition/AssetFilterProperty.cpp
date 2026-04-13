@@ -3,11 +3,7 @@
 // Parent Header
 #include "Definition/AssetFilterProperty.h"
 
-// Engine Headers
-
-// Project Headers
-
-
 
 const FName FAssetFilterProperty::AssetId(TEXT("AssetId"));
+const FName FAssetFilterProperty::InstanceId(TEXT("ItemId"));
 

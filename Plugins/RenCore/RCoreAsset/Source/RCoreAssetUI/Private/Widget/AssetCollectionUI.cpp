@@ -15,7 +15,7 @@
 
 void UAssetCollectionUI::InitializeCollection()
 {
-
+	
 }
 
 void UAssetCollectionUI::DisplayEntries()

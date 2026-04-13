@@ -3,13 +3,11 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
-#include "Http.h"
+#include "Interfaces/IHttpRequest.h"
 
 // Project Headers
-#include "Interface/IStorageProvider.h"
 #include "Definition/StorageHandle.h"
-#include "Definition/TaskType.h"
+#include "Interface/IStorageProvider.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"
@@ -17,7 +15,7 @@
 // Forward Declarations
 class UStorage;
 class UDeveloperSettings;
-
+class FJsonObject;
 
 
 /**
@@ -46,7 +44,11 @@ protected:
 	TMap<FName, TObjectPtr<UStorage>> StorageCollection;
 
 
-	bool MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InUserIndex, FString& OutStorageId) const;
+	int GetSlotIndex();
+	void SetSlotIndex(int Index);
+
+
+	bool MakeStorageId(TSubclassOf<UStorage> InStorageClass, const FString& InSlotName, int InSlotIndex, FString& OutStorageId) const;
 	void GetDefaultQuery(const FName& StorageId, TSharedPtr<FJsonObject>& QueryJson);
 	void SerializeQuery(TSharedPtr<FJsonObject>& QueryJson, FString& OutString);
 
@@ -68,6 +70,10 @@ protected:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
+
+private:
+
+	int _SlotIndex = 0;
 
 public:
 

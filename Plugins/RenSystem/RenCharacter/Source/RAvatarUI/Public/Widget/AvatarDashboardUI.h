@@ -15,7 +15,6 @@ class UAssetEntry;
 class UCoreDataAsset;
 
 
-
 /**
  *
  */

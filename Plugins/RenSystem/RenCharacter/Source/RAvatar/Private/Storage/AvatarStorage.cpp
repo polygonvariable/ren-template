@@ -104,9 +104,9 @@ bool UAvatarStorage::ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAss
     return bool();
 }
 
-FOnAssetInstanceCollectionUpdated& UAvatarStorage::GetOnAssetInstanceCollectionUpdated()
+FGameEventDelegate& UAvatarStorage::GetOnAssetInstanceCollectionUpdated()
 {
-	return OnCollectionUpdated;
+	return OnStorageUpdated;
 }
 
 bool UAvatarStorage::UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback)
@@ -131,18 +131,6 @@ const FAscensionData* UAvatarStorage::GetAscensionInstance(const FPrimaryAssetId
 		return nullptr;
 	}
 	return &Instance->Ascension;
-}
-
-bool UAvatarStorage::UpdateAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FAscensionData&)> Callback)
-{
-	FAvatarInstance* Instance = AvatarCollection.Find(AssetId);
-	if (!Instance)
-	{
-		return false;
-	}
-	Callback(Instance->Ascension);
-	OnStorageUpdated.Broadcast();
-	return true;
 }
 
 

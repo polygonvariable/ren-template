@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetDashboardUI.h"
 
@@ -16,7 +14,6 @@ class UAssetDetailUI;
 class UAssetFilterCollectionUI;
 class UAssetEntry;
 class UInventoryAsset;
-
 
 
 /**

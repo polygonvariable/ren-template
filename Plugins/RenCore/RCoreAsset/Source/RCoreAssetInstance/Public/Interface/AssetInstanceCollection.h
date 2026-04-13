@@ -5,14 +5,14 @@
 // Engine Headers
 #include "UObject/Interface.h"
 
+// Project Headers
+#include "Delegate/GameEventDelegate.h" 
+
 // Generated Headers
 #include "AssetInstanceCollection.generated.h"
 
 // Module Macros
 #define REN_API RCOREASSETINSTANCE_API
-
-// Delegate Declarations
-DECLARE_MULTICAST_DELEGATE(FOnAssetInstanceCollectionUpdated);
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
@@ -44,8 +44,8 @@ public:
 	virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const = 0;
 	virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const = 0;
 
-	virtual FOnAssetInstanceCollectionUpdated& GetOnAssetInstanceCollectionUpdated() = 0;
-
+	virtual FGameEventDelegate& GetOnAssetInstanceCollectionUpdated() = 0;
+	
 };
 
 

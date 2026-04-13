@@ -31,7 +31,7 @@ void UTask_GrantAvatarRank::OnStarted()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarCollection();
+	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarStorage();
 	if (!IsValid(AvatarCollection))
 	{
 		Fail(TEXT("AvatarStorage is invalid"));
@@ -140,7 +140,7 @@ void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>
 		return;
 	}
 
-	FName MaterialCollectionId = MaterialProvider->GetDefaultCollectionId();
+	FName MaterialCollectionId = MaterialProvider->GetPrimaryCollectionId();
 	IAssetInstanceCollection* MaterialCollection = MaterialProvider->GetInstanceCollection(MaterialCollectionId);
 	if (!MaterialCollection)
 	{

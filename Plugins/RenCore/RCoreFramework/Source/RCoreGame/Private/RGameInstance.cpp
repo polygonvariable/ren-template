@@ -4,8 +4,7 @@
 #include "RGameInstance.h"
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegates.h"
-
+#include "Delegate/GameLifecycleDelegate.h"
 
 
 void URGameInstance::Init()
@@ -16,6 +15,6 @@ void URGameInstance::Init()
 
 void URGameInstance::GameInit()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.Broadcast();
+	FGameLifecycleDelegate::OnPreGameInitialized.Broadcast();
 }
 

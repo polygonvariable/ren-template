@@ -31,7 +31,7 @@ void UEquipmentSlotUI::RefreshDetail()
 	}
 
 	FPrimaryAssetId EquipmentAssetId;
-	if (!EquipmentStorage->GetEquipmentAtSlot(OwnerId, SlotTag, EquipmentAssetId))
+	if (!EquipmentStorage->GetEquipmentAtSlot(OwnerInstanceId, SlotTag, EquipmentAssetId))
 	{
 		ResetDetail();
 		return;
@@ -44,7 +44,7 @@ void UEquipmentSlotUI::ClearSlot()
 {
 	if (IsValid(EquipmentStorage))
 	{
-		EquipmentStorage->RemoveEquipmentFromSlot(OwnerId, SlotTag);
+		EquipmentStorage->RemoveEquipmentFromSlot(OwnerInstanceId, SlotTag);
 	}
 }
 
@@ -67,10 +67,24 @@ void UEquipmentSlotUI::SetSecondaryDetail(const UAssetEntry* Entry)
 		return;
 	}
 
-	OwnerId = Entry->GetAssetInstanceId();
 	OwnerAssetId = Entry->AssetId;
+	OwnerInstanceId = Entry->GetAssetInstanceId();
 
 	RefreshDetail();
+}
+
+void UEquipmentSlotUI::NativePreConstruct()
+{
+	Super::NativePreConstruct();
+
+	if (bAllowEdit)
+	{
+		ClearButton->SetVisibility(ESlateVisibility::Visible);
+	}
+	else
+	{
+		ClearButton->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }
 
 void UEquipmentSlotUI::NativeConstruct()
@@ -85,7 +99,7 @@ void UEquipmentSlotUI::NativeConstruct()
 	UEquipmentSubsystem* EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 	if (IsValid(EquipmentSubsystem))
 	{
-		EquipmentStorage = EquipmentSubsystem->GetEquipment();
+		EquipmentStorage = EquipmentSubsystem->GetEquipmentStorage();
 		if (IsValid(EquipmentStorage))
 		{
 			EquipmentStorage->OnStorageUpdated.AddUObject(this, &UEquipmentSlotUI::RefreshDetail);
@@ -116,19 +130,19 @@ bool UEquipmentSlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 		return false;
 	}
 
-	UAssetDragOperation* DragOperation = Cast<UAssetDragOperation>(InOperation);
+	const UAssetDragOperation* DragOperation = Cast<UAssetDragOperation>(InOperation);
 	if (!IsValid(DragOperation))
 	{
 		return false;
 	}
 
-	const FGuid& EquipmentId = DragOperation->AssetInstanceId;
+	const FGuid& EquipmentInstanceId = DragOperation->AssetInstanceId;
 	const FPrimaryAssetId& EquipmentAssetId = DragOperation->AssetId;
-	if (!EquipmentId.IsValid() || !EquipmentAssetId.IsValid())
+	if (!EquipmentInstanceId.IsValid() || !EquipmentAssetId.IsValid())
 	{
 		return false;
 	}
 	
-	return EquipmentStorage->SetEquipmentAtSlot(OwnerId, OwnerAssetId, SlotTag, EquipmentId, EquipmentAssetId);
+	return EquipmentStorage->SetEquipmentAtSlot(OwnerInstanceId, OwnerAssetId, SlotTag, EquipmentInstanceId, EquipmentAssetId);
 }
 

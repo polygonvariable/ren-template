@@ -11,7 +11,7 @@
 #include "Definition/AssetDetail_Trade.h"
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/ICraftProvider.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
@@ -228,13 +228,13 @@ void UCraftSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("CraftSubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UCraftSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UCraftSubsystem::OnPreGameInitialized);
 }
 
 void UCraftSubsystem::Deinitialize()
 {
 	StorageProvider.Reset();
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	LOG_WARNING(LogTemp, TEXT("CraftSubsystem deinitialized"));
 	Super::Deinitialize();

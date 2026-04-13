@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -19,7 +19,7 @@ void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerId) const
 	return OnSyncEquipment.Broadcast(OwnerId);
 }
 
-UEquipmentStorage* UEquipmentSubsystem::GetEquipment() const
+UEquipmentStorage* UEquipmentSubsystem::GetEquipmentStorage() const
 {
 	IStorageProvider* StorageInterface = StorageProvider.Get();
 	if (!StorageInterface)
@@ -53,12 +53,12 @@ void UEquipmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem initialized"));
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::OnPreGameInitialized);
 }
 
 void UEquipmentSubsystem::Deinitialize()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 	StorageProvider.Reset();
 
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem deinitialized"));

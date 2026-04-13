@@ -13,6 +13,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UEquipmentSlotCollectionUI;
 class UEquipmentSubsystem;
+class UEquipmentStorage;
 
 
 /**
@@ -25,7 +26,7 @@ class UEquipmentDashboardUI : public UAssetDashboardUI
 	GENERATED_BODY()
 
 public:
-
+	
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
 	// ~ End of UAssetDashboardUI
@@ -47,7 +48,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
 
-	FGuid OwnerId;
+	UPROPERTY()
+	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
+
+	FGuid OwnerInstanceId;
 
 
 	UFUNCTION()

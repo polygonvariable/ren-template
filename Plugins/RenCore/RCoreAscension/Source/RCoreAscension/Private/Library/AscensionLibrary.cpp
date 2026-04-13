@@ -5,7 +5,15 @@
 
 // Project Headers
 #include "Definition/AscensionData.h"
+#include "Settings/AscensionSettings.h"
 
+
+int FAscensionLibrary::ClampLevel(int Level)
+{
+    const UAscensionSettings* Settings = UAscensionSettings::Get();
+
+    return FMath::Clamp(Level, Settings->MinLevel, Settings->MaxLevel);
+}
 
 int FAscensionLibrary::ScaleByLevel(int Value, int Level)
 {

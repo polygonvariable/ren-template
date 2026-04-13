@@ -19,10 +19,7 @@ class IStorageProvider;
 class UAvatarStorage;
 
 
-
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -33,12 +30,12 @@ class UAvatarSubsystem : public UGameInstanceSubsystem, public IAssetInstanceCol
 
 public:
 
-	REN_API UAvatarStorage* GetAvatarCollection() const;
+	REN_API UAvatarStorage* GetAvatarStorage() const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
 	virtual FPrimaryAssetType GetSupportedAssetType() const override;
-	virtual FName GetDefaultCollectionId() const override;
+	virtual FName GetPrimaryCollectionId() const override;
 	// ~ End of IAssetInstanceCollectionProvider
 
 protected:

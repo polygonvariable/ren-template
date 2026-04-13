@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/InventoryQueryType.h"
 #include "Widget/AssetCollectionUI.h"
@@ -11,11 +9,8 @@
 // Generated Headers
 #include "InventoryCollectionUI.generated.h"
 
-// Module Macros
-
 // Forward Declarations
 class UInventoryStorage;
-
 
 
 /**
@@ -40,7 +35,7 @@ protected:
 	FInventoryQueryRule QueryRule;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
+	TObjectPtr<UInventoryStorage> InventoryStorage = nullptr;
 
 
 	// ~ UUserWidget
@@ -48,8 +43,4 @@ protected:
 	// ~ End of UUserWidget
 
 };
-
-
-
-// Module Macros
 

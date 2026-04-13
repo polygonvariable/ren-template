@@ -63,14 +63,14 @@ void FRAvatarEdModule::UnregisterCommand()
 	}
 }
 
-UAvatarStorage* FRAvatarEdModule::GetAvatarCollection(UWorld* World)
+UAvatarStorage* FRAvatarEdModule::GetAvatarStorage(UWorld* World)
 {
 	UAvatarSubsystem* Subsystem = UAvatarSubsystem::Get(World);
 	if (!IsValid(Subsystem))
 	{
 		return nullptr;
 	}
-	return Subsystem->GetAvatarCollection();
+	return Subsystem->GetAvatarStorage();
 }
 
 void FRAvatarEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
@@ -81,7 +81,7 @@ void FRAvatarEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World);
+	UAvatarStorage* Collection = GetAvatarStorage(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
@@ -97,7 +97,7 @@ void FRAvatarEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World);
+	UAvatarStorage* Collection = GetAvatarStorage(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
@@ -113,7 +113,7 @@ void FRAvatarEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarCollection(World);
+	UAvatarStorage* Collection = GetAvatarStorage(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));

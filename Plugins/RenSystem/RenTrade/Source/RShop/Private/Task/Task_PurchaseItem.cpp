@@ -160,7 +160,7 @@ void UTask_PurchaseItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int
 		return;
 	}
 
-	FName MaterialSourceId = MaterialInterchange->GetDefaultCollectionId();
+	FName MaterialSourceId = MaterialInterchange->GetPrimaryCollectionId();
 	MaterialInstance = MaterialInterchange->GetInstanceCollection(MaterialSourceId);
 	if (!MaterialInstance)
 	{
@@ -232,7 +232,7 @@ void UTask_PurchaseItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& Ma
 		return;
 	}
 
-	FName TargetSourceId = TargetInterchange->GetDefaultCollectionId();
+	FName TargetSourceId = TargetInterchange->GetPrimaryCollectionId();
 	IAssetInstanceCollection* TargetInstance = TargetInterchange->GetInstanceCollection(TargetSourceId);
 	if (!TargetInstance || !MaterialInstance)
 	{

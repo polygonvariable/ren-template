@@ -9,7 +9,7 @@
 // Project Headers
 #include "Library/InventoryPrimaryAsset.h"
 #include "Item/InventoryInstance.h"
-#include "Delegate/GameLifecycleDelegates.h"
+#include "Delegate/GameLifecycleDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InventorySubsystem.h"
@@ -157,7 +157,7 @@ bool UInventoryInstanceSubsystem::CommitItem_Internal(UInventoryInstance* Item, 
 
 void UInventoryInstanceSubsystem::OnPreGameInitialized()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	UInventorySubsystem* Inventory = UInventorySubsystem::Get(GetGameInstance());
 	WeakInventory = TWeakObjectPtr<UInventorySubsystem>(Inventory);
@@ -174,14 +174,14 @@ void UInventoryInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 {
 	Super::Initialize(Collection);
 
-	FGameLifecycleDelegates::OnPreGameInitialized.AddUObject(this, &UInventoryInstanceSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventoryInstanceSubsystem::OnPreGameInitialized);
 
 	LOG_WARNING(LogInventoryInstance, TEXT("InventoryInstanceSubsystem initialized"));
 }
 
 void UInventoryInstanceSubsystem::Deinitialize()
 {
-	FGameLifecycleDelegates::OnPreGameInitialized.RemoveAll(this);
+	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	CommitAllItems();
 	InventoryInstances.Empty();

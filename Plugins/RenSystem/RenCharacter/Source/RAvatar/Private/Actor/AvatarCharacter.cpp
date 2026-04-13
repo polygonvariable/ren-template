@@ -76,36 +76,24 @@ FPrimaryAssetType AAvatarCharacter::GetAssetType() const
 
 void AAvatarCharacter::InitializeCharacter()
 {
-	if (CharacterData.SourceType == EAssetQuerySource::Asset)
+	if (CharacterData.SourceType == EAssetQuerySource::Instance)
 	{
-		Super::InitializeCharacter();
-		return;
+		UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
+		if (IsValid(AvatarSubsystem))
+		{
+			AvatarStorage = AvatarSubsystem->GetAvatarStorage();
+			if (IsValid(AvatarStorage))
+			{
+				const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
+				if (FoundInstance)
+				{
+					AvatarInstance = *FoundInstance;
+					AvatarStorage->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
+				}
+			}
+		}
 	}
 	
-	UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
-	if (!IsValid(AvatarSubsystem))
-	{
-		LOG_ERROR(LogAvatar, TEXT("AvatarSubsystem is invalid"));
-		return;
-	}
-
-	AvatarStorage = AvatarSubsystem->GetAvatarCollection();
-	if (!IsValid(AvatarStorage))
-	{
-		LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
-		return;
-	}
-	
-	const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
-	if (!FoundInstance)
-	{
-		LOG_ERROR(LogAvatar, TEXT("Avatar data not found"));
-		return;
-	}
-
-	AvatarInstance = *FoundInstance;
-	AvatarStorage->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
-
 	Super::InitializeCharacter();
 }
 
@@ -137,6 +125,7 @@ void AAvatarCharacter::RefreshCharacter()
 
 	AvatarInstance = *FoundInstance;
 
+	SetCharacterLevel(FoundInstance->Ascension.Level);
 	RefreshAttributes();
 }
 
@@ -146,18 +135,9 @@ void AAvatarCharacter::AddRuntimeAttributes()
 	if (CharacterData.SourceType == EAssetQuerySource::Instance)
 	{
 		const UCharacterSettings* Settings = UCharacterSettings::Get();
-		TMap<FGameplayTag, float>& Attributes = CharacterData.Attributes;
+		TMap<FGameplayTag, float>& Attributes = GetCharacterAttributes();
 
-		Attributes.Add(Settings->AttributeHealthTag, AvatarInstance.Health);
+		Attributes.Add(Settings->DataHealthTag, AvatarInstance.Health);
 	}
-}
-
-int AAvatarCharacter::GetCharacterLevel() const
-{
-	if (CharacterData.SourceType == EAssetQuerySource::Instance)
-	{
-		return AvatarInstance.Ascension.Level;
-	}
-	return Super::GetCharacterLevel();
 }
 

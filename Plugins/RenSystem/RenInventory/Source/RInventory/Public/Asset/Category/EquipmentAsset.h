@@ -2,45 +2,41 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Project Headers
 #include "Asset/Category/EnhanceableAsset.h"
-#include "Interface/IEquipmentProvider.h"
+#include "Interface/EquipmentDataProvider.h"
 
 // Generated Headers
 #include "EquipmentAsset.generated.h"
 
+// Forward Declaration
+class UPrimaryDataAsset;
 
 
 /**
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UEquipmentAsset : public UEnhanceableAsset, public IEquipmentProvider
+class UEquipmentAsset : public UEnhanceableAsset, public IEquipmentDataProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	// ~ IEquipmentProvider
-	virtual const TSoftClassPtr<AActor>& GetEquipmentClass() const override;
-	virtual const TArray<FSoftClassPath>& GetEquipmentAbilities() const override;
-	virtual const FName& GetEquipmentSocket() const override;
-	// ~ End of IEquipmentProvider
+	// ~ IEquipmentDataProvider
+	//virtual const FSoftClassPath& GetEquipmentActorClass() const override;
+	//virtual const TSoftObjectPtr<UPrimaryDataAsset>& GetEquipmentDataAsset() const override;
+	// ~ End of IEquipmentDataProvider
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Equipment", AllowAbstract = false))
-	TSoftClassPtr<AActor> EquipmentClass;
+	//UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Equipment", MetaClass = "EquipmentActor", AllowAbstract = false))
+	//FSoftClassPath EquipmentActorClass;
+	
+	//UPROPERTY()
+	//TSoftObjectPtr<UPrimaryDataAsset> EquipmentDataAsset;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Ability", AllowAbstract = false))
-	TArray<FSoftClassPath> EquipmentAbilities;
-
-	UPROPERTY(EditDefaultsOnly)
-	FName SocketName;
 
 };
 

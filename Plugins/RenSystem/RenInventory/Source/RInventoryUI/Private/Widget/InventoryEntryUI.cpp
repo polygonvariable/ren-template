@@ -8,20 +8,21 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/InventoryAsset.h"
 #include "Asset/CoreDataAsset.h"
 #include "Widget/InventoryEntry.h"
 
 
-
 void UInventoryEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
-	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
-	if (IsValid(InventoryAsset))
+	if (!IsValid(Asset))
 	{
-		EntryName->SetText(InventoryAsset->DisplayName);
-		EntryIcon->SetBrushFromSoftTexture(InventoryAsset->Icon);
+		return;
 	}
+
+	EntryName->SetText(Asset->DisplayName);
+	EntryIcon->SetBrushFromSoftTexture(Asset->Icon);
+
+	SetToolTipText(Asset->DisplayName);
 }
 
 void UInventoryEntryUI::SetSecondaryDetail(const UAssetEntry* Entry)

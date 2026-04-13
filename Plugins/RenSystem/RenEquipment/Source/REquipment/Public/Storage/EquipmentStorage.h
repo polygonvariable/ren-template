@@ -28,7 +28,10 @@ class UEquipmentStorage : public UStorage
 
 public:
 
-	const TMap<FGameplayTag, FEquipmentKey>* GetOwnedEquipment(const FGuid& OwnerId) const;
+	REN_API const TMap<FGameplayTag, FEquipmentKey>* GetOwnedEquipment(const FGuid& OwnerId) const;
+
+	REN_API void GetOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const;
+	REN_API void GetNonOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const;
 
 	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FPrimaryAssetId& OutEquipmentAssetId) const;
 	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& EquipmentSlot, const FGuid& EquipmentId, const FPrimaryAssetId& EquipmentAssetId);
@@ -44,7 +47,7 @@ protected:
 	TMap<FGuid, FEquipmentInstance> EquipmentInstances; // OwnerId -> Equipment Instance
 
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FGuid> EquipmentRelation; // EquipmentId -> OwnerId
+	TMap<FGuid, FGuid> EquipmentRelations; // EquipmentId -> OwnerId
 
 };
 

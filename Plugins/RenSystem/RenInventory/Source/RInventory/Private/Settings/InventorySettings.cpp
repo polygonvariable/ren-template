@@ -7,7 +7,6 @@
 #include "Storage/InventoryStorage.h"
 
 
-
 UInventorySettings::UInventorySettings(const FObjectInitializer& ObjectInitializer)
 {
 	CategoryName = TEXT("Ren Project");

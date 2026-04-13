@@ -34,7 +34,7 @@ public:
 	FOnSyncEquipment OnSyncEquipment;
 
 	REN_API void SyncEquipment(const FGuid& OwnerId) const;
-	REN_API UEquipmentStorage* GetEquipment() const;
+	REN_API UEquipmentStorage* GetEquipmentStorage() const;
 
 protected:
 

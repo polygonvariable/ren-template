@@ -17,10 +17,8 @@ class UInventoryStorage;
 class UInventoryAscensionSubsystem;
 class UCoreDataAsset;
 class IAscensionProvider;
-
 struct FInventoryInstance;
 struct FTaskResult;
-
 
 
 /**
@@ -44,16 +42,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bAutoRefresh = false;
 
-	FGuid ActiveItemId;
-	const IAscensionProvider* ActiveAscensionProvider = nullptr;
-
-	FAscensionData AscensionData;
-
 	UPROPERTY()
 	TObjectPtr<UInventoryAscensionSubsystem> AscensionSubsystem = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
+	TObjectPtr<UInventoryStorage> InventoryStorage = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
@@ -69,6 +62,10 @@ protected:
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UButton> RankUpButton = nullptr;
+
+	FGuid ActiveItemId;
+	FAscensionData AscensionInstance;
+	const IAscensionProvider* AscensionProvider = nullptr;
 
 
 	void EnableControls();
@@ -86,8 +83,6 @@ protected:
 
 	UFUNCTION()
 	void HandleRankUp();
-
-	void HandleOnItemUpdated();
 
 	// ~ UAssetDashboardUI
 	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
