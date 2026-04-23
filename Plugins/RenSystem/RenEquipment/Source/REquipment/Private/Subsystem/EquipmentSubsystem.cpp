@@ -3,8 +3,6 @@
 // Parent Header
 #include "Subsystem/EquipmentSubsystem.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IStorageProvider.h"
@@ -14,32 +12,28 @@
 #include "Storage/EquipmentStorage.h"
 
 
-void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerId) const
+void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerInstanceId) const
 {
-	return OnSyncEquipment.Broadcast(OwnerId);
+	return OnSyncEquipment.Broadcast(OwnerInstanceId);
 }
 
 UEquipmentStorage* UEquipmentSubsystem::GetEquipmentStorage() const
 {
-	IStorageProvider* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
+	if (!StorageProvider)
 	{
 		return nullptr;
 	}
 
 	FName StorageId = UEquipmentSettings::Get()->StorageId;
-	UStorage* Storage = StorageInterface->GetStorage(StorageId);
-
-	return Cast<UEquipmentStorage>(Storage);
+	return StorageProvider->GetStorage<UEquipmentStorage>(StorageId);
 }
 
 void UEquipmentSubsystem::OnPreGameInitialized()
 {
-	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
-	if (StorageInterface)
+	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	if (StorageProvider)
 	{
-		StorageInterface->LoadStorageFromSettings(UEquipmentSettings::Get());
-		StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
+		StorageProvider->LoadStorageFromSettings(UEquipmentSettings::Get());
 	}
 }
 
@@ -59,12 +53,11 @@ void UEquipmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void UEquipmentSubsystem::Deinitialize()
 {
 	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
-	StorageProvider.Reset();
+	StorageProvider = nullptr;
 
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
 
 
 UEquipmentSubsystem* UEquipmentSubsystem::Get(UWorld* World)

@@ -44,7 +44,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Meta=(ClampMin=1, ClampMax=6))
 	int MaxPartySize = 3;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Meta = (AllowedTypes = "Asset.Character"))
 	TArray<FPrimaryAssetId> DefaultCharacters;
 
 	UPROPERTY(Config, EditDefaultsOnly)

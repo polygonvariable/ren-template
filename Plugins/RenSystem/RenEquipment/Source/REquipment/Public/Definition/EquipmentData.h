@@ -25,7 +25,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FPrimaryAssetId AssetId;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Instance", EditConditionHides))
 	FGuid EquipmentId;
 
 	UPROPERTY(EditAnywhere)
@@ -33,6 +33,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+
+	bool IsValid() const
+	{
+		return AssetId.IsValid() && EquipmentSlot.IsValid();
+	}
 
 	void Reset()
 	{

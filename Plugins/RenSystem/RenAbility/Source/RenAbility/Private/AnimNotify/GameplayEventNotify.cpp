@@ -7,6 +7,12 @@
 #include "AbilitySystemBlueprintLibrary.h"
 
 
+UGameplayEventNotify::UGameplayEventNotify()
+{
+	bShouldFireInEditor = false;
+	NotifyColor = FColor::FromHex("#00D5FFFF");
+}
+
 void UGameplayEventNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)
 {
 	Super::Notify(MeshComp, Animation, EventReference);

@@ -15,12 +15,15 @@
  * 
  */
 UCLASS()
-class RENABILITY_API UGameplayEventNotify : public UAnimNotify
+class UGameplayEventNotify : public UAnimNotify
 {
 
 	GENERATED_BODY()
 	
 public:
+
+	UGameplayEventNotify();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FGameplayTag EventTag;

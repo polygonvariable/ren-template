@@ -58,6 +58,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "MotionTrajectory",
+			"Enabled": true
+		},
+		{
 			"Name": "GameplayAbilities",
 			"Enabled": true
 		},

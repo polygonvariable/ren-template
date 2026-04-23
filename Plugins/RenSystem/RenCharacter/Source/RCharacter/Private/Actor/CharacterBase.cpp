@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "CharacterTrajectoryComponent.h"
 
 // Project Headers
 #include "Asset/CharacterAsset.h"
@@ -44,7 +45,8 @@ ACharacterBase::ACharacterBase() : Super()
 		MovementComponent->bOrientRotationToMovement = true;
 	}
 	
-	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("Ability System"));
+	CharacterTrajectoryComponent = CreateDefaultSubobject<UCharacterTrajectoryComponent>(TEXT("Character Trajectory"));
 
 	PrimaryActorTick.bStartWithTickEnabled = false;
 }
@@ -75,6 +77,11 @@ void ACharacterBase::DeinitializeCharacter()
 	}
 
 	CharacterAsset = nullptr;
+}
+
+UCharacterTrajectoryComponent* ACharacterBase::GetTrajectoryComponent() const
+{
+	return CharacterTrajectoryComponent;
 }
 
 void ACharacterBase::RefreshCharacter()

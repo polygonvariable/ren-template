@@ -47,6 +47,7 @@ public class RCharacter : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"MotionTrajectory",
                 "RCoreLibrary",
                 "StructUtils",
             }

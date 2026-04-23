@@ -204,12 +204,6 @@ void UTask_GrantAvatarExperience::Step_CheckMaterialAsset(const FGuid& Experienc
 void UTask_GrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
 {
 	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(TaskId, AssetId);
-	if (!Future.IsValid())
-	{
-		Fail(TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UTask_GrantAvatarExperience> WeakThis(this);
 	Future.Next([WeakThis, Quantity](const FLatentLoadedAsset<UExperiencePointAsset>& Result)
 		{

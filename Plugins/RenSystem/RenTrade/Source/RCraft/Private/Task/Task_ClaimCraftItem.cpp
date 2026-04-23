@@ -57,12 +57,6 @@ void UTask_ClaimCraftItem::Step_LoadAsset()
 	}
 
 	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(TaskId, CraftAssetId);
-	if (!Future.IsValid())
-	{
-		Fail(TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UTask_ClaimCraftItem> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{

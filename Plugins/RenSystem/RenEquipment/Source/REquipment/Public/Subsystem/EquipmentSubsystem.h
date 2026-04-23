@@ -16,10 +16,7 @@ class IStorageProvider;
 class UEquipmentStorage;
 
 
-
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -30,15 +27,15 @@ class UEquipmentSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_OneParam(FOnSyncEquipment, const FGuid& /* Owner Id */);
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnSyncEquipment, const FGuid& /* OwnerInstanceId */);
 	FOnSyncEquipment OnSyncEquipment;
 
-	REN_API void SyncEquipment(const FGuid& OwnerId) const;
+	REN_API void SyncEquipment(const FGuid& OwnerInstanceId) const;
 	REN_API UEquipmentStorage* GetEquipmentStorage() const;
 
 protected:
 
-	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+	IStorageProvider* StorageProvider;
 
 
 	void OnPreGameInitialized();

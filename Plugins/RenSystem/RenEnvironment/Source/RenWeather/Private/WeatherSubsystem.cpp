@@ -51,23 +51,16 @@ void UWeatherSubsystem::AddWeather(const FGuid& LatentId, const FPrimaryAssetId&
 	}
 
 	TFuture<FLatentLoadedAsset<UWeatherAsset>> Future = AssetManager->FetchPrimaryAsset<UWeatherAsset>(LatentId, AssetId);
-	if (!Future.IsValid())
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UWeatherSubsystem> WeakThis(this);
-	TFunction<void(const FLatentLoadedAsset<UWeatherAsset>&)> Callback = [WeakThis, Priority](const FLatentLoadedAsset<UWeatherAsset>& Result)
+	Future.Next([WeakThis, Priority](const FLatentLoadedAsset<UWeatherAsset>& Result)
 		{
 			UWeatherSubsystem* This = WeakThis.Get();
 			if (IsValid(This) && Result.IsValid())
 			{
 				This->AddWeather(Result.Asset, Priority);
 			}
-		};
-
-	Future.Next(MoveTemp(Callback));
+		}
+	);
 }
 
 bool UWeatherSubsystem::RemoveWeather(const FGuid& LatentId, int Priority)
@@ -102,12 +95,6 @@ void UWeatherSubsystem::LoadDefaultWeather(const FPrimaryAssetId& AssetId, int P
 	}
 	
 	TFuture<FLatentLoadedAsset<UWeatherAsset>> Future = AssetManager->FetchPrimaryAsset<UWeatherAsset>(FGuid::NewGuid(), AssetId);
-	if (!Future.IsValid())
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UWeatherSubsystem> WeakThis(this);
 	TFunction<void(const FLatentLoadedAsset<UWeatherAsset>&)> Callback = [WeakThis, Priority](const FLatentLoadedAsset<UWeatherAsset>& Result)
 		{

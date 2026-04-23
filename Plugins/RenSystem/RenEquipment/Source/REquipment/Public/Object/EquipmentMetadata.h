@@ -25,7 +25,9 @@ class AEquipmentActor;
 class IAssetInstanceCollection;
 class IAscensionInstanceProvider;
 class UEquipmentAbilityCollection;
+class UEquipmentController;
 struct FGameplayEventData;
+struct FEquipmentTagData;
 
 
 /**
@@ -83,6 +85,22 @@ public:
 
 };
 
+USTRUCT()
+struct FEquipmentSocket
+{
+	
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FName SocketName = NAME_None;
+
+	UPROPERTY(EditAnywhere)
+	FTransform SocketTransform = FTransform::Identity;
+
+};
+
 /**
  *
  */
@@ -95,142 +113,12 @@ class UEquipmentDataDefinition_Weapon : public UEquipmentDataDefinition
 public:
 
 	UPROPERTY(EditAnywhere)
-	FTransform SocketTransform = FTransform::Identity;
+	FEquipmentSocket EquipSocket;
 
 	UPROPERTY(EditAnywhere)
-	FName SocketName = NAME_None;
+	FEquipmentSocket UnequipSocket;
 
 };
 
-/**
- *
- */
-UCLASS(Abstract, Blueprintable)
-class UEquipmentController : public UObject
-{
-
-	GENERATED_BODY()
-
-public:
 
 
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TObjectPtr<const UCoreDataAsset> EquipmentAsset;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	FEquipmentData EquipmentData;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	FGuid EquipmentOwnerId;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay, BlueprintReadOnly)
-	TObjectPtr<AEquipmentActor> EquipmentActor = nullptr;
-
-
-
-	UFUNCTION(BlueprintCallable)
-	bool GetIsEquipped() const;
-
-	UFUNCTION(BlueprintCallable)
-	void SetIsEquipped(bool IsEquipped);
-
-
-
-
-
-	int GetEquipmentLevel() const;
-	void SetEquipmentLevel(int Level);
-
-
-	virtual bool InitializeController(const UEquipmentDataDefinition* DataDefinition);
-	virtual void DeinitializeController();
-
-	virtual void RefreshController();
-
-
-	// ~ UObject
-	virtual class UWorld* GetWorld() const override;
-	virtual bool ImplementsGetWorld() const override;
-	// ~ End of UObject
-
-protected:
-
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UAnimMontage> EquipAnimation = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UAnimMontage> UnequipAnimation = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAnimInstance> EquipmentAnimInstance = nullptr;
-
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay, BlueprintReadOnly)
-	TObjectPtr<UAbilitySystemComponent> OwnerASC = nullptr;
-
-	IAssetInstanceCollection* InstanceCollection = nullptr;
-	IAscensionInstanceProvider* InstanceAscension = nullptr;
-
-
-
-	UPROPERTY()
-	TArray<FActiveGameplayEffectHandle> ActiveEffectHandles;
-
-	UPROPERTY()
-	TArray<FGameplayAbilitySpecHandle> ActiveAbilityHandles;
-
-
-
-
-	void ApplyAbilities();
-	void RemoveAbilities();
-	void RefreshAbilities();
-
-
-
-	void HandleActivationEvent(const FGameplayEventData* Payload);
-
-
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (DisplayName = "On Equipped"))
-	void OnEquipped();
-	virtual void OnEquipped_Implementation();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Meta = (DisplayName = "On Unequipped"))
-	void OnUnequipped();
-	virtual void OnUnequipped_Implementation();
-
-
-	UFUNCTION(BlueprintNativeEvent)
-	void AttachEquipment();
-	virtual void AttachEquipment_Implementation();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void DetachEquipment();
-	virtual void DetachEquipment_Implementation();
-
-
-	UFUNCTION(BlueprintNativeEvent, Meta = (DisplayName = "Initialize Controller"))
-	void BP_InitializeController();
-	virtual void BP_InitializeController_Implementation() {};
-
-	UFUNCTION(BlueprintNativeEvent, Meta = (DisplayName = "Deinitialize Controller"))
-	void BP_DeinitializeController();
-	virtual void BP_DeinitializeController_Implementation() {};
-
-private:
-
-	UPROPERTY()
-	bool _bIsEquipped = false;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TObjectPtr<const UEquipmentAbilityCollection> _AbilityCollection = nullptr;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TObjectPtr<const UEquipmentDataDefinition> _DataDefinition = nullptr;
-
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	int _EquipmentLevel = 1;
-
-};

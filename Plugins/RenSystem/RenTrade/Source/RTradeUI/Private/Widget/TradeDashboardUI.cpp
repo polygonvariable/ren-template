@@ -64,12 +64,6 @@ void UTradeDashboardUI::InitializeDetail()
 	_TradeLoadId = FGuid::NewGuid();
 
 	TFuture<FLatentLoadedAsset<UTradeAsset>> Future = AssetManager->FetchPrimaryAsset<UTradeAsset>(_TradeLoadId, TradeAssetId);
-	if (!Future.IsValid())
-	{
-		LOG_ERROR(LogAsset, TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UTradeDashboardUI> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAsset<UTradeAsset>& Result)
 		{

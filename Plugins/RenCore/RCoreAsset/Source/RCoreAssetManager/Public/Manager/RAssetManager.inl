@@ -9,20 +9,11 @@
 #include "Definition/LatentHandle.h"
 
 
-
 template<typename T>
 TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId, const TArray<FName>& AssetBundles)
 {
 	TSharedPtr<TPromise<FLatentLoadedAsset<T>>> Promise = MakeShared<TPromise<FLatentLoadedAsset<T>>>();
 	TFuture<FLatentLoadedAsset<T>> Future = Promise->GetFuture();
-
-	//if (LoadingAssetsIds.Contains(AssetId))
-	//{
-	//	FLatentLoadedAsset<T> Result;
-	//	Result.bSuccess = false;
-	//	Promise->SetValue(MoveTemp(Result));
-	//	return Future;
-	//}
 
 	TSharedPtr<FLatentHandle> Handle = MakeShared<FLatentHandle, ESPMode::ThreadSafe>();
 	{
@@ -30,10 +21,8 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 		LatentHandles.Add(LatentId, Handle);
 	};
 
-	// LoadingAssetsIds.Add(AssetId);
-
 	TWeakPtr<FLatentHandle> WeakHandle(Handle);
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, AssetId, LatentId, WeakHandle, Promise]()
+	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, LatentId, AssetId, WeakHandle, Promise]()
 		{
 			FLatentLoadedAsset<T> Result;
 			TSharedPtr<FLatentHandle> Handle = WeakHandle.Pin();
@@ -56,8 +45,6 @@ TFuture<FLatentLoadedAsset<T>> URAssetManager::FetchPrimaryAsset(const FGuid& La
 
 			FScopeLock Lock(&LatentHandleLock);
 			LatentHandles.Remove(LatentId);
-
-			// LoadingAssetsIds.Remove(AssetId);
 		}
 	);
 	
@@ -78,7 +65,7 @@ TFuture<FLatentLoadedAssets<T>> URAssetManager::FetchPrimaryAssets(const FGuid& 
 	};
 
 	TWeakPtr<FLatentHandle> WeakHandle(Handle);
-	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, bResolveObjects, AssetIds, LatentId, WeakHandle, Promise]()
+	FStreamableDelegate Streamable = FStreamableDelegate::CreateWeakLambda(this, [this, LatentId, AssetIds, bResolveObjects, WeakHandle, Promise]()
 		{
 			FLatentLoadedAssets<T> Result;
 			TSharedPtr<FLatentHandle> Handle = WeakHandle.Pin();

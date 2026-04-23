@@ -43,7 +43,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TSubclassOf<UAvatarSubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Meta = (AllowedTypes = "Asset.Character"))
 	TMap<FPrimaryAssetId, FAvatarInstance> DefaultAvatars;
 
 

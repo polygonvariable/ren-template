@@ -19,6 +19,7 @@
 #define REN_API RCHARACTER_API
 
 // Forward Declarations
+class UCharacterTrajectoryComponent;
 class UAbilitySystemComponent;
 class UCharacterAsset;
 class UGameplayEffect;
@@ -75,6 +76,10 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnCharacterRevived);
 	FOnCharacterRevived OnCharacterRevived;
 
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	TObjectPtr<UCharacterTrajectoryComponent> CharacterTrajectoryComponent;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
@@ -85,6 +90,8 @@ public:
 	virtual void DeinitializeCharacter();
 
 
+	UFUNCTION(BlueprintCallable)
+	virtual UCharacterTrajectoryComponent* GetTrajectoryComponent() const;
 
 
 	// ~ ACharacter

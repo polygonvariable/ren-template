@@ -6,20 +6,17 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Generated Headers
-#include "ActorFreeListSubsystem.generated.h"
+#include "ActorFreelistSubsystem.generated.h"
 
 // Module Macros
 #define REN_API RCOREPOOL_API
 
 
-
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
-class UActorFreeListSubsystem : public UWorldSubsystem
+class UActorFreelistSubsystem : public UWorldSubsystem
 {
 
 	GENERATED_BODY()
@@ -49,7 +46,7 @@ protected:
 
 public:
 
-	static REN_API UActorFreeListSubsystem* Get(UWorld* World);
+	static REN_API UActorFreelistSubsystem* Get(UWorld* World);
 
 };
 

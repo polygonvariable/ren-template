@@ -65,12 +65,6 @@ void UTask_GrantAvatarRank::OnCleanup()
 void UTask_GrantAvatarRank::Step_LoadAsset()
 {
 	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(FGuid::NewGuid(), TargetAssetId);
-	if (!Future.IsValid())
-	{
-		Fail(TEXT("Failed to create Future"));
-		return;
-	}
-
 	TWeakObjectPtr<UTask_GrantAvatarRank> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{

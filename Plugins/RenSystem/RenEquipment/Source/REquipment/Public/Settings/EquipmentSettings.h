@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "Definition/Runtime/EquipmentInstance.h"
+#include "Definition/EquipmentTagData.h"
 #include "Interface/IStorageSettingsProvider.h"
 
 // Generated Headers
@@ -20,37 +21,6 @@
 class UEquipmentStorage;
 class UEquipmentSubsystem;
 
-
-/**
- *
- */
-USTRUCT(BlueprintType)
-struct FEquipmentTagRelation
-{
-
-	GENERATED_BODY()
-
-public:
-
-	/*
-	 * Dynamic tag granted to ability, used to identify ability for activation.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag AbilityTag;
-
-	/*
-	 * Tag that responds to event, can be used to activate ability.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag EventTag;
-
-	/*
-	 * Tag granted to actor, can be used to identify state of ability or actor.
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag StateTag;
-
-};
 
 
 /**
@@ -101,10 +71,23 @@ public:
 	 * DataTag -> <AbilityTag, EventTag, StateTag>
 	 */
 	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly, Category = "Tags")
-	TMap<FGameplayTag, FEquipmentTagRelation> EquipmentTagRelations; 
+	TMap<FGameplayTag, FEquipmentTagData> EquipmentTagRelations;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Gameplay Event")
 	bool bAllowEventActivation = false;
+
+
+
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Notify Tags")
+	FGameplayTag EquipmentEquipNotify;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Notify Tags")
+	FGameplayTag EquipmentUnequipNotify;
+
+
+
+
 
 
 	// ~ IStorageSettingsProvider
@@ -114,6 +97,13 @@ public:
 
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Equipment Settings"))
 	static REN_API const UEquipmentSettings* Get();
+
+
+	static REN_API const FEquipmentTagData* GetTagData(const FGameplayTag& Tag);
+	static REN_API const FEquipmentTagData* GetTagDataByAbility(const FGameplayTag& Tag);
+
+
+	static REN_API const FGameplayTag& GetNotifyTag(bool bEquip);
 
 };
 
