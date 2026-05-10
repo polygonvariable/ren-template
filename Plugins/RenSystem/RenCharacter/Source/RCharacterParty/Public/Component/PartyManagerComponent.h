@@ -13,7 +13,7 @@
 class FObjectPreSaveContext;
 class URAssetManager;
 class UPartySubsystem;
-class UPartyStorage;
+class UPartyStorageManager;
 class ACharacterBase;
 
 
@@ -63,7 +63,7 @@ protected:
 	TObjectPtr<UPartySubsystem> PartySubsystem;
 
 	UPROPERTY()
-	TObjectPtr<UPartyStorage> PartyStorage;
+	TObjectPtr<UPartyStorageManager> StorageManager;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager;

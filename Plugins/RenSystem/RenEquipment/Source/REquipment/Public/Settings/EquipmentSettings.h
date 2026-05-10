@@ -9,7 +9,6 @@
 // Project Headers
 #include "Definition/Runtime/EquipmentInstance.h"
 #include "Definition/EquipmentTagData.h"
-#include "Interface/IStorageSettingsProvider.h"
 
 // Generated Headers
 #include "EquipmentSettings.generated.h"
@@ -19,6 +18,7 @@
 
 // Forward Declarations
 class UEquipmentStorage;
+class UEquipmentStorageManager;
 class UEquipmentSubsystem;
 
 
@@ -27,7 +27,7 @@ class UEquipmentSubsystem;
  *
  */
 UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Equipment"))
-class UEquipmentSettings : public UDeveloperSettings, public IStorageSettingsProvider
+class UEquipmentSettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
@@ -44,6 +44,9 @@ public:
 	TSubclassOf<UEquipmentStorage> StorageClass;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	TSubclassOf<UEquipmentStorageManager> StorageManagerClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
 	TMap<FGuid, FEquipmentInstance> DefaultEquipment;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
@@ -89,12 +92,6 @@ public:
 
 
 
-
-	// ~ IStorageSettingsProvider
-	virtual const FName& GetStorageId() const override;
-	virtual TSubclassOf<UStorage> GetStorageClass() const override;
-	// ~ End of IStorageSettingsProvider
-
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Equipment Settings"))
 	static REN_API const UEquipmentSettings* Get();
 
@@ -103,7 +100,7 @@ public:
 	static REN_API const FEquipmentTagData* GetTagDataByAbility(const FGameplayTag& Tag);
 
 
-	static REN_API const FGameplayTag& GetNotifyTag(bool bEquip);
+	static REN_API const FGameplayTag& GetAttachmentNotifyTag(bool bEquip);
 
 };
 

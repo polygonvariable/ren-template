@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/Runtime/CraftData.h"
 #include "Widget/TradeDetailUI.h"
@@ -15,8 +13,7 @@
 class UTextBlock;
 class UAssetEntry;
 class UCoreDataAsset;
-class UCraftStorage;
-
+class UCraftStorageManager;
 
 
 /**
@@ -43,7 +40,7 @@ protected:
 	TObjectPtr<UTextBlock> CraftQuantity = nullptr;
 
 	UPROPERTY()
-	TWeakObjectPtr<UCraftStorage> CraftStorage = nullptr;
+	TObjectPtr<UCraftStorageManager> StorageManager = nullptr;
 
 	FCraftData CraftData;
 

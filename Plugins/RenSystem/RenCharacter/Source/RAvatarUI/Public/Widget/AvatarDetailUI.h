@@ -10,11 +10,9 @@
 
 // Forward Declarations
 class UAscensionDetailUI;
-class UAvatarStorage;
+class UAvatarStorageManager;
 class UCoreDataAsset;
-
 struct FAvatarInstance;
-
 
 
 /**
@@ -39,7 +37,7 @@ protected:
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;
 
 
 	virtual void SetCustomDetails(const FAvatarInstance* Instance);

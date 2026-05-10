@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Generated Headers
 #include "AssetRuleDefinition.generated.h"
 

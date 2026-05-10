@@ -77,6 +77,7 @@ public:
 	FOnCharacterRevived OnCharacterRevived;
 
 
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UCharacterTrajectoryComponent> CharacterTrajectoryComponent;
 
@@ -86,6 +87,7 @@ public:
 
 	virtual bool IsAlive() const;
 
+	UFUNCTION(BlueprintCallable)
 	virtual void InitializeCharacter();
 	virtual void DeinitializeCharacter();
 
@@ -113,6 +115,11 @@ public:
 	virtual void GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& OutValue) const override;
 	// ~ End of ISpawnContextProvider
 
+	// ~ ACharacter
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// ~ End of ACharacter
+
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -121,7 +128,11 @@ protected:
 
 	virtual void RefreshCharacter();
 
+	UFUNCTION(BlueprintCallable)
+	void CallOnCharacterDied();
 
+	UFUNCTION(BlueprintCallable)
+	void CallOnCharacterRevived();
 
 
 	virtual void InitializeAttributes();
@@ -135,6 +146,10 @@ protected:
 	virtual void InitializeTags();
 
 
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnCharacterInitialized();
+	virtual void OnCharacterInitialized_Implementation();
 
 
 	UFUNCTION(BlueprintCallable)

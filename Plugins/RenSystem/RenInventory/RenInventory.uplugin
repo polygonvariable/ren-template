@@ -71,10 +71,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RenCounter",
-			"Enabled": true
-		},
-		{
 			"Name": "StructUtils",
 			"Enabled": true
 		}

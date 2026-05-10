@@ -16,7 +16,12 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenAbility",
+			"Name": "RAbility",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RAbilityUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
@@ -28,14 +33,6 @@
 		},
 		{
 			"Name": "RCoreFramework",
-			"Enabled": true
-		},
-		{
-			"Name": "RenStorage",
-			"Enabled": true
-		},
-		{
-			"Name": "RenGameplay",
 			"Enabled": true
 		}
 	]

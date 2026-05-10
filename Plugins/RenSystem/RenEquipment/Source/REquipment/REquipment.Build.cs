@@ -35,6 +35,7 @@ public class REquipment : ModuleRules
 				"RCorePool",
                 "RCoreAscension",
                 "RCoreStorage",
+				"RCoreAuthAction",
                 "RCoreAssetInstance",
             }
 			);

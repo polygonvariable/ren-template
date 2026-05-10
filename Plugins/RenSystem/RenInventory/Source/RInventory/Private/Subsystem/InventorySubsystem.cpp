@@ -3,8 +3,6 @@
 // Parent Header
 #include "Subsystem/InventorySubsystem.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Delegate/GameLifecycleDelegate.h"
@@ -13,23 +11,21 @@
 #include "Log/LogMacro.h"
 #include "Settings/InventorySettings.h"
 #include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 
 
-
-
-UInventoryStorage* UInventorySubsystem::GetInventory(const FName& InventoryId) const
+UInventoryStorageManager* UInventorySubsystem::GetStorageManager(const FName& InventoryId) const
 {
-	IStorageProvider* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
+	if (!StorageProvider)
 	{
 		return nullptr;
 	}
-	return StorageInterface->GetStorage<UInventoryStorage>(InventoryId);
+	return StorageProvider->GetStorageManager<UInventoryStorageManager>(InventoryId);
 }
 
 IAssetInstanceCollection* UInventorySubsystem::GetInstanceCollection(const FName& SourceId) const
 {
-	return Cast<IAssetInstanceCollection>(GetInventory(SourceId));
+	return Cast<IAssetInstanceCollection>(GetStorageManager(SourceId));
 }
 
 FPrimaryAssetType UInventorySubsystem::GetSupportedAssetType() const
@@ -42,15 +38,19 @@ FName UInventorySubsystem::GetPrimaryCollectionId() const
 	return UInventorySettings::Get()->StorageId;
 }
 
-
-
-void UInventorySubsystem::OnPreGameInitialized()
+void UInventorySubsystem::HandlePreGameInitialized()
 {
-	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
-	if (StorageInterface)
+	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	if (StorageProvider)
 	{
-		StorageInterface->LoadStorageFromSettings(UInventorySettings::Get());
-		StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
+		const UInventorySettings* Settings = UInventorySettings::Get();
+
+		FStorageDefinition StorageDefinition;
+		StorageDefinition.StorageId = Settings->StorageId;
+		StorageDefinition.StorageClass = Settings->StorageClass;
+		StorageDefinition.ManagerClass = Settings->StorageManagerClass;
+
+		StorageProvider->LoadStorage(StorageDefinition, FTaskCallback());
 	}
 }
 
@@ -64,20 +64,17 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::HandlePreGameInitialized);
 }
 
 void UInventorySubsystem::Deinitialize()
 {
-	StorageProvider.Reset();
-
 	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
+	StorageProvider = nullptr;
 
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
-
 
 UInventorySubsystem* UInventorySubsystem::Get(UWorld* World)
 {

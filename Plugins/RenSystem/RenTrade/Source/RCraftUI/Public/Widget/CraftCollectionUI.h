@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/CraftQuery.h"
 #include "Widget/TradeCollectionUI.h"
@@ -13,8 +11,7 @@
 
 // Forward Declarations
 class UCraftSubsystem;
-class UCraftStorage;
-
+class UCraftStorageManager;
 
 
 /**
@@ -32,7 +29,7 @@ protected:
 	TObjectPtr<UCraftSubsystem> CraftSubsystem;
 
 	UPROPERTY()
-	TWeakObjectPtr<UCraftStorage> CraftStorage;
+	TObjectPtr<UCraftStorageManager> StorageManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ECraftQuerySource QuerySource;

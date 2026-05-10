@@ -5,19 +5,25 @@
 
 // Project Headers
 #include "Delegate/GameLifecycleDelegate.h"
+#include "Interface/AssetInstanceRelation.h"
 #include "Interface/IStorageProvider.h"
+#include "Interface/StorageManager.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Settings/EquipmentSettings.h"
 #include "Storage/EquipmentStorage.h"
-
+#include "Storage/EquipmentStorageManager.h"
+#include "Subsystem/AssetInstanceRelationSubsystem.h"
+#include "Subsystem/AuthActionSubsystem.h"
+#include "Auth/AARemoveEquipmentSlot.h"
+#include "Auth/AASetEquipmentSlot.h"
 
 void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerInstanceId) const
 {
 	return OnSyncEquipment.Broadcast(OwnerInstanceId);
 }
 
-UEquipmentStorage* UEquipmentSubsystem::GetEquipmentStorage() const
+UEquipmentStorageManager* UEquipmentSubsystem::GetStorageManager() const
 {
 	if (!StorageProvider)
 	{
@@ -25,15 +31,89 @@ UEquipmentStorage* UEquipmentSubsystem::GetEquipmentStorage() const
 	}
 
 	FName StorageId = UEquipmentSettings::Get()->StorageId;
-	return StorageProvider->GetStorage<UEquipmentStorage>(StorageId);
+	return StorageProvider->GetStorageManager<UEquipmentStorageManager>(StorageId);
 }
 
-void UEquipmentSubsystem::OnPreGameInitialized()
+bool UEquipmentSubsystem::TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& Slot, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId)
+{
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("AuthActionSubsystem not found"));
+		return false;
+	}
+
+	FGuid ActionId = FGuid::NewGuid();
+	UAASetEquipmentSlot* Action = AuthActionSubsystem->CreateAction<UAASetEquipmentSlot>(ActionId);
+	if (!IsValid(Action))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("Failed to create auth action"));
+		return false;
+	}
+
+	Action->OwnerInstanceId = OwnerInstanceId;
+	Action->OwnerAssetId = OwnerAssetId;
+	Action->Slot = Slot;
+	Action->EquipmentInstanceId = EquipmentInstanceId;
+	Action->EquipmentAssetId = EquipmentAssetId;
+	return Action->StartAction();
+}
+
+bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FGameplayTag& Slot)
+{
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("AuthActionSubsystem not found"));
+		return false;
+	}
+
+	FGuid ActionId = FGuid::NewGuid();
+	UAARemoveEquipmentSlot* Action = AuthActionSubsystem->CreateAction<UAARemoveEquipmentSlot>(ActionId);
+	if (!IsValid(Action))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("Failed to create auth action"));
+		return false;
+	}
+
+	Action->OwnerInstanceId = OwnerInstanceId;
+	Action->Slot = Slot;
+	return Action->StartAction();
+}
+
+void UEquipmentSubsystem::HandleStorageLoaded(const FTaskResult& Result)
+{
+	if (Result.State == ETaskState::Completed)
+	{
+		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+
+		const FPrimaryAssetType& EquipmentType = Settings->EquipmentType;
+		const FPrimaryAssetType& OwnerType = Settings->OwnerType;
+
+		IAssetInstanceRelation* Relation = Cast<IAssetInstanceRelation>(GetStorageManager());
+		UAssetInstanceRelationSubsystem* RelationSubsystem = UAssetInstanceRelationSubsystem::Get(GetGameInstance());
+
+		if (IsValid(RelationSubsystem))
+		{
+			RelationSubsystem->RegisterRelation(EquipmentType, Relation);
+			RelationSubsystem->RegisterRelation(OwnerType, Relation);
+		}
+	}
+}
+
+void UEquipmentSubsystem::HandlePreGameInitialized()
 {
 	StorageProvider = IStorageProvider::Get(GetGameInstance());
 	if (StorageProvider)
 	{
-		StorageProvider->LoadStorageFromSettings(UEquipmentSettings::Get());
+		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+
+		FStorageDefinition Definition;
+		Definition.StorageId = Settings->StorageId;
+		Definition.StorageClass = Settings->StorageClass;
+		Definition.ManagerClass = Settings->StorageManagerClass;
+
+		StorageProvider->LoadStorage(Definition, FTaskCallback::CreateUObject(this, &UEquipmentSubsystem::HandleStorageLoaded));
 	}
 }
 
@@ -47,7 +127,7 @@ void UEquipmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::HandlePreGameInitialized);
 }
 
 void UEquipmentSubsystem::Deinitialize()
@@ -58,7 +138,6 @@ void UEquipmentSubsystem::Deinitialize()
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
 
 UEquipmentSubsystem* UEquipmentSubsystem::Get(UWorld* World)
 {

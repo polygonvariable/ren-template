@@ -10,25 +10,26 @@
 #include "Log/LogMacro.h"
 #include "Settings/PartySettings.h"
 #include "Storage/PartyStorage.h"
+#include "Storage/PartyStorageManager.h"
 #include "Util/SubsystemUtil.h"
+#include "Subsystem/AuthActionSubsystem.h"
+#include "Auth/AASetPartyCharacter.h"
+#include "Auth/AARemovePartyCharacter.h"
 
 
-UPartyStorage* UPartySubsystem::GetPartyStorage()
+UPartyStorageManager* UPartySubsystem::GetStorageManager()
 {
-	if (!IsValid(_CachedStorage))
+	if (!IsValid(StorageManager))
 	{
-		IStorageProvider* StorageInterface = StorageProvider.Get();
-		if (!StorageInterface)
+		if (!StorageProvider)
 		{
 			return nullptr;
 		}
 
 		FName StorageId = UPartySettings::Get()->StorageId;
-		UStorage* Storage = StorageInterface->GetStorage(StorageId);
-
-		_CachedStorage = Cast<UPartyStorage>(Storage);
+		StorageManager = StorageProvider->GetStorageManager<UPartyStorageManager>(StorageId);
 	}
-	return _CachedStorage;
+	return StorageManager;
 }
 
 void UPartySubsystem::SyncParty()
@@ -36,13 +37,64 @@ void UPartySubsystem::SyncParty()
 	OnSyncParty.Broadcast();
 }
 
-void UPartySubsystem::OnPreGameInitialized()
+bool UPartySubsystem::TrySetPartyCharacter(int Slot, const FPrimaryAssetId& AssetId)
 {
-	IStorageProvider* StorageInterface = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
-	if (StorageInterface)
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
-		StorageInterface->LoadStorageFromSettings(UPartySettings::Get());
-		StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
+		LOG_ERROR(LogCharacterParty, TEXT("AuthActionSubsystem not found"));
+		return false;
+	}
+
+	FGuid ActionId = FGuid::NewGuid();
+	UAASetPartyCharacter* Action = AuthActionSubsystem->CreateAction<UAASetPartyCharacter>(ActionId);
+	if (!IsValid(Action))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("Failed to create auth action"));
+		return false;
+	}
+
+	Action->CharacterSlot = Slot;
+	Action->CharacterAssetId = AssetId;
+	return Action->StartAction();
+}
+
+bool UPartySubsystem::TryRemovePartyCharacter(int Slot)
+{
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("AuthActionSubsystem not found"));
+		return false;
+	}
+
+	FGuid ActionId = FGuid::NewGuid();
+	UAARemovePartyCharacter* Action = AuthActionSubsystem->CreateAction<UAARemovePartyCharacter>(ActionId);
+	if (!IsValid(Action))
+	{
+		LOG_ERROR(LogCharacterParty, TEXT("Failed to create auth action"));
+		return false;
+	}
+
+	Action->CharacterSlot = Slot;
+
+	return Action->StartAction();
+}
+
+
+void UPartySubsystem::HandlePreGameInitialized()
+{
+	StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
+	if (StorageProvider)
+	{
+		const UPartySettings* Settings = UPartySettings::Get();
+
+		FStorageDefinition Definition;
+		Definition.StorageId = Settings->StorageId;
+		Definition.StorageClass = Settings->StorageClass;
+		Definition.ManagerClass = Settings->StorageManagerClass;
+
+		StorageProvider->LoadStorage(Definition, FTaskCallback());
 	}
 }
 
@@ -56,14 +108,14 @@ void UPartySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogCharacterParty, TEXT("PartySubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::HandlePreGameInitialized);
 }
 
 void UPartySubsystem::Deinitialize()
 {
 	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
-	StorageProvider.Reset();
-	_CachedStorage = nullptr;
+	StorageProvider = nullptr;
+	StorageManager = nullptr;
 
 	LOG_WARNING(LogCharacterParty, TEXT("PartySubsystem deinitialized"));
 	Super::Deinitialize();

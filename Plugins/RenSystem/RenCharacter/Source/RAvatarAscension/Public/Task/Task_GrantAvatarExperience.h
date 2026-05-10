@@ -2,30 +2,25 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "Task/TaskObject.h"
+#include "Auth/AuthAction.h"
 
 // Generated Headers
 #include "Task_GrantAvatarExperience.generated.h"
 
 // Forward Declarations
 class UAvatarAsset;
-class UAvatarStorage;
+class UAvatarStorageManager;
 class URAssetManager;
 class UCoreDataAsset;
 
 
-
 /**
- *
- *
  *
  */
 UCLASS(NotBlueprintType)
-class UTask_GrantAvatarExperience : public UTaskObject
+class UTask_GrantAvatarExperience : public UAuthAction
 {
 
 	GENERATED_BODY()
@@ -49,7 +44,7 @@ protected:
 	TObjectPtr<const UCoreDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -72,11 +67,11 @@ protected:
 	void Step_RemoveMaterial();
 	void Step_AddExperience();
 
-	// ~ UTaskObject
+	// ~ UAuthAction
 	void OnStarted() override;
-	void OnStopped() override;
+	void OnCompleted(bool bSuccess) override;
 	void OnCleanup() override;
-	// ~ End of UTaskObject
+	// ~ End of UAuthAction
 
 };
 

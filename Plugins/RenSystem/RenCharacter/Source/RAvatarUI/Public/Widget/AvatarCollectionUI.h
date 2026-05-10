@@ -10,8 +10,7 @@
 #include "AvatarCollectionUI.generated.h"
 
 // Forward Declarations
-class UAvatarStorage;
-
+class UAvatarStorageManager;
 
 
 /**
@@ -36,7 +35,7 @@ protected:
 	FAvatarQueryRule QueryRule;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;
 
 
 	// ~ UUserWidget

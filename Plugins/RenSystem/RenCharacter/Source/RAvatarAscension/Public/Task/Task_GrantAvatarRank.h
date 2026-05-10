@@ -2,30 +2,25 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "Task/TaskObject.h"
+#include "Auth/AuthAction.h"
 
 // Generated Headers
 #include "Task_GrantAvatarRank.generated.h"
 
 // Forward Declarations
 class UAvatarAsset;
-class UAvatarStorage;
+class UAvatarStorageManager;
 class URAssetManager;
 class IAscensionProvider;
 
 
-
 /**
- *
- *
  *
  */
 UCLASS(NotBlueprintType)
-class UTask_GrantAvatarRank : public UTaskObject
+class UTask_GrantAvatarRank : public UAuthAction
 {
 
 	GENERATED_BODY()
@@ -43,7 +38,7 @@ protected:
 	TObjectPtr<const UAvatarAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -61,11 +56,11 @@ protected:
 	void Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>& Materials, FPrimaryAssetType MaterialType);
 	void Step_AddRank();
 
-	// ~ UTaskObject
+	// ~ UAuthAction
 	void OnStarted() override;
-	void OnStopped() override;
+	void OnCompleted(bool bSuccess) override;
 	void OnCleanup() override;
-	// ~ End of UTaskObject
+	// ~ End of UAuthAction
 
 };
 

@@ -12,18 +12,14 @@
 
 // Forward Declarations
 class UAscensionDetailUI;
-class UInventoryStorage;
+class UInventoryStorageManager;
 class UInventorySubsystem;
 class UCoreDataAsset;
-
 struct FInventoryInstance;
-
 
 
 /**
  *
- * 
- * 
  */
 UCLASS(Abstract, MinimalAPI)
 class UInventoryDetailUI : public UAssetDetailUI
@@ -43,7 +39,7 @@ protected:
 	FGuid ActiveItemId;
 
 	UPROPERTY()
-	TWeakObjectPtr<UInventoryStorage> Inventory = nullptr;
+	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;

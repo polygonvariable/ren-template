@@ -3,8 +3,6 @@
 // Parent Header
 #include "Task/Task_GrantItemRank.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/InventoryAsset.h"
 #include "Asset/CoreDataAsset.h"
@@ -13,10 +11,8 @@
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventorySubsystem.h"
-
-
 
 
 void UTask_GrantItemRank::OnStarted()
@@ -30,21 +26,19 @@ void UTask_GrantItemRank::OnStarted()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(SourceId);
-	if (!IsValid(InventoryStorage))
+	StorageManager = InventorySubsystem->GetStorageManager(SourceId);
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("InventoryStorage is invalid"));
 		return;
 	}
 
-	Inventory = InventoryStorage;
-
 	Step_LoadAsset();
 }
 
-void UTask_GrantItemRank::OnStopped()
+void UTask_GrantItemRank::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_GrantItemRank::OnCleanup()
@@ -56,7 +50,7 @@ void UTask_GrantItemRank::OnCleanup()
 
 	TargetAsset = nullptr;
 	AssetManager = nullptr;
-	Inventory = nullptr;
+	StorageManager = nullptr;
 
 	AscensionData.Reset();
 }
@@ -89,7 +83,7 @@ void UTask_GrantItemRank::Step_CheckTarget()
 		return;
 	}
 
-	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = StorageManager->GetInstanceById(TargetAssetId, TargetId);
 	if (!IsValid(TargetAsset) || !Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -120,14 +114,14 @@ void UTask_GrantItemRank::Step_CheckTarget()
 	TMap<FPrimaryAssetId, int> AssetList;
 	RankItems->GetAssetList(AssetList);
 
-	bool bRemoved = Inventory->RemoveInstances(AssetList, 1);
+	bool bRemoved = StorageManager->RemoveInstances(AssetList, 1);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
 		return;
 	}
 
-	bool bSuccess = Inventory->UpdateInstanceById(TargetAssetId, TargetId,
+	bool bSuccess = StorageManager->UpdateInstanceById(TargetAssetId, TargetId,
 		[](FInventoryInstance* Item)
 		{
 			if (Item)

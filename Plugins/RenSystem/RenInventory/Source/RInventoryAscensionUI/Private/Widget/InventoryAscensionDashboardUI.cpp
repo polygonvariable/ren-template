@@ -12,13 +12,14 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/InventoryInstance.h"
+#include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
 #include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventoryAscensionSubsystem.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AssetCollectionUI.h"
@@ -44,35 +45,22 @@ void UInventoryAscensionDashboardUI::InitializeDetail()
 		return;
 	}
 
-	InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
-	if (IsValid(InventoryStorage) && bAutoRefresh)
+	StorageManager = InventorySubsystem->GetStorageManager(PrimarySourceId);
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryAscensionDashboardUI::RefreshDetail);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UInventoryAscensionDashboardUI::RefreshDetail);
 	}
 }
 
 void UInventoryAscensionDashboardUI::RefreshDetail()
 {
-	if (!IsValid(InventoryStorage))
+	if (!IsValid(StorageManager))
 	{
 		return;
 	}
 
-	const FInventoryInstance* Item = InventoryStorage->GetInstanceById(GetActiveAssetId(), ActiveItemId);
+	const FInventoryInstance* Item = StorageManager->GetInstanceById(GetActiveAssetId(), ActiveItemId);
 	ToggleAscension(Item);
-}
-
-
-void UInventoryAscensionDashboardUI::EnableControls()
-{
-	LevelUpButton->SetIsEnabled(true);
-	RankUpButton->SetIsEnabled(true);
-}
-
-void UInventoryAscensionDashboardUI::DisableControls()
-{
-	LevelUpButton->SetIsEnabled(false);
-	RankUpButton->SetIsEnabled(false);
 }
 
 
@@ -140,18 +128,6 @@ void UInventoryAscensionDashboardUI::ToggleRankUp(const FInventoryInstance* Item
 }
 
 
-void UInventoryAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Result)
-{
-	if (Result.State == ETaskState::Pending)
-	{
-		DisableControls();
-	}
-	else
-	{
-		EnableControls();
-	}
-}
-
 void UInventoryAscensionDashboardUI::HandleLevelUp()
 {
 	const UAssetEntry* Entry = LevelItemCollection->GetSelectedEntry();
@@ -164,7 +140,7 @@ void UInventoryAscensionDashboardUI::HandleLevelUp()
 	FGuid MaterialId = Entry->GetAssetInstanceId();
 	FPrimaryAssetId MaterialAssetId = Entry->AssetId;
 	
-	AscensionSubsystem->AddExperiencePoints(PrimarySourceId, GetActiveAssetId(), ActiveItemId, MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->TryAddExperiencePoints(PrimarySourceId, GetActiveAssetId(), ActiveItemId, MaterialAssetId, MaterialId);
 }
 
 void UInventoryAscensionDashboardUI::HandleRankUp()
@@ -175,9 +151,21 @@ void UInventoryAscensionDashboardUI::HandleRankUp()
 		return;
 	}
 
-	AscensionSubsystem->AddRankPoints(PrimarySourceId, GetActiveAssetId(), ActiveItemId, FTaskCallback::CreateUObject(this, &UInventoryAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->TryAddRankPoints(PrimarySourceId, GetActiveAssetId(), ActiveItemId);
 }
 
+
+void UInventoryAscensionDashboardUI::LockControls_Implementation()
+{
+	LevelUpButton->SetIsEnabled(false);
+	RankUpButton->SetIsEnabled(false);
+}
+
+void UInventoryAscensionDashboardUI::UnlockControls_Implementation()
+{
+	LevelUpButton->SetIsEnabled(true);
+	RankUpButton->SetIsEnabled(true);
+}
 
 void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
@@ -229,6 +217,9 @@ void UInventoryAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry
 
 void UInventoryAscensionDashboardUI::NativeConstruct()
 {
+	FGameUIDelegate::OnUIActionStarted.AddUObject(this, &UInventoryAscensionDashboardUI::LockControls);
+	FGameUIDelegate::OnUIActionCompleted.AddUObject(this, &UInventoryAscensionDashboardUI::UnlockControls);
+
 	RankUpButton->OnClicked.AddDynamic(this, &UInventoryAscensionDashboardUI::HandleRankUp);
 	LevelUpButton->OnClicked.AddDynamic(this, &UInventoryAscensionDashboardUI::HandleLevelUp);
 
@@ -239,14 +230,17 @@ void UInventoryAscensionDashboardUI::NativeConstruct()
 
 void UInventoryAscensionDashboardUI::NativeDestruct()
 {
+	FGameUIDelegate::OnUIActionStarted.RemoveAll(this);
+	FGameUIDelegate::OnUIActionCompleted.RemoveAll(this);
+
 	RankUpButton->OnClicked.RemoveAll(this);
 	LevelUpButton->OnClicked.RemoveAll(this);
 
-	if (IsValid(InventoryStorage))
+	if (IsValid(StorageManager))
 	{
-		InventoryStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	InventoryStorage = nullptr;
+	StorageManager = nullptr;
 
 	AscensionSubsystem = nullptr;
 	AscensionProvider = nullptr;

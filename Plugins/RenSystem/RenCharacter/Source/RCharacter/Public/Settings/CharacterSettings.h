@@ -10,7 +10,6 @@
 #include "CharacterSettings.generated.h"
 
 
-
 /**
  *
  */
@@ -26,6 +25,12 @@ public:
 	{
 		CategoryName = TEXT("Ren Project");
 	}
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Effects")
+	TSubclassOf<UGameplayEffect> AliveEffectClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Effects")
+	TSubclassOf<UGameplayEffect> DeadEffectClass;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
 	FGameplayTag DataHealthTag;

@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetEntry.h"
 
@@ -12,7 +10,6 @@
 
 // Forward Declarations
 struct FInventoryInstance;
-
 
 
 /**
@@ -28,6 +25,7 @@ public:
 
 	int Quantity = 0;
 	const FInventoryInstance* Item = nullptr;
+	bool bIsLinked = false;
 
 	// ~ UAssetEntry
 	virtual FGuid GetAssetInstanceId() const override;

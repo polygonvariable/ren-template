@@ -5,8 +5,16 @@
 // Engine Headers
 #include "Abilities/GameplayAbility.h"
 
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
 // Generated Headers
 #include "EquipmentAbility.generated.h"
+
+// Forward Declarations
+class UEquipmentController;
+class AEquipmentActor;
 
 
 /**
@@ -21,6 +29,79 @@ class UEquipmentAbility : public UGameplayAbility
 public:
 
 };
+
+
+
+
+/**
+ *
+ */
+UCLASS()
+class UEquipmentStateAbility : public UEquipmentAbility
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ UGameplayAbility
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	// ~ End of UGameplayAbility
+
+#if WITH_EDITOR
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UObject
+#endif
+
+protected:
+
+	UFUNCTION(BlueprintCallable)
+	void EnableEquipment();
+
+	UFUNCTION(BlueprintCallable)
+	void DisableEquipment();
+
+	UFUNCTION(BlueprintCallable)
+	UEquipmentController* GetController() const;
+
+};
+
+
+/**
+ *
+ */
+UCLASS()
+class UEquipmentWeaponAbility : public UEquipmentAbility
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ UGameplayAbility
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	// ~ End of UGameplayAbility
+
+#if WITH_EDITOR
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UObject
+#endif
+
+protected:
+
+	UFUNCTION(BlueprintCallable)
+	UEquipmentController* GetEquipmentController() const;
+
+	UFUNCTION(BlueprintCallable)
+	AEquipmentActor* GetEquipmentActor() const;
+
+};
+
+
+
+
 
 
 /**

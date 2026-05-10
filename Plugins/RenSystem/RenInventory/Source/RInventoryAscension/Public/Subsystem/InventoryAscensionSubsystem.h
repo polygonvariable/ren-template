@@ -5,17 +5,11 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
-// Project Headers
-#include "Definition/TaskType.h"
-
 // Generated Headers
 #include "InventoryAscensionSubsystem.generated.h"
 
 // Module Macros
 #define REN_API RINVENTORYASCENSION_API
-
-// Forward Declarations
-
 
 
 /**
@@ -29,8 +23,8 @@ class UInventoryAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	REN_API void AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
-	REN_API void AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback);
+	REN_API bool TryAddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId);
+	REN_API bool TryAddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId);
 
 protected:
 
@@ -46,7 +40,6 @@ public:
 	REN_API static UInventoryAscensionSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
 
 
 // Module Macros

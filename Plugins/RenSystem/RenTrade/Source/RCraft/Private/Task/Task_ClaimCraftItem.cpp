@@ -19,10 +19,8 @@
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
 #include "Settings/CraftSettings.h"
-#include "Storage/CraftStorage.h"
+#include "Storage/CraftStorageManager.h"
 #include "Subsystem/CraftSubsystem.h"
-
-
 
 
 void UTask_ClaimCraftItem::OnStarted()
@@ -31,9 +29,9 @@ void UTask_ClaimCraftItem::OnStarted()
 	Step_LoadAsset();
 }
 
-void UTask_ClaimCraftItem::OnStopped()
+void UTask_ClaimCraftItem::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_ClaimCraftItem::OnCleanup()
@@ -56,7 +54,7 @@ void UTask_ClaimCraftItem::Step_LoadAsset()
 		return;
 	}
 
-	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(TaskId, CraftAssetId);
+	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(ActionId, CraftAssetId);
 	TWeakObjectPtr<UTask_ClaimCraftItem> WeakThis(this);
 	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
 		{
@@ -120,15 +118,14 @@ void UTask_ClaimCraftItem::Step_CheckClaimable()
 		return;
 	}
 
-	FName CraftSourceId = UCraftSettings::Get()->StorageId;
-	UCraftStorage* CraftStorage = CraftSubsystem->GetCraft(CraftSourceId);
-	if (!IsValid(CraftStorage))
+	UCraftStorageManager* StorageManager = CraftSubsystem->GetStorageManager();
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("Failed to get CraftStorage"));
 		return;
 	}
 
-	ClaimQuantity = CraftStorage->ClaimCraftedItems(FTradeKey(CraftAssetId, TradeCollectionId, TargetAssetId));
+	ClaimQuantity = StorageManager->ClaimCraftedItems(FTradeKey(CraftAssetId, TradeCollectionId, TargetAssetId));
 	if (ClaimQuantity <= 0)
 	{
 		Fail(TEXT("No item to claim"));

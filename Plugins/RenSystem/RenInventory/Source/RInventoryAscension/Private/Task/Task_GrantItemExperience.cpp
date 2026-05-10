@@ -3,8 +3,6 @@
 // Parent Header
 #include "Task/Task_GrantItemExperience.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/InventoryAsset.h"
@@ -15,10 +13,8 @@
 #include "Library/AscensionLibrary.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventorySubsystem.h"
-
-
 
 
 void UTask_GrantItemExperience::OnStarted()
@@ -32,15 +28,15 @@ void UTask_GrantItemExperience::OnStarted()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(SourceId);
-	if (!IsValid(InventoryStorage))
+	StorageManager = InventorySubsystem->GetStorageManager(SourceId);
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("InventoryStorage is invalid"));
 		return;
 	}
 
 #if WITH_EDITOR
-	bool bSuccess = InventoryStorage->UpdateInstanceById(TargetAssetId, TargetId, [](FInventoryInstance* Item)
+	bool bSuccess = StorageManager->UpdateInstanceById(TargetAssetId, TargetId, [](FInventoryInstance* Item)
 		{
 			if (Item)
 			{
@@ -53,13 +49,12 @@ void UTask_GrantItemExperience::OnStarted()
 	return;
 #endif
 
-	Inventory = InventoryStorage;
 	Step_LoadAssets();
 }
 
-void UTask_GrantItemExperience::OnStopped()
+void UTask_GrantItemExperience::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_GrantItemExperience::OnCleanup()
@@ -76,7 +71,7 @@ void UTask_GrantItemExperience::OnCleanup()
 	TargetAsset = nullptr;
 	MaterialAsset = nullptr;
 	AssetManager = nullptr;
-	Inventory = nullptr;
+	StorageManager = nullptr;
 }
 
 void UTask_GrantItemExperience::Step_LoadAssets()
@@ -91,7 +86,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(ActionId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -119,7 +114,7 @@ void UTask_GrantItemExperience::Step_LoadAssets()
 
 void UTask_GrantItemExperience::Step_CheckItemAsset()
 {
-	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = StorageManager->GetInstanceById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found, TargetAsset is invalid"));
@@ -163,7 +158,7 @@ void UTask_GrantItemExperience::Step_CheckItemAsset()
 
 void UTask_GrantItemExperience::Step_CheckMaterialAsset(const FGuid& MaterialCollectionId)
 {
-	if (!IsValid(MaterialAsset) || !IsValid(Inventory))
+	if (!IsValid(MaterialAsset) || !IsValid(StorageManager))
 	{
 		Fail(TEXT("MaterialAsset, Inventory is invalid"));
 		return;
@@ -201,7 +196,7 @@ void UTask_GrantItemExperience::Step_CheckMaterialAsset(const FGuid& MaterialCol
 
 void UTask_GrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
 {
-	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(TaskId, AssetId);
+	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(ActionId, AssetId);
 	TWeakObjectPtr<UTask_GrantItemExperience> WeakThis(this);
 	Future.Next([WeakThis, Quantity](const FLatentLoadedAsset<UExperiencePointAsset>& Result)
 		{
@@ -222,7 +217,7 @@ void UTask_GrantItemExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& A
 
 void UTask_GrantItemExperience::Step_RemoveItem()
 {
-	bool bRemoved = Inventory->RemoveInstanceById(MaterialAssetId, MaterialId, MaterialQuantity);
+	bool bRemoved = StorageManager->RemoveInstanceById(MaterialAssetId, MaterialId, MaterialQuantity);
 	if (!bRemoved)
 	{
 		Fail(TEXT("Failed to remove material"));
@@ -234,7 +229,7 @@ void UTask_GrantItemExperience::Step_RemoveItem()
 
 void UTask_GrantItemExperience::Step_AddExperience()
 {
-	const FInventoryInstance* Item = Inventory->GetInstanceById(TargetAssetId, TargetId);
+	const FInventoryInstance* Item = StorageManager->GetInstanceById(TargetAssetId, TargetId);
 	if (!Item)
 	{
 		Fail(TEXT("Item not found"));
@@ -253,7 +248,7 @@ void UTask_GrantItemExperience::Step_AddExperience()
 		return;
 	}
 
-	bool bSuccess = Inventory->UpdateInstanceById(TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryInstance* Item)
+	bool bSuccess = StorageManager->UpdateInstanceById(TargetAssetId, TargetId, [NewExperience, NewLevel](FInventoryInstance* Item)
 		{
 			if (Item)
 			{

@@ -3,13 +3,10 @@
 // Parent Header
 #include "Widget/ShopCollectionUI.h"
 
-// Engine Headers
-
 // Project Headers
-#include "Storage/ShopStorage.h"
+#include "Storage/ShopStorageManager.h"
 #include "Subsystem/ShopSubsystem.h"
 #include "Widget/TradeEntry.h"
-
 
 
 void UShopCollectionUI::DisplayEntries()
@@ -37,12 +34,11 @@ void UShopCollectionUI::NativeConstruct()
 	ShopSubsystem = UShopSubsystem::Get(GetGameInstance());
 	if (IsValid(ShopSubsystem))
 	{
-		UShopStorage* Shop = ShopSubsystem->GetShop(PrimarySourceId);
-		if (IsValid(Shop))
+		StorageManager = ShopSubsystem->GetStorageManager();
+		if (IsValid(StorageManager))
 		{
-			Shop->OnShopUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);
+			StorageManager->OnStorageUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);
 		}
-		ShopStorage = TWeakObjectPtr<UShopStorage>(Shop);
 	}
 
 	Super::NativeConstruct();
@@ -50,13 +46,12 @@ void UShopCollectionUI::NativeConstruct()
 
 void UShopCollectionUI::NativeDestruct()
 {
-	UShopStorage* Shop = ShopStorage.Get();
-	if (IsValid(ShopSubsystem))
+	if (IsValid(StorageManager))
 	{
-		Shop->OnShopUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
+	StorageManager = nullptr;
 	ShopSubsystem = nullptr;
-	ShopStorage.Reset();
 
 	Super::NativeDestruct();
 }

@@ -15,11 +15,11 @@ AActor* UActorFreelistSubsystem::AcquireFromList(TSubclassOf<AActor> ActorClass,
 	if (StartingNode)
 	{
 		AActor* Actor = StartingNode->Get();
-		IActorLinkedNode* Task = Cast<IActorLinkedNode>(Actor);
-		if (Task)
+		IActorLinkedNode* Node = Cast<IActorLinkedNode>(Actor);
+		if (Node)
 		{
-			ActorList.Add(ActorClass, Task->GetNextNode());
-			Task->SetNextNode(nullptr);
+			ActorList.Add(ActorClass, Node->GetNextNode());
+			Node->SetNextNode(nullptr);
 			Actor->SetOwner(Owner);
 			return Actor;
 		}
@@ -30,8 +30,8 @@ AActor* UActorFreelistSubsystem::AcquireFromList(TSubclassOf<AActor> ActorClass,
 
 void UActorFreelistSubsystem::ReturnToList(AActor* Actor)
 {
-	IActorLinkedNode* Task = Cast<IActorLinkedNode>(Actor);
-	if (!Task)
+	IActorLinkedNode* Node = Cast<IActorLinkedNode>(Actor);
+	if (!Node)
 	{
 		return;
 	}
@@ -41,7 +41,7 @@ void UActorFreelistSubsystem::ReturnToList(AActor* Actor)
 	UClass* ActorClass = Actor->GetClass();
 	if (ActorList.Contains(ActorClass))
 	{
-		Task->SetNextNode(ActorList.FindChecked(ActorClass));
+		Node->SetNextNode(ActorList.FindChecked(ActorClass));
 	}
 	ActorList.Add(ActorClass, Actor);
 }

@@ -13,7 +13,9 @@
 
 // Forward Declarations
 class IStorageProvider;
-class UEquipmentStorage;
+class UEquipmentStorageManager;
+struct FTaskResult;
+struct FGameplayTag;
 
 
 /**
@@ -31,14 +33,17 @@ public:
 	FOnSyncEquipment OnSyncEquipment;
 
 	REN_API void SyncEquipment(const FGuid& OwnerInstanceId) const;
-	REN_API UEquipmentStorage* GetEquipmentStorage() const;
+	REN_API UEquipmentStorageManager* GetStorageManager() const;
+
+	REN_API bool TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& Slot, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId);
+	REN_API bool TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FGameplayTag& Slot);
 
 protected:
 
 	IStorageProvider* StorageProvider;
 
-
-	void OnPreGameInitialized();
+	void HandleStorageLoaded(const FTaskResult& Result);
+	void HandlePreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

@@ -11,25 +11,23 @@
 #include "Log/LogMacro.h"
 #include "Settings/AvatarSettings.h"
 #include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 
 
-UAvatarStorage* UAvatarSubsystem::GetAvatarStorage() const
+UAvatarStorageManager* UAvatarSubsystem::GetStorageManager() const
 {
-	IStorageProvider* Storage = StorageProvider.Get();
-	if (!Storage)
+	if (!StorageProvider)
 	{
 		return nullptr;
 	}
 
 	FName StorageId = UAvatarSettings::Get()->StorageId;
-	UStorage* AvatarStorage = Storage->GetStorage(StorageId);
-
-	return Cast<UAvatarStorage>(AvatarStorage);
+	return StorageProvider->GetStorageManager<UAvatarStorageManager>(StorageId);
 }
 
 IAssetInstanceCollection* UAvatarSubsystem::GetInstanceCollection(const FName& CollectionId) const
 {
-	return Cast<IAssetInstanceCollection>(GetAvatarStorage());
+	return Cast<IAssetInstanceCollection>(GetStorageManager());
 }
 
 FPrimaryAssetType UAvatarSubsystem::GetSupportedAssetType() const
@@ -42,13 +40,19 @@ FName UAvatarSubsystem::GetPrimaryCollectionId() const
 	return UAvatarSettings::Get()->StorageId;
 }
 
-void UAvatarSubsystem::OnPreGameInitialized()
+void UAvatarSubsystem::HandlePreGameInitialized()
 {
-	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
-	if (StorageInterface)
+	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	if (StorageProvider)
 	{
-		StorageInterface->LoadStorageFromSettings(UAvatarSettings::Get());
-		StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
+		const UAvatarSettings* Settings = UAvatarSettings::Get();
+
+		FStorageDefinition Definition;
+		Definition.StorageId = Settings->StorageId;
+		Definition.StorageClass = Settings->StorageClass;
+		Definition.ManagerClass = Settings->StorageManagerClass;
+
+		StorageProvider->LoadStorage(Definition, FTaskCallback());
 	}
 }
 
@@ -62,13 +66,13 @@ void UAvatarSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::OnPreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::HandlePreGameInitialized);
 }
 
 void UAvatarSubsystem::Deinitialize()
 {
 	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
-	StorageProvider.Reset();
+	StorageProvider = nullptr;
 
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem deinitialized"));
 	Super::Deinitialize();

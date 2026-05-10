@@ -7,7 +7,6 @@
 #include "Definition/Runtime/AvatarInstance.h"
 
 
-
 FGuid UAvatarEntry::GetAssetInstanceId() const
 {
 	if (AvatarInstance)

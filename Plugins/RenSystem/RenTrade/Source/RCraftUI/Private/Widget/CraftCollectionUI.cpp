@@ -3,14 +3,11 @@
 // Parent Header
 #include "Widget/CraftCollectionUI.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/TradeAsset.h"
-#include "Storage/CraftStorage.h"
+#include "Storage/CraftStorageManager.h"
 #include "Subsystem/CraftSubsystem.h"
 #include "Widget/CraftEntry.h"
-
 
 
 void UCraftCollectionUI::DisplayEntries()
@@ -22,7 +19,7 @@ void UCraftCollectionUI::DisplayEntries()
 
 	FPrimaryAssetId TradeAssetId = TradeAsset->GetPrimaryAssetId();
 
-	CraftSubsystem->QueryItems(PrimarySourceId, TradeAsset, TradeCollectionId, QuerySource,
+	CraftSubsystem->QueryItems(TradeAsset, TradeCollectionId, QuerySource,
 		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftData* CraftData) {
 
 			UCraftEntry* Entry = GetEntryFromPool<UCraftEntry>();
@@ -42,12 +39,11 @@ void UCraftCollectionUI::NativeConstruct()
 	CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* Craft = CraftSubsystem->GetCraft(PrimarySourceId);
-		if (IsValid(Craft))
+		StorageManager = CraftSubsystem->GetStorageManager();
+		if (IsValid(StorageManager))
 		{
-			Craft->OnCraftUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
+			StorageManager->OnStorageUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
 		}
-		CraftStorage = TWeakObjectPtr<UCraftStorage>(Craft);
 	}
 
 	Super::NativeConstruct();
@@ -55,13 +51,12 @@ void UCraftCollectionUI::NativeConstruct()
 
 void UCraftCollectionUI::NativeDestruct()
 {
-	UCraftStorage* Craft = CraftStorage.Get();
-	if (IsValid(Craft))
+	if (IsValid(StorageManager))
 	{
-		Craft->OnCraftUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
+	StorageManager = nullptr;
 	CraftSubsystem = nullptr;
-	CraftStorage.Reset();
 
 	Super::NativeDestruct();
 }

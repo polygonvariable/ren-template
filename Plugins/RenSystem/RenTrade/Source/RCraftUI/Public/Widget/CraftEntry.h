@@ -2,17 +2,12 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/Runtime/CraftData.h"
 #include "Widget/TradeEntry.h"
 
 // Generated Headers
 #include "CraftEntry.generated.h"
-
-// Forward Declarations
-
 
 
 /**

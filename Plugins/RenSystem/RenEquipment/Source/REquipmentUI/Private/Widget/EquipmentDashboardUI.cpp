@@ -8,8 +8,9 @@
 
 // Project Headers
 #include "Definition/AssetFilterProperty.h"
+#include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
-#include "Storage/EquipmentStorage.h"
+#include "Storage/EquipmentStorageManager.h"
 #include "Subsystem/EquipmentSubsystem.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
@@ -21,6 +22,11 @@ void UEquipmentDashboardUI::InitializeDetail()
 {
 	OwnerDetail->InitializeDetail();
 	EquipmentCollection->InitializeCollection();
+}
+
+void UEquipmentDashboardUI::RefreshDetail()
+{
+	EquipmentCollection->RefreshEntries();
 }
 
 void UEquipmentDashboardUI::SyncEquipment()
@@ -48,10 +54,10 @@ void UEquipmentDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 	OwnerDetail->InitializeEntryDetail(Entry);
 	SlotCollection->InitializeEntryDetail(Entry);
 
-	if (IsValid(EquipmentStorage))
+	if (IsValid(StorageManager))
 	{
 		TArray<FGuid> EquipmentIds;
-		EquipmentStorage->GetNonOwnedEquipmentIds(OwnerInstanceId, EquipmentIds);
+		StorageManager->GetNonOwnedEquipmentIds(OwnerInstanceId, EquipmentIds);
 
 		UFilterCriterion_Guid* AssetFilter = EquipmentCollection->GetCriterionByName<UFilterCriterion_Guid>(FAssetFilterProperty::InstanceId);
 		if (IsValid(AssetFilter))
@@ -67,8 +73,15 @@ void UEquipmentDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 void UEquipmentDashboardUI::NativeConstruct()
 {
 	SyncButton->OnClicked.AddDynamic(this, &UEquipmentDashboardUI::SyncEquipment);
+	FGameUIDelegate::OnUIActionStarted.AddUObject(this, &UEquipmentDashboardUI::LockControls);
+	FGameUIDelegate::OnUIActionCompleted.AddUObject(this, &UEquipmentDashboardUI::UnlockControls);
+
 	EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
-	EquipmentStorage = EquipmentSubsystem->GetEquipmentStorage();
+	StorageManager = EquipmentSubsystem->GetStorageManager();
+	if (IsValid(StorageManager))
+	{
+		StorageManager->OnStorageUpdated.AddUObject(this, &UEquipmentDashboardUI::RefreshDetail);
+	}
 
 	Super::NativeConstruct();
 }
@@ -76,8 +89,15 @@ void UEquipmentDashboardUI::NativeConstruct()
 void UEquipmentDashboardUI::NativeDestruct()
 {
 	SyncButton->OnClicked.RemoveAll(this);
+	FGameUIDelegate::OnUIActionStarted.RemoveAll(this);
+	FGameUIDelegate::OnUIActionCompleted.RemoveAll(this);
+
+	if (IsValid(StorageManager))
+	{
+		StorageManager->OnStorageUpdated.RemoveAll(this);
+	}
+	StorageManager = nullptr;
 	EquipmentSubsystem = nullptr;
-	EquipmentStorage = nullptr;
 
 	Super::NativeDestruct();
 }

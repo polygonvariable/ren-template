@@ -40,13 +40,14 @@ struct FInventorySortEntry
 
 public:
 
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity) {}
-	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InItemName, int InQuantity, const FInventoryInstance* InItem) : AssetId(InAssetId), ItemName(InItemName), Quantity(InQuantity), Item(InItem) {}
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InDisplayName, int InQuantity) : AssetId(InAssetId), DisplayName(InDisplayName), Quantity(InQuantity) {}
+	FInventorySortEntry(FPrimaryAssetId InAssetId, FText InDisplayName, int InQuantity, const FInventoryInstance* InInstance, bool bInIsLinked) : AssetId(InAssetId), DisplayName(InDisplayName), Quantity(InQuantity), Instance(InInstance), bIsLinked(bInIsLinked) {}
 
 	FPrimaryAssetId AssetId;
-	FText ItemName;
+	FText DisplayName;
 	int Quantity = 0;
-	const FInventoryInstance* Item = nullptr;
+	const FInventoryInstance* Instance = nullptr;
+	bool bIsLinked = false;
 
 };
 

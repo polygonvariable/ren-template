@@ -4,96 +4,93 @@
 #include "Widget/EquipmentItemUI.h"
 
 // Engine Headers
-#include "Components/PanelWidget.h"
-#include "Components/ProgressBar.h"
+#include "AbilitySystemComponent.h"
 #include "Components/Image.h"
+#include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
-#include "AbilitySystemComponent.h"
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
+#include "Asset/EquipmentDataAsset.h"
 #include "Component/EquipmentManagerComponent.h"
 #include "Controller/EquipmentController.h"
-#include "Settings/EquipmentSettings.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Asset/EquipmentDataAsset.h"
+#include "Settings/EquipmentSettings.h"
 
+
+UEquipmentManagerComponent* UEquipmentItemUI::GetEquipmentComponent() const
+{
+	return _EquipmentComponent.Get();
+}
+
+UEquipmentController* UEquipmentItemUI::GetEquipmentController() const
+{
+	return _EquipmentController.Get();
+}
 
 void UEquipmentItemUI::RegisterEquipmentComponent(AActor* Target)
 {
-	ResetDetail();
-	UnregisterEquipmentComponent();
-	UnregisterEquipmentController();
-
-	if (!IsValid(Target))
+	if (IsValid(Target))
 	{
-		return;
-	}
+		UEquipmentManagerComponent* Component = Target->FindComponentByClass<UEquipmentManagerComponent>();
+		if (!IsValid(Component))
+		{
+			return;
+		}
 
-	EquipmentComponent = Target->FindComponentByClass<UEquipmentManagerComponent>();
-	if (!IsValid(EquipmentComponent))
-	{
-		return;
-	}
+		Component->OnEquipmentSpawnBegin.AddUObject(this, &UEquipmentItemUI::UnregisterEquipmentController);
+		Component->OnEquipmentSpawnEnd.AddUObject(this, &UEquipmentItemUI::RegisterEquipmentController);
 
-	EquipmentComponent->OnEquipmentChangeBegin.AddUObject(this, &UEquipmentItemUI::HandleEquipmentChangeBegin);
-	EquipmentComponent->OnEquipmentChangeEnd.AddUObject(this, &UEquipmentItemUI::HandleEquipmentChangeEnd);
+		_EquipmentComponent = TWeakObjectPtr<UEquipmentManagerComponent>(Component);
+	}
 }
 
 void UEquipmentItemUI::UnregisterEquipmentComponent()
 {
-	if (IsValid(EquipmentComponent))
+	UEquipmentManagerComponent* Component = GetEquipmentComponent();
+	if (IsValid(Component))
 	{
-		EquipmentComponent->OnEquipmentChangeBegin.RemoveAll(this);
-		EquipmentComponent->OnEquipmentChangeEnd.RemoveAll(this);
+		Component->OnEquipmentSpawnBegin.RemoveAll(this);
+		Component->OnEquipmentSpawnEnd.RemoveAll(this);
 	}
-	EquipmentComponent = nullptr;
+	_EquipmentComponent.Reset();
 }
 
 void UEquipmentItemUI::RegisterEquipmentController()
 {
+	UEquipmentManagerComponent* EquipmentComponent = GetEquipmentComponent();
 	if (!IsValid(EquipmentComponent))
 	{
 		return;
 	}
 
-	EquipmentController = EquipmentComponent->GetEquipmentControllerByTag(EquipmentSlot);
-}
-
-void UEquipmentItemUI::UnregisterEquipmentController()
-{
-	EquipmentController = nullptr;
-	ResetDetail();
-}
-
-void UEquipmentItemUI::HandleEquipmentChangeBegin()
-{
-	ResetDetail();
-	UnregisterEquipmentController();
-}
-
-void UEquipmentItemUI::HandleEquipmentChangeEnd()
-{
-	RegisterEquipmentController();
-	SetDetail();
-}
-
-void UEquipmentItemUI::SetDetail()
-{
-	if (!IsValid(EquipmentController))
+	UEquipmentController* Controller = EquipmentComponent->GetEquipmentControllerByTag(EquipmentSlot);
+	if (!IsValid(Controller))
 	{
 		return;
 	}
 
-	EquipmentImage->SetBrushFromSoftTexture(EquipmentController->EquipmentAsset->Icon);
+	_EquipmentController = TWeakObjectPtr<UEquipmentController>(Controller);
+	SetDetail(Controller);
 }
 
-void UEquipmentItemUI::ResetDetail()
+void UEquipmentItemUI::UnregisterEquipmentController()
 {
+	ResetDetail();
+	_EquipmentController.Reset();
 }
+
+void UEquipmentItemUI::SetDetail(UEquipmentController* Controller)
+{
+	EquipmentImage->SetBrushFromSoftTexture(Controller->EquipmentAsset->Icon);
+}
+
+void UEquipmentItemUI::RefreshDetail() {}
+void UEquipmentItemUI::ResetDetail() {}
+
 
 void UEquipmentItemUI::RegisterPlayer()
 {
@@ -103,57 +100,71 @@ void UEquipmentItemUI::RegisterPlayer()
 		return;
 	}
 
+	TWeakObjectPtr<UEquipmentItemUI> WeakThis(this);
 	Controller->GetOnNewPawnNotifier().AddWeakLambda(this,
-		[&](APawn* NewPawn)
+		[WeakThis](APawn* NewPawn)
 		{
-			RegisterEquipmentComponent(NewPawn);
+			UEquipmentItemUI* This = WeakThis.Get();
+			if (IsValid(This))
+			{
+				This->OnPlayerRegistered(NewPawn);
+			}
 		}
 	);
 
 	APawn* ExistingPawn = Controller->GetPawn();
 	if (IsValid(ExistingPawn))
 	{
-		RegisterEquipmentComponent(ExistingPawn);
+		OnPlayerRegistered(ExistingPawn);
 	}
 }
 
-void UEquipmentItemUI::CleanUpPlayer()
+void UEquipmentItemUI::UnregisterPlayer()
 {
 	APlayerController* Controller = GetOwningPlayer();
 	if (IsValid(Controller))
 	{
 		Controller->GetOnNewPawnNotifier().RemoveAll(this);
 	}
+
+	OnPlayerUnregistered();
 }
+
+void UEquipmentItemUI::OnPlayerRegistered(AActor* Target)
+{
+	OnPlayerUnregistered();
+
+	if (IsValid(Target))
+	{
+		RegisterEquipmentComponent(Target);
+	}
+}
+
+void UEquipmentItemUI::OnPlayerUnregistered()
+{
+	ResetDetail();
+	UnregisterEquipmentComponent();
+	UnregisterEquipmentController();
+}
+
+
 
 void UEquipmentItemUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
 	KeyTextBlock->SetText(KeyText);
 }
 
 void UEquipmentItemUI::NativeConstruct()
 {
 	RegisterPlayer();
-
 	Super::NativeConstruct();
 }
 
 void UEquipmentItemUI::NativeDestruct()
 {
-	CleanUpPlayer();
-	UnregisterEquipmentComponent();
-	UnregisterEquipmentController();
-
+	UnregisterPlayer();
 	Super::NativeDestruct();
-}
-
-void UEquipmentItemUI::OnControllerRemoved_Implementation()
-{
-}
-void UEquipmentItemUI::OnControllerAdded_Implementation()
-{
 }
 
 
@@ -165,38 +176,49 @@ void UEquipmentWeaponItemUI::RegisterEquipmentController()
 {
 	Super::RegisterEquipmentController();
 
-	UEquipmentController_Weapon* Weapon = Cast<UEquipmentController_Weapon>(EquipmentController);
-	if (!IsValid(Weapon))
+	UEquipmentProjectileWeaponController* Weapon = GetEquipmentController<UEquipmentProjectileWeaponController>();
+	if (IsValid(Weapon))
 	{
-		return;
+		Weapon->OnDataChanged.AddUObject(this, &UEquipmentWeaponItemUI::RefreshDetail);
 	}
-
-	OnControllerAdded();
-	RefreshDetail(Weapon->GetProjectileCount(), Weapon->GetMaxProjectileCount());
-	Weapon->OnEquipmentDataChanged.AddUObject(this, &UEquipmentWeaponItemUI::RefreshDetail);
 }
 
 void UEquipmentWeaponItemUI::UnregisterEquipmentController()
 {
-	UEquipmentController_Weapon* Weapon = Cast<UEquipmentController_Weapon>(EquipmentController);
+	UEquipmentProjectileWeaponController* Weapon = GetEquipmentController<UEquipmentProjectileWeaponController>();
 	if (IsValid(Weapon))
 	{
-		Weapon->OnEquipmentDataChanged.RemoveAll(this);
+		Weapon->OnDataChanged.RemoveAll(this);
 	}
+
 	Super::UnregisterEquipmentController();
 }
 
-void UEquipmentWeaponItemUI::RefreshDetail(int Current, int Max)
+void UEquipmentWeaponItemUI::SetDetail(UEquipmentController* Controller)
 {
-	CurrentTextBlock->SetText(FText::AsNumber(Current));
-	MaxTextBlock->SetText(FText::AsNumber(Max));
+	Super::SetDetail(Controller);
+	UpdateWeaponData();
+}
+
+void UEquipmentWeaponItemUI::RefreshDetail()
+{
+	UpdateWeaponData();
 }
 
 void UEquipmentWeaponItemUI::ResetDetail()
 {
 	CurrentTextBlock->SetText(FText::FromString("--"));
 	MaxTextBlock->SetText(FText::FromString("--"));
-	OnControllerRemoved();
+}
+
+void UEquipmentWeaponItemUI::UpdateWeaponData()
+{
+	UEquipmentProjectileWeaponController* Weapon = GetEquipmentController<UEquipmentProjectileWeaponController>();
+	if (IsValid(Weapon))
+	{
+		CurrentTextBlock->SetText(FText::AsNumber(Weapon->GetProjectileCount()));
+		MaxTextBlock->SetText(FText::AsNumber(Weapon->GetMaxProjectileCount()));
+	}
 }
 
 
@@ -205,22 +227,24 @@ void UEquipmentWeaponItemUI::ResetDetail()
 
 
 
-
-void UEquipmentSkillItemUI::RegisterEquipmentComponent(AActor* Target)
+UAbilitySystemComponent* UEquipmentSkillItemUI::GetAbilitySystemComponent() const
 {
-	FormatOptions.MinimumIntegralDigits = 1;
-	FormatOptions.MinimumFractionalDigits = 1;
-	FormatOptions.MaximumFractionalDigits = 1;
+	return _AbilitySystemComponent.Get();
+}
 
-	Super::RegisterEquipmentComponent(Target);
+
+void UEquipmentSkillItemUI::OnPlayerRegistered(AActor* Target)
+{
+	Super::OnPlayerRegistered(Target);
 	RegisterAbilitySystem(Target);
 }
 
-void UEquipmentSkillItemUI::UnregisterEquipmentComponent()
+void UEquipmentSkillItemUI::OnPlayerUnregistered()
 {
-	Super::UnregisterEquipmentComponent();
 	UnregisterAbilitySystem();
+	Super::OnPlayerUnregistered();
 }
+
 
 void UEquipmentSkillItemUI::RegisterAbilitySystem(AActor* Target)
 {
@@ -229,40 +253,34 @@ void UEquipmentSkillItemUI::RegisterAbilitySystem(AActor* Target)
 		return;
 	}
 
-	AbilitySystemComponent = Target->FindComponentByClass<UAbilitySystemComponent>();
+	UAbilitySystemComponent* AbilitySystemComponent = Target->FindComponentByClass<UAbilitySystemComponent>();
 	if (!IsValid(AbilitySystemComponent))
 	{
 		return;
 	}
 
 	AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.AddUObject(this, &UEquipmentSkillItemUI::HandleGameplayEffectApplied);
-	AbilitySystemComponent->OnAnyGameplayEffectRemovedDelegate().AddWeakLambda(this,
-		[this](const FActiveGameplayEffect& Effect)
-		{
-			if (Effect.Spec.DynamicGrantedTags.HasTag(EffectTag))
-			{
-				ResetDetail();
-				CleanUpTimer();
-			}
-		}
-	);
+	AbilitySystemComponent->OnAnyGameplayEffectRemovedDelegate().AddUObject(this, &UEquipmentSkillItemUI::HandleGameplayEffectRemoved);
+
+	_AbilitySystemComponent = TWeakObjectPtr<UAbilitySystemComponent>(AbilitySystemComponent);
 }
 
 void UEquipmentSkillItemUI::UnregisterAbilitySystem()
 {
-	CleanUpTimer();
-
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
 	if (IsValid(AbilitySystemComponent))
 	{
 		AbilitySystemComponent->OnAnyGameplayEffectRemovedDelegate().RemoveAll(this);
 		AbilitySystemComponent->OnGameplayEffectAppliedDelegateToSelf.RemoveAll(this);
 	}
-	AbilitySystemComponent = nullptr;
+	_AbilitySystemComponent.Reset();
 }
+
 
 void UEquipmentSkillItemUI::HandleGameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, FActiveGameplayEffectHandle Handle)
 {
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
 	if (Spec.DynamicGrantedTags.HasTag(EffectTag))
 	{
 		if (TimerHandle.IsValid())
@@ -281,6 +299,20 @@ void UEquipmentSkillItemUI::HandleGameplayEffectApplied(UAbilitySystemComponent*
 	}
 }
 
+void UEquipmentSkillItemUI::HandleGameplayEffectRemoved(const FActiveGameplayEffect& Effect)
+{
+	if (Effect.Spec.DynamicGrantedTags.HasTag(EffectTag))
+	{
+		CleanUpTimer();
+
+		CooldownProgressBar->SetPercent(0.0f);
+		CooldownTextBlock->SetText(FText::AsNumber(0.0f, &FormatOptions));
+
+		CooldownTextBlock->SetVisibility(ESlateVisibility::Collapsed);
+		CostTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+	}
+}
+
 void UEquipmentSkillItemUI::HandleEffectTimeChanged()
 {
 	float Duration = 0.0f;
@@ -289,7 +321,6 @@ void UEquipmentSkillItemUI::HandleEffectTimeChanged()
 	GetEffectDurationAndRemainingTime(Duration, RemainingTime);
 
 	CooldownProgressBar->SetPercent(RemainingTime > 0.0f ? (RemainingTime / Duration) : 0.0f);
-
 	CooldownTextBlock->SetText(FText::AsNumber(RemainingTime, &FormatOptions));
 
 	CooldownTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
@@ -303,7 +334,8 @@ void UEquipmentSkillItemUI::HandleEffectTimeChanged()
 		CooldownTextBlock->SetVisibility(ESlateVisibility::Collapsed);
 		CostTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
 
-		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+		UWorld* World = GetWorld();
+		FTimerManager& TimerManager = World->GetTimerManager();
 		if (TimerManager.IsTimerActive(TimerHandle))
 		{
 			TimerManager.PauseTimer(TimerHandle);
@@ -313,11 +345,13 @@ void UEquipmentSkillItemUI::HandleEffectTimeChanged()
 	}
 }
 
+
 void UEquipmentSkillItemUI::GetEffectDurationAndRemainingTime(float& Duration, float& RemainingTime)
 {
 	Duration = 0.0f;
 	RemainingTime = 0.0f;
 
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
 	if (IsValid(AbilitySystemComponent))
 	{
 		FGameplayEffectQuery Query = FGameplayEffectQuery::MakeQuery_MatchAllOwningTags(FGameplayTagContainer(EffectTag));
@@ -342,36 +376,39 @@ void UEquipmentSkillItemUI::GetEffectDurationAndRemainingTime(float& Duration, f
 
 void UEquipmentSkillItemUI::CleanUpTimer()
 {
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
+
 	TimerManager.ClearAllTimersForObject(this);
 	TimerHandle.Invalidate();
 }
 
-void UEquipmentSkillItemUI::SetDetail()
-{
-	Super::SetDetail();
 
-	if (!IsValid(EquipmentController))
+void UEquipmentSkillItemUI::SetDetail(UEquipmentController* Controller)
+{
+	Super::SetDetail(Controller);
+
+	if (!IsValid(Controller))
 	{
 		ResetDetail();
 		return;
 	}
 
-	const UEquipmentAbilityCollection* AbilityCollection = EquipmentController->GetEquipmentAbilityCollection();
+	const UEquipmentAbilityCollection* AbilityCollection = Controller->GetEquipmentAbilityCollection();
 	if (!IsValid(AbilityCollection))
 	{
 		ResetDetail();
 		return;
 	}
 
-	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->AbilityClasses;
-	if (!Abilities.IsValidIndex(0) || !IsValid(Abilities[0]))
+	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
+	if (!Abilities.IsValidIndex(0) || !IsValid(Abilities[0].AbilityClass))
 	{
 		ResetDetail();
 		return;
 	}
 
-	const UGameplayAbility* AbilityCDO = Abilities[0]->GetDefaultObject<UGameplayAbility>();
+	const UGameplayAbility* AbilityCDO = Abilities[0].AbilityClass->GetDefaultObject<UGameplayAbility>();
 	const UGameplayEffect* EffectCDO = AbilityCDO->GetCostGameplayEffect();
 
 	if (!IsValid(EffectCDO) || !EffectCDO->Modifiers.IsValidIndex(0))
@@ -388,7 +425,6 @@ void UEquipmentSkillItemUI::SetDetail()
 	}
 
 	CostTextBlock->SetText(FText::AsNumber(FMath::Abs(Cost)));
-	OnControllerAdded();
 }
 
 void UEquipmentSkillItemUI::ResetDetail()
@@ -398,10 +434,18 @@ void UEquipmentSkillItemUI::ResetDetail()
 	CooldownTextBlock->SetText(FText::AsNumber(0.0f, &FormatOptions));
 	CooldownTextBlock->SetVisibility(ESlateVisibility::Collapsed);
 
-	if (!IsValid(EquipmentController))
-	{
-		OnControllerRemoved();
-		CostTextBlock->SetText(FText::AsNumber(0));
-	}
+	CostTextBlock->SetText(FText::AsNumber(0));
 	CostTextBlock->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+	CleanUpTimer();
 }
+
+void UEquipmentSkillItemUI::NativeConstruct()
+{
+	FormatOptions.MinimumIntegralDigits = 1;
+	FormatOptions.MinimumFractionalDigits = 1;
+	FormatOptions.MaximumFractionalDigits = 1;
+
+	Super::NativeConstruct();
+}
+

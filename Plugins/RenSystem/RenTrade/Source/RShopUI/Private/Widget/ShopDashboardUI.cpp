@@ -16,7 +16,6 @@
 #include "Widget/TradeEntry.h"
 
 
-
 void UShopDashboardUI::HandlePurchase()
 {
 	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
@@ -27,9 +26,7 @@ void UShopDashboardUI::HandlePurchase()
 	}
 
 	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
-
-	FGuid TaskId = FGuid::NewGuid();
-	ShopSubsystem->PurchaseItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
+	ShopSubsystem->TryPurchaseItem(TradeAssetId, TradeCollectionId, TargetAssetId);
 }
 
 const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const

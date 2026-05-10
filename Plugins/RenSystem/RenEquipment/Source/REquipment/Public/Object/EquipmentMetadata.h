@@ -2,32 +2,17 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-#include "ActiveGameplayEffectHandle.h"
-#include "GameplayAbilitySpecHandle.h"
-
 // Project Headers
-#include "Object/AssetFragment.h"
 #include "Object/AssetDataDefinition.h"
-#include "Definition/EquipmentData.h"
+#include "Object/AssetFragment.h"
 
 // Generated Headers
 #include "EquipmentMetadata.generated.h"
 
 // Forward Declarations
-class UAnimInstance;
-class UGameplayEffect;
-class UGameplayAbility;
-class UAbilitySystemComponent;
-class UCoreDataAsset;
 class AEquipmentActor;
-class IAssetInstanceCollection;
-class IAscensionInstanceProvider;
 class UEquipmentAbilityCollection;
 class UEquipmentController;
-struct FGameplayEventData;
-struct FEquipmentTagData;
 
 
 /**
@@ -45,7 +30,7 @@ public:
 	TSubclassOf<UEquipmentDataDefinition> EquipmentDefinition = nullptr;
 
 
-	const UEquipmentDataDefinition* GetEquipmentDefinitionCDO() const;
+	const UEquipmentDataDefinition* GetEquipmentDefinition() const;
 
 #if WITH_EDITORONLY_DATA
 	// ~ UAssetFragment

@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "UObject/ObjectSaveContext.h"
+#include "Abilities/GameplayAbility.h"
 
 
 void UEquipmentAbilityCollection::PreSave(FObjectPreSaveContext ObjectSaveContext)
@@ -12,9 +13,15 @@ void UEquipmentAbilityCollection::PreSave(FObjectPreSaveContext ObjectSaveContex
 	Super::PreSave(ObjectSaveContext);
 
 #if WITH_EDITOR
-	//if (Abilities.IsValidIndex(0))
+	//Abilities.Empty();
+	//for (TSubclassOf<UGameplayAbility>& Ability : AbilityClasses)
 	//{
-	//	Abilities[0].EventTag = FGameplayTag::EmptyTag;
+	//	if (Ability)
+	//	{
+	//		FEquipmentAbilityData AbilityData;
+	//		AbilityData.AbilityClass = Ability;
+	//		Abilities.Add(AbilityData);
+	//	}
 	//}
 #endif
 }

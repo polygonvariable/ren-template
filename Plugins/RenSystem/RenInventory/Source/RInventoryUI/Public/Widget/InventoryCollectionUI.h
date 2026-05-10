@@ -10,7 +10,7 @@
 #include "InventoryCollectionUI.generated.h"
 
 // Forward Declarations
-class UInventoryStorage;
+class UInventoryStorageManager;
 
 
 /**
@@ -35,7 +35,7 @@ protected:
 	FInventoryQueryRule QueryRule;
 
 	UPROPERTY()
-	TObjectPtr<UInventoryStorage> InventoryStorage = nullptr;
+	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
 
 	// ~ UUserWidget

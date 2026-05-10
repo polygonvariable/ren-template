@@ -16,7 +16,7 @@
 // Forward Declarations
 class FObjectPreSaveContext;
 class URAssetManager;
-class UEquipmentStorage;
+class UEquipmentStorageManager;
 class UEquipmentSubsystem;
 class UActorFreelistSubsystem;
 class UEquipmentController;
@@ -40,11 +40,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<FEquipmentData> EquipmentSpawnData;
 
+	DECLARE_MULTICAST_DELEGATE(FOnEquipmentSpawn);
+	FOnEquipmentSpawn OnEquipmentSpawnBegin;
+	FOnEquipmentSpawn OnEquipmentSpawnEnd;
 
-	DECLARE_MULTICAST_DELEGATE(FOnEquipmentChanged);
-	FOnEquipmentChanged OnEquipmentChangeBegin;
-	FOnEquipmentChanged OnEquipmentChangeEnd;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void InitializeManager();
+
+	virtual void DeinitializeManager();
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnEquipment();
@@ -52,9 +56,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveEquipment();
 
-
 	REN_API UEquipmentController* GetEquipmentControllerByTag(const FGameplayTag& Tag) const;
-
 
 	// ~ UActorComponent
 	virtual void BeginPlay() override;
@@ -71,17 +73,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
 
-	UPROPERTY()
-	FGuid OwnerInstanceId;
+	UPROPERTY(EditAnywhere)
+	FGameplayTag DefaultEquippedTag;
 
 	UPROPERTY()
 	TMap<FEquipmentData, TObjectPtr<UEquipmentController>> EquippedControllers;
-
-	UPROPERTY()
-	TArray<FPrimaryAssetId> EquippedAssetIds;
-
-	UPROPERTY()
-	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
@@ -92,10 +88,13 @@ protected:
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
 
+	FGuid OwnerInstanceId;
+	TArray<FPrimaryAssetId> EquippedAssetIds;
 
 
 	void SyncEquipment(const FGuid& InOwnerId);
 	void SpawnEquipmentActors();
+	void HandleDefaultEquipment();
 
 	void RefreshEquipmentData();
 	void CleanupEquipmentData();
@@ -110,6 +109,7 @@ private:
 
 	FGuid _SpawnId;
 	bool _bIsSpawning = false;
+	bool _bIsDefaultHandled = false;
 
 	UPROPERTY()
 	TMap<UClass*, FPoolCollection> _ControllerPool;

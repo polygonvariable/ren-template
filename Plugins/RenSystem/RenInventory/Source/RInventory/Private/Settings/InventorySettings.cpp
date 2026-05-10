@@ -7,23 +7,3 @@
 #include "Storage/InventoryStorage.h"
 
 
-UInventorySettings::UInventorySettings(const FObjectInitializer& ObjectInitializer)
-{
-	CategoryName = TEXT("Ren Project");
-}
-
-const FName& UInventorySettings::GetStorageId() const
-{
-	return StorageId;
-}
-
-TSubclassOf<UStorage> UInventorySettings::GetStorageClass() const
-{
-	return StorageClass;
-}
-
-const UInventorySettings* UInventorySettings::Get()
-{
-	return GetDefault<UInventorySettings>();
-}
-

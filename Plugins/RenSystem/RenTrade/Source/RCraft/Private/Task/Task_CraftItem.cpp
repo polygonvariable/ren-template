@@ -22,10 +22,8 @@
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
 #include "Settings/CraftSettings.h"
-#include "Storage/CraftStorage.h"
+#include "Storage/CraftStorageManager.h"
 #include "Subsystem/CraftSubsystem.h"
-
-
 
 
 void UTask_CraftItem::OnStarted()
@@ -34,9 +32,9 @@ void UTask_CraftItem::OnStarted()
 	Step_LoadAsset();
 }
 
-void UTask_CraftItem::OnStopped()
+void UTask_CraftItem::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_CraftItem::OnCleanup()
@@ -64,7 +62,7 @@ void UTask_CraftItem::Step_LoadAsset()
 	Assets.Add(CraftAssetId);
 	Assets.Add(TargetAssetId);
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(ActionId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -196,16 +194,15 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 		return;
 	}
 
-	FName CraftSourceId = UCraftSettings::Get()->StorageId;
-	UCraftStorage* CraftStorage = CraftSubsystem->GetCraft(CraftSourceId);
-	if (!IsValid(CraftStorage))
+	UCraftStorageManager* StorageManager = CraftSubsystem->GetStorageManager();
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("Failed to get CraftStorage"));
 		return;
 	}
 
 	FTradeKey TradeKey(CraftAssetId, TradeCollectionId, TargetAssetId);
-	const FCraftData* CraftData = CraftStorage->GetItem(TradeKey);
+	const FCraftData* CraftData = StorageManager->GetItem(TradeKey);
 	if (!CraftData)
 	{
 		Fail(TEXT("Failed to get craft data"));
@@ -218,7 +215,7 @@ void UTask_CraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& Material
 		return;
 	}
 
-	if (!CraftStorage->AddItem(TradeKey, CraftingTime))
+	if (!StorageManager->AddItem(TradeKey, CraftingTime))
 	{
 		Fail(TEXT("Failed to add craft item"));
 		return;

@@ -13,7 +13,7 @@ class UImage;
 class UButton;
 class UTextBlock;
 class UCoreDataAsset;
-class UPartyStorage;
+class UPartyStorageManager;
 
 
 /**
@@ -59,7 +59,7 @@ protected:
 	TSoftObjectPtr<UTexture2D> EmptyIcon = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UPartyStorage> PartyStorage = nullptr;
+	TObjectPtr<UPartyStorageManager> StorageManager = nullptr;
 
 
 	UFUNCTION(BlueprintCallable)

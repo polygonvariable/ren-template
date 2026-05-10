@@ -10,7 +10,7 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Storage/PartyStorage.h"
+#include "Storage/PartyStorageManager.h"
 #include "Subsystem/PartySubsystem.h"
 #include "Widget/Drag/AssetDragOperation.h"
 
@@ -29,7 +29,7 @@ void UPartySlotUI::ResetDetail()
 void UPartySlotUI::RefreshDetail()
 {
 	FPrimaryAssetId AssetId;
-	if (!IsValid(PartyStorage) || !PartyStorage->GetCharacterAtSlot(CharacterSlot, AssetId))
+	if (!IsValid(StorageManager) || !StorageManager->GetCharacterAtSlot(CharacterSlot, AssetId))
 	{
 		ResetDetail();
 		return;
@@ -40,9 +40,10 @@ void UPartySlotUI::RefreshDetail()
 
 void UPartySlotUI::ClearSlot()
 {
-	if (bAllowEdit && IsValid(PartyStorage))
+	UPartySubsystem* PartySubsystem = UPartySubsystem::Get(GetWorld());
+	if (bAllowEdit && IsValid(PartySubsystem))
 	{
-		PartyStorage->RemoveCharacterFromSlot(CharacterSlot);
+		PartySubsystem->TryRemovePartyCharacter(CharacterSlot);
 	}
 }
 
@@ -83,10 +84,10 @@ void UPartySlotUI::NativeConstruct()
 	UPartySubsystem* PartySubsystem = UPartySubsystem::Get(GetWorld());
 	if (IsValid(PartySubsystem))
 	{
-		PartyStorage = PartySubsystem->GetPartyStorage();
-		if (IsValid(PartyStorage))
+		StorageManager = PartySubsystem->GetStorageManager();
+		if (IsValid(StorageManager))
 		{
-			PartyStorage->OnStorageUpdated.AddUObject(this, &UPartySlotUI::RefreshDetail);
+			StorageManager->OnStorageUpdated.AddUObject(this, &UPartySlotUI::RefreshDetail);
 			RefreshDetail();
 		}
 	}
@@ -99,11 +100,11 @@ void UPartySlotUI::NativeDestruct()
 		ClearButton->OnClicked.Clear();
 	}
 
-	if (IsValid(PartyStorage))
+	if (IsValid(StorageManager))
 	{
-		PartyStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	PartyStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }
@@ -127,6 +128,12 @@ bool UPartySlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEven
 		return false;
 	}
 
-	return PartyStorage->SetCharacterAtSlot(CharacterSlot, AssetId);
+	UPartySubsystem* PartySubsystem = UPartySubsystem::Get(GetWorld());
+	if (!IsValid(PartySubsystem))
+	{
+		return false;
+	}
+
+	return PartySubsystem->TrySetPartyCharacter(CharacterSlot, AssetId);
 }
 

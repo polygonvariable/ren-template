@@ -14,11 +14,8 @@
 class UCoreDataAsset;
 
 
-
 /**
- *
- *
- *
+ * 
  */
 UCLASS(Abstract)
 class UInventoryFilterUI : public UAssetFilterUI

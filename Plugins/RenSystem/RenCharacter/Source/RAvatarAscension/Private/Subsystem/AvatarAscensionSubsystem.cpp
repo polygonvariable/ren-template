@@ -3,67 +3,55 @@
 // Parent Header
 #include "Subsystem/AvatarAscensionSubsystem.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/TaskSubsystem.h"
+#include "Subsystem/AuthActionSubsystem.h"
 #include "Task/Task_GrantAvatarExperience.h"
 #include "Task/Task_GrantAvatarRank.h"
 
 
-
-void UAvatarAscensionSubsystem::AddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback)
+bool UAvatarAscensionSubsystem::TryAddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
-	UTask_GrantAvatarExperience* Task = TaskSubsystem->CreateTask<UTask_GrantAvatarExperience>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_GrantAvatarExperience* Action = AuthActionSubsystem->CreateAction<UTask_GrantAvatarExperience>(ActionId);
+	if (!IsValid(Action))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->TargetSourceId = TargetSourceId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->MaterialAssetId = MaterialAssetId;
-	Task->MaterialId = MaterialId;
-	Task->StartTask();
+	Action->TargetSourceId = TargetSourceId;
+	Action->TargetAssetId = TargetAssetId;
+	Action->MaterialAssetId = MaterialAssetId;
+	Action->MaterialId = MaterialId;
+	return Action->StartAction();
 }
 
-void UAvatarAscensionSubsystem::AddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FTaskCallback Callback)
+bool UAvatarAscensionSubsystem::TryAddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
-	UTask_GrantAvatarRank* Task = TaskSubsystem->CreateTask<UTask_GrantAvatarRank>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_GrantAvatarRank* Action = AuthActionSubsystem->CreateAction<UTask_GrantAvatarRank>(ActionId);
+	if (!IsValid(Action))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->TargetSourceId = TargetSourceId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->StartTask();
+	Action->TargetSourceId = TargetSourceId;
+	Action->TargetAssetId = TargetAssetId;
+	return Action->StartAction();
 }
-
-
-
 
 bool UAvatarAscensionSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -81,8 +69,6 @@ void UAvatarAscensionSubsystem::Deinitialize()
 	LOG_WARNING(LogInventoryAscension, TEXT("AvatarAscensionSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
-
 
 UAvatarAscensionSubsystem* UAvatarAscensionSubsystem::Get(UWorld* World)
 {

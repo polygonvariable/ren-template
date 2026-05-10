@@ -13,7 +13,7 @@
 #include "Log/LogMacro.h"
 #include "Manager/RAssetManager.inl"
 #include "Settings/PartySettings.h"
-#include "Storage/PartyStorage.h"
+#include "Storage/PartyStorageManager.h"
 #include "Subsystem/PartySubsystem.h"
 
 
@@ -34,7 +34,7 @@ void UPartyManagerComponent::BeginPlay()
 		if (IsValid(PartySubsystem))
 		{
 			PartySubsystem->OnSyncParty.AddUObject(this, &UPartyManagerComponent::SpawnParty);
-			PartyStorage = PartySubsystem->GetPartyStorage();
+			StorageManager = PartySubsystem->GetStorageManager();
 		}
 	}
 
@@ -50,7 +50,7 @@ void UPartyManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	AssetManager = nullptr;
 	PartySubsystem = nullptr;
-	PartyStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -169,9 +169,9 @@ void UPartyManagerComponent::UnregisterCharacter(const FPrimaryAssetId& AssetId)
 
 void UPartyManagerComponent::RefreshPartyOrder()
 {
-	if (SourceType == EAssetQuerySource::Instance)
+	if (IsValid(StorageManager) && SourceType == EAssetQuerySource::Instance)
 	{
-		PartyStorage->GetAllCharacters(CharacterAssetIds);
+		StorageManager->GetAllCharacters(CharacterAssetIds);
 	}
 }
 

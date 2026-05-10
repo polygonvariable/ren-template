@@ -3,69 +3,57 @@
 // Parent Header
 #include "Subsystem/InventoryAscensionSubsystem.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/TaskSubsystem.h"
+#include "Subsystem/AuthActionSubsystem.h"
 #include "Task/Task_GrantItemExperience.h"
 #include "Task/Task_GrantItemRank.h"
 
 
-
-void UInventoryAscensionSubsystem::AddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback)
+bool UInventoryAscensionSubsystem::TryAddExperiencePoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
-	UTask_GrantItemExperience* Task = TaskSubsystem->CreateTask<UTask_GrantItemExperience>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_GrantItemExperience* Action = AuthActionSubsystem->CreateAction<UTask_GrantItemExperience>(ActionId);
+	if (!IsValid(Action))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->SourceId = SourceId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->TargetId = TargetId;
-	Task->MaterialAssetId = MaterialAssetId;
-	Task->MaterialId = MaterialId;
-	Task->StartTask();
+	Action->SourceId = SourceId;
+	Action->TargetAssetId = TargetAssetId;
+	Action->TargetId = TargetId;
+	Action->MaterialAssetId = MaterialAssetId;
+	Action->MaterialId = MaterialId;
+	return Action->StartAction();
 }
 
-void UInventoryAscensionSubsystem::AddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId, FTaskCallback Callback)
+bool UInventoryAscensionSubsystem::TryAddRankPoints(FName SourceId, FPrimaryAssetId TargetAssetId, FGuid TargetId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	FGuid TaskId = FGuid::NewGuid();
-	UTask_GrantItemRank* Task = TaskSubsystem->CreateTask<UTask_GrantItemRank>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_GrantItemRank* Action = AuthActionSubsystem->CreateAction<UTask_GrantItemRank>(ActionId);
+	if (!IsValid(Action))
 	{
-		Callback.ExecuteIfBound(FTaskResult(ETaskState::Failed));
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->SourceId = SourceId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->TargetId = TargetId;
-	Task->StartTask();
+	Action->SourceId = SourceId;
+	Action->TargetAssetId = TargetAssetId;
+	Action->TargetId = TargetId;
+	return Action->StartAction();
 }
-
-
-
 
 bool UInventoryAscensionSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
@@ -83,8 +71,6 @@ void UInventoryAscensionSubsystem::Deinitialize()
 	LOG_WARNING(LogInventoryAscension, TEXT("InventoryAscensionSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
-
 
 UInventoryAscensionSubsystem* UInventoryAscensionSubsystem::Get(UWorld* World)
 {

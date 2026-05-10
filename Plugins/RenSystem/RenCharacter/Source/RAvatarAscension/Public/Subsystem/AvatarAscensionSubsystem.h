@@ -14,9 +14,6 @@
 // Module Macros
 #define REN_API RAVATARASCENSION_API
 
-// Forward Declarations
-
-
 
 /**
  *
@@ -29,8 +26,8 @@ class UAvatarAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	REN_API void AddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId, FTaskCallback Callback);
-	REN_API void AddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FTaskCallback Callback);
+	REN_API bool TryAddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId);
+	REN_API bool TryAddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId);
 
 protected:
 
@@ -46,7 +43,6 @@ public:
 	REN_API static UAvatarAscensionSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
 
 
 // Module Macros

@@ -3,6 +3,7 @@
 // Parent Header
 #include "Actor/EquipmentActor.h"
 
+
 AEquipmentActor::AEquipmentActor(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -11,7 +12,6 @@ AEquipmentActor::AEquipmentActor(const FObjectInitializer& ObjectInitializer)
 	SetActorHiddenInGame(true);
 	SetCanBeDamaged(false);
 }
-
 
 void AEquipmentActor::BeginPlay()
 {
@@ -27,7 +27,6 @@ void AEquipmentActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
-
 
 AActor* AEquipmentActor::GetNextNode() const
 {

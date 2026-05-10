@@ -7,6 +7,10 @@
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
 
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
 // Project Headers
 #include "Object/AssetFragment.h"
 #include "Object/AssetDataDefinition.h"
@@ -14,6 +18,9 @@
 
 // Generated Headers
 #include "EquipmentController.generated.h"
+
+// Module Macros
+#define REN_API REQUIPMENT_API
 
 // Forward Declarations
 class ACharacter;
@@ -56,25 +63,20 @@ public:
 	TObjectPtr<AEquipmentActor> EquipmentActor = nullptr;
 
 
-	const UEquipmentAbilityCollection* GetEquipmentAbilityCollection() const
-	{
-		return AbilityCollection;
-	}
-	const UEquipmentDataDefinition* GetEquipmentDataDefinition() const
-	{
-		return DataDefinition;
-	}
-
-
 	UFUNCTION(BlueprintCallable)
 	virtual void ActivateEquipment();
 
 	UFUNCTION(BlueprintCallable)
 	virtual void DeactivateEquipment();
 
-
 	virtual bool InitializeController(const UEquipmentDataDefinition* InDataDefinition);
 	virtual void DeinitializeController();
+
+	REN_API const UEquipmentAbilityCollection* GetEquipmentAbilityCollection() const;
+	REN_API const UEquipmentDataDefinition* GetEquipmentDataDefinition() const;
+
+	UFUNCTION(BlueprintCallable)
+	REN_API AActor* GetEquipmentActor() const;
 
 	// ~ UObject
 	virtual class UWorld* GetWorld() const override;
@@ -89,40 +91,22 @@ protected:
 	UPROPERTY()
 	TObjectPtr<const UEquipmentDataDefinition> DataDefinition = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UAnimMontage> EquipAnimation = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UAnimMontage> UnequipAnimation = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAnimInstance> EquipmentAnimInstance = nullptr;
-
-
-	const FEquipmentTagData* EquipmentTagData = nullptr;
-	IAssetInstanceCollection* InstanceCollection = nullptr;
-	IAscensionInstanceProvider* InstanceAscension = nullptr;
-
-
-
-
 	UPROPERTY()
 	TArray<FActiveGameplayEffectHandle> ActiveEffectHandles;
 
 	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> ActiveAbilityHandles;
 
+	const FEquipmentTagData* EquipmentTagData = nullptr;
+	IAssetInstanceCollection* InstanceCollection = nullptr;
+	IAscensionInstanceProvider* InstanceAscension = nullptr;
 
-	virtual void RefreshController();
 
-	int GetEquipmentLevel() const;
-	void SetEquipmentLevel(int Level);
+	virtual void HandleActivationEvent(const FGameplayEventData* Payload); 
 
 	UAnimInstance* GetOwnerAnimInstance() const;
 	UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
 	AActor* GetEquipmentOwner() const;
-	AActor* GetEquipmentActor() const;
-
 
 	template<class T>
 	T* GetEquipmentOwner() const
@@ -130,39 +114,27 @@ protected:
 		return Cast<T>(GetEquipmentOwner());
 	}
 
+	int GetEquipmentLevel() const;
+	void SetEquipmentLevel(int Level);
+
+	virtual void RefreshController();
+
 	void ApplyAbilities();
 	void RemoveAbilities();
 	void RefreshAbilities();
-
-	virtual void HandleActivationEvent(const FGameplayEventData* Payload);
-	void HandleAbilityActivation(const FGameplayEventData* Payload, FGameplayTag EventTag);
 
 	virtual void OnEquipped();
 	virtual void OnUnequipped();
 
 	virtual void AttachEquipment();
 	virtual void DetachEquipment();
-
-	UFUNCTION(BlueprintNativeEvent)
-	void OnControllerInitialized();
-	virtual void OnControllerInitialized_Implementation() {};
-
-	UFUNCTION(BlueprintNativeEvent)
-	void OnControllerDeinitialized();
-	virtual void OnControllerDeinitialized_Implementation() {};
-
+	
+	virtual void OnControllerInitialized();
+	virtual void OnControllerDeinitialized();
 
 	bool GetIsDeinitialized() const;
 
 private:
-
-	void SetIsDeinitialized(bool bState);
-
-	bool _bIsDeinitialized = false;
-
-
-	UPROPERTY()
-	int _Level = 1;
 
 	UPROPERTY()
 	mutable TObjectPtr<UAbilitySystemComponent> _OwnerAbilitySystem = nullptr;
@@ -170,46 +142,23 @@ private:
 	UPROPERTY()
 	mutable TObjectPtr<UAnimInstance> _OwnerAnimInstance = nullptr;
 
+	int _Level = 1;
+	bool _bIsDeinitialized = false;
+
+
+	void SetIsDeinitialized(bool bState);
+
 };
 
 
 UENUM()
-enum class EEquipmentState : uint8
+enum class EEquipmentAttachmentState : uint8
 {
 	Equipped UMETA(DisplayName = "Equipped"),
 	Unequipped UMETA(DisplayName = "Unequipped")
 };
 
 
-
-//UCLASS(Abstract, MinimalAPI, DefaultToInstanced)
-//class UEquipmentControllerComponent : public UObject
-//{
-//
-//	GENERATED_BODY()
-//
-//public:
-//
-//	virtual void RegisterComponent() {};
-//	virtual void UnregisterComponent() {};
-//
-//};
-//
-//UCLASS(MinimalAPI, DefaultToInstanced)
-//class UEquipmentControllerComponent_Projectile : public UEquipmentControllerComponent
-//{
-//
-//	GENERATED_BODY()
-//
-//public:
-//
-//	UPROPERTY(EditDefaultsOnly)
-//	int MaxProjectileCount = 10;
-//
-//	UPROPERTY(Transient)
-//	int CurrentProjectileCount = 10;
-//
-//};
 
 
 
@@ -219,20 +168,108 @@ enum class EEquipmentState : uint8
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Weapon)"))
-class UEquipmentController_Weapon : public UEquipmentController
+UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller"))
+class UEquipmentAttachmentController : public UEquipmentController
 {
 
 	GENERATED_BODY()
 
 public:
 
-	DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEquipmentDataChanged, int, int)
-	FOnEquipmentDataChanged OnEquipmentDataChanged;
-
-
+	// ~ UEquipmentController
+	virtual bool InitializeController(const UEquipmentDataDefinition* InDataDefinition) override;
 	virtual void ActivateEquipment() override;
 	virtual void DeactivateEquipment() override;
+	// ~ End of UEquipmentController
+
+#if WITH_EDITOR
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UObject
+#endif
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> StateEffectClass = nullptr;
+
+	FActiveGameplayEffectHandle StateEffectHandle;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> EquipAnimation = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UAnimMontage> UnequipAnimation = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UAnimInstance> EquipmentAnimInstance = nullptr;
+
+	EEquipmentAttachmentState AttachmentState = EEquipmentAttachmentState::Unequipped;
+
+
+	// ~ UEquipmentController
+	virtual void HandleActivationEvent(const FGameplayEventData* Payload) override;
+	// ~ End of UEquipmentController
+
+	virtual bool IsEquipped();
+
+	// ~ UEquipmentController
+	virtual void OnEquipped() override;
+	virtual void OnUnequipped() override;
+	// ~ End of UEquipmentController
+
+	virtual bool LinkAnimInstance();
+	virtual bool UnlinkAnimInstance();
+
+	virtual bool PlayEquipAnimation();
+	virtual bool PlayUnequipAnimation();
+
+	virtual void RegisterAttachmentNotify(bool bIsEquip);
+	virtual void UnregisterAttachmentNotify(bool bIsEquip);
+
+	virtual void HandleMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip);
+	virtual void HandleMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted);
+	virtual void HandleMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted);
+
+	virtual void AttachToEquipSocket();
+	virtual void AttachToUnequipSocket();
+
+	// ~ UEquipmentController
+	virtual void AttachEquipment() override;
+	virtual void OnControllerDeinitialized() override;
+	// ~ End of UEquipmentController
+
+};
+
+
+
+/**
+ *
+ */
+UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Weapon)"))
+class UEquipmentWeaponController : public UEquipmentAttachmentController
+{
+
+	GENERATED_BODY()
+
+public:
+
+	DECLARE_MULTICAST_DELEGATE(FOnWeaponDataChanged)
+	FOnWeaponDataChanged OnDataChanged;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Projectile Weapon)"))
+class UEquipmentProjectileWeaponController : public UEquipmentWeaponController
+{
+
+	GENERATED_BODY()
+
+public:
 
 
 	UFUNCTION(BlueprintCallable)
@@ -257,7 +294,7 @@ public:
 	void ReloadProjectiles()
 	{
 		ProjectileCount = ProjectileCountMax;
-		OnEquipmentDataChanged.Broadcast(ProjectileCount, ProjectileCountMax);
+		OnDataChanged.Broadcast();
 	}
 
 	UFUNCTION(BlueprintCallable)
@@ -266,7 +303,7 @@ public:
 		if (ProjectileCount > 0)
 		{
 			ProjectileCount = FMath::Clamp(ProjectileCount - 1, 0, ProjectileCountMax);
-			OnEquipmentDataChanged.Broadcast(ProjectileCount, ProjectileCountMax);
+			OnDataChanged.Broadcast();
 		}
 		return ProjectileCount;
 	}
@@ -294,39 +331,7 @@ public:
 
 protected:
 
-
 	int ProjectileCount = 10;
-
-	EEquipmentState EquipmentState = EEquipmentState::Unequipped;
-
-	virtual bool IsEquipped();
-
-	virtual void HandleActivationEvent(const FGameplayEventData* Payload) override;
-
-	virtual void OnEquipped() override;
-	virtual void OnUnequipped() override;
-
-	virtual void AttachEquipment() override;
-
-	virtual bool LinkAnimInstance();
-	virtual bool UnlinkAnimInstance();
-
-	virtual bool PlayEquipAnimation();
-	virtual bool PlayUnequipAnimation();
-
-	virtual void HandleMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted);
-	virtual void HandleMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted);
-
-	void RegisterAttachmentNotify(bool bIsEquip);
-	void UnregisterAttachmentNotify(bool bIsEquip);
-	virtual void HandleMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip);
-
-
-	virtual void AttachToEquipSocket();
-	virtual void AttachToUnequipSocket();
-
-	virtual void OnControllerDeinitialized_Implementation() override;
-
 
 };
 
@@ -341,24 +346,20 @@ protected:
  *
  */
 UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Skill)"))
-class UEquipmentController_Skill : public UEquipmentController
+class UEquipmentSkillController : public UEquipmentController
 {
 
 	GENERATED_BODY()
 
-public:
+protected:
 
+	// ~ UEquipmentController
 	virtual void HandleActivationEvent(const FGameplayEventData* Payload) override;
+	// ~ End of UEquipmentController
 
 };
 
 
-
-
-
-
-
-
-
-
+// Module Macros
+#undef REN_API
 

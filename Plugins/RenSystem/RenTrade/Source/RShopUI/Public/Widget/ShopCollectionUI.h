@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/TradeCollectionUI.h"
 
@@ -12,8 +10,7 @@
 
 // Forward Declarations
 class UShopSubsystem;
-class UShopStorage;
-
+class UShopStorageManager;
 
 
 /**
@@ -31,7 +28,7 @@ public:
 	TObjectPtr<UShopSubsystem> ShopSubsystem;
 
 	UPROPERTY()
-	TWeakObjectPtr<UShopStorage> ShopStorage;
+	TObjectPtr<UShopStorageManager> StorageManager;
 
 
 	// ~ UTradeCollectionUI

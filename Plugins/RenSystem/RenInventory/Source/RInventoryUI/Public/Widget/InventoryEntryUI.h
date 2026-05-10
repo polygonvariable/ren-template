@@ -9,6 +9,7 @@
 #include "InventoryEntryUI.generated.h"
 
 // Forward Declarations
+class UOverlay;
 class UCoreDataAsset;
 
 
@@ -26,6 +27,8 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UOverlay> ItemRelation = nullptr;
 
 	// ~ UInventoryUI
 	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;

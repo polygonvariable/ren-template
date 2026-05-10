@@ -23,6 +23,7 @@ void UInventoryEntry::ResetData()
 {
 	Quantity = 0;
 	Item = nullptr;
+	bIsLinked = false;
 	Super::ResetData();
 }
 

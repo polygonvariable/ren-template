@@ -13,7 +13,7 @@
 class UAssetEntry;
 class UAssetCollectionUI;
 class UAssetDetailUI;
-class UAvatarStorage;
+class UAvatarStorageManager;
 class UAvatarAscensionSubsystem;
 class UCoreDataAsset;
 class IAscensionProvider;
@@ -46,7 +46,7 @@ protected:
 	TObjectPtr<UAvatarAscensionSubsystem> AscensionSubsystem = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage = nullptr;
+	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
@@ -67,14 +67,9 @@ protected:
 	const IAscensionProvider* AscensionProvider = nullptr;
 
 
-	void EnableControls();
-	void DisableControls();
-
 	void ToggleAscension(const FAvatarInstance* Instance);
 	void ToggleLevelUp(const FAvatarInstance* Instance);
 	void ToggleRankUp(const FAvatarInstance* Instance);
-
-	void HandleTaskCallback(const FTaskResult& Result);
 
 	UFUNCTION()
 	void HandleLevelUp();
@@ -83,6 +78,7 @@ protected:
 	void HandleRankUp();
 
 	// ~ UAssetDashboardUI
+	virtual TArray<UWidget*> GetLockingControls_Implementation() const override;
 	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI

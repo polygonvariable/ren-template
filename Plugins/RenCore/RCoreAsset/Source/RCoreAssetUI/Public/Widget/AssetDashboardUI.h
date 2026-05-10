@@ -13,7 +13,7 @@
 
 // Forward Declarations
 class UButton;
-
+class UOverlay;
 
 
 /**
@@ -37,6 +37,9 @@ protected:
 	UPROPERTY(Meta = (BindWidgetOptional))
 	TObjectPtr<UButton> CloseButton = nullptr;
 
+	UPROPERTY(Meta = (BindWidgetOptional))
+	TObjectPtr<UOverlay> LoaderOverlay = nullptr;
+
 
 	UFUNCTION(BlueprintNativeEvent)
 	REN_API void GetAssetWidgets(TArray<UWidget*>& Widgets);
@@ -44,6 +47,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	REN_API virtual void RedirectToWidget(UPARAM(Meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
+
+	// ~ UAssetUI
+	REN_API virtual void LockControls_Implementation() override;
+	REN_API virtual void UnlockControls_Implementation() override;
+	// ~ End of UAssetUI
 
 	// ~ UUserWidget
 	REN_API virtual void NativeConstruct() override;

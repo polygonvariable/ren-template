@@ -38,8 +38,6 @@ public:
 	virtual void InitializeDefaults() override;
 	// ~ End of UStorage
 
-protected:
-
 	/* Party Locations on different levels */
 	UPROPERTY(SaveGame)
 	TMap<FName, FVector> PartyLocations;

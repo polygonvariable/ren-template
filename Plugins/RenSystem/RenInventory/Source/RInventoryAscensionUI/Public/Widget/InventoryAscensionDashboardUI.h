@@ -13,7 +13,7 @@
 class UAssetEntry;
 class UAssetCollectionUI;
 class UAssetDetailUI;
-class UInventoryStorage;
+class UInventoryStorageManager;
 class UInventoryAscensionSubsystem;
 class UCoreDataAsset;
 class IAscensionProvider;
@@ -46,7 +46,7 @@ protected:
 	TObjectPtr<UInventoryAscensionSubsystem> AscensionSubsystem = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UInventoryStorage> InventoryStorage = nullptr;
+	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
@@ -68,15 +68,9 @@ protected:
 	const IAscensionProvider* AscensionProvider = nullptr;
 
 
-	void EnableControls();
-	void DisableControls();
-
 	void ToggleAscension(const FInventoryInstance* Item);
 	void ToggleLevelUp(const FInventoryInstance* Item);
 	void ToggleRankUp(const FInventoryInstance* Item);
-
-	void HandleTaskCallback(const FTaskResult& Result);
-
 
 	UFUNCTION()
 	void HandleLevelUp();
@@ -85,6 +79,8 @@ protected:
 	void HandleRankUp();
 
 	// ~ UAssetDashboardUI
+	virtual void LockControls_Implementation() override;
+	virtual void UnlockControls_Implementation() override;
 	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI

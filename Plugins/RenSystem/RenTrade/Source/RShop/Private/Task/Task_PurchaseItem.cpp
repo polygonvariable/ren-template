@@ -11,6 +11,8 @@
 #include "Asset/ShopAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
+#include "Definition/Runtime/ShopData.h"
+#include "Definition/Runtime/TradeKey.h"
 #include "Interface/AssetInstanceCollection.h"
 #include "Interface/AssetInstanceCollectionProvider.h"
 #include "Interface/IShopProvider.h"
@@ -20,9 +22,8 @@
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Manager/RAssetManager.inl"
 #include "Settings/ShopSettings.h"
-#include "Storage/ShopStorage.h"
+#include "Storage/ShopStorageManager.h"
 #include "Subsystem/ShopSubsystem.h"
-
 
 
 void UTask_PurchaseItem::OnStarted()
@@ -31,9 +32,9 @@ void UTask_PurchaseItem::OnStarted()
 	Step_LoadAsset();
 }
 
-void UTask_PurchaseItem::OnStopped()
+void UTask_PurchaseItem::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_PurchaseItem::OnCleanup()
@@ -63,7 +64,7 @@ void UTask_PurchaseItem::Step_LoadAsset()
 	Assets.Add(ShopAssetId);
 	Assets.Add(TargetAssetId);
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(ActionId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -192,16 +193,15 @@ void UTask_PurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& Materi
 		return;
 	}
 
-	FName ShopStorageId = UShopSettings::Get()->StorageId;
-	UShopStorage* ShopStorage = ShopSubsystem->GetShop(ShopStorageId);
-	if (!IsValid(ShopStorage))
+	UShopStorageManager* StorageManager = ShopSubsystem->GetStorageManager();
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("Failed to get ShopStorage"));
 		return;
 	}
 
 	FTradeKey TradeKey(ShopAssetId, TradeCollectionId, TargetAssetId);
-	const FShopData* ShopData = ShopStorage->GetItem(TradeKey);
+	const FShopData* ShopData = StorageManager->GetItem(TradeKey);
 	if (!ShopData)
 	{
 		Fail(TEXT("Failed to get ShopData"));
@@ -214,7 +214,7 @@ void UTask_PurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& Materi
 		return;
 	}
 
-	if (!ShopStorage->AddItem(TradeKey))
+	if (!StorageManager->AddItem(TradeKey))
 	{
 		Fail(TEXT("Failed to add item"));
 		return;

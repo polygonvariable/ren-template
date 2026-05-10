@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "Components/Image.h"
+#include "Components/Overlay.h"
 #include "Components/TextBlock.h"
 
 // Project Headers
@@ -31,6 +32,7 @@ void UInventoryEntryUI::SetSecondaryDetail(const UAssetEntry* Entry)
 	if (IsValid(InventoryEntry))
 	{
 		ItemQuantity->SetText(FText::AsNumber(InventoryEntry->Quantity));
+		ItemRelation->SetVisibility(InventoryEntry->bIsLinked ? ESlateVisibility::HitTestInvisible : ESlateVisibility::Collapsed);
 	}
 }
 

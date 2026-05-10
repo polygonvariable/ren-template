@@ -44,6 +44,7 @@ public class RInventoryAscensionUI : ModuleRules
 				"StructUtils",
                 "RCoreAsset",
                 "RCoreAscension",
+                "RCoreDelegate",
                 "RCoreFilter",
                 "RCoreLibrary",
                 "RInventory",

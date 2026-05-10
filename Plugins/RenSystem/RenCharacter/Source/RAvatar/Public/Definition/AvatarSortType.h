@@ -35,11 +35,11 @@ struct FAvatarSortEntry
 public:
 
 	FAvatarSortEntry(FPrimaryAssetId InAssetId, FText InItemName) : AssetId(InAssetId), ItemName(InItemName) {}
-	FAvatarSortEntry(FPrimaryAssetId InAssetId, FText InItemName, const FAvatarInstance* InItem) : AssetId(InAssetId), ItemName(InItemName), Item(InItem) {}
+	FAvatarSortEntry(FPrimaryAssetId InAssetId, FText InItemName, const FAvatarInstance* InInstance) : AssetId(InAssetId), ItemName(InItemName), Instance(InInstance) {}
 
 	FPrimaryAssetId AssetId;
 	FText ItemName;
-	const FAvatarInstance* Item = nullptr;
+	const FAvatarInstance* Instance = nullptr;
 
 };
 

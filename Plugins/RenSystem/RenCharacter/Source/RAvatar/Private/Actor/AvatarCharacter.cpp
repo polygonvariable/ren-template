@@ -14,7 +14,7 @@
 #include "Log/LogMacro.h"
 #include "Settings/AvatarSettings.h"
 #include "Settings/CharacterSettings.h"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarSubsystem.h"
 
 
@@ -51,7 +51,8 @@ void AAvatarCharacter::CameraZoom(float Delta, float Multiplier)
 {
 	if (IsValid(SpringArm))
 	{
-		float NewLength = SpringArm->TargetArmLength + (Delta * Multiplier);
+		float ArmLength = SpringArm->TargetArmLength;
+		float NewLength = ArmLength + (Delta * Multiplier);
 		SpringArm->TargetArmLength = FMath::Clamp(NewLength, CameraMinZoom, CameraMaxZoom);
 	}
 }
@@ -81,14 +82,14 @@ void AAvatarCharacter::InitializeCharacter()
 		UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
 		if (IsValid(AvatarSubsystem))
 		{
-			AvatarStorage = AvatarSubsystem->GetAvatarStorage();
-			if (IsValid(AvatarStorage))
+			StorageManager = AvatarSubsystem->GetStorageManager();
+			if (IsValid(StorageManager))
 			{
-				const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
+				const FAvatarInstance* FoundInstance = StorageManager->GetInstance(CharacterData.AssetId);
 				if (FoundInstance)
 				{
 					AvatarInstance = *FoundInstance;
-					AvatarStorage->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
+					StorageManager->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
 				}
 			}
 		}
@@ -99,11 +100,11 @@ void AAvatarCharacter::InitializeCharacter()
 
 void AAvatarCharacter::DeinitializeCharacter()
 {
-	if (IsValid(AvatarStorage))
+	if (IsValid(StorageManager))
 	{
-		AvatarStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 	AvatarInstance.Reset();
 
 	Super::DeinitializeCharacter();
@@ -111,12 +112,12 @@ void AAvatarCharacter::DeinitializeCharacter()
 
 void AAvatarCharacter::RefreshCharacter()
 {
-	if (!IsValid(AvatarStorage))
+	if (!IsValid(StorageManager))
 	{
 		return;
 	}
 
-	const FAvatarInstance* FoundInstance = AvatarStorage->GetInstance(CharacterData.AssetId);
+	const FAvatarInstance* FoundInstance = StorageManager->GetInstance(CharacterData.AssetId);
 	if (!FoundInstance || AvatarInstance == *FoundInstance)
 	{
 		LOG_ERROR(LogAvatar, TEXT("Avatar data not found or not changed"));

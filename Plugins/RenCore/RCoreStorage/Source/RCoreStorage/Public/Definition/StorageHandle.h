@@ -2,44 +2,32 @@
 
 #pragma once
 
-// Engine Headers
-
-
-// Project Headers
-#include "Definition/TaskType.h"
-
-// Generated Headers
-
-// Module Macros
-#define REN_API RCORESTORAGE_API
-
-// Forward Declarations
-class UStorage;
-
-
 
 /**
  *
- * 
- *
  */
-struct FStorageHandle
+struct FStorageDefinition
 {
 
 public:
 
-    TSubclassOf<UStorage> StorageClass;
-    FName StorageId;
-    FString Url;
-    FTaskCallback Callback;
+    FStorageDefinition() {};
+    FStorageDefinition(FName InStorageId, TSubclassOf<UObject> InStorageClass, TSubclassOf<UObject> InManagerClass) : StorageId(InStorageId), StorageClass(InStorageClass), ManagerClass(InManagerClass) {};
 
-    REN_API bool IsValid() const;
-    REN_API bool IsUrlValid() const;
+    FName StorageId;
+    TSubclassOf<UObject> StorageClass;
+    TSubclassOf<UObject> ManagerClass;
+    FString RemoteUrl;
+
+    bool IsValid() const
+    {
+        return StorageClass != nullptr && StorageId.IsValid();
+    }
+
+    bool IsUrlValid() const
+    {
+        return !RemoteUrl.IsEmpty();
+    }
 
 };
-
-
-
-// Module Macros
-#undef REN_API
 

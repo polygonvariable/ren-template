@@ -10,7 +10,7 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Storage/EquipmentStorage.h"
+#include "Storage/EquipmentStorageManager.h"
 #include "Subsystem/EquipmentSubsystem.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/Drag/AssetDragOperation.h"
@@ -24,14 +24,14 @@ void UEquipmentSlotUI::ResetDetail()
 
 void UEquipmentSlotUI::RefreshDetail()
 {
-	if (!IsValid(EquipmentStorage))
+	if (!IsValid(StorageManager))
 	{
 		ResetDetail();
 		return;
 	}
 
 	FPrimaryAssetId EquipmentAssetId;
-	if (!EquipmentStorage->GetEquipmentAtSlot(OwnerInstanceId, SlotTag, EquipmentAssetId))
+	if (!StorageManager->GetEquipmentAtSlot(OwnerInstanceId, SlotTag, EquipmentAssetId))
 	{
 		ResetDetail();
 		return;
@@ -42,9 +42,10 @@ void UEquipmentSlotUI::RefreshDetail()
 
 void UEquipmentSlotUI::ClearSlot()
 {
-	if (IsValid(EquipmentStorage))
+	UEquipmentSubsystem* EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
+	if (IsValid(EquipmentSubsystem))
 	{
-		EquipmentStorage->RemoveEquipmentFromSlot(OwnerInstanceId, SlotTag);
+		EquipmentSubsystem->TryRemoveEquipmentSlot(OwnerInstanceId, SlotTag);
 	}
 }
 
@@ -99,10 +100,10 @@ void UEquipmentSlotUI::NativeConstruct()
 	UEquipmentSubsystem* EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 	if (IsValid(EquipmentSubsystem))
 	{
-		EquipmentStorage = EquipmentSubsystem->GetEquipmentStorage();
-		if (IsValid(EquipmentStorage))
+		StorageManager = EquipmentSubsystem->GetStorageManager();
+		if (IsValid(StorageManager))
 		{
-			EquipmentStorage->OnStorageUpdated.AddUObject(this, &UEquipmentSlotUI::RefreshDetail);
+			StorageManager->OnStorageUpdated.AddUObject(this, &UEquipmentSlotUI::RefreshDetail);
 		}
 	}
 }
@@ -114,18 +115,18 @@ void UEquipmentSlotUI::NativeDestruct()
 		ClearButton->OnClicked.Clear();
 	}
 
-	if (IsValid(EquipmentStorage))
+	if (IsValid(StorageManager))
 	{
-		EquipmentStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	EquipmentStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }
 
 bool UEquipmentSlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
-	if (!bAllowEdit || !IsValid(EquipmentStorage))
+	if (!bAllowEdit || !IsValid(StorageManager))
 	{
 		return false;
 	}
@@ -142,7 +143,13 @@ bool UEquipmentSlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 	{
 		return false;
 	}
+
+	UEquipmentSubsystem* EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
+	if (!IsValid(EquipmentSubsystem))
+	{
+		return false;
+	}
 	
-	return EquipmentStorage->SetEquipmentAtSlot(OwnerInstanceId, OwnerAssetId, SlotTag, EquipmentInstanceId, EquipmentAssetId);
+	return EquipmentSubsystem->TrySetEquipmentSlot(OwnerInstanceId, OwnerAssetId, SlotTag, EquipmentInstanceId, EquipmentAssetId);
 }
 

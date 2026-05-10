@@ -6,7 +6,7 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/InventoryEntry.h"
 
@@ -19,42 +19,43 @@ void UInventoryCollectionUI::InitializeCollection()
 		return;
 	}
 
-	InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
-	if (IsValid(InventoryStorage) && bAutoRefresh)
+	StorageManager = InventorySubsystem->GetStorageManager(PrimarySourceId);
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
 	}
 }
 
 void UInventoryCollectionUI::DisplayEntries()
 {
-	if (!IsValid(InventoryStorage))
+	if (!IsValid(StorageManager))
 	{
 		LOG_ERROR(LogInventory, TEXT("InventoryStorage is invalid"));
 		return;
 	}
 
-	InventoryStorage->QueryInstances(GetFilterRoot(), QueryRule,
-		[this](const FInventorySortEntry& SortEntry)
+	TArray<FInventorySortEntry> SortedItems;
+	StorageManager->QueryInstances(GetFilterRoot(), QueryRule, SortedItems);
+	for (const FInventorySortEntry& SortItem : SortedItems)
+	{
+		UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
+		if (IsValid(Entry))
 		{
-			UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();
-			if (IsValid(Entry))
-			{
-				Entry->Item = SortEntry.Item;
-				Entry->Quantity = SortEntry.Quantity;
-				AddEntry(SortEntry.AssetId, Entry);
-			}
+			Entry->Item = SortItem.Instance;
+			Entry->Quantity = SortItem.Quantity;
+			Entry->bIsLinked = SortItem.bIsLinked;
+			AddEntry(SortItem.AssetId, Entry);
 		}
-	);
+	}
 }
 
 void UInventoryCollectionUI::NativeDestruct()
 {
-	if (IsValid(InventoryStorage))
+	if (IsValid(StorageManager))
 	{
-		InventoryStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	InventoryStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }

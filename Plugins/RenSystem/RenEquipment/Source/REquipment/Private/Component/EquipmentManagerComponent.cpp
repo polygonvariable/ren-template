@@ -6,6 +6,7 @@
 // Engine Headers
 #include "InstancedStruct.h"
 #include "UObject/ObjectSaveContext.h"
+#include "AbilitySystemBlueprintLibrary.h"
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
@@ -20,7 +21,7 @@
 #include "Manager/RAssetManager.inl"
 #include "Object/EquipmentMetadata.h"
 #include "Settings/EquipmentSettings.h"
-#include "Storage/EquipmentStorage.h"
+#include "Storage/EquipmentStorageManager.h"
 #include "Subsystem/ActorFreelistSubsystem.h"
 #include "Subsystem/EquipmentSubsystem.h"
 
@@ -34,46 +35,12 @@ UEquipmentManagerComponent::UEquipmentManagerComponent(const FObjectInitializer&
 
 void UEquipmentManagerComponent::BeginPlay()
 {
-	AssetManager = URAssetManager::Get();
-	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
-
-	if (SourceType == EAssetQuerySource::Instance)
-	{
-		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
-		if (IsValid(EquipmentSubsystem))
-		{
-			EquipmentSubsystem->OnSyncEquipment.AddUObject(this, &UEquipmentManagerComponent::SyncEquipment);
-			EquipmentStorage = EquipmentSubsystem->GetEquipmentStorage();
-		}
-
-		IAssetInstanceContextProvider* InstanceContext = GetOwner<IAssetInstanceContextProvider>();
-		if (InstanceContext)
-		{
-			OwnerInstanceId = InstanceContext->GetAssetInstanceId();
-		}
-	}
-
 	Super::BeginPlay();
 }
 
 void UEquipmentManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	RemoveEquipment();
-	
-	if (IsValid(EquipmentSubsystem))
-	{
-		EquipmentSubsystem->OnSyncEquipment.RemoveAll(this);
-	}
-	EquipmentStorage = nullptr;
-	EquipmentSubsystem = nullptr;
-
-	if (IsValid(AssetManager) && _SpawnId.IsValid())
-	{
-		AssetManager->CancelFetch(_SpawnId);
-	}
-	AssetManager = nullptr;
-	ActorFreelist = nullptr;
-
+	DeinitializeManager();
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -87,20 +54,60 @@ void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext
 	Super::PreSave(ObjectSaveContext);
 
 #if WITH_EDITOR
-	EquippedAssetIds.Empty();
+	//EquippedAssetIds.Empty();
 
-	if (SourceType == EAssetQuerySource::Asset)
+	//if (SourceType == EAssetQuerySource::Asset)
+	//{
+	//	for (const FEquipmentData& Data : EquipmentSpawnData)
+	//	{
+	//		EquippedAssetIds.Add(Data.AssetId);
+	//	}
+	//}
+	//else
+	//{
+	//	EquipmentSpawnData.Empty();
+	//}
+#endif
+}
+
+void UEquipmentManagerComponent::InitializeManager()
+{
+	AssetManager = URAssetManager::Get();
+	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
+
+	if (SourceType == EAssetQuerySource::Instance)
 	{
-		for (const FEquipmentData& Data : EquipmentSpawnData)
+		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
+		if (IsValid(EquipmentSubsystem))
 		{
-			EquippedAssetIds.Add(Data.AssetId);
+			EquipmentSubsystem->OnSyncEquipment.AddUObject(this, &UEquipmentManagerComponent::SyncEquipment);
+		}
+
+		IAssetInstanceContextProvider* InstanceContext = GetOwner<IAssetInstanceContextProvider>();
+		if (InstanceContext)
+		{
+			OwnerInstanceId = InstanceContext->GetAssetInstanceId();
 		}
 	}
-	else
+}
+
+void UEquipmentManagerComponent::DeinitializeManager()
+{
+	RemoveEquipment();
+
+	if (IsValid(EquipmentSubsystem))
 	{
-		EquipmentSpawnData.Empty();
+		EquipmentSubsystem->OnSyncEquipment.RemoveAll(this);
 	}
-#endif
+	EquipmentSubsystem = nullptr;
+
+	if (IsValid(AssetManager) && _SpawnId.IsValid())
+	{
+		AssetManager->CancelFetch(_SpawnId);
+	}
+	AssetManager = nullptr;
+	ActorFreelist = nullptr;
+
 }
 
 void UEquipmentManagerComponent::SyncEquipment(const FGuid& InOwnerId)
@@ -114,14 +121,14 @@ void UEquipmentManagerComponent::SyncEquipment(const FGuid& InOwnerId)
 
 void UEquipmentManagerComponent::SpawnEquipment()
 {
-	OnEquipmentChangeBegin.Broadcast();
+	OnEquipmentSpawnBegin.Broadcast();
 
 	RefreshEquipmentData();
 	CleanupEquipmentData();
 
 	if (EquippedAssetIds.Num() == 0)
 	{
-		OnEquipmentChangeEnd.Broadcast();
+		OnEquipmentSpawnEnd.Broadcast();
 		return;
 	}
 
@@ -129,7 +136,8 @@ void UEquipmentManagerComponent::SpawnEquipment()
 
 	_SpawnId = FGuid::NewGuid();
 
-	const TArray<FName>& AssetBundles = UEquipmentSettings::Get()->EquipmentBundles;
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	const TArray<FName>& AssetBundles = Settings->EquipmentBundles;
 
 	TWeakObjectPtr<UEquipmentManagerComponent> WeakThis(this);
 	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(_SpawnId, EquippedAssetIds, AssetBundles, false);
@@ -189,15 +197,15 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 			continue;
 		}
 
-		const UEquipmentDataDefinition* DefinitionCDO = Fragment->GetEquipmentDefinitionCDO();
-		if (!IsValid(DefinitionCDO))
+		const UEquipmentDataDefinition* Definition = Fragment->GetEquipmentDefinition();
+		if (!IsValid(Definition))
 		{
 			LOG_ERROR(LogEquipment, TEXT("Equipment data definition is invalid"));
 			continue;
 		}
 
-		UClass* ControllerClass = DefinitionCDO->ControllerClass.Get();
-		UClass* ActorClass = DefinitionCDO->ActorClass.Get();
+		UClass* ControllerClass = Definition->ControllerClass.Get();
+		UClass* ActorClass = Definition->ActorClass.Get();
 		if (!IsValid(ControllerClass) || !IsValid(ActorClass))
 		{
 			LOG_ERROR(LogEquipment, TEXT("Controller or actor class is invalid"));
@@ -221,16 +229,42 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 		Controller->EquipmentAsset = Asset;
 		Controller->EquipmentData = Data;
 
-		if (!Controller->InitializeController(DefinitionCDO))
+		if (!Controller->InitializeController(Definition))
 		{
-			LOG_ERROR(LogEquipment, TEXT("Failed to initialize controller"));
+			LOG_ERROR(LogEquipment, TEXT("Failed to initialize controller, de-initializing it"));
+
+			Controller->DeinitializeController();
 			continue;
 		}
 
 		RegisterEquipment(Data, Controller);
 	}
 
-	OnEquipmentChangeEnd.Broadcast();
+	OnEquipmentSpawnEnd.Broadcast();
+	HandleDefaultEquipment();
+}
+
+void UEquipmentManagerComponent::HandleDefaultEquipment()
+{
+	if (_bIsDefaultHandled)
+	{
+		return;
+	}
+
+	if (DefaultEquippedTag.IsValid())
+	{
+		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+		const FEquipmentTagData* TagData = Settings->GetTagData(DefaultEquippedTag);
+		if (TagData)
+		{
+			FGameplayEventData EventData = FGameplayEventData();
+			EventData.EventTag = TagData->EventTag;
+
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), TagData->EventTag, EventData);
+		}
+	}
+
+	_bIsDefaultHandled = true;
 }
 
 void UEquipmentManagerComponent::RefreshEquipmentData()
@@ -249,12 +283,12 @@ void UEquipmentManagerComponent::RefreshEquipmentData()
 			if (DataList)
 			{
 				EquipmentSpawnData = DataList->EquipmentList;
+			}
 
-				EquippedAssetIds.Empty();
-				for (const FEquipmentData& Data : EquipmentSpawnData)
-				{
-					EquippedAssetIds.Add(Data.AssetId);
-				}
+			EquippedAssetIds.Empty();
+			for (const FEquipmentData& Data : EquipmentSpawnData)
+			{
+				EquippedAssetIds.Add(Data.AssetId);
 			}
 		}
 	}
@@ -263,13 +297,20 @@ void UEquipmentManagerComponent::RefreshEquipmentData()
 		EquipmentSpawnData.Empty();
 		EquippedAssetIds.Empty();
 
-		if (!IsValid(EquipmentStorage))
+		if (!IsValid(EquipmentSubsystem))
 		{
-			LOG_ERROR(LogEquipment, TEXT("EquipmentStorage is invalid"));
+			LOG_ERROR(LogEquipment, TEXT("EquipmentSubsystem is invalid"));
 			return;
 		}
 
-		const TMap<FGameplayTag, FEquipmentKey>* OwnedEquipment = EquipmentStorage->GetOwnedEquipment(OwnerInstanceId);
+		UEquipmentStorageManager* StorageManager = EquipmentSubsystem->GetStorageManager();
+		if (!IsValid(StorageManager))
+		{
+			LOG_ERROR(LogEquipment, TEXT("StorageManager is invalid"));
+			return;
+		}
+
+		const TMap<FGameplayTag, FEquipmentKey>* OwnedEquipment = StorageManager->GetOwnedEquipment(OwnerInstanceId);
 		if (!OwnedEquipment)
 		{
 			LOG_ERROR(LogEquipment, TEXT("OwnedEquipment is invalid"));

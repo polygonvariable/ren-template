@@ -4,22 +4,12 @@
 #include "Settings/EquipmentSettings.h"
 
 // Project Headers
-#include "Storage/EquipmentStorage.h"
+#include "Storage/EquipmentStorageManager.h"
 
 
 UEquipmentSettings::UEquipmentSettings(const FObjectInitializer& ObjectInitializer)
 {
 	CategoryName = TEXT("Ren Project");
-}
-
-const FName& UEquipmentSettings::GetStorageId() const
-{
-	return StorageId;
-}
-
-TSubclassOf<UStorage> UEquipmentSettings::GetStorageClass() const
-{
-	return StorageClass;
 }
 
 const UEquipmentSettings* UEquipmentSettings::Get()
@@ -50,7 +40,7 @@ const FEquipmentTagData* UEquipmentSettings::GetTagDataByAbility(const FGameplay
 	return nullptr;
 }
 
-const FGameplayTag& UEquipmentSettings::GetNotifyTag(bool bEquip)
+const FGameplayTag& UEquipmentSettings::GetAttachmentNotifyTag(bool bEquip)
 {
 	if (bEquip)
 	{

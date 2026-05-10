@@ -13,7 +13,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UEquipmentSlotCollectionUI;
 class UEquipmentSubsystem;
-class UEquipmentStorage;
+class UEquipmentStorageManager;
 
 
 /**
@@ -29,6 +29,7 @@ public:
 	
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
+	virtual void RefreshDetail() override;
 	// ~ End of UAssetDashboardUI
 
 protected:
@@ -49,7 +50,7 @@ protected:
 	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
+	TObjectPtr<UEquipmentStorageManager> StorageManager = nullptr;
 
 	FGuid OwnerInstanceId;
 

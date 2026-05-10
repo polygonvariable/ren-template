@@ -46,6 +46,7 @@ public class RAvatarAscensionUI : ModuleRules
                 "RCoreAscension",
                 "RCoreFilter",
                 "RCoreLibrary",
+                "RCoreDelegate",
                 "RAvatar",
                 "RAvatarUI",
                 "RAvatarAscension",

@@ -3,21 +3,17 @@
 // Parent Header
 #include "Task/Task_GrantAvatarRank.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/AvatarAsset.h"
 #include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/AvatarInstance.h"
 #include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
+#include "Library/AssetInstanceUtil.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "Library/AssetInstanceUtil.h"
-
-
 
 
 void UTask_GrantAvatarRank::OnStarted()
@@ -31,21 +27,19 @@ void UTask_GrantAvatarRank::OnStarted()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarStorage();
-	if (!IsValid(AvatarCollection))
+	StorageManager = AvatarSubsystem->GetStorageManager();
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("AvatarStorage is invalid"));
 		return;
 	}
 
-	AvatarStorage = AvatarCollection;
-
 	Step_LoadAsset();
 }
 
-void UTask_GrantAvatarRank::OnStopped()
+void UTask_GrantAvatarRank::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
+	AssetManager->CancelFetch(ActionId);
 }
 
 void UTask_GrantAvatarRank::OnCleanup()
@@ -57,7 +51,7 @@ void UTask_GrantAvatarRank::OnCleanup()
 
 	TargetAsset = nullptr;
 	AssetManager = nullptr;
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 
 	AscensionData.Reset();
 }
@@ -90,7 +84,7 @@ void UTask_GrantAvatarRank::Step_CheckTarget()
 		return;
 	}
 
-	const FAvatarInstance* Instance = AvatarStorage->GetInstance(TargetAssetId);
+	const FAvatarInstance* Instance = StorageManager->GetInstance(TargetAssetId);
 	if (!IsValid(TargetAsset) || !Instance)
 	{
 		Fail(TEXT("Instance not found, TargetAsset is invalid"));
@@ -154,7 +148,7 @@ void UTask_GrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>
 
 void UTask_GrantAvatarRank::Step_AddRank()
 {
-	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
+	bool bSuccess = StorageManager->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
 		{
 			if (Instance)
 			{

@@ -9,13 +9,13 @@
 
 // Project Headers
 #include "Asset/AvatarAsset.h"
+#include "Definition/Runtime/AvatarInstance.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarSubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 #include "Widget/AvatarEntry.h"
-
 
 
 void UAvatarDetailUI::InitializeDetail()
@@ -27,22 +27,21 @@ void UAvatarDetailUI::InitializeDetail()
 		return;
 	}
 
-	AvatarStorage = AvatarSubsystem->GetAvatarStorage();
-	if (IsValid(AvatarStorage) && bAutoRefresh)
+	StorageManager = AvatarSubsystem->GetStorageManager();
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UAvatarDetailUI::RefreshDetail);
 	}
 }
 
 void UAvatarDetailUI::RefreshDetail()
 {
-	UAvatarStorage* AvatarCollection = AvatarStorage.Get();
-	if (!IsValid(AvatarCollection))
+	if (!IsValid(StorageManager))
 	{
 		return;
 	}
 
-	const FAvatarInstance* AvatarInstance = AvatarCollection->GetInstance(GetActiveAssetId());
+	const FAvatarInstance* AvatarInstance = StorageManager->GetInstance(GetActiveAssetId());
 	if (!AvatarInstance)
 	{
 		return;
@@ -91,11 +90,11 @@ void UAvatarDetailUI::SetCustomDetails(const FAvatarInstance* Instance)
 
 void UAvatarDetailUI::NativeDestruct()
 {
-	if (IsValid(AvatarStorage))
+	if (IsValid(StorageManager))
 	{
-		AvatarStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }

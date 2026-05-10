@@ -3,15 +3,12 @@
 // Parent Header
 #include "Widget/AvatarCollectionUI.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarSubsystem.h"
 #include "Widget/AvatarEntry.h"
-
 
 
 void UAvatarCollectionUI::InitializeCollection()
@@ -23,41 +20,42 @@ void UAvatarCollectionUI::InitializeCollection()
 		return;
 	}
 
-	AvatarStorage = AvatarSubsystem->GetAvatarStorage();
-	if (IsValid(AvatarStorage) && bAutoRefresh)
+	StorageManager = AvatarSubsystem->GetStorageManager();
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
 	}
 }
 
 void UAvatarCollectionUI::DisplayEntries()
 {
-	if (!IsValid(AvatarStorage))
+	if (!IsValid(StorageManager))
 	{
 		LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
 		return;
 	}
 
-	AvatarStorage->QueryInstances(GetFilterRoot(), QueryRule,
-		[this](const FAvatarSortEntry& SortEntry)
+	TArray<FAvatarSortEntry> SortedEntries;
+	StorageManager->QueryInstances(GetFilterRoot(), QueryRule, SortedEntries);
+
+	for (const FAvatarSortEntry& SortEntry : SortedEntries)
+	{
+		UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
+		if (IsValid(Entry))
 		{
-			UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
-			if (IsValid(Entry))
-			{
-				Entry->AvatarInstance = SortEntry.Item;
-				AddEntry(SortEntry.AssetId, Entry);
-			}
+			Entry->AvatarInstance = SortEntry.Instance;
+			AddEntry(SortEntry.AssetId, Entry);
 		}
-	);
+	}
 }
 
 void UAvatarCollectionUI::NativeDestruct()
 {
-	if (IsValid(AvatarStorage))
+	if (IsValid(StorageManager))
 	{
-		AvatarStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }

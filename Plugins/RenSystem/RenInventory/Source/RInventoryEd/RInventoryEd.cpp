@@ -7,8 +7,9 @@
 #include "HAL/IConsoleManager.h"
 
 // Project Headers
+#include "Definition/Runtime/InventoryInstance.h"
 #include "Library/InventoryPrimaryAsset.h"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventorySubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FRInventoryEdModule"
@@ -70,14 +71,14 @@ void FRInventoryEdModule::UnregisterCommand()
 	}
 }
 
-UInventoryStorage* FRInventoryEdModule::GetInventory(UWorld* World, FName ContainerId)
+UInventoryStorageManager* FRInventoryEdModule::GetStorageManager(UWorld* World, FName ContainerId)
 {
 	UInventorySubsystem* InventorySubsystem = UInventorySubsystem::Get(World);
 	if (!IsValid(InventorySubsystem))
 	{
 		return nullptr;
 	}
-	return InventorySubsystem->GetInventory(ContainerId);
+	return InventorySubsystem->GetStorageManager(ContainerId);
 }
 
 void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
@@ -88,13 +89,13 @@ void FRInventoryEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UInventoryStorage* Inventory = GetInventory(World, FName(*Args[0]));
-	if (IsValid(Inventory))
+	UInventoryStorageManager* StorageManager = GetStorageManager(World, FName(*Args[0]));
+	if (IsValid(StorageManager))
 	{
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
 		int Quantity = FCString::Atoi(*Args[2]);
 
-		Inventory->AddInstance(AssetId, Quantity);
+		StorageManager->AddInstance(AssetId, Quantity);
 	}
 }
 
@@ -106,13 +107,13 @@ void FRInventoryEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UInventoryStorage* Inventory = GetInventory(World, FName(*Args[0]));
-	if (IsValid(Inventory))
+	UInventoryStorageManager* StorageManager = GetStorageManager(World, FName(*Args[0]));
+	if (IsValid(StorageManager))
 	{
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
 		int Quantity = FCString::Atoi(*Args[2]);
 
-		Inventory->RemoveInstance(AssetId, Quantity);
+		StorageManager->RemoveInstance(AssetId, Quantity);
 	}
 }
 
@@ -124,11 +125,11 @@ void FRInventoryEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UInventoryStorage* Inventory = GetInventory(World, FName(*Args[0]));
-	if (IsValid(Inventory))
+	UInventoryStorageManager* StorageManager = GetStorageManager(World, FName(*Args[0]));
+	if (IsValid(StorageManager))
 	{
 		FPrimaryAssetId AssetId = FInventoryPrimaryAsset::GetPrimaryAssetId(FName(*Args[1]));
-		const FInventoryInstance* Item = Inventory->GetInstance(AssetId);
+		const FInventoryInstance* Item = StorageManager->GetInstance(AssetId);
 		if (!Item)
 		{
 			UE_LOG(LogTemp, Error, TEXT("Item not found"));

@@ -16,7 +16,7 @@
 
 // Forward Declarations
 class IStorageProvider;
-class UAvatarStorage;
+class UAvatarStorageManager;
 
 
 /**
@@ -30,7 +30,7 @@ class UAvatarSubsystem : public UGameInstanceSubsystem, public IAssetInstanceCol
 
 public:
 
-	REN_API UAvatarStorage* GetAvatarStorage() const;
+	REN_API UAvatarStorageManager* GetStorageManager() const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
@@ -40,10 +40,10 @@ public:
 
 protected:
 
-	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+	IStorageProvider* StorageProvider;
 
 
-	void OnPreGameInitialized();
+	void HandlePreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

@@ -20,74 +20,68 @@
 #include "Management/Collection/AssetCollection_Trade.h"
 #include "Settings/CraftSettings.h"
 #include "Storage/CraftStorage.h"
-#include "Subsystem/TaskSubsystem.h"
+#include "Storage/CraftStorageManager.h"
+#include "Subsystem/AuthActionSubsystem.h"
 #include "Task/Task_ClaimCraftItem.h"
 #include "Task/Task_CraftItem.h"
 
 
-
-UCraftStorage* UCraftSubsystem::GetCraft(const FName& CraftId)
+UCraftStorageManager* UCraftSubsystem::GetStorageManager()
 {
-	IStorageProvider* StorageInterface = StorageProvider.Get();
-	if (!StorageInterface)
+	if (!StorageProvider)
 	{
 		return nullptr;
 	}
-	return StorageInterface->GetStorage<UCraftStorage>(CraftId);
+	FName StorageId = UCraftSettings::Get()->StorageId;
+	return StorageProvider->GetStorageManager<UCraftStorageManager>(StorageId);
 }
 
 
-
-void UCraftSubsystem::ClaimCraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
+bool UCraftSubsystem::TryClaimCraftItem(const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
 		LOG_ERROR(LogCraft, TEXT("Task subsystem is invalid"));
-		Callback.ExecuteIfBound(ETaskState::Failed);
-		return;
+		return false;
 	}
 
-	UTask_ClaimCraftItem* Task = TaskSubsystem->CreateTask<UTask_ClaimCraftItem>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_ClaimCraftItem* Action = AuthActionSubsystem->CreateAction<UTask_ClaimCraftItem>(ActionId);
+	if (!IsValid(Action))
 	{
 		LOG_ERROR(LogCraft, TEXT("Failed to create task"));
-		Callback.ExecuteIfBound(ETaskState::Failed);
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->CraftAssetId = CraftAssetId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->TradeCollectionId = TradeCollectionId;
-	Task->StartTask();
+	Action->CraftAssetId = CraftAssetId;
+	Action->TargetAssetId = TargetAssetId;
+	Action->TradeCollectionId = TradeCollectionId;
+	return Action->StartAction();
 }
 
-void UCraftSubsystem::CraftItem(const FGuid& TaskId, const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback)
+bool UCraftSubsystem::TryCraftItem(const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId)
 {
-	UTaskSubsystem* TaskSubsystem = UTaskSubsystem::Get(GetGameInstance());
-	if (!IsValid(TaskSubsystem))
+	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
+	if (!IsValid(AuthActionSubsystem))
 	{
 		LOG_ERROR(LogCraft, TEXT("Task subsystem is invalid"));
-		Callback.ExecuteIfBound(ETaskState::Failed);
-		return;
+		return false;
 	}
 
-	UTask_CraftItem* Task = TaskSubsystem->CreateTask<UTask_CraftItem>(TaskId);
-	if (!IsValid(Task))
+	FGuid ActionId = FGuid::NewGuid();
+	UTask_CraftItem* Action = AuthActionSubsystem->CreateAction<UTask_CraftItem>(ActionId);
+	if (!IsValid(Action))
 	{
 		LOG_ERROR(LogCraft, TEXT("Failed to create task"));
-		Callback.ExecuteIfBound(ETaskState::Failed);
-		return;
+		return false;
 	}
 
-	Task->Callback = MoveTemp(Callback);
-	Task->CraftAssetId = CraftAssetId;
-	Task->TargetAssetId = TargetAssetId;
-	Task->TradeCollectionId = TradeCollectionId;
-	Task->StartTask();
+	Action->CraftAssetId = CraftAssetId;
+	Action->TargetAssetId = TargetAssetId;
+	Action->TradeCollectionId = TradeCollectionId;
+	return Action->StartAction();
 }
-
 
 
 const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const
@@ -106,11 +100,10 @@ const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAs
 }
 
 
-
-void UCraftSubsystem::QueryItems(const FName& CraftId, const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback)
+void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)> Callback)
 {
-	UCraftStorage* CraftStorage = GetCraft(CraftId);
-	if (!IsValid(Asset) || !IsValid(CraftStorage))
+	UCraftStorageManager* StorageManager = GetStorageManager();
+	if (!IsValid(Asset) || !IsValid(StorageManager))
 	{
 		return;
 	}
@@ -133,15 +126,15 @@ void UCraftSubsystem::QueryItems(const FName& CraftId, const UTradeAsset* Asset,
 
 	if (QuerySource == ECraftQuerySource::Glossary)
 	{
-		QueryAssetItems(AssetList, CraftAssetId, CollectionId, Context, CraftStorage, MoveTemp(Callback));
+		QueryAssetItems(AssetList, CraftAssetId, CollectionId, Context, StorageManager, MoveTemp(Callback));
 	}
 	else
 	{
-		HandleStorageItems(AssetList, CraftAssetId, CollectionId, Context, CraftStorage, MoveTemp(Callback));
+		QueryStorageItems(AssetList, CraftAssetId, CollectionId, Context, StorageManager, MoveTemp(Callback));
 	}
 }
 
-void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
+void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
 {
 	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
 	{
@@ -157,7 +150,7 @@ void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_T
 		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
 
 		FTradeKey TradeKey(CraftAssetId, CollectionId, ItemAssetId);
-		const FCraftData* CraftData = CraftStorage->GetItem(TradeKey);
+		const FCraftData* CraftData = StorageManager->GetItem(TradeKey);
 		if (CraftData)
 		{
 			ItemDetail.Quota = FMath::Max(0, ItemDetail.Quota - CraftData->PendingQuantity);
@@ -167,7 +160,7 @@ void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_T
 	}
 }
 
-void UCraftSubsystem::HandleStorageItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorage* CraftStorage, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
+void UCraftSubsystem::QueryStorageItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftData*)>&& Callback)
 {
 	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
 	{
@@ -183,7 +176,7 @@ void UCraftSubsystem::HandleStorageItems(const TMap<UCoreDataAsset*, FAssetDetai
 		const FPrimaryAssetId& ItemAssetId = ItemDataAsset->GetPrimaryAssetId();
 
 		FTradeKey TradeKey(CraftAssetId, CollectionId, ItemAssetId);
-		const FCraftData* CraftData = CraftStorage->GetItem(TradeKey);
+		const FCraftData* CraftData = StorageManager->GetItem(TradeKey);
 		if (!CraftData)
 		{
 			continue;
@@ -196,11 +189,10 @@ void UCraftSubsystem::HandleStorageItems(const TMap<UCoreDataAsset*, FAssetDetai
 }
 
 
-
 void UCraftSubsystem::OnPreGameInitialized()
 {
-	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
-	if (!StorageInterface)
+	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	if (!StorageProvider)
 	{
 		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
 		return;
@@ -208,14 +200,12 @@ void UCraftSubsystem::OnPreGameInitialized()
 
 	const UCraftSettings* Settings = UCraftSettings::Get();
 
-	FStorageHandle Handle;
-	Handle.StorageClass = Settings->StorageClass;
-	Handle.StorageId = Settings->StorageId;
-	Handle.Url = Settings->StorageUrl;
+	FStorageDefinition Definition;
+	Definition.StorageId = Settings->StorageId;
+	Definition.StorageClass = Settings->StorageClass;
+	Definition.ManagerClass = Settings->StorageManagerClass;
 
-	StorageInterface->LoadStorage(MoveTemp(Handle));
-
-	StorageProvider = TWeakInterfacePtr<IStorageProvider>(StorageInterface);
+	StorageProvider->LoadStorage(Definition, FTaskCallback());
 }
 
 bool UCraftSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -233,13 +223,12 @@ void UCraftSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 
 void UCraftSubsystem::Deinitialize()
 {
-	StorageProvider.Reset();
 	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
+	StorageProvider = nullptr;
 
 	LOG_WARNING(LogTemp, TEXT("CraftSubsystem deinitialized"));
 	Super::Deinitialize();
 }
-
 
 
 UCraftSubsystem* UCraftSubsystem::Get(UWorld* World)

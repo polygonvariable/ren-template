@@ -3,27 +3,11 @@
 // Parent Header
 #include "Object/EquipmentMetadata.h"
 
-// Engine Headers
-#include "AbilitySystemComponent.h"
-#include "AbilitySystemInterface.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/SpringArmComponent.h"
-
 // Project Headers
-#include "Actor/EquipmentActor.h"
-#include "Asset/CoreDataAsset.h"
-#include "Asset/EquipmentDataAsset.h"
-#include "Definition/AscensionData.h"
-#include "Interface/AscensionInstanceProvider.h"
-#include "Interface/AssetInstanceCollection.h"
-#include "Interface/AssetInstanceCollectionProvider.h"
-#include "Library/AssetInstanceUtil.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
 #include "Settings/EquipmentSettings.h"
 
 
-const UEquipmentDataDefinition* UEquipmentFragment::GetEquipmentDefinitionCDO() const
+const UEquipmentDataDefinition* UEquipmentFragment::GetEquipmentDefinition() const
 {
 	if (!IsValid(EquipmentDefinition))
 	{

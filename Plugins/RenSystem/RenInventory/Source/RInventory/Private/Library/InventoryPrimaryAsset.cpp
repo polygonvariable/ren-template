@@ -3,11 +3,8 @@
 // Parent Header
 #include "Library/InventoryPrimaryAsset.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/InventoryAsset.h"
-
 
 
 FPrimaryAssetType FInventoryPrimaryAsset::GetAssetType()

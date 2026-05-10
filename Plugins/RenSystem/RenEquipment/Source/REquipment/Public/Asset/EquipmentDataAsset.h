@@ -21,21 +21,24 @@ class UGameplayEffect;
 /**
  *
  */
-//USTRUCT()
-//struct FEquipmentAbilityData
-//{
-//	
-//	GENERATED_BODY()
-//
-//public:
-//
-//	UPROPERTY(EditAnywhere)
-//	FGameplayTag EventTag;
-//
-//	UPROPERTY(EditAnywhere)
-//	TArray<TSubclassOf<UGameplayAbility>> AbilityClasses;
-//
-//};
+USTRUCT()
+struct FEquipmentAbilityData
+{
+	
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayAbility> AbilityClass;
+
+	UPROPERTY(EditAnywhere)
+	bool bEnableInput = false;
+
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnableInput==true", EditConditionHides))
+	int InputId = -1;
+
+};
 
 /**
  *
@@ -48,11 +51,8 @@ class UEquipmentAbilityCollection : public UPrimaryDataAsset
 
 public:
 
-	//UPROPERTY(EditAnywhere)
-	//TArray<FEquipmentAbilityData> Abilities;
-
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<UGameplayAbility>> AbilityClasses;
+	TArray<FEquipmentAbilityData> Abilities;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<UGameplayEffect>> EffectClasses;

@@ -10,8 +10,8 @@
 
 // Forward Declarations
 class UCraftStorage;
+class UCraftStorageManager;
 class UCraftSubsystem;
-
 
 
 /**
@@ -30,16 +30,17 @@ public:
 		CategoryName = TEXT("Ren Project");
 	}
 
-	UPROPERTY(Config, EditDefaultsOnly)
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	FName StorageId;
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FString StorageUrl;
-
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	TSubclassOf<UCraftStorage> StorageClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	TSubclassOf<UCraftStorageManager> StorageManagerClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UCraftSubsystem> SubsystemClass;
 
 

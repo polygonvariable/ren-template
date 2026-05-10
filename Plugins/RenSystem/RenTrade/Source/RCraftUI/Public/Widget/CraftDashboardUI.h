@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/TradeDashboardUI.h"
 
@@ -14,7 +12,6 @@
 class UAssetCollection;
 class UCoreDataAsset;
 class UCraftSubsystem;
-
 
 
 /**
@@ -48,7 +45,6 @@ protected:
 	// ~ End of UUserWidget
 
 };
-
 
 
 /**

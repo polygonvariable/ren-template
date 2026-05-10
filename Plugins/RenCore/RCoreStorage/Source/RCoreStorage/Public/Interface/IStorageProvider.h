@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "Definition/StorageHandle.h"
+#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "IStorageProvider.generated.h"
@@ -15,9 +16,7 @@
 #define REN_API RCORESTORAGE_API
 
 // Forward Declarations
-class UStorage;
-class UDeveloperSettings;
-
+class IStorageManager;
 
 
 UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
@@ -38,17 +37,19 @@ class REN_API IStorageProvider
 
 public:
 
-	virtual UStorage* GetStorage(const FName& StorageId) = 0;
+	virtual UObject* GetStorageManager(const FName& StorageId) = 0;
 
 	template<typename T>
-	T* GetStorage(const FName& StorageId)
+	T* GetStorageManager(const FName& StorageId)
 	{
-		return Cast<T>(GetStorage(StorageId));
+		return Cast<T>(GetStorageManager(StorageId));
 	}
 
-	virtual void LoadStorage(FStorageHandle&& Handle) = 0;
-	virtual void LoadStorageFromSettings(const UDeveloperSettings* Settings) = 0;
+	virtual void LoadStorage(const FStorageDefinition& Definition, FTaskCallback&& Callback) = 0;
 	virtual void SaveStorage(const FName& StorageId) = 0;
+
+	//virtual void RegisterTransientStorage(const FName& StorageId, UObject* StorageManager, UObject* Storage) = 0;
+	//virtual void UnregisterTransientStorage(const FName& StorageId) = 0;
 
 public:
 
@@ -56,7 +57,6 @@ public:
 	static IStorageProvider* Get(UGameInstance* GameInstance);
 
 };
-
 
 
 // Module Macros

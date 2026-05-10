@@ -7,8 +7,7 @@
 #include "Modules/ModuleManager.h"
 
 // Forward declaration
-class UAvatarStorage;
-
+class UAvatarStorageManager;
 
 
 class FRAvatarEdModule : public IModuleInterface
@@ -32,7 +31,7 @@ protected:
 	void RemoveItem(const TArray<FString>& Args, UWorld* World);
 	void GetItem(const TArray<FString>& Args, UWorld* World);
 
-	UAvatarStorage* GetAvatarStorage(UWorld* World);
+	UAvatarStorageManager* GetStorageManager(UWorld* World);
 
 };
 

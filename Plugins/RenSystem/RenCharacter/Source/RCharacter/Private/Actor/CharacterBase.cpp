@@ -59,7 +59,8 @@ bool ACharacterBase::IsAlive() const
 	{
 		return false;
 	}
-	return ASC->HasMatchingGameplayTag(UCharacterSettings::Get()->StateAliveTag);
+	const UCharacterSettings* Settings = UCharacterSettings::Get();
+	return ASC->HasMatchingGameplayTag(Settings->StateAliveTag);
 }
 
 void ACharacterBase::InitializeCharacter()
@@ -87,6 +88,16 @@ UCharacterTrajectoryComponent* ACharacterBase::GetTrajectoryComponent() const
 void ACharacterBase::RefreshCharacter()
 {
 	RefreshAttributes();
+}
+
+void ACharacterBase::CallOnCharacterDied()
+{
+	OnCharacterDied.Broadcast();
+}
+
+void ACharacterBase::CallOnCharacterRevived()
+{
+	OnCharacterRevived.Broadcast();
 }
 
 
@@ -137,7 +148,7 @@ void ACharacterBase::ApplyAttributes()
 	{
 		return;
 	}
-
+	PRINT_WARNING(LogTemp, 1.0f, TEXT("ApplyAttributes"));
 	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
 	Context.AddSourceObject(this);
 
@@ -147,6 +158,10 @@ void ACharacterBase::ApplyAttributes()
 		Spec.Data->SetByCallerTagMagnitudes = _CharacterAttributes;
 		ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
+}
+
+void ACharacterBase::OnCharacterInitialized_Implementation()
+{
 }
 
 int ACharacterBase::GetCharacterLevel() const
@@ -177,26 +192,28 @@ TMap<FGameplayTag, float>& ACharacterBase::GetCharacterAttributes()
 
 void ACharacterBase::InitializeTags()
 {
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (!IsValid(ASC))
-	{
-		return;
-	}
+	//UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	//if (!IsValid(ASC))
+	//{
+	//	return;
+	//}
 
-	const UCharacterSettings* Settings = UCharacterSettings::Get();
+	//const UCharacterSettings* Settings = UCharacterSettings::Get();
 
-	FGameplayTag HealthTag;
-	int Health = _CharacterAttributes.FindRef(Settings->DataHealthTag);
-	if (Health > 0)
-	{
-		HealthTag = Settings->StateAliveTag;
-	}
-	else
-	{
-		HealthTag = Settings->StateDeadTag;
-	}
+	//FGameplayEffectSpecHandle Spec;
+	//if (_CharacterAttributes.FindRef(Settings->DataHealthTag) > 0)
+	//{
+	//	Spec = ASC->MakeOutgoingSpec(Settings->AliveEffectClass, GetCharacterLevel(), ASC->MakeEffectContext());
+	//}
+	//else
+	//{
+	//	Spec = ASC->MakeOutgoingSpec(Settings->DeadEffectClass, GetCharacterLevel(), ASC->MakeEffectContext());
+	//}
 
-	ASC->AddLooseGameplayTag(HealthTag);
+	//if (Spec.IsValid())
+	//{
+	//	ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
+	//}
 }
 
 
@@ -261,6 +278,16 @@ void ACharacterBase::GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& O
 	{
 		OutValue = *Value;
 	}
+}
+
+void ACharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
+void ACharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
 }
 
 

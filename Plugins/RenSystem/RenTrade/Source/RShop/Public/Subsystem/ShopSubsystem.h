@@ -16,15 +16,12 @@
 
 // Forward Declarations
 class UAssetCollection;
-class UStorage;
-class UShopStorage;
+class UShopStorageManager;
 class UTradeAsset;
 class UCoreDataAsset;
 class IStorageProvider;
-
 struct FAssetDetail_Trade;
 struct FInstancedStruct;
-
 
 
 /**
@@ -38,9 +35,9 @@ class UShopSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	REN_API UShopStorage* GetShop(const FName& ShopId);
+	REN_API UShopStorageManager* GetStorageManager();
 
-	REN_API void PurchaseItem(const FGuid& TaskId, const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId, FTaskCallback Callback);
+	REN_API bool TryPurchaseItem(const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId);
 
 	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
 	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
@@ -49,7 +46,7 @@ public:
 
 protected:
 
-	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+	IStorageProvider* StorageProvider;
 
 
 	void OnPreGameInitialized();
@@ -66,7 +63,6 @@ public:
 	REN_API static UShopSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
 
 
 // Module Macros

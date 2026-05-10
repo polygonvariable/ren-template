@@ -10,7 +10,7 @@
 // Project Headers
 #include "Asset/CoreDataAsset.h"
 #include "Definition/Runtime/InventoryInstance.h"
-#include "Storage/InventoryStorage.h"
+#include "Storage/InventoryStorageManager.h"
 #include "Subsystem/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 #include "Widget/InventoryEntry.h"
@@ -25,24 +25,21 @@ void UInventoryDetailUI::InitializeDetail()
 		return;
 	}
 
-	UInventoryStorage* InventoryStorage = InventorySubsystem->GetInventory(PrimarySourceId);
-	if (IsValid(InventoryStorage) && bAutoRefresh)
+	StorageManager = InventorySubsystem->GetStorageManager(PrimarySourceId);
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		InventoryStorage->OnStorageUpdated.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UInventoryDetailUI::RefreshDetail);
 	}
-
-	Inventory = TWeakObjectPtr<UInventoryStorage>(InventoryStorage);
 }
 
 void UInventoryDetailUI::RefreshDetail()
 {
-	UInventoryStorage* InventoryStorage = Inventory.Get();
-	if (!IsValid(InventoryStorage))
+	if (!IsValid(StorageManager))
 	{
 		return;
 	}
 
-	const FInventoryInstance* Item = InventoryStorage->GetInstanceById(GetActiveAssetId(), ActiveItemId);
+	const FInventoryInstance* Item = StorageManager->GetInstanceById(GetActiveAssetId(), ActiveItemId);
 	if (!Item)
 	{
 		return;
@@ -95,12 +92,11 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryInstance* Item, int Qu
 
 void UInventoryDetailUI::NativeDestruct()
 {
-	UInventoryStorage* InventoryStorage = Inventory.Get();
-	if (IsValid(InventoryStorage))
+	if (IsValid(StorageManager))
 	{
-		InventoryStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	Inventory.Reset();
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }

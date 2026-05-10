@@ -2,10 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
-#include "Task/TaskObject.h"
+#include "Auth/AuthAction.h"
 
 // Generated Headers
 #include "Task_ClaimCraftItem.generated.h"
@@ -16,14 +14,11 @@ class UTradeAsset;
 class UCoreDataAsset;
 
 
-
 /**
- *
- *
  *
  */
 UCLASS(NotBlueprintType)
-class UTask_ClaimCraftItem : public UTaskObject
+class UTask_ClaimCraftItem : public UAuthAction
 {
 
 	GENERATED_BODY()
@@ -51,11 +46,11 @@ protected:
 	void Step_CheckClaimable();
 	void Step_PerformTransaction();
 
-	// ~ UTaskObject
+	// ~ UAuthAction
 	void OnStarted() override;
-	void OnStopped() override;
+	void OnCompleted(bool bSuccess) override;
 	void OnCleanup() override;
-	// ~ End of UTaskObject
+	// ~ End of UAuthAction
 
 };
 

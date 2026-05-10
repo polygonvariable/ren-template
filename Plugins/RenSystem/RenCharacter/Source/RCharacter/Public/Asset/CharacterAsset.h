@@ -100,6 +100,14 @@ public:
 };
 
 
+UCLASS(MinimalAPI)
+class UEnemyCharacterAsset : public UCharacterAsset
+{
+
+	GENERATED_BODY()
+
+};
+
 // Module Macros
 #undef REN_API
 

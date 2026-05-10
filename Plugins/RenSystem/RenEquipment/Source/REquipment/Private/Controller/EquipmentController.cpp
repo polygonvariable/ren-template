@@ -24,24 +24,12 @@
 #include "Settings/EquipmentSettings.h"
 
 
-
-
 void UEquipmentController::ActivateEquipment()
 {
 }
+
 void UEquipmentController::DeactivateEquipment()
 {
-}
-
-
-int UEquipmentController::GetEquipmentLevel() const
-{
-	return _Level;
-}
-
-void UEquipmentController::SetEquipmentLevel(int Level)
-{
-	_Level = Level;
 }
 
 
@@ -53,6 +41,8 @@ bool UEquipmentController::InitializeController(const UEquipmentDataDefinition* 
 		LOG_ERROR(LogTemp, TEXT("Equipment actor, data definition, equipment data, tag data is invalid"));
 		return false;
 	}
+
+	SetIsDeinitialized(false);
 
 	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
@@ -87,8 +77,6 @@ bool UEquipmentController::InitializeController(const UEquipmentDataDefinition* 
 	DataDefinition = InDataDefinition;
 	AbilityCollection = InDataDefinition->AbilityCollection.Get();
 
-	SetIsDeinitialized(false);
-
 	AttachEquipment();
 	ApplyAbilities();
 
@@ -99,44 +87,19 @@ bool UEquipmentController::InitializeController(const UEquipmentDataDefinition* 
 void UEquipmentController::DeinitializeController()
 {
 	SetIsDeinitialized(true);
-
 	OnControllerDeinitialized();
 
 	DetachEquipment();
 	RemoveAbilities();
 
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (IsValid(AbilitySystem))
+	if (IsValid(AbilitySystem) && EquipmentTagData)
 	{
-		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-		if (EquipmentTagData)
+		FGameplayEventMulticastDelegate* Callback = AbilitySystem->GenericGameplayEventCallbacks.Find(EquipmentTagData->EventTag);
+		if (Callback)
 		{
-			FGameplayEventMulticastDelegate* Callback = AbilitySystem->GenericGameplayEventCallbacks.Find(EquipmentTagData->EventTag);
-			if (Callback)
-			{
-				Callback->RemoveAll(this);
-			}
+			Callback->RemoveAll(this);
 		}
-
-		FGameplayEventMulticastDelegate* EquipCallback = AbilitySystem->GenericGameplayEventCallbacks.Find(Settings->EquipmentEquipNotify);
-		if (EquipCallback)
-		{
-			EquipCallback->RemoveAll(this);
-		}
-		
-		FGameplayEventMulticastDelegate* UnequipCallback = AbilitySystem->GenericGameplayEventCallbacks.Find(Settings->EquipmentUnequipNotify);
-		if (UnequipCallback)
-		{
-			UnequipCallback->RemoveAll(this);
-		}
-	}
-
-	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
-	if (IsValid(AnimInstance))
-	{
-		AnimInstance->UnlinkAnimClassLayers(EquipmentAnimInstance);
-		AnimInstance->Montage_Stop(0.0f, EquipAnimation);
-		AnimInstance->Montage_Stop(0.0f, UnequipAnimation);
 	}
 
 	_OwnerAbilitySystem = nullptr;
@@ -160,6 +123,34 @@ void UEquipmentController::DeinitializeController()
 	_Level = 1;
 }
 
+
+const UEquipmentAbilityCollection* UEquipmentController::GetEquipmentAbilityCollection() const
+{
+	return AbilityCollection;
+}
+
+const UEquipmentDataDefinition* UEquipmentController::GetEquipmentDataDefinition() const
+{
+	return DataDefinition;
+}
+
+
+UWorld* UEquipmentController::GetWorld() const
+{
+	UObject* Outer = GetOuter();
+	if (!IsValid(Outer))
+	{
+		return nullptr;
+	}
+	return Outer->GetWorld();
+}
+
+bool UEquipmentController::ImplementsGetWorld() const
+{
+	return true;
+}
+
+
 UAnimInstance* UEquipmentController::GetOwnerAnimInstance() const
 {
 	if (!IsValid(_OwnerAnimInstance))
@@ -181,13 +172,44 @@ UAnimInstance* UEquipmentController::GetOwnerAnimInstance() const
 	return _OwnerAnimInstance;
 }
 
-void UEquipmentController::OnEquipped()
+UAbilitySystemComponent* UEquipmentController::GetOwnerAbilitySystemComponent() const
 {
+	if (!IsValid(_OwnerAbilitySystem))
+	{
+		IAbilitySystemInterface* AbilityInterface = GetEquipmentOwner<IAbilitySystemInterface>();
+		if (AbilityInterface)
+		{
+			_OwnerAbilitySystem = AbilityInterface->GetAbilitySystemComponent();
+		}
+	}
+	return _OwnerAbilitySystem;
 }
 
-void UEquipmentController::OnUnequipped()
+AActor* UEquipmentController::GetEquipmentOwner() const
 {
+	if (!IsValid(EquipmentActor))
+	{
+		return nullptr;
+	}
+	return EquipmentActor->GetOwner();
 }
+
+AActor* UEquipmentController::GetEquipmentActor() const
+{
+	return EquipmentActor;
+}
+
+
+int UEquipmentController::GetEquipmentLevel() const
+{
+	return _Level;
+}
+
+void UEquipmentController::SetEquipmentLevel(int Level)
+{
+	_Level = Level;
+}
+
 
 void UEquipmentController::RefreshController()
 {
@@ -207,57 +229,6 @@ void UEquipmentController::RefreshController()
 	SetEquipmentLevel(AscensionData->Level);
 }
 
-UWorld* UEquipmentController::GetWorld() const
-{
-	UObject* Outer = GetOuter();
-	if (!IsValid(Outer))
-	{
-		return nullptr;
-	}
-	return Outer->GetWorld();
-}
-
-bool UEquipmentController::ImplementsGetWorld() const
-{
-	return true;
-}
-
-AActor* UEquipmentController::GetEquipmentOwner() const
-{
-	if (!IsValid(EquipmentActor))
-	{
-		return nullptr;
-	}
-	return EquipmentActor->GetOwner();
-}
-
-
-UAbilitySystemComponent* UEquipmentController::GetOwnerAbilitySystemComponent() const
-{
-	if (!IsValid(_OwnerAbilitySystem))
-	{
-		IAbilitySystemInterface* AbilityInterface = GetEquipmentOwner<IAbilitySystemInterface>();
-		if (AbilityInterface)
-		{
-			_OwnerAbilitySystem = AbilityInterface->GetAbilitySystemComponent();
-		}
-	}
-	return _OwnerAbilitySystem;
-}
-
-AActor* UEquipmentController::GetEquipmentActor() const
-{
-	return EquipmentActor;
-}
-
-void UEquipmentController::HandleAbilityActivation(const FGameplayEventData* Payload, FGameplayTag EventTag)
-{
-	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (IsValid(AbilitySystem))
-	{
-		AbilitySystem->TryActivateAbilitiesByTag(FGameplayTagContainer(EventTag));
-	}
-}
 
 void UEquipmentController::ApplyAbilities()
 {
@@ -280,46 +251,14 @@ void UEquipmentController::ApplyAbilities()
 		}
 	}
 
-	//const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
-	//int AbilityNum = Abilities.Num();
-	//for (int i = 0; i < AbilityNum; i++)
-	//{
-	//	const FGameplayTag& EventTag = Abilities[i].EventTag;
-	//	const TArray<TSubclassOf<UGameplayAbility>>& AbilityClasses = Abilities[i].AbilityClasses;
-
-	//	for (const TSubclassOf<UGameplayAbility>& AbilityClass : AbilityClasses)
-	//	{
-	//		if (IsValid(AbilityClass))
-	//		{
-	//			FGameplayAbilitySpec AbilitySpec(AbilityClass);
-	//			AbilitySpec.Level = GetEquipmentLevel();
-	//			AbilitySpec.SourceObject = this;
-	//			if (i == 0)
-	//			{
-	//				AbilitySpec.DynamicAbilityTags.AddTag(EquipmentTagData->AbilityTag);
-	//			}
-	//			else
-	//			{
-	//				AbilitySpec.DynamicAbilityTags.AddTag(EquipmentTagData->StateTag);
-	//			}
-
-	//			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
-	//			ActiveAbilityHandles.Add(AbilityHandle);
-	//		}
-	//	}
-
-	//	if (EventTag.IsValid() && AbilityClasses.Num() > 0)
-	//	{
-	//		AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(EventTag).AddUObject(this, &UEquipmentController::HandleAbilityActivation, EventTag);
-	//	}
-	//}
-	
-	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->AbilityClasses;
+	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
 	int AbilityNum = Abilities.Num();
 
 	for (int i = 0; i < AbilityNum; i++)
 	{
-		const TSubclassOf<UGameplayAbility>& AbilityClass = Abilities[i];
+		const FEquipmentAbilityData& AbilityData = Abilities[i];
+		const TSubclassOf<UGameplayAbility>& AbilityClass = AbilityData.AbilityClass;
+
 		if (IsValid(AbilityClass))
 		{
 			FGameplayAbilitySpec AbilitySpec(AbilityClass);
@@ -332,6 +271,10 @@ void UEquipmentController::ApplyAbilities()
 			else
 			{
 				AbilitySpec.DynamicAbilityTags.AddTag(EquipmentTagData->StateTag);
+				if (AbilityData.bEnableInput)
+				{
+					AbilitySpec.InputID = AbilityData.InputId;
+				}
 			}
 
 			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
@@ -348,15 +291,6 @@ void UEquipmentController::RemoveAbilities()
 		LOG_ERROR(LogTemp, TEXT("AbilitySystem is invalid"));
 		return;
 	}
-
-	//for (const FEquipmentAbilityData& Data : AbilityCollection->Abilities)
-	//{
-	//	const FGameplayTag& EventTag = Data.EventTag;
-	//	if (EventTag.IsValid())
-	//	{
-	//		AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(EventTag).RemoveAll(this);
-	//	}
-	//}
 
 	for (const FActiveGameplayEffectHandle& Handle : ActiveEffectHandles)
 	{
@@ -396,9 +330,20 @@ void UEquipmentController::RefreshAbilities()
 	}
 }
 
+
 void UEquipmentController::HandleActivationEvent(const FGameplayEventData* Payload)
 {
 }
+
+
+void UEquipmentController::OnEquipped()
+{
+}
+
+void UEquipmentController::OnUnequipped()
+{
+}
+
 
 void UEquipmentController::AttachEquipment()
 {
@@ -420,6 +365,15 @@ void UEquipmentController::DetachEquipment()
 	}
 
 	EquipmentActor->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+}
+
+
+void UEquipmentController::OnControllerInitialized()
+{
+}
+
+void UEquipmentController::OnControllerDeinitialized()
+{
 }
 
 
@@ -445,14 +399,7 @@ void UEquipmentController::SetIsDeinitialized(bool bState)
 
 
 
-void UEquipmentController_Weapon::OnControllerDeinitialized_Implementation()
-{
-	UnlinkAnimInstance();
-	OnUnequipped();
-}
-
-
-void UEquipmentController_Weapon::HandleActivationEvent(const FGameplayEventData* Payload)
+void UEquipmentAttachmentController::HandleActivationEvent(const FGameplayEventData* Payload)
 {
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!IsValid(AbilitySystem) || !ActiveAbilityHandles.IsValidIndex(0) || !Payload)
@@ -477,7 +424,16 @@ void UEquipmentController_Weapon::HandleActivationEvent(const FGameplayEventData
 	}
 }
 
-void UEquipmentController_Weapon::ActivateEquipment()
+bool UEquipmentAttachmentController::InitializeController(const UEquipmentDataDefinition* InDataDefinition)
+{
+	if (!Super::InitializeController(InDataDefinition))
+	{
+		return false;
+	}
+	return IsValid(StateEffectClass);
+}
+
+void UEquipmentAttachmentController::ActivateEquipment()
 {
 	if (IsEquipped() || GetIsDeinitialized())
 	{
@@ -493,7 +449,7 @@ void UEquipmentController_Weapon::ActivateEquipment()
 	}
 }
 
-void UEquipmentController_Weapon::DeactivateEquipment()
+void UEquipmentAttachmentController::DeactivateEquipment()
 {
 	if (!IsEquipped() || GetIsDeinitialized())
 	{
@@ -509,7 +465,27 @@ void UEquipmentController_Weapon::DeactivateEquipment()
 	}
 }
 
-bool UEquipmentController_Weapon::IsEquipped()
+#if WITH_EDITOR
+EDataValidationResult UEquipmentAttachmentController::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+	if (!IsValid(StateEffectClass))
+	{
+		Result = EDataValidationResult::Invalid;
+		Context.AddError(FText::FromString("StateEffectClass is invalid"));
+	}
+
+	if ((IsValid(EquipAnimation) || IsValid(UnequipAnimation)) && !IsValid(EquipmentAnimInstance))
+	{
+		Result = EDataValidationResult::Invalid;
+		Context.AddError(FText::FromString("For equipping and unequipping animations, EquipmentAnimInstance is required"));
+	}
+
+	return Result;
+}
+#endif
+
+bool UEquipmentAttachmentController::IsEquipped()
 {
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!EquipmentTagData || !IsValid(AbilitySystem))
@@ -519,30 +495,35 @@ bool UEquipmentController_Weapon::IsEquipped()
 	return AbilitySystem->HasMatchingGameplayTag(EquipmentTagData->StateTag);
 }
 
-
-void UEquipmentController_Weapon::OnEquipped()
+void UEquipmentAttachmentController::OnEquipped()
 {
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (EquipmentTagData && IsValid(AbilitySystem))
+	if (EquipmentTagData && IsValid(AbilitySystem) && IsValid(StateEffectClass))
 	{
-		AbilitySystem->AddLooseGameplayTag(EquipmentTagData->StateTag);
+		FGameplayEffectContextHandle EffectContext = AbilitySystem->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystem->MakeOutgoingSpec(StateEffectClass, 1.0f, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			SpecHandle.Data->DynamicGrantedTags.AddTag(EquipmentTagData->StateTag);
+			StateEffectHandle = AbilitySystem->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
 	}
 }
 
-void UEquipmentController_Weapon::OnUnequipped()
+void UEquipmentAttachmentController::OnUnequipped()
 {
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (EquipmentTagData && IsValid(AbilitySystem))
+	if (IsValid(AbilitySystem) && StateEffectHandle.IsValid())
 	{
-		AbilitySystem->RemoveLooseGameplayTag(EquipmentTagData->StateTag);
+		AbilitySystem->RemoveActiveGameplayEffect(StateEffectHandle, -1);
 	}
 }
 
 
-bool UEquipmentController_Weapon::LinkAnimInstance()
+bool UEquipmentAttachmentController::LinkAnimInstance()
 {
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
-	if (!IsValid(AnimInstance) || !(IsValid(EquipmentAnimInstance)))
+	if (!IsValid(AnimInstance) || !IsValid(EquipmentAnimInstance))
 	{
 		return false;
 	}
@@ -550,10 +531,10 @@ bool UEquipmentController_Weapon::LinkAnimInstance()
 	return true;
 }
 
-bool UEquipmentController_Weapon::UnlinkAnimInstance()
+bool UEquipmentAttachmentController::UnlinkAnimInstance()
 {
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
-	if (!IsValid(AnimInstance) || !(IsValid(EquipmentAnimInstance)))
+	if (!IsValid(AnimInstance) || !IsValid(EquipmentAnimInstance))
 	{
 		return false;
 	}
@@ -561,12 +542,12 @@ bool UEquipmentController_Weapon::UnlinkAnimInstance()
 	return true;
 }
 
-bool UEquipmentController_Weapon::PlayEquipAnimation()
+bool UEquipmentAttachmentController::PlayEquipAnimation()
 {
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
-	if (!IsValid(AnimInstance) || !IsValid(EquipAnimation))
+	if (!IsValid(AnimInstance) || !IsValid(EquipAnimation) || GetIsDeinitialized())
 	{
-		LOG_ERROR(LogTemp, TEXT("Anim instance, equip animation is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Anim instance, equip animation is invalid or is deinitialized"));
 		return false;
 	}
 
@@ -580,18 +561,18 @@ bool UEquipmentController_Weapon::PlayEquipAnimation()
 	RegisterAttachmentNotify(true);
 
 	FOnMontageEnded EndDelegate;
-	EndDelegate.BindUObject(this, &UEquipmentController_Weapon::HandleMontageEquipEnded);
+	EndDelegate.BindUObject(this, &UEquipmentAttachmentController::HandleMontageEquipEnded);
 	AnimInstance->Montage_SetEndDelegate(EndDelegate, EquipAnimation);
 
 	return true;
 }
 
-bool UEquipmentController_Weapon::PlayUnequipAnimation()
+bool UEquipmentAttachmentController::PlayUnequipAnimation()
 {
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
-	if (!IsValid(AnimInstance) || !IsValid(UnequipAnimation))
+	if (!IsValid(AnimInstance) || !IsValid(UnequipAnimation) || GetIsDeinitialized())
 	{
-		LOG_ERROR(LogTemp, TEXT("Anim instance, unequip animation is invalid"));
+		LOG_ERROR(LogTemp, TEXT("Anim instance, unequip animation is invalid or is deinitialized"));
 		return false;
 	}
 
@@ -605,27 +586,99 @@ bool UEquipmentController_Weapon::PlayUnequipAnimation()
 	RegisterAttachmentNotify(false);
 
 	FOnMontageEnded EndDelegate;
-	EndDelegate.BindUObject(this, &UEquipmentController_Weapon::HandleMontageUnequipEnded);
+	EndDelegate.BindUObject(this, &UEquipmentAttachmentController::HandleMontageUnequipEnded);
 	AnimInstance->Montage_SetEndDelegate(EndDelegate, UnequipAnimation);
 
 	return true;
 }
 
-void UEquipmentController_Weapon::HandleMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip)
-{
-	UnregisterAttachmentNotify(bIsEquip);
 
-	if (bIsEquip)
+void UEquipmentAttachmentController::RegisterAttachmentNotify(bool bIsEquip)
+{
+	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
+	if (IsValid(AbilitySystem))
 	{
-		AttachToEquipSocket();
-	}
-	else
-	{
-		AttachToUnequipSocket();
+		const FGameplayTag& AttachmentTag = UEquipmentSettings::GetAttachmentNotifyTag(bIsEquip);
+
+		FGameplayEventMulticastDelegate& Delegate = AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(AttachmentTag);
+		Delegate.AddUObject(this, &UEquipmentAttachmentController::HandleMontageAttachmentNotify, bIsEquip);
 	}
 }
 
-void UEquipmentController_Weapon::AttachToEquipSocket()
+void UEquipmentAttachmentController::UnregisterAttachmentNotify(bool bIsEquip)
+{
+	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
+	if (IsValid(AbilitySystem))
+	{
+		const FGameplayTag& AttachmentTag = UEquipmentSettings::GetAttachmentNotifyTag(bIsEquip);
+
+		FGameplayEventMulticastDelegate& Delegate = AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(AttachmentTag);
+		Delegate.RemoveAll(this);
+	}
+}
+
+
+void UEquipmentAttachmentController::HandleMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip)
+{
+	if (!GetIsDeinitialized())
+	{
+		UnregisterAttachmentNotify(bIsEquip);
+
+		if (bIsEquip)
+		{
+			AttachToEquipSocket();
+		}
+		else
+		{
+			AttachToUnequipSocket();
+		}
+	}
+}
+
+void UEquipmentAttachmentController::HandleMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	// Only equip if the controller isnot deinitialized
+	if (!GetIsDeinitialized())
+	{
+		// If unable to equip via montage then force it when montage ends
+		if (AttachmentState == EEquipmentAttachmentState::Unequipped)
+		{
+			UnregisterAttachmentNotify(true);
+			AttachToEquipSocket();
+		}
+
+		// Set the equipment tag
+		if (!IsEquipped())
+		{
+			OnEquipped();
+		}
+	}
+}
+
+void UEquipmentAttachmentController::HandleMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	// Only unequip if the controller is not deinitialized
+	if (!GetIsDeinitialized())
+	{
+		UnlinkAnimInstance();
+
+		// If was unable to detach from montage event then force it
+		if (AttachmentState == EEquipmentAttachmentState::Equipped)
+		{
+			UnregisterAttachmentNotify(false);
+			AttachToUnequipSocket();
+		}
+
+		// Remove the equipment tag
+		if (IsEquipped())
+		{
+			OnUnequipped();
+		}
+	}
+}
+
+
+void UEquipmentAttachmentController::AttachToEquipSocket()
 {
 	ACharacter* Character = GetEquipmentOwner<ACharacter>();
 	if (IsValid(Character))
@@ -644,10 +697,10 @@ void UEquipmentController_Weapon::AttachToEquipSocket()
 		EquipmentActor->SetActorRelativeTransform(SocketTransform);
 	}
 
-	EquipmentState = EEquipmentState::Equipped;
+	AttachmentState = EEquipmentAttachmentState::Equipped;
 }
 
-void UEquipmentController_Weapon::AttachToUnequipSocket()
+void UEquipmentAttachmentController::AttachToUnequipSocket()
 {
 	ACharacter* Character = GetEquipmentOwner<ACharacter>();
 	if (IsValid(Character))
@@ -673,77 +726,38 @@ void UEquipmentController_Weapon::AttachToUnequipSocket()
 		}
 	}
 
-	EquipmentState = EEquipmentState::Unequipped;
+	AttachmentState = EEquipmentAttachmentState::Unequipped;
 }
 
-void UEquipmentController_Weapon::HandleMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	// if unable to equip via montage then force it when montage ends
-	if (EquipmentState == EEquipmentState::Unequipped)
-	{
-		UnregisterAttachmentNotify(true);
-		AttachToEquipSocket();
-	}
-
-	if (!IsEquipped())
-	{
-		OnEquipped();
-	}
-}
-
-void UEquipmentController_Weapon::HandleMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted)
-{
-	UnlinkAnimInstance();
-
-	if (EquipmentState == EEquipmentState::Equipped)
-	{
-		UnregisterAttachmentNotify(false);
-		AttachToUnequipSocket();
-	}
-
-	if (IsEquipped())
-	{
-		OnUnequipped();
-	}
-}
-
-void UEquipmentController_Weapon::RegisterAttachmentNotify(bool bIsEquip)
-{
-	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (IsValid(AbilitySystem))
-	{
-		const FGameplayTag& NotifyTag = UEquipmentSettings::GetNotifyTag(bIsEquip);
-
-		FGameplayEventMulticastDelegate& Delegate = AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(NotifyTag);
-		Delegate.AddUObject(this, &UEquipmentController_Weapon::HandleMontageAttachmentNotify, bIsEquip);
-	}
-
-}
-
-void UEquipmentController_Weapon::UnregisterAttachmentNotify(bool bIsEquip)
-{
-	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (IsValid(AbilitySystem))
-	{
-		const FGameplayTag& NotifyTag = UEquipmentSettings::GetNotifyTag(bIsEquip);
-
-		FGameplayEventMulticastDelegate& Delegate = AbilitySystem->GenericGameplayEventCallbacks.FindOrAdd(NotifyTag);
-		Delegate.RemoveAll(this);
-	}
-}
-
-void UEquipmentController_Weapon::AttachEquipment()
+void UEquipmentAttachmentController::AttachEquipment()
 {
 	AttachToUnequipSocket();
 }
 
+void UEquipmentAttachmentController::OnControllerDeinitialized()
+{
+	UnregisterAttachmentNotify(true);
+	UnregisterAttachmentNotify(false);
+
+	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
+	if (IsValid(AnimInstance))
+	{
+		AnimInstance->Montage_Stop(0.0f, EquipAnimation);
+		AnimInstance->Montage_Stop(0.0f, UnequipAnimation);
+	}
+
+	UnlinkAnimInstance();
+	OnUnequipped();
+}
 
 
 
 
 
 
-void UEquipmentController_Skill::HandleActivationEvent(const FGameplayEventData* Payload)
+
+
+void UEquipmentSkillController::HandleActivationEvent(const FGameplayEventData* Payload)
 {
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!IsValid(AbilitySystem) || !ActiveAbilityHandles.IsValidIndex(0) || !Payload)

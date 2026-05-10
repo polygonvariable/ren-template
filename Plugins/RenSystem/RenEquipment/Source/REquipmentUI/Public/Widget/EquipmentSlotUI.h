@@ -15,7 +15,7 @@
 class UImage;
 class UButton;
 class UTextBlock;
-class UEquipmentStorage;
+class UEquipmentStorageManager;
 
 
 /**
@@ -59,7 +59,7 @@ protected:
 	TSoftObjectPtr<UTexture2D> EmptyIcon = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UEquipmentStorage> EquipmentStorage = nullptr;
+	TObjectPtr<UEquipmentStorageManager> StorageManager = nullptr;
 
 	FGuid OwnerInstanceId;
 	FPrimaryAssetId OwnerAssetId;

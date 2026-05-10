@@ -15,10 +15,8 @@
 #define REN_API RINVENTORY_API
 
 // Forward Declarations
-class UStorage;
-class UInventoryStorage;
+class UInventoryStorageManager;
 class IStorageProvider;
-
 
 
 /**
@@ -33,7 +31,7 @@ class UInventorySubsystem : public UGameInstanceSubsystem, public IAssetInstance
 
 public:
 
-	REN_API UInventoryStorage* GetInventory(const FName& InventoryId) const;
+	REN_API UInventoryStorageManager* GetStorageManager(const FName& InventoryId) const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& SourceId) const override;
@@ -43,10 +41,10 @@ public:
 
 protected:
 
-	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+	IStorageProvider* StorageProvider;
 
 
-	void OnPreGameInitialized();
+	void HandlePreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

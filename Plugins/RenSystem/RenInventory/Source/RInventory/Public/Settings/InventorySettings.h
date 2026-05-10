@@ -7,13 +7,13 @@
 
 // Project Headers
 #include "Definition/Runtime/InventoryStack.h"
-#include "Interface/IStorageSettingsProvider.h"
 
 // Generated Headers
 #include "InventorySettings.generated.h"
 
 // Forward Declarations
 class UInventoryStorage;
+class UInventoryStorageManager;
 class UInventorySubsystem;
 
 
@@ -21,35 +21,40 @@ class UInventorySubsystem;
  *
  */
 UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Inventory"))
-class UInventorySettings : public UDeveloperSettings, public IStorageSettingsProvider
+class UInventorySettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UInventorySettings(const FObjectInitializer& ObjectInitializer);
+	UInventorySettings(const FObjectInitializer& ObjectInitializer)
+	{
+		CategoryName = TEXT("Ren Project");
+	}
 
-	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly)
+
+	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly, Category = "Storage")
 	FName StorageId;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	TSubclassOf<UInventoryStorage> StorageClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	TSubclassOf<UInventoryStorageManager> StorageManagerClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UInventorySubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Meta = (AllowedTypes = "Asset.Inventory"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", Meta = (AllowedTypes = "Asset.Inventory"))
 	TMap<FPrimaryAssetId, FInventoryStack> DefaultInventory;
 
 
-	// ~ IStorageSettingsProvider
-	virtual const FName& GetStorageId() const override;
-	virtual TSubclassOf<UStorage> GetStorageClass() const override;
-	// ~ End of IStorageSettingsProvider
-
 	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Inventory Settings"))
-	static const UInventorySettings* Get();
+	static const UInventorySettings* Get()
+	{
+		return GetDefault<UInventorySettings>();
+	}
 
 };
 

@@ -12,13 +12,14 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Definition/Runtime/AvatarInstance.h"
+#include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
 #include "Interface/AscensionProvider.h"
 #include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarAscensionSubsystem.h"
 #include "Subsystem/AvatarSubsystem.h"
 #include "Widget/AssetCollectionUI.h"
@@ -41,35 +42,22 @@ void UAvatarAscensionDashboardUI::InitializeDetail()
 		return;
 	}
 
-	AvatarStorage = AvatarSubsystem->GetAvatarStorage();
-	if (IsValid(AvatarStorage) && bAutoRefresh)
+	StorageManager = AvatarSubsystem->GetStorageManager();
+	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		AvatarStorage->OnStorageUpdated.AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
+		StorageManager->OnStorageUpdated.AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
 	}
 }
 
 void UAvatarAscensionDashboardUI::RefreshDetail()
 {
-	if (!IsValid(AvatarStorage))
+	if (!IsValid(StorageManager))
 	{
 		return;
 	}
 
-	const FAvatarInstance* Instance = AvatarStorage->GetInstance(GetActiveAssetId());
+	const FAvatarInstance* Instance = StorageManager->GetInstance(GetActiveAssetId());
 	ToggleAscension(Instance);
-}
-
-
-void UAvatarAscensionDashboardUI::EnableControls()
-{
-	LevelUpButton->SetIsEnabled(true);
-	RankUpButton->SetIsEnabled(true);
-}
-
-void UAvatarAscensionDashboardUI::DisableControls()
-{
-	LevelUpButton->SetIsEnabled(false);
-	RankUpButton->SetIsEnabled(false);
 }
 
 
@@ -137,18 +125,6 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 }
 
 
-void UAvatarAscensionDashboardUI::HandleTaskCallback(const FTaskResult& Result)
-{
-	if (Result.State == ETaskState::Pending)
-	{
-		DisableControls();
-	}
-	else
-	{
-		EnableControls();
-	}
-}
-
 void UAvatarAscensionDashboardUI::HandleLevelUp()
 {
 	const UAssetEntry* Entry = LevelItemCollection->GetSelectedEntry();
@@ -161,7 +137,7 @@ void UAvatarAscensionDashboardUI::HandleLevelUp()
 	FGuid MaterialId = Entry->GetAssetInstanceId();
 	FPrimaryAssetId MaterialAssetId = Entry->AssetId;
 	
-	AscensionSubsystem->AddExperiencePoints(PrimarySourceId, GetActiveAssetId(), MaterialAssetId, MaterialId, FTaskCallback::CreateUObject(this, &UAvatarAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->TryAddExperiencePoints(PrimarySourceId, GetActiveAssetId(), MaterialAssetId, MaterialId);
 }
 
 void UAvatarAscensionDashboardUI::HandleRankUp()
@@ -172,9 +148,19 @@ void UAvatarAscensionDashboardUI::HandleRankUp()
 		return;
 	}
 
-	AscensionSubsystem->AddRankPoints(PrimarySourceId, GetActiveAssetId(), FTaskCallback::CreateUObject(this, &UAvatarAscensionDashboardUI::HandleTaskCallback));
+	AscensionSubsystem->TryAddRankPoints(PrimarySourceId, GetActiveAssetId());
 }
 
+
+TArray<UWidget*> UAvatarAscensionDashboardUI::GetLockingControls_Implementation() const
+{
+	TArray<UWidget*> Widgets;
+
+	Widgets.Add(LevelUpButton);
+	Widgets.Add(RankUpButton);
+
+	return Widgets;
+}
 
 void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
@@ -225,6 +211,9 @@ void UAvatarAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 
 void UAvatarAscensionDashboardUI::NativeConstruct()
 {
+	FGameUIDelegate::OnUIActionStarted.AddUObject(this, &UAvatarAscensionDashboardUI::LockControls);
+	FGameUIDelegate::OnUIActionCompleted.AddUObject(this, &UAvatarAscensionDashboardUI::UnlockControls);
+
 	RankUpButton->OnClicked.AddDynamic(this, &UAvatarAscensionDashboardUI::HandleRankUp);
 	LevelUpButton->OnClicked.AddDynamic(this, &UAvatarAscensionDashboardUI::HandleLevelUp);
 
@@ -235,14 +224,17 @@ void UAvatarAscensionDashboardUI::NativeConstruct()
 
 void UAvatarAscensionDashboardUI::NativeDestruct()
 {
+	FGameUIDelegate::OnUIActionStarted.RemoveAll(this);
+	FGameUIDelegate::OnUIActionCompleted.RemoveAll(this);
+
 	RankUpButton->OnClicked.RemoveAll(this);
 	LevelUpButton->OnClicked.RemoveAll(this);
 
-	if (IsValid(AvatarStorage))
+	if (IsValid(StorageManager))
 	{
-		AvatarStorage->OnStorageUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 
 	AscensionSubsystem = nullptr;
 	AscensionProvider = nullptr;

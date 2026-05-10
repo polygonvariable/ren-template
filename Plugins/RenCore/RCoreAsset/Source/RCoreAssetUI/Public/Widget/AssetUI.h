@@ -57,6 +57,17 @@ protected:
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager;
 
+	UFUNCTION(BlueprintNativeEvent)
+	REN_API TArray<UWidget*> GetLockingControls() const;
+	REN_API virtual TArray<UWidget*> GetLockingControls_Implementation() const;
+
+	UFUNCTION(BlueprintNativeEvent)
+	REN_API void LockControls();
+	REN_API virtual void LockControls_Implementation() {};
+
+	UFUNCTION(BlueprintNativeEvent)
+	REN_API void UnlockControls();
+	REN_API virtual void UnlockControls_Implementation() {};
 
 	REN_API virtual const FPrimaryAssetId& GetActiveAssetId() const;
 	REN_API const UCoreDataAsset* GetActiveAsset() const;

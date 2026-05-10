@@ -46,6 +46,7 @@ public class REquipmentUI : ModuleRules
 				"GameplayAbilities",
                 "RCoreAsset",
                 "RCoreAssetManager",
+				"RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
             }

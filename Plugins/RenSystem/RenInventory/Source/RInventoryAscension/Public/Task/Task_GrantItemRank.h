@@ -2,29 +2,24 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Definition/AscensionData.h"
-#include "Task/TaskObject.h"
+#include "Auth/AuthAction.h"
 
 // Generated Headers
 #include "Task_GrantItemRank.generated.h"
 
 // Forward Declarations
 class UInventoryAsset;
-class UInventoryStorage;
+class UInventoryStorageManager;
 class URAssetManager;
-
 
 
 /**
  *
- *
- *
  */
 UCLASS(NotBlueprintType)
-class UTask_GrantItemRank : public UTaskObject
+class UTask_GrantItemRank : public UAuthAction
 {
 
 	GENERATED_BODY()
@@ -41,7 +36,7 @@ protected:
 	TObjectPtr<const UInventoryAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UInventoryStorage> Inventory = nullptr;
+	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<URAssetManager> AssetManager = nullptr;
@@ -57,11 +52,11 @@ protected:
 	void Step_LoadAsset();
 	void Step_CheckTarget();
 
-	// ~ UTaskObject
+	// ~ UAuthAction
 	void OnStarted() override;
-	void OnStopped() override;
+	void OnCompleted(bool bSuccess) override;
 	void OnCleanup() override;
-	// ~ End of UTaskObject
+	// ~ End of UAuthAction
 
 };
 

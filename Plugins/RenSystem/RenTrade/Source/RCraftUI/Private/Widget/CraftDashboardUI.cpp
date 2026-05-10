@@ -14,7 +14,6 @@
 #include "Widget/TradeEntry.h"
 
 
-
 void UCraftBuildDashboardUI::HandleCraft()
 {
 	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
@@ -25,9 +24,7 @@ void UCraftBuildDashboardUI::HandleCraft()
 	}
 
 	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
-
-	FGuid TaskId = FGuid::NewGuid();
-	CraftSubsystem->CraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
+	CraftSubsystem->TryCraftItem(TradeAssetId, TradeCollectionId, TargetAssetId);
 }
 
 const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
@@ -56,7 +53,6 @@ void UCraftBuildDashboardUI::NativeDestruct()
 }
 
 
-
 void UCraftClaimDashboardUI::HandleCraft()
 {
 	const UTradeEntry* Entry = PrimaryCollection->GetSelectedEntry<UTradeEntry>();
@@ -67,8 +63,6 @@ void UCraftClaimDashboardUI::HandleCraft()
 	}
 
 	const FPrimaryAssetId& TargetAssetId = Entry->AssetId;
-
-	FGuid TaskId = FGuid::NewGuid();
-	CraftSubsystem->ClaimCraftItem(TaskId, TradeAssetId, TradeCollectionId, TargetAssetId, FTaskCallback::CreateWeakLambda(this, [](const FTaskResult& Result) {}));
+	CraftSubsystem->TryClaimCraftItem(TradeAssetId, TradeCollectionId, TargetAssetId);
 }
 

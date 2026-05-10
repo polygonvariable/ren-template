@@ -5,6 +5,9 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
+// Project Headers
+#include "Definition/TaskType.h"
+
 // Generated Headers
 #include "PartySubsystem.generated.h"
 
@@ -13,12 +16,10 @@
 
 // Forward Declarations
 class IStorageProvider;
-class UPartyStorage;
+class UPartyStorageManager;
 
 
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -33,26 +34,27 @@ public:
 	FOnSyncParty OnSyncParty;
 
 
-	REN_API UPartyStorage* GetPartyStorage();
+	REN_API UPartyStorageManager* GetStorageManager();
 	REN_API void SyncParty();
+
+	REN_API bool TrySetPartyCharacter(int Slot, const FPrimaryAssetId& AssetId);
+	REN_API bool TryRemovePartyCharacter(int Slot);
 
 protected:
 
-	TWeakInterfacePtr<IStorageProvider> StorageProvider;
+	UPROPERTY()
+	TObjectPtr<UPartyStorageManager> StorageManager;
+
+	IStorageProvider* StorageProvider;
 
 
-	void OnPreGameInitialized();
+	void HandlePreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 	// ~ End of UGameInstanceSubsystem
-
-private:
-
-	UPROPERTY()
-	TObjectPtr<UPartyStorage> _CachedStorage;
 
 public:
 

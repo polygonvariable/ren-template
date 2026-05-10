@@ -77,6 +77,11 @@ void UAssetUI::InitializeEntryDetail(const UAssetEntry* Entry)
 	SetSecondaryDetail(Entry);
 }
 
+TArray<UWidget*> UAssetUI::GetLockingControls_Implementation() const
+{
+	return TArray<UWidget*>();
+}
+
 const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 {
 	return _ActiveAssetId;

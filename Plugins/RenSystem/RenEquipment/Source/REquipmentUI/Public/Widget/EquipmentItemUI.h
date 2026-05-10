@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GameplayTagContainer.h"
 #include "ActiveGameplayEffectHandle.h"
+#include "Components/ProgressBar.h"
 
 // Generated Headers
 #include "EquipmentItemUI.generated.h"
@@ -18,6 +19,7 @@ class UAbilitySystemComponent;
 class UEquipmentManagerComponent;
 class UEquipmentController;
 struct FGameplayEffectSpec;
+struct FActiveGameplayEffect;
 
 
 /**
@@ -43,12 +45,21 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTag EquipmentSlot;
 
-	UPROPERTY()
-	TObjectPtr<UEquipmentManagerComponent> EquipmentComponent = nullptr;
 
-	UPROPERTY()
-	TObjectPtr<UEquipmentController>  EquipmentController = nullptr;
+	UEquipmentManagerComponent* GetEquipmentComponent() const;
+	UEquipmentController* GetEquipmentController() const;
 
+	template<class T>
+	T* GetEquipmentComponent() const
+	{
+		return Cast<T>(_EquipmentComponent.Get());
+	}
+
+	template<class T>
+	T* GetEquipmentController() const
+	{
+		return Cast<T>(_EquipmentController.Get());
+	}
 
 	virtual void RegisterEquipmentComponent(AActor* Target);
 	virtual void UnregisterEquipmentComponent();
@@ -56,14 +67,15 @@ protected:
 	virtual void RegisterEquipmentController();
 	virtual void UnregisterEquipmentController();
 
-	void HandleEquipmentChangeBegin();
-	void HandleEquipmentChangeEnd();
-
-	virtual void SetDetail();
+	virtual void SetDetail(UEquipmentController* Controller);
+	virtual void RefreshDetail();
 	virtual void ResetDetail();
 
 	void RegisterPlayer();
-	void CleanUpPlayer();
+	void UnregisterPlayer();
+
+	virtual void OnPlayerRegistered(AActor* Target);
+	virtual void OnPlayerUnregistered();
 
 	// ~ UUserWidget
 	virtual void NativePreConstruct() override;
@@ -71,16 +83,16 @@ protected:
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
+private:
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnControllerRemoved();
-	void OnControllerRemoved_Implementation();
+	UPROPERTY()
+	TWeakObjectPtr<UEquipmentManagerComponent> _EquipmentComponent = nullptr;
 
-	UFUNCTION(BlueprintNativeEvent)
-	void OnControllerAdded();
-	void OnControllerAdded_Implementation();
+	UPROPERTY()
+	TWeakObjectPtr<UEquipmentController>  _EquipmentController = nullptr;
 
 };
+
 
 
 
@@ -105,16 +117,25 @@ protected:
 	UPROPERTY(Meta = (BindWidget))
 	TObjectPtr<UTextBlock> MaxTextBlock;
 
+	void UpdateWeaponData();
 
 	// ~ UEquipmentItemUI
 	virtual void RegisterEquipmentController() override;
 	virtual void UnregisterEquipmentController() override;
 
-	virtual void RefreshDetail(int Current, int Max);
+	virtual void SetDetail(UEquipmentController* Controller) override;
+	virtual void RefreshDetail() override;
 	virtual void ResetDetail() override;
 	// ~ End of UEquipmentItemUI
 
 };
+
+
+
+
+
+
+
 
 
 
@@ -139,31 +160,40 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
 	TObjectPtr<UTextBlock> CostTextBlock;
 
-	UPROPERTY()
-	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
-
 	UPROPERTY(EditAnywhere)
 	FGameplayTag EffectTag;
-
 
 	FNumberFormattingOptions FormatOptions;
 	FTimerHandle TimerHandle;
 
 
-	virtual void RegisterEquipmentComponent(AActor* Target) override;
-	virtual void UnregisterEquipmentComponent() override;
+	UAbilitySystemComponent* GetAbilitySystemComponent() const;
+
+	// ~ UEquipmentItemUI
+	virtual void OnPlayerRegistered(AActor* Target) override;
+	virtual void OnPlayerUnregistered() override;
+	// ~ End of UEquipmentItemUI
 
 	void RegisterAbilitySystem(AActor* Target);
 	void UnregisterAbilitySystem();
 
 	void HandleGameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, FActiveGameplayEffectHandle Handle);
+	void HandleGameplayEffectRemoved(const FActiveGameplayEffect& Effect);
 	void HandleEffectTimeChanged();
-	void GetEffectDurationAndRemainingTime(float& Duration, float& RemainingTime);
 
+	void GetEffectDurationAndRemainingTime(float& Duration, float& RemainingTime);
 	void CleanUpTimer();
 
-	virtual void SetDetail() override;
+	// ~ UEquipmentItemUI
+	virtual void SetDetail(UEquipmentController* Controller) override;
 	virtual void ResetDetail() override;
+	virtual void NativeConstruct() override;
+	// ~ End of UEquipmentItemUI
+
+private:
+
+	UPROPERTY()
+	TWeakObjectPtr<UAbilitySystemComponent> _AbilitySystemComponent = nullptr;
 
 };
 

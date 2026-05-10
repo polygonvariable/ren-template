@@ -6,22 +6,19 @@
 #define REN_API RCHARACTER_API
 
 
-
 /**
  *
  */
-class REN_API FCharacterPrimaryAsset
+namespace FCharacterPrimaryAsset
 {
 
-public:
+	REN_API FPrimaryAssetType GetAssetType();
+	REN_API FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
 
-	static FPrimaryAssetType GetAssetType();
-	static FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
+	REN_API bool IsValid(const FPrimaryAssetId& AssetId);
 
-	static bool IsValid(const FPrimaryAssetId& AssetId);
-
-	static bool GetDisplayName(const FAssetData& AssetData, FText& DisplayName);
-	static bool GetHealth(const FAssetData& AssetData, int& Health);
+	REN_API bool GetDisplayName(const FAssetData& AssetData, FText& DisplayName);
+	REN_API bool GetHealth(const FAssetData& AssetData, int& Health);
 
 };
 

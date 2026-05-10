@@ -18,7 +18,6 @@
 class UFilterGroup;
 class UCoreDataAsset;
 class UAssetEntry;
-
 struct FFilterContext;
 
 

@@ -33,16 +33,17 @@ class REN_API IAssetInstanceCollection
 public:
 
 	virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) = 0;
-	virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) = 0;
+	virtual bool AddInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) { return false; };
 
 	virtual bool RemoveInstance(const FPrimaryAssetId& AssetId, int Quantity) = 0;
-	virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) = 0;
+	virtual bool RemoveInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) { return false; };
 
-	virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) = 0;
-	virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) = 0;
+	virtual bool RemoveAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) { return false; };
+	virtual bool RemoveInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, int Quantity) { return false; };
 
-	virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const = 0;
-	virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const = 0;
+	virtual bool ContainInstance(const FPrimaryAssetId& AssetId, int Quantity) const = 0;
+	virtual bool ContainInstances(const TMap<FPrimaryAssetId, int>& AssetIds, int Multiplier) const { return false; };
+	virtual bool ContainAnyInstances(const TMap<FPrimaryAssetId, int>& InAssetIds, int InMultiplier, FPrimaryAssetId& OutAssetId, int& OutQuantity) const { return false; };
 
 	virtual FGameEventDelegate& GetOnAssetInstanceCollectionUpdated() = 0;
 	

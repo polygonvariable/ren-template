@@ -10,8 +10,8 @@
 
 // Forward Declarations
 class UShopStorage;
+class UShopStorageManager;
 class UShopSubsystem;
-
 
 
 /**
@@ -30,16 +30,17 @@ public:
 		CategoryName = TEXT("Ren Project");
 	}
 
-	UPROPERTY(Config, EditDefaultsOnly)
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	FName StorageId;
 
-	UPROPERTY(Config, EditDefaultsOnly)
-	FString StorageUrl;
-
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	TSubclassOf<UShopStorage> StorageClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	TSubclassOf<UShopStorageManager> StorageManagerClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UShopSubsystem> SubsystemClass;
 
 

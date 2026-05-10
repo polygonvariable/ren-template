@@ -61,7 +61,7 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RCoreTask",
+			"Name": "RCoreAuthAction",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

@@ -3,8 +3,6 @@
 // Parent Header
 #include "Task/Task_GrantAvatarExperience.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Asset/AscensionAsset.h"
 #include "Asset/AvatarAsset.h"
@@ -13,13 +11,11 @@
 #include "Interface/AscensionProvider.h"
 #include "Interface/AssetComposition.h"
 #include "Library/AscensionLibrary.h"
+#include "Library/AssetInstanceUtil.h"
 #include "Management/Collection/AssetCollection_Simple.h"
 #include "Manager/RAssetManager.inl"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "Library/AssetInstanceUtil.h"
-
-
 
 
 void UTask_GrantAvatarExperience::OnStarted()
@@ -33,17 +29,15 @@ void UTask_GrantAvatarExperience::OnStarted()
 		return;
 	}
 
-	UAvatarStorage* AvatarCollection = AvatarSubsystem->GetAvatarStorage();
-	if (!IsValid(AvatarCollection))
+	StorageManager = AvatarSubsystem->GetStorageManager();
+	if (!IsValid(StorageManager))
 	{
 		Fail(TEXT("AvatarStorage is invalid"));
 		return;
 	}
 
-	AvatarStorage = AvatarCollection;
-
 #if WITH_EDITOR
-	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
+	bool bSuccess = StorageManager->UpdateInstance(TargetAssetId, [](FAvatarInstance* Instance)
 		{
 			if (Instance)
 			{
@@ -60,13 +54,14 @@ void UTask_GrantAvatarExperience::OnStarted()
 	// Step_LoadAssets();
 }
 
-void UTask_GrantAvatarExperience::OnStopped()
+void UTask_GrantAvatarExperience::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(TaskId);
 }
 
 void UTask_GrantAvatarExperience::OnCleanup()
 {
+	AssetManager->CancelFetch(ActionId);
+
 	TargetSourceId = TEXT_EMPTY;
 	MaterialSourceId = TEXT_EMPTY;
 	MaterialId.Invalidate();
@@ -79,7 +74,7 @@ void UTask_GrantAvatarExperience::OnCleanup()
 	TargetAsset = nullptr;
 	MaterialAsset = nullptr;
 	AssetManager = nullptr;
-	AvatarStorage = nullptr;
+	StorageManager = nullptr;
 }
 
 void UTask_GrantAvatarExperience::Step_LoadAssets()
@@ -94,7 +89,7 @@ void UTask_GrantAvatarExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(TaskId, Assets);
+	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(ActionId, Assets);
 	if (!Future.IsValid())
 	{
 		Fail(TEXT("Failed to create Future"));
@@ -122,7 +117,7 @@ void UTask_GrantAvatarExperience::Step_LoadAssets()
 
 void UTask_GrantAvatarExperience::Step_CheckItemAsset()
 {
-	const FAvatarInstance* Instance = AvatarStorage->GetInstance(TargetAssetId);
+	const FAvatarInstance* Instance = StorageManager->GetInstance(TargetAssetId);
 	if (!Instance)
 	{
 		Fail(TEXT("Instance not found"));
@@ -203,7 +198,7 @@ void UTask_GrantAvatarExperience::Step_CheckMaterialAsset(const FGuid& Experienc
 
 void UTask_GrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
 {
-	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(TaskId, AssetId);
+	TFuture<FLatentLoadedAsset<UExperiencePointAsset>> Future = AssetManager->FetchPrimaryAsset<UExperiencePointAsset>(ActionId, AssetId);
 	TWeakObjectPtr<UTask_GrantAvatarExperience> WeakThis(this);
 	Future.Next([WeakThis, Quantity](const FLatentLoadedAsset<UExperiencePointAsset>& Result)
 		{
@@ -249,7 +244,6 @@ void UTask_GrantAvatarExperience::Step_RemoveMaterial()
 	Step_AddExperience();
 }
 
-// UE_DISABLE_OPTIMIZATION
 void UTask_GrantAvatarExperience::Step_AddExperience()
 {
 	int Amount = FMath::Max(0, (Points * MaterialQuantity));
@@ -263,7 +257,7 @@ void UTask_GrantAvatarExperience::Step_AddExperience()
 		return;
 	}
 
-	bool bSuccess = AvatarStorage->UpdateInstance(TargetAssetId, [NewExperience, NewLevel](FAvatarInstance* Instance)
+	bool bSuccess = StorageManager->UpdateInstance(TargetAssetId, [NewExperience, NewLevel](FAvatarInstance* Instance)
 		{
 			if (Instance)
 			{
@@ -282,5 +276,4 @@ void UTask_GrantAvatarExperience::Step_AddExperience()
 
 	Success();
 }
-// UE_ENABLE_OPTIMIZATION
 

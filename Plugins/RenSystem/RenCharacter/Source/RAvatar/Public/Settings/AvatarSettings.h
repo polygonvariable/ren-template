@@ -7,56 +7,53 @@
 
 // Project Headers
 #include "Definition/Runtime/AvatarInstance.h"
-#include "Interface/IStorageSettingsProvider.h"
 
 // Generated Headers
 #include "AvatarSettings.generated.h"
 
-// Module Macros
-#define REN_API RAVATAR_API
-
 // Forward Declarations
 class UAvatarStorage;
+class UAvatarStorageManager;
 class UAvatarSubsystem;
-
 
 
 /**
  *
  */
 UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Avatar"))
-class UAvatarSettings : public UDeveloperSettings, public IStorageSettingsProvider
+class UAvatarSettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UAvatarSettings(const FObjectInitializer& ObjectInitializer);
+	UAvatarSettings(const FObjectInitializer& ObjectInitializer)
+	{
+		CategoryName = TEXT("Ren Project");
+	}
 
-	UPROPERTY(Config, EditDefaultsOnly)
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	FName StorageId = TEXT_EMPTY;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	TSubclassOf<UAvatarStorage> StorageClass;
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	TSubclassOf<UAvatarStorageManager> StorageManagerClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UAvatarSubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Meta = (AllowedTypes = "Asset.Character"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", Meta = (AllowedTypes = "Asset.Character"))
 	TMap<FPrimaryAssetId, FAvatarInstance> DefaultAvatars;
 
 
-	// ~ IStorageSettingsProvider
-	virtual const FName& GetStorageId() const override;
-	virtual TSubclassOf<UStorage> GetStorageClass() const override;
-	// ~ End of IStorageSettingsProvider
-
-	REN_API static const UAvatarSettings* Get();
+	static const UAvatarSettings* Get()
+	{
+		return GetDefault<UAvatarSettings>();
+	}
 
 };
-
-
-// Module Macros
-#undef REN_API
 

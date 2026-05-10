@@ -15,7 +15,7 @@ DEFINE_LOG_CATEGORY(LogStorage);
 // ~ End of Storage
 
 // ~ Task Categories
-DEFINE_LOG_CATEGORY(LogTask);
+DEFINE_LOG_CATEGORY(LogAction);
 DEFINE_LOG_CATEGORY(LogAsset);
 // ~ End of Library Task
 

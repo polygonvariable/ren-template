@@ -7,7 +7,7 @@
 #include "Modules/ModuleManager.h"
 
 // Forward Declaration
-class UInventoryStorage;
+class UInventoryStorageManager;
 
 
 
@@ -28,7 +28,7 @@ protected:
 	void RegisterCommand();
 	void UnregisterCommand();
 
-	UInventoryStorage* GetInventory(UWorld* World, FName ContainerId);
+	UInventoryStorageManager* GetStorageManager(UWorld* World, FName ContainerId);
 
 	void AddItem(const TArray<FString>& Args, UWorld* World);
 	void RemoveItem(const TArray<FString>& Args, UWorld* World);

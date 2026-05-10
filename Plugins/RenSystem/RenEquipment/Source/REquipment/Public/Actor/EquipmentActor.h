@@ -11,8 +11,6 @@
 // Generated Headers
 #include "EquipmentActor.generated.h"
 
-// Forward Declarations
-
 
 /**
  * 

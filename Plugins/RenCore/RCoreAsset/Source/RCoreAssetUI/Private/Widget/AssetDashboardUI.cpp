@@ -5,9 +5,7 @@
 
 // Engine Headers
 #include "Components/Button.h"
-
-// Project Headers
-
+#include "Components/Overlay.h"
 
 
 void UAssetDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass)
@@ -52,6 +50,40 @@ void UAssetDashboardUI::InitializeEntryDetail(const UAssetEntry* Entry)
 void UAssetDashboardUI::GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets)
 {
 
+}
+
+void UAssetDashboardUI::LockControls_Implementation()
+{
+	if (IsValid(LoaderOverlay))
+	{
+		LoaderOverlay->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+		TArray<UWidget*> Widgets = GetLockingControls();
+		for (UWidget* Widget : Widgets)
+		{
+			if (IsValid(Widget))
+			{
+				Widget->SetIsEnabled(false);
+			}
+		}
+	}
+}
+
+void UAssetDashboardUI::UnlockControls_Implementation()
+{
+	if (IsValid(LoaderOverlay))
+	{
+		LoaderOverlay->SetVisibility(ESlateVisibility::Collapsed);
+
+		TArray<UWidget*> Widgets = GetLockingControls();
+		for (UWidget* Widget : Widgets)
+		{
+			if (IsValid(Widget))
+			{
+				Widget->SetIsEnabled(true);
+			}
+		}
+	}
 }
 
 void UAssetDashboardUI::NativeConstruct()

@@ -22,7 +22,7 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogStorage, Log, All);
 // ~ End Storage
 
 // ~ Task Categories
-REN_API DECLARE_LOG_CATEGORY_EXTERN(LogTask, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAction, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAsset, Log, All);
 // ~ End of Task Categories
 

@@ -14,7 +14,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UCharacterAsset;
-class UAvatarStorage;
+class UAvatarStorageManager;
 
 
 /**
@@ -54,7 +54,7 @@ protected:
 	FAvatarInstance AvatarInstance;
 
 	UPROPERTY()
-	TObjectPtr<UAvatarStorage> AvatarStorage;
+	TObjectPtr<UAvatarStorageManager> StorageManager;
 
 	UPROPERTY(EditAnywhere)
 	float CameraMinZoom = 100.0f;

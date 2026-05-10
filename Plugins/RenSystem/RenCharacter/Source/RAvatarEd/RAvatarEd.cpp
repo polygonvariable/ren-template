@@ -9,7 +9,7 @@
 // Project Headers
 #include "Library/CharacterPrimaryAsset.h"
 #include "Subsystem/AvatarSubsystem.h"
-#include "Storage/AvatarStorage.h"
+#include "Storage/AvatarStorageManager.h"
 #include "Settings/AvatarSettings.h"
 
 #define LOCTEXT_NAMESPACE "FRAvatarEdModule"
@@ -63,14 +63,14 @@ void FRAvatarEdModule::UnregisterCommand()
 	}
 }
 
-UAvatarStorage* FRAvatarEdModule::GetAvatarStorage(UWorld* World)
+UAvatarStorageManager* FRAvatarEdModule::GetStorageManager(UWorld* World)
 {
 	UAvatarSubsystem* Subsystem = UAvatarSubsystem::Get(World);
 	if (!IsValid(Subsystem))
 	{
 		return nullptr;
 	}
-	return Subsystem->GetAvatarStorage();
+	return Subsystem->GetStorageManager();
 }
 
 void FRAvatarEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
@@ -81,7 +81,7 @@ void FRAvatarEdModule::AddItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarStorage(World);
+	UAvatarStorageManager* Collection = GetStorageManager(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
@@ -97,7 +97,7 @@ void FRAvatarEdModule::RemoveItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarStorage(World);
+	UAvatarStorageManager* Collection = GetStorageManager(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));
@@ -113,7 +113,7 @@ void FRAvatarEdModule::GetItem(const TArray<FString>& Args, UWorld* World)
 		return;
 	}
 
-	UAvatarStorage* Collection = GetAvatarStorage(World);
+	UAvatarStorageManager* Collection = GetStorageManager(World);
 	if (IsValid(Collection))
 	{
 		FPrimaryAssetId AssetId = FCharacterPrimaryAsset::GetPrimaryAssetId(FName(*Args[0]));

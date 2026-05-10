@@ -2,16 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "CraftData.generated.h"
-
-// Module Macros
-#define REN_API RCRAFT_API
-
 
 
 /**
@@ -26,7 +18,12 @@ struct FCraftData
 public:
 
 	FCraftData() {}
-	FCraftData(int InPendingQuantity, FDateTime InBatchStartTimestamp, FTimespan InBatchProcessingTime);
+	FCraftData(int InPendingQuantity, FDateTime InBatchStartTimestamp, FTimespan InBatchProcessingTime)
+	{
+		PendingQuantity = InPendingQuantity;
+		BatchStartTimestamp = InBatchStartTimestamp;
+		BatchProcessingTime = InBatchProcessingTime;
+	}
 
 
 	UPROPERTY(SaveGame)
@@ -39,17 +36,48 @@ public:
 	FTimespan BatchProcessingTime;
 
 
-	REN_API bool IsValid() const;
-	REN_API void Reset();
-	REN_API void Sanitize();
+	bool IsValid() const
+	{
+		return PendingQuantity > 0 && BatchProcessingTime.GetTicks() > 0;
+	}
 
-	REN_API int GetCompletedQuantity() const;
-	REN_API FTimespan GetRemainingTime() const;
+	void Reset()
+	{
+		PendingQuantity = 0;
+		BatchStartTimestamp = FDateTime::Now();
+		BatchProcessingTime = FTimespan::Zero();
+	}
+
+	void Sanitize()
+	{
+		PendingQuantity = FMath::Max(0, PendingQuantity);
+	}
+
+	int GetCompletedQuantity() const
+	{
+		if (BatchProcessingTime.GetTicks() <= 0)
+		{
+			return 0;
+		}
+
+		FTimespan Elapsed = FDateTime::Now() - BatchStartTimestamp;
+		int Completed = Elapsed.GetTicks() / BatchProcessingTime.GetTicks();
+
+		return FMath::Clamp(Completed, 0, PendingQuantity);
+	}
+
+	FTimespan GetRemainingTime() const
+	{
+		FDateTime EndTime = BatchStartTimestamp + (BatchProcessingTime * PendingQuantity);
+		FTimespan Result = EndTime - FDateTime::Now();
+
+		if (Result < FTimespan::Zero())
+		{
+			Result = FTimespan::Zero();
+		}
+
+		return Result;
+	}
 
 };
-
-
-
-// Module Macros
-#undef REN_API
 

@@ -48,6 +48,7 @@ public class RCharacterPartyUI : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreAsset",
+                "RCoreDelegate",
                 "RCoreAscensionUI",
                 "RCoreAssetManager",
             }

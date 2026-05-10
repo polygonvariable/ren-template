@@ -8,23 +8,21 @@
 
 // Project Headers
 #include "Definition/Runtime/TradeKey.h"
-#include "Storage/CraftStorage.h"
+#include "Storage/CraftStorageManager.h"
 #include "Subsystem/CraftSubsystem.h"
 #include "Widget/CraftEntry.h"
 
 
-
 void UCraftDetailUI::RefreshDetail()
 {
-	UCraftStorage* Craft = CraftStorage.Get();
-	if (!IsValid(Craft))
+	if (!IsValid(StorageManager))
 	{
 		SwitchDetail(false);
 		return;
 	}
 
 	FTradeKey TradeKey(TradeAssetId, TradeCollectionId, GetActiveAssetId());
-	const FCraftData* NewCraftData = Craft->GetItem(TradeKey);
+	const FCraftData* NewCraftData = StorageManager->GetItem(TradeKey);
 	if (!NewCraftData)
 	{
 		SwitchDetail(false);
@@ -69,12 +67,11 @@ void UCraftDetailUI::NativeConstruct()
 	UCraftSubsystem* CraftSubsystem = UCraftSubsystem::Get(GetGameInstance());
 	if (IsValid(CraftSubsystem))
 	{
-		UCraftStorage* Craft = CraftSubsystem->GetCraft(PrimarySourceId);
-		if (IsValid(Craft))
+		StorageManager = CraftSubsystem->GetStorageManager();
+		if (IsValid(StorageManager))
 		{
-			Craft->OnCraftUpdated.AddUObject(this, &UCraftDetailUI::RefreshDetail);
+			StorageManager->OnStorageUpdated.AddUObject(this, &UCraftDetailUI::RefreshDetail);
 		}
-		CraftStorage = TWeakObjectPtr<UCraftStorage>(Craft);
 	}
 
 	Super::NativeConstruct();
@@ -82,12 +79,11 @@ void UCraftDetailUI::NativeConstruct()
 
 void UCraftDetailUI::NativeDestruct()
 {
-	UCraftStorage* Craft = CraftStorage.Get();
-	if (IsValid(Craft))
+	if (IsValid(StorageManager))
 	{
-		Craft->OnCraftUpdated.RemoveAll(this);
+		StorageManager->OnStorageUpdated.RemoveAll(this);
 	}
-	CraftStorage.Reset();
+	StorageManager = nullptr;
 
 	Super::NativeDestruct();
 }
