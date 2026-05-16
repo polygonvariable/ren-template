@@ -29,19 +29,19 @@ public:
 
 #if WITH_EDITORONLY_DATA
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FName PinName;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FName PinCategory;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FText PinFriendlyName;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	FGuid PinGuid;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	bool bPinIsConst = false;
 
 	// UPROPERTY()
@@ -49,7 +49,7 @@ public:
 
 #endif
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UEventflowPin> PinLinkedTo = nullptr;
 
 };

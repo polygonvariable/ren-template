@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "RenInteract",
+	"FriendlyName": "Ren Interact",
 	"Description": "",
 	"Category": "Ren System",
 	"CreatedBy": "polygonvariable",
@@ -16,7 +16,12 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenInteract",
+			"Name": "RInteract",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RInteractUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

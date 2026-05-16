@@ -75,7 +75,13 @@ void UEquipmentManagerComponent::InitializeManager()
 	AssetManager = URAssetManager::Get();
 	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
 
-	if (SourceType == EAssetQuerySource::Instance)
+	ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
+	if (SpawnContext)
+	{
+		SourceType = SpawnContext->GetSpawnSource();
+	}
+
+	if (SourceType == EDataSource::Runtime)
 	{
 		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 		if (IsValid(EquipmentSubsystem))
@@ -212,7 +218,7 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 			continue;
 		}
 
-		UEquipmentController* Controller = FPoolHelper::Acquire<UEquipmentController>(_ControllerPool, ControllerClass, this);
+		UEquipmentController* Controller = FPoolHelper::AcquireFromContainer<UEquipmentController>(_ControllerPool, ControllerClass, this);
 		AEquipmentActor* Actor = ActorFreelist->AcquireFromList<AEquipmentActor>(ActorClass, FTransform(), GetOwner());
 		if (!IsValid(Controller) || !IsValid(Actor))
 		{
@@ -269,7 +275,7 @@ void UEquipmentManagerComponent::HandleDefaultEquipment()
 
 void UEquipmentManagerComponent::RefreshEquipmentData()
 {
-	if (SourceType == EAssetQuerySource::Asset)
+	if (SourceType == EDataSource::Static)
 	{
 		ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
 		if (SpawnContext)
@@ -325,7 +331,7 @@ void UEquipmentManagerComponent::RefreshEquipmentData()
 			Data.AssetId = EquipmentKey.AssetId;
 			Data.EquipmentId = EquipmentKey.AssetInstanceId;
 			Data.EquipmentSlot = Kv.Key;
-			Data.SourceType = EAssetQuerySource::Instance;
+			Data.SourceType = SourceType;
 
 			EquipmentSpawnData.Add(Data);
 			EquippedAssetIds.Add(Data.AssetId);
@@ -368,7 +374,7 @@ void UEquipmentManagerComponent::UnregisterEquipment(const FEquipmentData& Data)
 
 	Controller->DeinitializeController();
 
-	FPoolHelper::Return(_ControllerPool, Controller);
+	FPoolHelper::ReturnToContainer(_ControllerPool, Controller);
 	ActorFreelist->ReturnToList(Actor);
 }
 

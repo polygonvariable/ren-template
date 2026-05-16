@@ -3,21 +3,13 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "GameplayEffectTypes.h"
-
-// Project Headers
 
 // Generated Headers
 #include "RGameplayEffectContext.generated.h"
 
-// Forward Declarations
-
-
 
 /**
- * 
- * 
  * 
  */
 USTRUCT()

@@ -13,7 +13,7 @@
 #include "Definition/Runtime/TradeKey.h"
 #include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/IShopProvider.h"
-#include "Interface/IStorageProvider.h"
+#include "Interface/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetGroup.h"

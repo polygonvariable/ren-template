@@ -56,8 +56,18 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "REnemy",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "REnemyParty",
 			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "REnemyPartyEd",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	],

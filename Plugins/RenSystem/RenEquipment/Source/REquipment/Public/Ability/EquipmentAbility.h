@@ -20,7 +20,7 @@ class AEquipmentActor;
 /**
  *
  */
-UCLASS()
+UCLASS(Abstract)
 class UEquipmentAbility : public UGameplayAbility
 {
 
@@ -36,7 +36,7 @@ public:
 /**
  *
  */
-UCLASS()
+UCLASS(Abstract)
 class UEquipmentStateAbility : public UEquipmentAbility
 {
 
@@ -71,7 +71,7 @@ protected:
 /**
  *
  */
-UCLASS()
+UCLASS(Abstract)
 class UEquipmentWeaponAbility : public UEquipmentAbility
 {
 
@@ -107,7 +107,7 @@ protected:
 /**
  *
  */
-UCLASS()
+UCLASS(Abstract)
 class UEquipmentSkillAbility : public UEquipmentAbility
 {
 

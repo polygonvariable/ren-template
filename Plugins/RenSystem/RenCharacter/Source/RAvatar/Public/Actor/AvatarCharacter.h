@@ -36,12 +36,19 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UCameraComponent> Camera;
 
+	UPROPERTY(EditAnywhere)
+	EDataSource SourceType = EDataSource::Static;
+
 
 	// ~ IAssetInstanceContextProvider
 	virtual FGuid GetAssetInstanceId() const override;
 	virtual FPrimaryAssetId GetAssetId() const override;
 	virtual FPrimaryAssetType GetAssetType() const override;
 	// ~ End of IAssetInstanceContextProvider
+
+	// ~ ISpawnContextProvider
+	virtual EDataSource GetSpawnSource() const override;
+	// ~ End of ISpawnContextProvider
 
 	// ~ ACharacterBase
 	virtual void InitializeCharacter() override;

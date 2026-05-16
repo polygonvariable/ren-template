@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "Definition/AssetQuerySource.h"
+#include "Definition/QueryType.h"
 
 // Generated Headers
 #include "EquipmentData.generated.h"
@@ -25,14 +26,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	FPrimaryAssetId AssetId;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Instance", EditConditionHides))
-	FGuid EquipmentId;
-
 	UPROPERTY(EditAnywhere)
 	FGameplayTag EquipmentSlot;
 
-	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+	UPROPERTY(VisibleAnywhere)
+	FGuid EquipmentId;
+
+	UPROPERTY(VisibleAnywhere)
+	EDataSource SourceType = EDataSource::Static;
 
 	bool IsValid() const
 	{
@@ -44,7 +45,7 @@ public:
 		AssetId = FPrimaryAssetId();
 		EquipmentId.Invalidate();
 		EquipmentSlot = FGameplayTag();
-		SourceType = EAssetQuerySource::Asset;
+		SourceType = EDataSource::Static;
 	}
 
 	friend inline bool operator == (const FEquipmentData& A, const FEquipmentData& B)

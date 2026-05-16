@@ -17,7 +17,6 @@
 
 // Forward Declarations
 class UAssetCollection;
-class UStorage;
 class IStorageProvider;
 class UCraftStorageManager;
 class UTradeAsset;

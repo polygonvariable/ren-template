@@ -6,9 +6,9 @@
 // Engine Headers
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-#include "RenEventflow/Public/EventflowNode.h"
-#include "RenEventflow/Public/EventflowNodeData.h"
+#include "EventflowAsset.h"
+#include "EventflowNode.h"
+#include "EventflowNodeData.h"
 
 
 

@@ -75,9 +75,14 @@ FPrimaryAssetType AAvatarCharacter::GetAssetType() const
 	return CharacterAsset->GetPrimaryAssetType();
 }
 
+EDataSource AAvatarCharacter::GetSpawnSource() const
+{
+	return SourceType;
+}
+
 void AAvatarCharacter::InitializeCharacter()
 {
-	if (CharacterData.SourceType == EAssetQuerySource::Instance)
+	if (SourceType == EDataSource::Runtime)
 	{
 		UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
 		if (IsValid(AvatarSubsystem))
@@ -133,7 +138,7 @@ void AAvatarCharacter::RefreshCharacter()
 
 void AAvatarCharacter::AddRuntimeAttributes()
 {
-	if (CharacterData.SourceType == EAssetQuerySource::Instance)
+	if (SourceType == EDataSource::Runtime)
 	{
 		const UCharacterSettings* Settings = UCharacterSettings::Get();
 		TMap<FGameplayTag, float>& Attributes = GetCharacterAttributes();

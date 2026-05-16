@@ -26,10 +26,9 @@ UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Fallen);
 UE_DECLARE_GAMEPLAY_TAG_EXTERN(TAG_Attribute_Health_Restored);
 
 
+DECLARE_MULTICAST_DELEGATE(FHealthStateDelegate);
 
 /**
- * 
- * 
  * 
  */
 UCLASS()
@@ -47,6 +46,10 @@ public:
 	ATTRIBUTE_ACCESSORS(UHealthSet, Heal);
 
 public:
+
+	mutable FHealthStateDelegate OnDied;
+	mutable FHealthStateDelegate OnRevived;
+
 
 	UPROPERTY(ReplicatedUsing = OnRep_Health)
 	FGameplayAttributeData Health;
@@ -82,10 +85,6 @@ protected:
 	void HandleHeal(const FGameplayEffectModCallbackData& Data);
 	void BroadcastHealthChanged(const FGameplayEffectModCallbackData& Data, float Magnitude, const FGameplayTag& EventTag);
 
-
-	//UPROPERTY()
-	//TWeakObjectPtr<UGameplayNotifySubsystem> GameplayNotifySubsystem;
-	//UGameplayNotifySubsystem* GetGameplayNotifySubsystem();
 
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldValue);

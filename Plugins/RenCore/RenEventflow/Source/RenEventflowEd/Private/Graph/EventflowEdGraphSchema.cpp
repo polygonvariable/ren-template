@@ -7,10 +7,10 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowNodeData.h"
+#include "EventflowNodeData.h"
 
-#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphNode.h"
+#include "Graph/EventflowEdGraph.h"
+#include "Graph/EventflowEdGraphNode.h"
 
 
 

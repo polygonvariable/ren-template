@@ -6,7 +6,7 @@
 // Project Headers
 #include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/AssetInstanceRelation.h"
-#include "Interface/IStorageProvider.h"
+#include "Interface/StorageProvider.h"
 #include "Interface/StorageManager.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

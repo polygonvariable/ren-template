@@ -54,7 +54,7 @@ bool UEquipmentController::InitializeController(const UEquipmentDataDefinition* 
 		}
 	}
 
-	if (EquipmentData.SourceType == EAssetQuerySource::Instance)
+	if (EquipmentData.SourceType == EDataSource::Runtime)
 	{
 		const FPrimaryAssetId& AssetId = EquipmentData.AssetId;
 

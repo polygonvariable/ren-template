@@ -4,12 +4,9 @@
 #include "Attributes/HealthSet.h"
 
 // Engine Headers
-#include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
-
-// Project Headers
-#include "Log/LogMacro.h"
 
 // Declare Gameplay Tags
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Damaged, "Attribute.Health.Damaged");
@@ -18,7 +15,6 @@ UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Immunity, "Attribute.Health.Immunity
 
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Fallen, "Attribute.Health.Fallen");
 UE_DEFINE_GAMEPLAY_TAG(TAG_Attribute_Health_Restored, "Attribute.Health.Restored");
-
 
 
 bool UHealthSet::PreGameplayEffectExecute(FGameplayEffectModCallbackData& Data)
@@ -115,9 +111,6 @@ void UHealthSet::OnRep_MaxHealth(const FGameplayAttributeData& OldValue)
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UHealthSet, MaxHealth, OldValue);
 }
 
-
-
-
 void UHealthSet::UpdateHealthState()
 {
 	const bool bShouldBeDead = GetHealth() <= GetMinHealth() && GetMinHealth() <= 0.0f;
@@ -134,25 +127,15 @@ void UHealthSet::UpdateHealthState()
 
 void UHealthSet::BroadcastHealthState()
 {
-	FGameplayEventData EventData;
-	// EventData.Target = GetOwningActor();
-
-	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
-
-	if (IsValid(ASC))
+	if (bIsDead)
 	{
-		if (bIsDead)
-		{
-			ASC->HandleGameplayEvent(TAG_Attribute_Health_Fallen, &EventData);
-		}
-		else
-		{
-			ASC->HandleGameplayEvent(TAG_Attribute_Health_Restored, &EventData);
-		}
+		OnDied.Broadcast();
+	}
+	else
+	{
+		OnRevived.Broadcast();
 	}
 }
-
-
 
 void UHealthSet::HandleDamage(const FGameplayEffectModCallbackData& Data)
 {
@@ -212,21 +195,4 @@ void UHealthSet::UpdateHealth(float Value, float Multiplier)
 		SetHealth(NewHealth);
 	}
 }
-
-/*UGameplayNotifySubsystem* UHealthSet::GetGameplayNotifySubsystem()
-{
-	UGameplayNotifySubsystem* GameplayNotify = GameplayNotifySubsystem.Get();
-
-	if (!IsValid(GameplayNotify))
-	{
-		UWorld* World = GetWorld();
-		if (IsValid(World))
-		{
-			GameplayNotify = World->GetSubsystem<UGameplayNotifySubsystem>();
-			GameplayNotifySubsystem = GameplayNotify;
-		}
-	}
-
-	return GameplayNotify;
-}*/
 

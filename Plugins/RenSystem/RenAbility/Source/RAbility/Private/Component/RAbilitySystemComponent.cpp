@@ -10,7 +10,6 @@
 #include "Log/LogMacro.h"
 
 
-
 FGameplayAbilitySpecHandle URAbilitySystemComponent::BP_TryGiveAbilityWithSource(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputID, const FGameplayTagContainer& Tags, UObject* SourceObject)
 {
 	if (!IsValid(AbilityClass)|| !IsValid(SourceObject))
@@ -112,9 +111,8 @@ void URAbilitySystemComponent::TriggerGameplayCue(FGameplayTag EventTag, const F
 	}
 }
 
-
-
 const FGameplayCueTag* UGameplayCueBinding::GetGameplayCueTag(FGameplayTag Tag) const
 {
 	return TagRedirects.Find(Tag);
 }
+

@@ -3,8 +3,8 @@
 #pragma once
 
 // Project Headers
-#include "Actor/CharacterBase.h"
-#include "Definition/AssetQuerySource.h"
+#include "Definition/CharacterInitializationData.h"
+#include "Definition/QueryType.h"
 
 // Generated Headers
 #include "PartyManagerComponent.generated.h"
@@ -14,7 +14,7 @@ class FObjectPreSaveContext;
 class URAssetManager;
 class UPartySubsystem;
 class UPartyStorageManager;
-class ACharacterBase;
+class AAvatarCharacter;
 
 
 /**
@@ -31,8 +31,8 @@ public:
 
 	UPartyManagerComponent(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Asset", EditConditionHides))
-	TArray<FCharacterData> CharacterSpawnData;
+	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	TArray<FCharacterInitializationData> CharacterData;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -51,13 +51,13 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+	EDataSource SourceType = EDataSource::Static;
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TArray<FPrimaryAssetId> CharacterAssetIds;
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TMap<FPrimaryAssetId, TObjectPtr<ACharacterBase>> PartyCharacters;
+	TMap<FPrimaryAssetId, TObjectPtr<AAvatarCharacter>> PartyCharacters;
 
 	UPROPERTY()
 	TObjectPtr<UPartySubsystem> PartySubsystem;
@@ -70,9 +70,9 @@ protected:
 
 
 	void SpawnPartyCharacters();
-	void SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterData& Data);
+	void SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterInitializationData& Data);
 
-	void RegisterCharacter(const FPrimaryAssetId& AssetId, ACharacterBase* Character);
+	void RegisterCharacter(const FPrimaryAssetId& AssetId, AAvatarCharacter* Character);
 	void UnregisterCharacter(const FPrimaryAssetId& AssetId);
 
 	void RefreshPartyOrder();

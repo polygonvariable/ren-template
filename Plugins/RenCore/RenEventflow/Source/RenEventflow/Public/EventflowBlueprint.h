@@ -7,7 +7,7 @@
 #include "UObject/Interface.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowDelegates.h"
+#include "EventflowDelegates.h"
 
 // Generated Headers
 #include "EventflowBlueprint.generated.h"

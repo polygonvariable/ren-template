@@ -3,9 +3,9 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AssetQuerySource.h"
 #include "Definition/EquipmentData.h"
 #include "Definition/PoolCollection.h"
+#include "Definition/QueryType.h"
 
 // Generated Headers
 #include "EquipmentManagerComponent.generated.h"
@@ -71,7 +71,7 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
+	EDataSource SourceType = EDataSource::Static;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTag DefaultEquippedTag;

@@ -5,11 +5,10 @@
 // Engine Headers
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "GameplayTagAssetInterface.h"
-#include "InstancedStruct.h"
 
 // Project Headers
 #include "Definition/AssetQuerySource.h"
+#include "Definition/CharacterInitializationData.h"
 #include "Interface/SpawnContextProvider.h"
 
 // Generated Headers
@@ -24,28 +23,6 @@ class UAbilitySystemComponent;
 class UCharacterAsset;
 class UGameplayEffect;
 
-
-USTRUCT()
-struct FCharacterData
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, Meta = (AllowedTypes = "Asset.Character"))
-	FPrimaryAssetId AssetId;
-
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EAssetQuerySource::Asset", EditConditionHides))
-	TMap<FGameplayTag, float> Attributes;
-
-	UPROPERTY(EditAnywhere)
-	TMap<FGameplayTag, FInstancedStruct> Metadata;
-
-	UPROPERTY(EditAnywhere)
-	EAssetQuerySource SourceType = EAssetQuerySource::Asset;
-
-};
 
 
 /**
@@ -66,7 +43,7 @@ public:
 	TObjectPtr<const UCharacterAsset>  CharacterAsset;
 
 	UPROPERTY(EditAnywhere)
-	FCharacterData CharacterData;
+	FCharacterInitializationData CharacterData;
 
 
 
@@ -85,6 +62,7 @@ public:
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 
+	UFUNCTION(BlueprintCallable)
 	virtual bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
@@ -145,6 +123,9 @@ protected:
 
 	virtual void InitializeTags();
 
+
+	virtual void RegisterLifeStateEvent();
+	virtual void UnregisterLifeStateEvent();
 
 
 	UFUNCTION(BlueprintNativeEvent)

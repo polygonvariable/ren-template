@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
+#include "Graph/EventflowEdGraphSchema.h"
 
 
 

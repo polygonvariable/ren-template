@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Interface/IStorageProvider.h"
+#include "Interface/StorageProvider.h"
 
 #include "Util/AssetManagerUtil.h"
 #include "Log/LogMacro.h"

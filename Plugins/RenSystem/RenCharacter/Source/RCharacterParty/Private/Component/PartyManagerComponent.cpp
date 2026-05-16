@@ -8,6 +8,7 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
+#include "Actor/AvatarCharacter.h"
 #include "Asset/CharacterAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -28,7 +29,7 @@ void UPartyManagerComponent::BeginPlay()
 {
 	AssetManager = URAssetManager::Get();
 
-	if (SourceType == EAssetQuerySource::Instance)
+	if (SourceType == EDataSource::Runtime)
 	{
 		PartySubsystem = UPartySubsystem::Get(GetWorld());
 		if (IsValid(PartySubsystem))
@@ -66,16 +67,16 @@ void UPartyManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext)
 
 #if WITH_EDITOR
 	CharacterAssetIds.Empty();
-	if (SourceType == EAssetQuerySource::Asset)
+	if (SourceType == EDataSource::Static)
 	{
-		for (const FCharacterData& Data : CharacterSpawnData)
+		for (const FCharacterInitializationData& Data : CharacterData)
 		{
 			CharacterAssetIds.Add(Data.AssetId);
 		}
 	}
 	else
 	{
-		CharacterSpawnData.Empty();
+		CharacterData.Empty();
 	}
 #endif
 }
@@ -112,7 +113,7 @@ void UPartyManagerComponent::SpawnParty()
 
 void UPartyManagerComponent::SpawnPartyCharacters()
 {
-	for (const FCharacterData& Data : CharacterSpawnData)
+	for (const FCharacterInitializationData& Data : CharacterData)
 	{
 		SpawnCharacter(Data.AssetId, Data);
 	}
@@ -120,7 +121,7 @@ void UPartyManagerComponent::SpawnPartyCharacters()
 	PossessAliveCharacter();
 }
 
-void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterData& Data)
+void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterInitializationData& Data)
 {
 	const UCharacterAsset* Asset = AssetManager->GetPrimaryAssetObject<UCharacterAsset>(AssetId);
 	if (!IsValid(Asset) || PartyCharacters.Contains(AssetId))
@@ -137,7 +138,7 @@ void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, cons
 	}
 
 	FTransform SpawnTransform;
-	ACharacterBase* Character = GetWorld()->SpawnActorDeferred<ACharacterBase>(CharacterClass, SpawnTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+	AAvatarCharacter* Character = GetWorld()->SpawnActorDeferred<AAvatarCharacter>(CharacterClass, SpawnTransform, GetOwner(), nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (!IsValid(Character))
 	{
 		LOG_ERROR(LogCharacterParty, TEXT("Spawned character is invalid"));
@@ -146,20 +147,21 @@ void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, cons
 
 	Character->CharacterAsset = Asset;
 	Character->CharacterData = Data;
+	Character->SourceType = SourceType;
 	Character->InitializeCharacter();
 	Character->FinishSpawning(SpawnTransform);
 
 	RegisterCharacter(AssetId, Character);
 }
 
-void UPartyManagerComponent::RegisterCharacter(const FPrimaryAssetId& AssetId, ACharacterBase* Character)
+void UPartyManagerComponent::RegisterCharacter(const FPrimaryAssetId& AssetId, AAvatarCharacter* Character)
 {
 	PartyCharacters.Add(AssetId, Character);
 }
 
 void UPartyManagerComponent::UnregisterCharacter(const FPrimaryAssetId& AssetId)
 {
-	ACharacterBase* Character = PartyCharacters.FindAndRemoveChecked(AssetId);
+	AAvatarCharacter* Character = PartyCharacters.FindAndRemoveChecked(AssetId);
 	if (IsValid(Character))
 	{
 		Character->DeinitializeCharacter();
@@ -169,7 +171,7 @@ void UPartyManagerComponent::UnregisterCharacter(const FPrimaryAssetId& AssetId)
 
 void UPartyManagerComponent::RefreshPartyOrder()
 {
-	if (IsValid(StorageManager) && SourceType == EAssetQuerySource::Instance)
+	if (IsValid(StorageManager) && SourceType == EDataSource::Runtime)
 	{
 		StorageManager->GetAllCharacters(CharacterAssetIds);
 	}
@@ -177,16 +179,15 @@ void UPartyManagerComponent::RefreshPartyOrder()
 
 void UPartyManagerComponent::RefreshSpawnData()
 {
-	if (SourceType == EAssetQuerySource::Instance)
+	if (SourceType == EDataSource::Runtime)
 	{
-		CharacterSpawnData.Empty();
+		CharacterData.Empty();
 		for (const FPrimaryAssetId& AssetId : CharacterAssetIds)
 		{
-			FCharacterData Data;
+			FCharacterInitializationData Data;
 			Data.AssetId = AssetId;
-			Data.SourceType = EAssetQuerySource::Instance;
 
-			CharacterSpawnData.Add(Data);
+			CharacterData.Add(Data);
 		}
 	}
 }
@@ -217,9 +218,9 @@ void UPartyManagerComponent::PossessAliveCharacter()
 
 ACharacter* UPartyManagerComponent::GetAliveCharacter() const
 {
-	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : PartyCharacters)
+	for (const TPair<FPrimaryAssetId, TObjectPtr<AAvatarCharacter>>& Kv : PartyCharacters)
 	{
-		ACharacterBase* Actor = Kv.Value.Get();
+		AAvatarCharacter* Actor = Kv.Value.Get();
 		if (IsValid(Actor) && Actor->IsAlive())
 		{
 			return Actor;

@@ -5,17 +5,17 @@
 
 // Engine Headers
 #include "AbilitySystemComponent.h"
+#include "CharacterTrajectoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "CharacterTrajectoryComponent.h"
 
 // Project Headers
 #include "Asset/CharacterAsset.h"
 #include "Library/AscensionLibrary.h"
-#include "Settings/CharacterSettings.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Settings/CharacterSettings.h"
 
 
 ACharacterBase::ACharacterBase() : Super()
@@ -60,7 +60,7 @@ bool ACharacterBase::IsAlive() const
 		return false;
 	}
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
-	return ASC->HasMatchingGameplayTag(Settings->StateAliveTag);
+	return !ASC->HasMatchingGameplayTag(Settings->StateDeadTag);
 }
 
 void ACharacterBase::InitializeCharacter()
@@ -148,7 +148,7 @@ void ACharacterBase::ApplyAttributes()
 	{
 		return;
 	}
-	PRINT_WARNING(LogTemp, 1.0f, TEXT("ApplyAttributes"));
+
 	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
 	Context.AddSourceObject(this);
 
@@ -214,6 +214,17 @@ void ACharacterBase::InitializeTags()
 	//{
 	//	ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	//}
+}
+
+
+void ACharacterBase::RegisterLifeStateEvent()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+}
+
+void ACharacterBase::UnregisterLifeStateEvent()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 }
 
 

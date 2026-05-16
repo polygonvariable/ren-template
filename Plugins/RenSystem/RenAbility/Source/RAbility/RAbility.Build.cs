@@ -31,12 +31,9 @@ public class RAbility : ModuleRules
 				"Engine",
 				"StructUtils",
                 "UMG",
-
+                "DeveloperSettings",
                 "RCoreCommon",
                 "RCoreTag",
-                //"RenAsset",
-                //"RenStorage",
-                //"RenGameplay",
             }
 			);
 			

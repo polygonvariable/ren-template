@@ -5,6 +5,9 @@
 // Engine Headers
 #include "UObject/Interface.h"
 
+// Project Headers
+#include "Definition/QueryType.h"
+
 // Generated Headers
 #include "SpawnContextProvider.generated.h"
 
@@ -32,6 +35,7 @@ class REN_API ISpawnContextProvider
 
 public:
 
+	virtual EDataSource GetSpawnSource() const { return EDataSource::Static; };
 	virtual void GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& OutValue) const = 0;
 
 };

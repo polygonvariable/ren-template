@@ -2,11 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
-// Project Headers
-
 // Generated Headers
 #include "EventflowNode.generated.h"
 
@@ -15,9 +10,7 @@ class UEventflowNodeData;
 class UEventflowPin;
 
 
-
 /**
- *
  *
  */
 UCLASS(BlueprintType)
@@ -28,7 +21,7 @@ class RENEVENTFLOW_API UEventflowNode : public UObject
 
 public:
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	FGuid NodeId;
 
 	UPROPERTY()
@@ -50,7 +43,12 @@ public:
 	UPROPERTY()
 	TObjectPtr<UEventflowNodeData> NodeData = nullptr;
 
+	UEventflowNode* GetPreviousNodeAt(int Index) const;
 	UEventflowNode* GetNextNodeAt(int Index) const;
+
+protected:
+
+	UEventflowNode* GetNodeFromPinAt(UEventflowPin* Pin) const;
 
 };
 

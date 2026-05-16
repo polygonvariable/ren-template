@@ -26,11 +26,15 @@ public:
 		CategoryName = TEXT("Ren Project");
 	}
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Effects")
-	TSubclassOf<UGameplayEffect> AliveEffectClass;
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Asset")
+	TArray<FName> CharacterBundles;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Effects")
 	TSubclassOf<UGameplayEffect> DeadEffectClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health")
+	FGameplayTag DeadStateTag;
+
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
 	FGameplayTag DataHealthTag;
@@ -55,9 +59,6 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags")
 	FGameplayTag DataElementalDefenseTag;
 
-
-	UPROPERTY(Config, EditDefaultsOnly, Category = "State Tags")
-	FGameplayTag StateAliveTag;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "State Tags")
 	FGameplayTag StateDeadTag;

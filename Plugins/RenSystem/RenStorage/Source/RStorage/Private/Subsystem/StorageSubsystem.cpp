@@ -13,6 +13,7 @@
 #include "Interface/StorageManager.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Settings/StorageSettings.h"
 
 
 int UStorageSubsystem::GetSlotIndex()
@@ -172,7 +173,6 @@ USaveGame* UStorageSubsystem::CreateStorage(const FStorageDefinition& Definition
 	return CreateStorage(Definition, bOutIsNew);
 }
 
-
 void UStorageSubsystem::LoadRemoteStorage(const FStorageDefinition& Definition, FTaskCallback&& Callback)
 {
 	if (!Definition.IsValid() || !Definition.IsUrlValid())
@@ -289,7 +289,7 @@ bool UStorageSubsystem::SaveLocalStorage(USaveGame* SaveGame, const FName& Stora
 }
 
 
-void UStorageSubsystem::UnloadAllStorages()
+void UStorageSubsystem::UnloadAllStorage()
 {
 	TArray<FName> StorageIds;
 	StorageCollection.GetKeys(StorageIds);
@@ -319,6 +319,42 @@ void UStorageSubsystem::UnloadStorage(const FName& StorageId)
 	StorageCollection.Remove(StorageId);
 }
 
+void UStorageSubsystem::RegisterAutoSave()
+{
+	const UStorageSettings* Settings = UStorageSettings::Get();
+	if (Settings->bEnableAutoSave)
+	{
+		int SafeInterval = FMath::Max(Settings->AutoSaveInterval, 10);
+
+		UWorld* World = GetWorld();
+		FTimerManager& TimerManager = World->GetTimerManager();
+
+		TimerManager.SetTimer(AutoSaveTimerHandle, this, &UStorageSubsystem::HandleAutoSave, SafeInterval, true);
+	}
+}
+
+void UStorageSubsystem::UnregisterAutoSave()
+{
+	UWorld* World = GetWorld();
+	FTimerManager& TimerManager = World->GetTimerManager();
+
+	TimerManager.ClearTimer(AutoSaveTimerHandle);
+}
+
+void UStorageSubsystem::HandleAutoSave()
+{
+	PRINT_SUCCESS(LogStorage, 1.0f, TEXT("Auto save triggered"));
+
+	for (const TPair<FName, TObjectPtr<UObject>>& Pair : StorageCollection)
+	{
+		IStorageManager* StorageManager = Cast<IStorageManager>(Pair.Value);
+		if (StorageManager)
+		{
+			USaveGame* SaveGame = StorageManager->GetStorage<USaveGame>();
+			SaveLocalStorage(SaveGame, Pair.Key);
+		}
+	}
+}
 
 bool UStorageSubsystem::ShouldCreateSubsystem(UObject* Object) const
 {
@@ -329,11 +365,14 @@ void UStorageSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogStorage, TEXT("StorageSubsystem initialized"));
+
+	RegisterAutoSave();
 }
 
 void UStorageSubsystem::Deinitialize()
 {
-	UnloadAllStorages();
+	UnregisterAutoSave();
+	UnloadAllStorage();
 
 	LOG_WARNING(LogStorage, TEXT("StorageSubsystem deinitialized"));
 	Super::Deinitialize();

@@ -31,6 +31,7 @@ public class RCharacterParty : ModuleRules
                 "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
+				"RCoreCommon",
                 "RCoreAscension",
                 "RCoreAsset",
                 "RCoreAssetInstance",

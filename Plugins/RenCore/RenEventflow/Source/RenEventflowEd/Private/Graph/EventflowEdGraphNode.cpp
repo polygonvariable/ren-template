@@ -9,12 +9,11 @@
 #include "Algo/Reverse.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-#include "RenEventflow/Public/EventflowNodeData.h"
-#include "RenEventflow/Public/EventflowBlueprint.h"
-
-#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
+#include "EventflowAsset.h"
+#include "EventflowNodeData.h"
+#include "EventflowBlueprint.h"
+#include "Graph/EventflowEdGraph.h"
+#include "Graph/EventflowEdGraphSchema.h"
 
 
 

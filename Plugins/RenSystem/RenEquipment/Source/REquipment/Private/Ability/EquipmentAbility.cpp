@@ -169,6 +169,14 @@ AEquipmentActor* UEquipmentWeaponAbility::GetEquipmentActor() const
 
 void UEquipmentSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+	{
+		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+		return;
+	}
+
 	const FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
 	if (AbilitySpec && !EquipmentCooldownTags.IsValid())
 	{
@@ -179,7 +187,6 @@ void UEquipmentSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Ha
 			EquipmentCooldownTags = FGameplayTagContainer(TagData->CooldownTag);
 		}
 	}
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 const FGameplayTagContainer* UEquipmentSkillAbility::GetCooldownTags() const

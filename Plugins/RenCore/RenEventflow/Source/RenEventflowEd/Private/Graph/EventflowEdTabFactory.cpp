@@ -9,10 +9,9 @@
 #include "PropertyEditorModule.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-
-#include "RenEventflowEd/Public/App/EventflowEdApp.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
+#include "EventflowAsset.h"
+#include "App/EventflowEdApp.h"
+#include "Graph/EventflowEdGraph.h"
 
 
 
@@ -33,7 +32,7 @@ TSharedRef<SWidget> FEventflowEdGraphTab::CreateTabBody(const FWorkflowTabSpawnI
 
 	SGraphEditor::FGraphEditorEvents GraphEvents;
 	App->RegisterGraphEditorEvents(GraphEvents);
-
+	
 	TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
 			.IsEditable(true)
@@ -41,7 +40,7 @@ TSharedRef<SWidget> FEventflowEdGraphTab::CreateTabBody(const FWorkflowTabSpawnI
 			.GraphToEdit(WorkingGraph);
 
 	App->SetGraphEditorSlate(GraphEditor);
-	
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
@@ -84,12 +83,29 @@ TSharedRef<SWidget> FEventflowEdGraphPropertyTab::CreateTabBody(const FWorkflowT
 	DetailsView->SetObject(App->GetWorkingAsset());
 	App->SetGraphPropertySlate(DetailsView);
 
+	int32 ObjectCount = 0;
+	ForEachObjectWithOuter(App->GetWorkingAsset(),
+		[&ObjectCount](UObject* InnerObject)
+		{
+			++ObjectCount;
+		},
+		true
+	);
+
 	return SNew(SVerticalBox)
 		+ SVerticalBox::Slot()
 		.FillHeight(1.0f)
 		.HAlign(HAlign_Fill)
 		[
 			DetailsView.ToSharedRef()
+		]
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(4.0f)
+		.HAlign(HAlign_Fill)
+		[
+			SNew(STextBlock)
+			.Text(FText::FromString(FString::Printf(TEXT("Number of Objects: %d"), ObjectCount)))
 		];
 }
 

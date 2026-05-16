@@ -31,6 +31,7 @@ public class REnemyParty : ModuleRules
                 "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
+                "RCoreCommon",
                 "RCoreAscension",
                 "RCoreAsset",
                 "RCoreAssetInstance",
@@ -39,6 +40,8 @@ public class REnemyParty : ModuleRules
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",
+                "REnemy",
+				"RCoreBroadcast",
             }
 			);
 			

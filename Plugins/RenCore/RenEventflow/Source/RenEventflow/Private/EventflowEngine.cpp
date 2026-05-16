@@ -9,12 +9,12 @@
 // Project Headers
 #include "Log/LogMacro.h"
 
-#include "RenEventflow/Public/EventflowAsset.h"
-#include "RenEventflow/Public/EventflowBlueprint.h"
-#include "RenEventflow/Public/EventflowData.h"
-#include "RenEventflow/Public/EventflowNode.h"
-#include "RenEventflow/Public/EventflowNodeData.h"
-#include "RenEventflow/Public/EventflowNodeTask.h"
+#include "EventflowAsset.h"
+#include "EventflowBlueprint.h"
+#include "EventflowData.h"
+#include "EventflowNode.h"
+#include "EventflowNodeData.h"
+#include "EventflowNodeTask.h"
 
 
 

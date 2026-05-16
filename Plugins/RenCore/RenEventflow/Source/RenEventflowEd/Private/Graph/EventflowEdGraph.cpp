@@ -7,16 +7,15 @@
 #include "EditorDialogLibrary.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-#include "RenEventflow/Public/EventflowData.h"
-#include "RenEventflow/Public/EventflowNode.h"
-#include "RenEventflow/Public/EventflowNodeData.h"
-#include "RenEventflow/Public/EventflowPin.h"
-#include "RenEventflow/Public/EventflowBlueprint.h"
-
-#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphNode.h"
+#include "EventflowAsset.h"
+#include "EventflowData.h"
+#include "EventflowNode.h"
+#include "EventflowNodeData.h"
+#include "EventflowPin.h"
+#include "EventflowBlueprint.h"
+#include "Graph/EventflowEdGraph.h"
+#include "Graph/EventflowEdGraphSchema.h"
+#include "Graph/EventflowEdGraphNode.h"
 
 
 
@@ -108,7 +107,7 @@ void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
 		GraphData->NodeList.Add(NodeGuid, AssetNode);
 	}
 
-	for (TPair<FGuid, FGuid> Connection : Connections)
+	for (const TPair<FGuid, FGuid>& Connection : Connections)
 	{
 		UEventflowPin* FromPin = PinMap[Connection.Key];
 		UEventflowPin* ToPin = PinMap[Connection.Value];
@@ -186,7 +185,7 @@ void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
 		AddNode(UINode, false, false);
 	}
 
-	for (TPair<FGuid, FGuid> Connection : Connections)
+	for (const TPair<FGuid, FGuid>& Connection : Connections)
 	{
 		UEdGraphPin* FromPin = PinMap[Connection.Key];
 		UEdGraphPin* ToPin = PinMap[Connection.Value];

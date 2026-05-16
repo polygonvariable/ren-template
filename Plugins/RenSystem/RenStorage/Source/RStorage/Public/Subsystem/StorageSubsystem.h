@@ -8,7 +8,7 @@
 // Project Headers
 #include "Definition/StorageHandle.h"
 #include "Definition/TaskType.h"
-#include "Interface/IStorageProvider.h"
+#include "Interface/StorageProvider.h"
 
 // Generated Headers
 #include "StorageSubsystem.generated.h"
@@ -43,6 +43,8 @@ protected:
 	
 	UPROPERTY()
 	TMap<FName, TObjectPtr<UObject>> StorageCollection;
+
+	FTimerHandle AutoSaveTimerHandle;
 	
 
 	int GetSlotIndex();
@@ -65,8 +67,12 @@ protected:
 	void LoadLocalStorage(const FStorageDefinition& Definition, FTaskCallback&& Callback);
 	bool SaveLocalStorage(USaveGame* SaveGame, const FName& StorageId);
 
-	void UnloadAllStorages();
+	void UnloadAllStorage();
 	void UnloadStorage(const FName& StorageId);
+
+	void RegisterAutoSave();
+	void UnregisterAutoSave();
+	void HandleAutoSave();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Object) const override;

@@ -3,10 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "AbilitySystemGlobals.h"
-
-// Project Headers
 
 // Generated Headers
 #include "RAbilitySystemGlobals.generated.h"
@@ -15,9 +12,7 @@
 struct FGameplayEffectContext;
 
 
-
 /**
- * 
  * 
  */
 UCLASS(Config = Game)

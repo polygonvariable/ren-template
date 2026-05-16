@@ -2,41 +2,23 @@
 
 #pragma once
 
-// Project Headers
-#include "SaveGame/Storage.h"
+// Engine Headers
+#include "GameFramework/SaveGame.h"
 
 // Generated Headers
 #include "PartyStorage.generated.h"
-
-// Module Macros
-#define REN_API RCHARACTERPARTY_API
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UPartyStorage : public UStorage
+class UPartyStorage : public USaveGame
 {
 
 	GENERATED_BODY()
 
 public:
-
-	REN_API FVector GetPartyLocation(const FName& Level) const;
-	REN_API void SetPartyLocation(const FName& Level, const FVector& Location);
-
-	REN_API const TArray<FPrimaryAssetId>& GetCharacters() const;
-	REN_API const TArray<FPrimaryAssetId>& GetTemporaryCharacters() const;
-	REN_API void GetAllCharacters(TArray<FPrimaryAssetId>& OutCharacters) const;
-
-	REN_API bool GetCharacterAtSlot(int Slot, FPrimaryAssetId& AssetId) const;
-	REN_API bool SetCharacterAtSlot(int Slot, FPrimaryAssetId AssetId);
-	REN_API bool RemoveCharacterFromSlot(int Slot);
-
-	// ~ UStorage
-	virtual void InitializeDefaults() override;
-	// ~ End of UStorage
 
 	/* Party Locations on different levels */
 	UPROPERTY(SaveGame)
@@ -49,8 +31,4 @@ public:
 	TArray<FPrimaryAssetId> TemporarySlot;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

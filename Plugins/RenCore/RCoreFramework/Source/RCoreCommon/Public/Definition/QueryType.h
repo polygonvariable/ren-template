@@ -23,3 +23,13 @@ enum class ESortDirection : uint8
 	Descending UMETA(DisplayName = "Descending"),
 };
 
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class EDataSource : uint8
+{
+	Runtime UMETA(DisplayName = "Runtime"),
+	Static UMETA(DisplayName = "Static"),
+};
+

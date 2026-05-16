@@ -3,23 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "GameplayTagContainer.h"
 #include "Engine/DataAsset.h"
-
-// Project Headers
+#include "GameplayTagContainer.h"
 
 // Generated Headers
 #include "RAbilitySystemComponent.generated.h"
 
-// Forward Declarations
-
-
 
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)
@@ -81,7 +73,6 @@ protected:
 
 
 /**
- * 
  * 
  */
 UCLASS()

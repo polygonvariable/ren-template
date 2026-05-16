@@ -3,17 +3,18 @@
 // Parent Header
 #include "EventflowNodeData.h"
 
-// Engine Headers
-
 // Project Headers
-#include "RenEventflow/Public/EventflowBlueprint.h"
+#include "EventflowBlueprint.h"
 
 
 #if WITH_EDITOR
 
 TArray<FString> UEventflowNodeData::GetBlueprintMethods()
 {
-	if (!GraphBlueprint) return {};
+	if (!IsValid(GraphBlueprint))
+	{
+		return TArray<FString>();
+	}
 
 	TArray<FString> Methods;
 	for (TFieldIterator<UFunction> FIT(GraphBlueprint, EFieldIteratorFlags::IncludeSuper); FIT; ++FIT)

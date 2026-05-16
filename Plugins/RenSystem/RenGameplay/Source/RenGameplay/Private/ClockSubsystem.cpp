@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Interface/IStorageProvider.h"
+#include "Interface/StorageProvider.h"
 
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"

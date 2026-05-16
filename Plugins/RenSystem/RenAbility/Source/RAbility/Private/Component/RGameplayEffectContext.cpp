@@ -3,11 +3,6 @@
 // Parent Header
 #include "Component/RGameplayEffectContext.h"
 
-// Engine Headers
-
-// Project Headers
-
-
 
 FRGameplayEffectContext::FRGameplayEffectContext() : FGameplayEffectContext()
 {
@@ -42,3 +37,4 @@ FRGameplayEffectContext* FRGameplayEffectContext::Duplicate() const
 
 	return NewContext;
 }
+

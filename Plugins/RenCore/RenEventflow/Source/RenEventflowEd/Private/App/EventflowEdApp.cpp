@@ -8,14 +8,14 @@
 #include "GraphEditor.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowAsset.h"
-#include "RenEventflow/Public/EventflowData.h"
-#include "RenEventflow/Public/EventflowNodeData.h"
-
-#include "RenEventflowEd/Public/App/EventflowEdAppMode.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraph.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphNode.h"
-#include "RenEventflowEd/Public/Graph/EventflowEdGraphSchema.h"
+#include "EventflowAsset.h"
+#include "EventflowData.h"
+#include "EventflowNode.h"
+#include "EventflowNodeData.h"
+#include "App/EventflowEdAppMode.h"
+#include "Graph/EventflowEdGraph.h"
+#include "Graph/EventflowEdGraphNode.h"
+#include "Graph/EventflowEdGraphSchema.h"
 
 
 
@@ -88,7 +88,6 @@ void FEventflowEdApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Sel
 		NodePropertySlate->SetObject(SelectedNode->GetNodeData());
 		return;
 	}
-
 	NodePropertySlate->SetObject(nullptr);
 }
 

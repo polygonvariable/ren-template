@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "RenEventflow/Public/EventflowDelegates.h"
+#include "EventflowDelegates.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"

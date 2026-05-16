@@ -3,12 +3,18 @@
 // Parent Header
 #include "EventflowNode.h"
 
-// Engine Headers
-
 // Project Headers
-#include "RenEventflow/Public/EventflowPin.h"
+#include "EventflowPin.h"
 
 
+UEventflowNode* UEventflowNode::GetPreviousNodeAt(int Index) const
+{
+	if (!NodeInputs.IsValidIndex(Index))
+	{
+		return nullptr;
+	}
+	return GetNodeFromPinAt(NodeInputs[Index]);
+}
 
 UEventflowNode* UEventflowNode::GetNextNodeAt(int Index) const
 {
@@ -16,15 +22,18 @@ UEventflowNode* UEventflowNode::GetNextNodeAt(int Index) const
 	{
 		return nullptr;
 	}
+	return GetNodeFromPinAt(NodeOutputs[Index]);
+}
 
-	UEventflowPin* Pin = NodeOutputs[Index];
-	if (!Pin)
+UEventflowNode* UEventflowNode::GetNodeFromPinAt(UEventflowPin* Pin) const
+{
+	if (!IsValid(Pin))
 	{
 		return nullptr;
 	}
 
 	UEventflowPin* LinkedPin = Pin->PinLinkedTo;
-	if (!LinkedPin)
+	if (!IsValid(LinkedPin))
 	{
 		return nullptr;
 	}
