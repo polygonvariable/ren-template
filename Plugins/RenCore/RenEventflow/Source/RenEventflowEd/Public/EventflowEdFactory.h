@@ -3,18 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "Factories/Factory.h"
-
-// Project Headers
 
 // Generated Headers
 #include "EventflowEdFactory.generated.h"
 
-// Forward Declarations
 
-
-
+/*
+ *
+ */
 UCLASS()
 class UEventflowEdFactory : public UFactory
 {
@@ -25,8 +22,10 @@ public:
 
 	UEventflowEdFactory(const FObjectInitializer& ObjectInitializer);
 
+	// ~ UFactory
 	virtual UObject* FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 	virtual bool CanCreateNew() const override;
+	// ~ End of UFactory
 
 };
 

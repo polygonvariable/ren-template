@@ -17,17 +17,11 @@ public:
 	template<typename T>
 	static T* AcquireFromContainer(TMap<UClass*, FPoolCollection>& PoolContainer, UClass* Class, UObject* Outer)
 	{
-		if (!IsValid(Class) || !IsValid(Outer))
-		{
-			return nullptr;
-		}
-
 		FPoolCollection& Pool = PoolContainer.FindOrAdd(Class);
 		if (Pool.List.Num() > 0)
 		{
 			return Cast<T>(Pool.List.Pop());
 		}
-
 		return NewObject<T>(Outer, Class);
 	}
 
@@ -44,17 +38,21 @@ public:
 	template<typename T>
 	static T* AcquireFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UObject* Outer)
 	{
-		if (!IsValid(Class) || !IsValid(Outer))
-		{
-			return nullptr;
-		}
-
 		if (PoolContainer.Num() > 0)
 		{
 			return PoolContainer.Pop();
 		}
-
 		return NewObject<T>(Outer, Class);
+	}
+
+	template<typename T>
+	static T* AcquireWidgetFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UUserWidget* Outer)
+	{
+		if (PoolContainer.Num() > 0)
+		{
+			return PoolContainer.Pop();
+		}
+		return CreateWidget<T>(Outer, Class);
 	}
 
 	template<typename T>

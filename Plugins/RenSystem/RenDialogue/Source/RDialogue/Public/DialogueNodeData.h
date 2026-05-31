@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Project Headers
-#include "EventflowNodeData.h"
-
 // Generated Headers
 #include "DialogueNodeData.generated.h"
 
@@ -12,8 +9,8 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
-class RDIALOGUE_API UDialogueNodeData : public UEventflowNodeData
+USTRUCT()
+struct FDialogueData
 {
 
 	GENERATED_BODY()
@@ -21,26 +18,19 @@ class RDIALOGUE_API UDialogueNodeData : public UEventflowNodeData
 public:
 
 	UPROPERTY(EditAnywhere)
-	FText DialogueTitle;
+	FText Speaker;
+
+	UPROPERTY(EditAnywhere, Meta = (AssetBundles = "Dialogue"))
+	TSoftObjectPtr<UTexture2D> SpeakerImage;
 
 	UPROPERTY(EditAnywhere)
-	FText DialogueContent;
+	FText Content;
+
+	UPROPERTY(EditAnywhere, Meta = (AssetBundles = "Dialogue"))
+	TSoftObjectPtr<USoundBase> Audio;
 
 	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<UTexture2D> DialogueAvatar;
-
-	UPROPERTY(EditAnywhere)
-	TSoftObjectPtr<USoundBase> DialogueSound;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FText> OutputOptions;
-
-public:
-
-	virtual const TArray<FText>* GetOutputOptions() const override
-	{
-		return &OutputOptions;
-	}
+	TArray<FText> Options;
 
 };
 

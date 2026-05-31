@@ -3,298 +3,204 @@
 // Parent Header
 #include "Graph/EventflowEdGraph.h"
 
-// Engine Headers
-#include "EditorDialogLibrary.h"
-
 // Project Headers
 #include "EventflowAsset.h"
-#include "EventflowData.h"
-#include "EventflowNode.h"
-#include "EventflowNodeData.h"
-#include "EventflowPin.h"
-#include "EventflowBlueprint.h"
-#include "Graph/EventflowEdGraph.h"
-#include "Graph/EventflowEdGraphSchema.h"
+#include "EventflowTask.h"
 #include "Graph/EventflowEdGraphNode.h"
+#include "Graph/EventflowEdGraphSchema.h"
 
 
-
-void UEventflowEdGraph::RegisterNodeClasses()
+void UEventflowEdGraph::InitializeGraph(UEventflowAsset* GraphAsset)
 {
-	const UEventflowEdGraphSchema* CurrentSchema = Cast<UEventflowEdGraphSchema>(GetSchema());
-	if (!CurrentSchema) return;
-
-	TArray<UClass*> NodeClasses = CurrentSchema->GetNodeClasses();
-	for (UClass* NodeClass : NodeClasses)
-	{
-		UEventflowEdGraphNode* Node = NodeClass->GetDefaultObject<UEventflowEdGraphNode>();
-		if (!Node) continue;
-
-		NodeTypes.Add(Node->GetNodeType(), NodeClass);
-	}
+	RenderGraph(GraphAsset);
 }
 
-void UEventflowEdGraph::UpdateAssetData(UEventflowAsset* GraphAsset)
+void UEventflowEdGraph::SerializeGraph(UEventflowAsset* GraphAsset)
 {
-	if (!GraphAsset)
+	if (!IsValid(GraphAsset))
 	{
 		return;
 	}
 
-	if (GraphAsset->GraphData)
-	{
-		GraphAsset->GraphData->MarkAsGarbage();
-		GraphAsset->GraphData = nullptr;
-	}
-	GEngine->ForceGarbageCollection(true);
+	TMap<FGuid, FEventflowNodeDefinition>& NodeCollection = GraphAsset->NodeCollection;
+	NodeCollection.Empty();
 
-	UEventflowData* GraphData = NewObject<UEventflowData>(GraphAsset);
-	if (!GraphData) return;
+	TMap<FGuid, FEventflowPinRelation>& PinRelation = GraphAsset->PinRelation;
+	PinRelation.Empty();
 
-	// TArray of TPair<From, To> Output->Input Pin Connections
-	TArray<TPair<FGuid, FGuid>> Connections;
-	TMap<FGuid, UEventflowPin*> PinMap;
-
-	int Count = Nodes.Num();
-	for (int i = 0; i < Count; i++)
-	{
-		UEventflowEdGraphNode* UINode = Cast<UEventflowEdGraphNode>(Nodes[i]);
-		if (!UINode) continue;
-
-		FGuid NodeGuid = (UINode->NodeGuid.IsValid()) ? UINode->NodeGuid : FGuid::NewGuid();
-
-		if (UINode->IsEntryNode())
-		{
-			GraphData->NodeEntry = NodeGuid;
-		}
-
-		UEventflowNode* AssetNode = NewObject<UEventflowNode>(GraphData, GetAssetNodeClass());
-		AssetNode->NodeId = NodeGuid;
-		AssetNode->NodeData = DuplicateObject(UINode->GetNodeData(), AssetNode);
-		AssetNode->NodeType = UINode->GetNodeType();
-		AssetNode->NodePosition = FVector2D(UINode->NodePosX, UINode->NodePosY);
-
-		for (UEdGraphPin* UIPin : UINode->Pins)
-		{
-			UEventflowPin* AssetPin = NewObject<UEventflowPin>(AssetNode, GetAssetPinClass());
-			if (!AssetPin) continue;
-
-			AssetPin->PinGuid = UIPin->PinId;
-			AssetPin->PinName = UIPin->PinName;
-			AssetPin->PinFriendlyName = UIPin->PinFriendlyName;
-			AssetPin->PinCategory = UIPin->PinType.PinCategory;
-			AssetPin->bPinIsConst = UIPin->PinType.bIsConst;
-
-			if (UIPin->HasAnyConnections() && UIPin->Direction == EEdGraphPinDirection::EGPD_Output)
-			{
-				TPair<FGuid, FGuid> Connection;
-				Connection.Key = UIPin->PinId;
-				Connection.Value = UIPin->LinkedTo[0]->PinId;
-				Connections.Add(Connection);
-			}
-
-			PinMap.Add(UIPin->PinId, AssetPin);
-			if (UIPin->Direction == EEdGraphPinDirection::EGPD_Input)
-			{
-				AssetNode->NodeInputs.Add(AssetPin);
-			}
-			else
-			{
-				AssetNode->NodeOutputs.Add(AssetPin);
-			}
-		}
-
-		GraphData->NodeList.Add(NodeGuid, AssetNode);
-	}
-
-	for (const TPair<FGuid, FGuid>& Connection : Connections)
-	{
-		UEventflowPin* FromPin = PinMap[Connection.Key];
-		UEventflowPin* ToPin = PinMap[Connection.Value];
-
-		FromPin->PinLinkedTo = ToPin;
-	}
-
-	GraphAsset->GraphData = GraphData;
-}
-
-void UEventflowEdGraph::UpdateGraphData(UEventflowAsset* GraphAsset)
-{
-	if (!GraphAsset)
-	{
-		return;
-	}
-
-	UEventflowData* GraphData = GraphAsset->GraphData;
-	if (!GraphData)
-	{
-		return;
-	}
-	// TArray of TPair<From, To> Output->Input Pin Connections
-	TArray<TPair<FGuid, FGuid>> Connections;
-	TMap<FGuid, UEdGraphPin*> PinMap;
-
-	const TMap<FGuid, TObjectPtr<UEventflowNode>>& NodeList = GraphData->NodeList;
-
-	for (const TTuple<FGuid, TObjectPtr<UEventflowNode>>& Kv : NodeList)
-	{
-		FGuid NodeGuid = (Kv.Key.IsValid()) ? Kv.Key : FGuid::NewGuid();
-		UEventflowNode* AssetNode = Kv.Value.Get();
-
-		if (!AssetNode) continue;
-
-		TSubclassOf<UEventflowEdGraphNode> NodeClass = GetRegisteredNodeClass(AssetNode->NodeType);
-		if (!NodeClass) continue;
-
-		UEventflowEdGraphNode* UINode = NewObject<UEventflowEdGraphNode>(this, NodeClass);
-		if (!UINode) continue;
-
-		TSubclassOf<UEventflowNodeData> NodeDataClass = UINode->GetNodeDataClass();
-		if (!NodeDataClass) continue;
-
-		UINode->AllocateDefaultPins();
-		UINode->NodeGuid = NodeGuid;
-		UINode->NodePosX = AssetNode->NodePosition.X;
-		UINode->NodePosY = AssetNode->NodePosition.Y;
-
-		if (AssetNode->NodeData)
-		{
-			UINode->SetNodeData(DuplicateObject(AssetNode->NodeData, UINode));
-		}
-		else
-		{
-			UINode->SetNodeData(NewObject<UEventflowNodeData>(UINode, NodeDataClass));
-		}
-
-		for (UEventflowPin* AssetPin : AssetNode->NodeInputs)
-		{
-			AddNodePin(EEdGraphPinDirection::EGPD_Input, AssetPin, UINode, PinMap);
-		}
-		
-		for (UEventflowPin* AssetPin : AssetNode->NodeOutputs)
-		{
-			if (AddNodePin(EEdGraphPinDirection::EGPD_Output, AssetPin, UINode, PinMap) && AssetPin->PinLinkedTo)
-			{
-				TPair<FGuid, FGuid> Connection;
-				Connection.Key = AssetPin->PinGuid;
-				Connection.Value = AssetPin->PinLinkedTo->PinGuid;
-				Connections.Add(Connection);
-			}
-		}
-
-		AddNode(UINode, false, false);
-	}
-
-	for (const TPair<FGuid, FGuid>& Connection : Connections)
-	{
-		UEdGraphPin* FromPin = PinMap[Connection.Key];
-		UEdGraphPin* ToPin = PinMap[Connection.Value];
-
-		if (!FromPin || !ToPin) continue;
-
-		GetSchema()->TryCreateConnection(FromPin, ToPin);
-	}
-}
-
-/*
-bool UEventflowEdGraph::ValidateGraphData()
-{
-	int EntryNodes = 0;
-	const TArray<TObjectPtr<UEdGraphNode>>& CachedNodes = Nodes;
-
-	for (TObjectPtr<UEdGraphNode> CachedNode : CachedNodes)
-	{
-		UEventflowEdGraphNode* Node = Cast<UEventflowEdGraphNode>(CachedNode);
-		if (!Node)
-		{
-			UEditorDialogLibrary::ShowMessage(FText::FromString(TEXT("Error")), FText::FromString(TEXT("Node is not of type UEventflowEdGraphNode")), EAppMsgType::Ok, EAppReturnType::Ok, EAppMsgCategory::Error);
-			return false;
-		}
-
-		if (Node->IsEntryNode())
-		{
-			EntryNodes++;
-		}
-
-		if (EntryNodes > 1)
-		{
-			UEditorDialogLibrary::ShowMessage(FText::FromString(TEXT("Error")), FText::FromString(TEXT("Multiple Entry points found")), EAppMsgType::Ok, EAppReturnType::Ok, EAppMsgCategory::Error);
-			return false;
-		}
-	}
-
-	if (EntryNodes == 0)
-	{
-		UEditorDialogLibrary::ShowMessage(FText::FromString(TEXT("Error")), FText::FromString(TEXT("No Entry point found")), EAppMsgType::Ok, EAppReturnType::Ok, EAppMsgCategory::Error);
-		return false;
-	}
-
-	return true;
-}*/
-
-void UEventflowEdGraph::SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint)
-{
-	GraphBlueprint = InGraphBlueprint;
+	FGuid& EntryId = GraphAsset->EntryNodeId;
+	EntryId.Invalidate();
 
 	for (UEdGraphNode* Node : Nodes)
 	{
-		UEventflowEdGraphNode* UINode = Cast<UEventflowEdGraphNode>(Node);
-		if (UINode)
+		SerializeNode(GraphAsset, Node, EntryId, NodeCollection, PinRelation);
+	}
+}
+
+
+void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNodeDefinition>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation)
+{
+	UEventflowEdGraphNode* EdNode = Cast<UEventflowEdGraphNode>(Node);
+	if (!IsValid(EdNode))
+	{
+		return;
+	}
+
+	FEventflowNodeDefinition NodeDefinition;
+	NodeDefinition.Position.X = Node->NodePosX;
+	NodeDefinition.Position.Y = Node->NodePosY;
+	NodeDefinition.PrimaryTask = DuplicateObject(EdNode->PrimaryTask, GraphAsset);
+	//NodeDefinition.SecondaryTasks = EdNode->SecondaryTasks;
+	NodeDefinition.RuntimeInputs = EdNode->GetRuntimeInputPins();
+	NodeDefinition.RuntimeOutputs = EdNode->GetRuntimeOutputPins();
+	NodeDefinition.ClassName = FName(Node->GetClass()->GetName());
+
+	const TArray<UEdGraphPin*>& Pins = Node->Pins;
+	for (UEdGraphPin* Pin : Pins)
+	{
+		SerializePin(Pin, NodeDefinition, PinRelation);
+	}
+
+	NodeCollection.Add(Node->NodeGuid, NodeDefinition);
+
+	if (EdNode->GetIsEntryNode())
+	{
+		EntryId = Node->NodeGuid;
+	}
+}
+
+void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation)
+{
+	if (Pin->LinkedTo.Num() == 0)
+	{
+		return;
+	}
+
+	FEventflowPinDefinition PinDefinition;
+	PinDefinition.UniqueId = Pin->PinId;
+	PinDefinition.Name = Pin->PinName;
+	PinDefinition.FriendlyName = Pin->PinFriendlyName;
+	PinDefinition.Category = Pin->PinType.PinCategory;
+	PinDefinition.bIsConst = Pin->PinType.bIsConst;
+	
+	if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
+	{
+		NodeDefinition.StaticOutputs.Add(PinDefinition);
+	}
+	else if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
+	{
+		NodeDefinition.StaticInputs.Add(PinDefinition);
+	}
+
+	if (Pin->Direction == EEdGraphPinDirection::EGPD_Output)
+	{
+		const TArray<UEdGraphPin*>& LinkedTo = Pin->LinkedTo;
+		for (UEdGraphPin* Link : LinkedTo)
 		{
-			UINode->SyncBlueprintGraph(InGraphBlueprint);
+			FEventflowPinRelation Relation;
+			Relation.LinkedToNode = Link->GetOwningNode()->NodeGuid;
+			Relation.LinkedToPin = Link->PinId;
+
+			PinRelation.Add(Pin->PinId, Relation);
 		}
 	}
 }
 
 
-
-bool UEventflowEdGraph::AddNodePin(EEdGraphPinDirection Direction, UEventflowPin* AssetPin, UEventflowEdGraphNode* UINode, TMap<FGuid, UEdGraphPin*>& PinMap)
+void UEventflowEdGraph::RenderGraph(UEventflowAsset* GraphAsset)
 {
-	if (!AssetPin) return false;
-
-	UEdGraphPin* UIPin;
-
-	if (AssetPin->bPinIsConst)
+	if (!IsValid(GraphAsset))
 	{
-		UIPin = UINode->FindPin(AssetPin->PinName);
+		return;
+	}
+
+	TMap<FGuid, UEdGraphPin*> PinCollection;
+
+	const TMap<FGuid, FEventflowNodeDefinition>& NodeCollection = GraphAsset->NodeCollection;
+	for (const TPair<FGuid, FEventflowNodeDefinition>& Kv : NodeCollection)
+	{
+		RenderNode(Kv.Key, Kv.Value, PinCollection);
+	}
+
+	RenderNodePinLink(GraphAsset->PinRelation, PinCollection);
+}
+
+void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection)
+{
+	const UEventflowEdGraphSchema* EdSchema = Cast<UEventflowEdGraphSchema>(GetSchema());
+	UClass* NodeClass = EdSchema->GetRegisteredNodeClass(NodeDefinition.ClassName);
+	if (!IsValid(NodeClass))
+	{
+		return;
+	}
+
+	UEventflowEdGraphNode* EdNode = NewObject<UEventflowEdGraphNode>(this, NodeClass);
+	if (!IsValid(EdNode))
+	{
+		return;
+	}
+
+	EdNode->AllocateDefaultPins();
+	EdNode->NodeGuid = NodeId;
+	EdNode->NodePosX = NodeDefinition.Position.X;
+	EdNode->NodePosY = NodeDefinition.Position.Y;
+	EdNode->PrimaryTask = NodeDefinition.PrimaryTask;
+	//EdNode->SecondaryTasks = NodeDefinition.SecondaryTasks;
+
+	const TArray<FEventflowPinDefinition>& OutputPins = NodeDefinition.StaticOutputs;
+	for (const FEventflowPinDefinition& Pin : OutputPins)
+	{
+		RenderNodePin(EEdGraphPinDirection::EGPD_Output, Pin, EdNode, PinCollection);
+	}
+
+	const TArray<FEventflowPinDefinition>& InputPins = NodeDefinition.StaticInputs;
+	for (const FEventflowPinDefinition& Pin : InputPins)
+	{
+		RenderNodePin(EEdGraphPinDirection::EGPD_Input, Pin, EdNode, PinCollection);
+	}
+
+	AddNode(EdNode, false, false);
+}
+
+void UEventflowEdGraph::RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPinDefinition& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection)
+{
+	FGuid UniqueId = Definition.UniqueId;
+	UEdGraphPin* EdPin = nullptr;
+	if (Definition.bIsConst)
+	{
+		EdPin = EdNode->FindPin(Definition.Name);
 	}
 	else
 	{
-		UIPin = UINode->CreatePin(Direction, AssetPin->PinCategory, AssetPin->PinName);
-		UIPin->PinFriendlyName = AssetPin->PinFriendlyName;
-		UIPin->PinType.bIsConst = false;
+		EdPin = EdNode->CreatePin(EEdGraphPinDirection::EGPD_Output, Definition.Category, Definition.Name);
+		EdPin->PinFriendlyName = Definition.FriendlyName;
+		EdPin->PinType.bIsConst = false;
 	}
-	if (!UIPin) return false;
 
-	UIPin->PinId = AssetPin->PinGuid;
-
-	PinMap.Add(AssetPin->PinGuid, UIPin);
-
-	return true;
+	EdPin->PinId = UniqueId;
+	Collection.Add(UniqueId, EdPin);
 }
 
-TSubclassOf<UEventflowEdGraphNode> UEventflowEdGraph::GetRegisteredNodeClass(FName NodeType) const
+void UEventflowEdGraph::RenderNodePinLink(const TMap<FGuid, FEventflowPinRelation>& PinRelation, TMap<FGuid, UEdGraphPin*>& PinCollection)
 {
-	return NodeTypes.FindRef(NodeType);
-}
-
-TSubclassOf<UEventflowNode> UEventflowEdGraph::GetAssetNodeClass() const
-{
-	return UEventflowNode::StaticClass();
-}
-
-TSubclassOf<UEventflowPin> UEventflowEdGraph::GetAssetPinClass() const
-{
-	return UEventflowPin::StaticClass();
-}
-
-void UEventflowEdGraph::AddNode(UEdGraphNode* NodeToAdd, bool bUserAction, bool bSelectNewNode)
-{
-	UEventflowEdGraphNode* Node = Cast<UEventflowEdGraphNode>(NodeToAdd);
-	if (Node)
+	const UEdGraphSchema* GraphSchema = GetSchema();
+	for (const TPair<FGuid, FEventflowPinRelation>& Kv : PinRelation)
 	{
-		Node->SyncBlueprintGraph(GraphBlueprint);
+		UEdGraphPin** FoundFrom = PinCollection.Find(Kv.Key);
+		UEdGraphPin** FoundTo = PinCollection.Find(Kv.Value.LinkedToPin);
+		if (!FoundFrom || !FoundTo)
+		{
+			continue;
+		}
+
+		UEdGraphPin* FromPin = *FoundFrom;
+		UEdGraphPin* ToPin = *FoundTo;
+		if (!FromPin || !ToPin)
+		{
+			continue;
+		}
+
+		GraphSchema->TryCreateConnection(FromPin, ToPin);
 	}
-	Super::AddNode(NodeToAdd, bUserAction, bSelectNewNode);
 }
 

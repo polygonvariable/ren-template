@@ -11,10 +11,11 @@
 
 // Forward Declarations
 class FObjectPreSaveContext;
-class URAssetManager;
+class UAssetManager;
 class UPartySubsystem;
 class UPartyStorageManager;
 class AAvatarCharacter;
+struct FStreamableHandle;
 
 
 /**
@@ -66,7 +67,7 @@ protected:
 	TObjectPtr<UPartyStorageManager> StorageManager;
 
 	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager;
+	TObjectPtr<UAssetManager> AssetManager;
 
 
 	void SpawnPartyCharacters();
@@ -85,6 +86,7 @@ protected:
 
 private:
 
+	TSharedPtr<FStreamableHandle> _SpawnHandle;
 	FGuid _SpawnId;
 	FVector _SpawnLocation;
 

@@ -3,61 +3,60 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "EdGraph/EdGraphNode.h"
-
-// Project Headers
+#include "InstancedStruct.h"
 
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"
 
+// Module Macros
+#define REN_API RENEVENTFLOWED_API
+
 // Forward Declarations
-class UEventflowBlueprint;
-
-class UEventflowNodeData;
+class UEventflowTask;
 
 
-
+/*
+ *
+ */
 UCLASS()
-class RENEVENTFLOWED_API UEventflowEdGraphNode : public UEdGraphNode
+class REN_API UEventflowEdGraphNode : public UEdGraphNode
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual FName GetNodeType() const;
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UEventflowTask> PrimaryTask = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TArray<TSubclassOf<UEventflowTask>> SecondaryTasks;
+
+
+	virtual bool GetIsEntryNode() const;
 	virtual FText GetNodeDescription() const;
-	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const;
 
-	virtual bool IsEntryNode() const;
+	virtual TArray<FText> GetRuntimeInputPins() const;
+	virtual TArray<FText> GetRuntimeOutputPins() const;
 
-	void SetNodeData(UEventflowNodeData* NodeData);
-	UEventflowNodeData* GetNodeData() const;
+	virtual void SyncRuntimePins();
 
-	void SyncPins();
-	void SyncBlueprintGraph(TSubclassOf<UEventflowBlueprint> BlueprintClass);
-
-protected:
-
-	virtual bool CanCreateRuntimeInputPins() const;
-	virtual bool CanCreateRuntimeOutputPins() const;
-
-	void CreatePinHelper(FText FriendlyName, EEdGraphPinDirection Direction, const TArray<FText>* Options, const TArray<UEdGraphPin*>& CachedLinks);
-
-	FString LimitTextLength(const FString& InText, int MaxCharacters) const;
-
-public:
-
+	// ~ UEdGraphNode
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual bool CanUserDeleteNode() const override;
 	virtual void GetNodeContextMenuActions(class UToolMenu* Menu, class UGraphNodeContextMenuContext* Context) const override;
+	// ~ End of UEdGraphNode
 
-private:
+protected:
 
-	UPROPERTY()
-	UEventflowNodeData* CachedNodeData = nullptr;
+	void CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction);
+	void FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins);
 
 };
+
+
+// Module Macros
+#undef REN_API
 

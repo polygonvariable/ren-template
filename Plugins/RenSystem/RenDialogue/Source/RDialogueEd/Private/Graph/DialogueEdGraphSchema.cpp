@@ -3,40 +3,19 @@
 // Parent Header
 #include "Graph/DialogueEdGraphSchema.h"
 
-// Engine Headers
-
 // Project Headers
-#include "EventflowAsset.h"
-#include "DialogueAsset.h"
 #include "Graph/DialogueEdGraphNode.h"
 
 
-
-TArray<UClass*> UDialogueEdGraphSchema::GetNodeClasses() const
+TMap<FName, UClass*> UDialogueEdGraphSchema::GetRegisteredNodeClasses() const
 {
-	return {
-		UDialogueEdBeginNode::StaticClass(),
-		UDialogueEdDialogNode::StaticClass(),
-		UDialogueEdEndNode::StaticClass()
-	};
-}
+	TMap<FName, UClass*> NodeClasses;
 
-void UDialogueEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
-{
-	const TArray<UClass*> NodeClasses = GetNodeClasses();
+	NodeClasses.Add(UDialogueEdBeginNode::StaticClass()->GetFName(), UDialogueEdBeginNode::StaticClass());
+	NodeClasses.Add(UDialogueEdEndNode::StaticClass()->GetFName(), UDialogueEdEndNode::StaticClass());
+	NodeClasses.Add(UDialogueEdDialogNode::StaticClass()->GetFName(), UDialogueEdDialogNode::StaticClass());
+	NodeClasses.Add(UDialogueEdBranchNode::StaticClass()->GetFName(), UDialogueEdBranchNode::StaticClass());
 
-	for (UClass* NodeClass : NodeClasses)
-	{
-		UEventflowEdGraphNode* Node = NodeClass->GetDefaultObject<UEventflowEdGraphNode>();
-		if (!Node) continue;
-
-		AddGraphNodeActions(
-			ContextMenuBuilder,
-		    NodeClass,
-			TEXT("Nodes"),
-			Node->GetNodeTitle(ENodeTitleType::FullTitle),
-			Node->GetNodeDescription()
-		);
-	}
+	return NodeClasses;
 }
 

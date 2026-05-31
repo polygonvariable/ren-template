@@ -3,19 +3,16 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "WorkflowOrientedApp/ApplicationMode.h"
 #include "WorkflowOrientedApp/WorkflowTabManager.h"
-
-// Project Headers
-
-// Generated Headers
 
 // Forward Declarations
 class FEventflowEdApp;
 
 
-
+/*
+ * 
+ */
 class FEventflowEdAppMode : public FApplicationMode
 {
 
@@ -23,14 +20,14 @@ public:
 
 	FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
 
+	// ~ FApplicationMode
 	virtual void RegisterTabFactories(TSharedPtr<FTabManager> InTabManager) override;
-	virtual void PreDeactivateMode() override;
-	virtual void PostActivateMode() override;
+	// ~ End of FApplicationMode
 
 private:
 
 	TWeakPtr<FEventflowEdApp> EventflowEdApp;
-	FWorkflowAllowedTabSet AllowedTabSet;
+	FWorkflowAllowedTabSet EventflowEdTabSet;
 
 };
 

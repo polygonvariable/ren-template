@@ -15,9 +15,10 @@
 #define REN_API RCOREASSETUI_API
 
 // Forward Declarations
-class URAssetManager;
+class UAssetManager;
 class UAssetEntry;
 class UCoreDataAsset;
+struct FStreamableHandle;
 
 
 /**
@@ -36,7 +37,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	REN_API virtual void InitializeDetail();
+	REN_API virtual void InitializeDetail() {};
 
 	UFUNCTION(BlueprintCallable)
 	REN_API virtual void CloseWidget();
@@ -44,8 +45,8 @@ public:
 	REN_API virtual void InitializeAssetByEntry(const UAssetEntry* Entry);
 	REN_API virtual void InitializeAssetById(const FPrimaryAssetId& AssetId);
 
-	REN_API virtual void RefreshDetail();
-	REN_API virtual void ResetDetail();
+	REN_API virtual void RefreshDetail() {};
+	REN_API virtual void ResetDetail() {};
 
 	// ~ IAssetWidget
 	REN_API virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
@@ -55,7 +56,8 @@ public:
 protected:
 
 	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager;
+	TObjectPtr<UAssetManager> AssetManager;
+
 
 	UFUNCTION(BlueprintNativeEvent)
 	REN_API TArray<UWidget*> GetLockingControls() const;
@@ -69,14 +71,16 @@ protected:
 	REN_API void UnlockControls();
 	REN_API virtual void UnlockControls_Implementation() {};
 
-	REN_API virtual const FPrimaryAssetId& GetActiveAssetId() const;
+	REN_API const FPrimaryAssetId& GetActiveAssetId() const;
 	REN_API const UCoreDataAsset* GetActiveAsset() const;
 
-	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset);
-	REN_API virtual void SetSecondaryDetail(const UAssetEntry* Entry);
+	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) {};
+	REN_API virtual void SetSecondaryDetail(const UAssetEntry* Entry) {};
 
 	REN_API virtual void CancelInitialization();
-	REN_API virtual void SwitchDetail(bool bPrimary);
+	REN_API virtual void SwitchDetail(bool bPrimary) {};
+
+	void HandleAssetLoaded();
 
 	// ~ UUserWidget
 	REN_API virtual void NativeConstruct() override;
@@ -85,11 +89,8 @@ protected:
 
 private:
 
-	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> _ActiveAsset;
-
-	FPrimaryAssetId _ActiveAssetId;
-	FGuid _ActiveLoadId;
+	FPrimaryAssetId _AssetId;
+	TSharedPtr<FStreamableHandle> _AssetHandle;
 
 };
 

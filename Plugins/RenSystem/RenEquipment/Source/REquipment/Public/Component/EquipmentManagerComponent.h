@@ -15,11 +15,12 @@
 
 // Forward Declarations
 class FObjectPreSaveContext;
-class URAssetManager;
+class UAssetManager;
 class UEquipmentStorageManager;
 class UEquipmentSubsystem;
 class UActorFreelistSubsystem;
 class UEquipmentController;
+struct FStreamableHandle;
 
 
 /**
@@ -86,7 +87,7 @@ protected:
 	TObjectPtr<UActorFreelistSubsystem> ActorFreelist = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager = nullptr;
+	TObjectPtr<UAssetManager> AssetManager = nullptr;
 
 	FGuid OwnerInstanceId;
 	TArray<FPrimaryAssetId> EquippedAssetIds;
@@ -107,6 +108,7 @@ protected:
 
 private:
 
+	TSharedPtr<FStreamableHandle> _SpawnHandle;
 	FGuid _SpawnId;
 	bool _bIsSpawning = false;
 	bool _bIsDefaultHandled = false;

@@ -4,6 +4,7 @@
 #include "Widget/TradeDashboardUI.h"
 
 // Engine Headers
+#include "Engine/AssetManager.h"
 #include "InstancedStruct.h"
 
 // Project Headers
@@ -11,16 +12,27 @@
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
-#include "Manager/RAssetManager.inl"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeDetailUI.h"
-#include "Widget/TradeEntry.h"
 
 
+void UTradeDashboardUI::InitializeDetail()
+{
+	if (!IsValid(AssetManager) || !TradeAssetId.IsValid())
+	{
+		LOG_ERROR(LogAsset, TEXT("Entry, AssetManager or AssetId is invalid"));
+		return;
+	}
+
+	FAssetManagerUtil::CancelHandle(_TradeHandle);
+
+	_TradeHandle = AssetManager->LoadPrimaryAsset(TradeAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UTradeDashboardUI::InitializeTradeDetail));
+}
 
 void UTradeDashboardUI::ResetDetail()
 {
@@ -28,14 +40,22 @@ void UTradeDashboardUI::ResetDetail()
 	SecondaryCollection->ClearEntries(true);
 }
 
-
 const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
 {
 	return nullptr;
 }
 
-void UTradeDashboardUI::InitializeTradeDetails(const UTradeAsset* Asset)
+void UTradeDashboardUI::InitializeTradeDetail()
 {
+	FAssetManagerUtil::ReleaseHandle(_TradeHandle);
+
+	const UTradeAsset* Asset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(TradeAssetId);
+	if (!IsValid(Asset))
+	{
+		LOG_ERROR(LogAsset, TEXT("TradeAsset is invalid"));
+		return;
+	}
+
 	PrimaryCollection->TradeAsset = Asset;
 	PrimaryCollection->TradeCollectionId = TradeCollectionId;
 	PrimaryCollection->PrimarySourceId = PrimarySourceId;
@@ -48,32 +68,6 @@ void UTradeDashboardUI::InitializeTradeDetails(const UTradeAsset* Asset)
 	PrimaryDetail->InitializeDetail();
 
 	SecondaryCollection->InitializeCollection();
-}
-
-
-void UTradeDashboardUI::InitializeDetail()
-{
-	if (!IsValid(AssetManager) || !TradeAssetId.IsValid())
-	{
-		LOG_ERROR(LogAsset, TEXT("Entry, AssetManager or AssetId is invalid"));
-		return;
-	}
-
-	AssetManager->CancelFetch(_TradeLoadId);
-
-	_TradeLoadId = FGuid::NewGuid();
-
-	TFuture<FLatentLoadedAsset<UTradeAsset>> Future = AssetManager->FetchPrimaryAsset<UTradeAsset>(_TradeLoadId, TradeAssetId);
-	TWeakObjectPtr<UTradeDashboardUI> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<UTradeAsset>& Result)
-		{
-			UTradeDashboardUI* This = WeakThis.Get();
-			if (IsValid(This) && Result.IsValid())
-			{
-				This->InitializeTradeDetails(Result.Get());
-			}
-		}
-	);
 }
 
 void UTradeDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
@@ -111,6 +105,13 @@ void UTradeDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 	SecondaryCollection->RefreshEntries();
 }
 
+void UTradeDashboardUI::CancelInitialization()
+{
+	FAssetManagerUtil::CancelHandle(_TradeHandle);
+
+	Super::CancelInitialization();
+}
+
 void UTradeDashboardUI::NativeConstruct()
 {
 	PrimaryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
@@ -121,11 +122,6 @@ void UTradeDashboardUI::NativeConstruct()
 
 void UTradeDashboardUI::NativeDestruct()
 {
-	if (IsValid(AssetManager))
-	{
-		AssetManager->CancelFetch(_TradeLoadId);
-	}
-
 	PrimaryCollection->OnSelectionChanged.Unbind();
 	PrimaryCollection->OnSelectionCleared.Unbind();
 

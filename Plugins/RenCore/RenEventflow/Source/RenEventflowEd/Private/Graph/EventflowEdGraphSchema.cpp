@@ -7,22 +7,30 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
-#include "EventflowNodeData.h"
-
-#include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphNode.h"
-
+#include "Graph/EventflowEdGraphSchemaAction.h"
 
 
 const FName UEventflowEdGraphSchema::PC_Exec = FName("REN.EF.PC.EXEC");
 const FName UEventflowEdGraphSchema::PC_Wildcard = FName("REN.EF.PC.WILDCARD");
 
 
-
-void UEventflowEdGraphSchema::AddGraphNodeActions(FGraphContextMenuBuilder& ContextMenuBuilder, TSubclassOf<UEventflowEdGraphNode> NodeClass, const FString& InCategory, FText InMenuDesc, FText InToolTip) const
+void UEventflowEdGraphSchema::GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const
 {
-	TSharedPtr<FEventflowEdGraphSchemaAction> Action = MakeShareable(new FEventflowEdGraphSchemaAction(NodeClass, FText::FromString(InCategory), InMenuDesc, InToolTip, 0));
-	ContextMenuBuilder.AddAction(Action);
+	TMap<FName, UClass*> Classes = GetRegisteredNodeClasses();
+
+	for (const TPair<FName, UClass*>& Kv : Classes)
+	{
+		UEventflowEdGraphNode* Node = Kv.Value->GetDefaultObject<UEventflowEdGraphNode>();
+		if (IsValid(Node))
+		{
+			FString Category = TEXT("Nodes");
+			FText Title = Node->GetNodeTitle(ENodeTitleType::FullTitle);
+			FText Description = Node->GetNodeDescription();
+
+			ContextMenuBuilder.AddAction(MakeShareable(new FEventflowEdGraphSchemaAction(Kv.Value, FText::FromString(Category), Title, Description, 0)));
+		}
+	}
 }
 
 const FPinConnectionResponse UEventflowEdGraphSchema::CanCreateConnection(const UEdGraphPin* A, const UEdGraphPin* B) const
@@ -53,51 +61,28 @@ const FPinConnectionResponse UEventflowEdGraphSchema::CanCreateConnection(const 
 	
 	if (A->Direction == EEdGraphPinDirection::EGPD_Input && B->Direction == EEdGraphPinDirection::EGPD_Output)
 	{
-		if (B->LinkedTo.Num() > 0)
-		{
-			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT("Can't connect more than one input pin"));
-		}
+		//if (B->LinkedTo.Num() > 0)
+		//{
+		//	return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT("Can't connect more than one input pin"));
+		//}
 		return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
 	}
 
 	return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Invalid connection condition"));
 }
 
-TArray<UClass*> UEventflowEdGraphSchema::GetNodeClasses() const
+UClass* UEventflowEdGraphSchema::GetRegisteredNodeClass(const FName& ClassName) const
 {
-	return TArray<UClass*>();
+	UClass** FoundClass = GetRegisteredNodeClasses().Find(ClassName);
+	if (!FoundClass)
+	{
+		return nullptr;
+	}
+	return *FoundClass;
 }
 
-
-
-FEventflowEdGraphSchemaAction::FEventflowEdGraphSchemaAction()
+TMap<FName, UClass*> UEventflowEdGraphSchema::GetRegisteredNodeClasses() const
 {
-}
-
-FEventflowEdGraphSchemaAction::FEventflowEdGraphSchemaAction(TSubclassOf<UEventflowEdGraphNode> InNodeClass, FText InCategory, FText InMenuDesc, FText InToolTip, const int32 InGrouping) : FEdGraphSchemaAction(InCategory, InMenuDesc, InToolTip, InGrouping)
-{
-	NodeClass = InNodeClass;
-}
-
-UEdGraphNode* FEventflowEdGraphSchemaAction::PerformAction(UEdGraph* ParentGraph, UEdGraphPin* FromPin, const FVector2D Location, bool bSelectNewNode)
-{
-	UEventflowEdGraph* Graph = Cast<UEventflowEdGraph>(ParentGraph);
-	if (!Graph) return nullptr;
-
-	UEventflowEdGraphNode* NewNode = NewObject<UEventflowEdGraphNode>(Graph, NodeClass);
-	NewNode->CreateNewGuid();
-	NewNode->AllocateDefaultPins();
-	NewNode->NodePosX = Location.X;
-	NewNode->NodePosY = Location.Y;
-
-	TSubclassOf<UEventflowNodeData> NodeDataClass = NewNode->GetNodeDataClass();
-	if (!NodeDataClass) return nullptr;
-
-	NewNode->SetNodeData(NewObject<UEventflowNodeData>(NewNode, NodeDataClass));
-
-	Graph->Modify();
-	Graph->AddNode(NewNode, true, true);
-
-	return NewNode;
+	return TMap<FName, UClass*>();
 }
 

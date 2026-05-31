@@ -2,82 +2,93 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Project Headers
-#include "EventflowDelegates.h"
+#include "Definition/PoolCollection.h"
+#include "EventflowDefinition.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"
 
+// Module Macros
+#define REN_API RENEVENTFLOW_API
+
 // Forward Declarations
+class UAssetManager;
 class UEventflowAsset;
-class UEventflowNode;
-class UEventflowData;
-class UEventflowBlueprint;
+class UEventflowTask;
+struct FStreamableHandle;
+struct FEventflowNodeDefinition;
+struct FEventflowPinRelation;
 
 
 
 /**
  *
- *
  */
-UCLASS()
-class RENEVENTFLOW_API UEventflowEngine : public UObject
+UCLASS(MinimalAPI, BlueprintType, Blueprintable)
+class UEventflowEngine : public UObject
 {
 
 	GENERATED_BODY()
 
 public:
 
-	void LoadAsset(const FPrimaryAssetId& AssetId);
-	void LoadAsset(UEventflowAsset* Asset);
+	DECLARE_DELEGATE(FEventflowEngineDelegate);
+	FEventflowEngineDelegate OnStarted;
+	FEventflowEngineDelegate OnEnded;
 
-	void UnloadAsset();
 
-	UEventflowNode* GetNodeById(FGuid NodeId) const;
+	UFUNCTION(BlueprintCallable)
+	REN_API void InitializeEngine(const FPrimaryAssetId& AssetId);
 
-	bool ReachEntryNode();
-	bool ReachNode(UEventflowNode* Node);
-	bool ReachNodeById(FGuid NodeId);
-	bool ReachNextNode(UEventflowNode* Node, int Index);
-	bool ReachImmediateNextNode(UEventflowNode* Node);
+	UFUNCTION(BlueprintCallable)
+	REN_API void DeinitializeEngine();
 
-	bool ExecuteNode(UEventflowNode* Node);
+	UFUNCTION(BlueprintCallable)
+	REN_API virtual void StartEngine();
 
-	FPrimaryAssetId GetOwningAssetId() const;
-	UEventflowAsset* GetOwningAsset() const;
-	UEventflowBlueprint* GetCurrentBlueprint() const;
-
-	FOnGraphStarted OnGraphStarted;
-	FOnGraphEnded OnGraphEnded;
+	UFUNCTION(BlueprintCallable)
+	REN_API virtual void StopEngine(bool bInterrupted);
 
 protected:
 
-	UPROPERTY()
+	FGuid CurrentLoadId;
 	FPrimaryAssetId CurrentAssetId;
+	FGuid CurrentNodeId;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowBlueprint> CurrentBlueprint;
+	TObjectPtr<UEventflowAsset> CurrentAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowAsset> CurrentAsset;
+	TObjectPtr<UEventflowTask> CurrentTask = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowData> CachedGraphData;
+	TObjectPtr<UAssetManager> AssetManager = nullptr;
 
-	void InitializeEngine();
+	const FEventflowNodeDefinition* GetNode(const FGuid& NodeId) const;
+	const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
 
-	virtual void ConstructBlueprint(TSubclassOf<UObject> InClass);
-	virtual void DestructBlueprint();
+	void ReachNode(const FGuid& NodeId);
+	void ReachEntryNode();
+	void ReachNextNode(int Index = 0);
 
-	virtual void HandleAssetLoaded();
+	void CreateActiveTask(const FGuid& NodeId, const FEventflowNodeDefinition* Node);
+	void RemoveActiveTask();
+	void HandleTaskFinished(EEventflowDirection Direction, int Index);
 
-	virtual void HandleOnNodeReached(UEventflowNode* Node);
-	virtual void HandleOnNodeExited(UEventflowNode* Node, bool bSuccess, int NextNodeIndex);
-	virtual void HandleOnGraphStarted();
-	virtual void HandleOnGraphEnded();
+	void HandleInitialization();
+	void Fail(const FString& Message);
+
+private:
+
+	TSharedPtr<FStreamableHandle> _SpawnHandle;
+
+	UPROPERTY()
+	TMap<UClass*, FPoolCollection> _TaskPool;
 
 };
+
+
+// Module Macros
+#undef REN_API
 

@@ -2,37 +2,35 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Project Headers
 #include "App/EventflowEdApp.h"
 
-// Generated Headers
-
 // Forward Declarations
 class UEventflowAsset;
-
 class UEventflowEdGraph;
-class UEventflowEdGraphNode;
-class UEventflowEdGraphSchema;
 
 
-
+/*
+ *
+ */
 class FDialogueEdApp : public FEventflowEdApp
 {
+
 public:
 
+	// ~ UEventflowEdApp
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
+	// ~ End of UEventflowEdApp
 
 protected:
 
+	// ~ UEventflowEdApp
 	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const override;
 	virtual TArray<FName> GetTriggerNodeProperties() const override;
-
+	// ~ End of UEventflowEdApp
 
 };
 

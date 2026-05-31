@@ -4,22 +4,28 @@
 #include "Graph/EventflowEdGraphNode.h"
 
 // Engine Headers
+#include "Algo/Reverse.h"
+#include "EdGraph/EdGraphPin.h"
 #include "Framework/Commands/UIAction.h"
 #include "ToolMenu.h"
-#include "Algo/Reverse.h"
 
 // Project Headers
-#include "EventflowAsset.h"
-#include "EventflowNodeData.h"
-#include "EventflowBlueprint.h"
-#include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphSchema.h"
 
 
-
-FName UEventflowEdGraphNode::GetNodeType() const
+bool UEventflowEdGraphNode::GetIsEntryNode() const
 {
-	return FName(TEXT("REN.EF.NODE"));
+	int PinCount = Pins.Num();
+	int InputPinCount = 0;
+	for (int i = 0; i < PinCount; i++)
+	{
+		UEdGraphPin* Pin = GetPinAt(i);
+		if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
+		{
+			InputPinCount++;
+		}
+	}
+	return InputPinCount == 0;
 }
 
 FText UEventflowEdGraphNode::GetNodeDescription() const
@@ -27,35 +33,21 @@ FText UEventflowEdGraphNode::GetNodeDescription() const
 	return FText::FromString(TEXT("Eventflow Node Description"));
 }
 
-TSubclassOf<UEventflowNodeData> UEventflowEdGraphNode::GetNodeDataClass() const
+
+TArray<FText> UEventflowEdGraphNode::GetRuntimeInputPins() const
 {
-	return UEventflowNodeData::StaticClass();
+	return TArray<FText>();
 }
 
-bool UEventflowEdGraphNode::IsEntryNode() const
+TArray<FText> UEventflowEdGraphNode::GetRuntimeOutputPins() const
 {
-	return false;
+	return TArray<FText>();
 }
 
-void UEventflowEdGraphNode::SetNodeData(UEventflowNodeData* AssetNodeData)
+void UEventflowEdGraphNode::SyncRuntimePins()
 {
-	CachedNodeData = AssetNodeData;
-}
-
-UEventflowNodeData* UEventflowEdGraphNode::GetNodeData() const
-{
-	return CachedNodeData;
-}
-
-void UEventflowEdGraphNode::SyncPins()
-{
-	if (!CanCreateRuntimeInputPins() && !CanCreateRuntimeOutputPins()) return;
-
-	UEventflowNodeData* NodeData = GetNodeData();
-	if (!NodeData) return;
-
-	TArray<UEdGraphPin*> InputLinks;
-	TArray<UEdGraphPin*> OutputLinks;
+	TArray<TPair<FString, TArray<UEdGraphPin*>>> InputLinks;
+	TArray<TPair<FString, TArray<UEdGraphPin*>>> OutputLinks;
 
 	int TotalPins = Pins.Num();
 	while (TotalPins > 0)
@@ -63,27 +55,15 @@ void UEventflowEdGraphNode::SyncPins()
 		UEdGraphPin* Pin = GetPinAt(TotalPins - 1);
 		if (!Pin->PinType.bIsConst)
 		{
+			FString FuzzyName = Pin->PinName.ToString();
+
 			if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
 			{
-				if (Pin->LinkedTo.IsValidIndex(0))
-				{
-					InputLinks.Add(Pin->LinkedTo[0]);
-				}
-				else
-				{
-					InputLinks.Add(nullptr);
-				}
+				InputLinks.Add(TPair<FString, TArray<UEdGraphPin*>>(FuzzyName, Pin->LinkedTo));
 			}
 			else
 			{
-				if (Pin->LinkedTo.IsValidIndex(0))
-				{
-					OutputLinks.Add(Pin->LinkedTo[0]);
-				}
-				else
-				{
-					OutputLinks.Add(nullptr);
-				}
+				OutputLinks.Add(TPair<FString, TArray<UEdGraphPin*>>(FuzzyName, Pin->LinkedTo));
 			}
 			RemovePin(Pin);
 		}
@@ -93,81 +73,15 @@ void UEventflowEdGraphNode::SyncPins()
 	Algo::Reverse(InputLinks);
 	Algo::Reverse(OutputLinks);
 
-	if (CanCreateRuntimeInputPins())
-	{
-		const TArray<FText>* InputOptions = NodeData->GetInputOptions();
-		if (!InputOptions) return;
+	const TArray<FText>& InputPins = GetRuntimeInputPins();
+	const TArray<FText>& OutputPins = GetRuntimeOutputPins();
 
-		CreatePinHelper(FText::FromString(TEXT("Input")), EEdGraphPinDirection::EGPD_Input, InputOptions, InputLinks);
-	}
+	CreateRuntimePins(InputPins, EEdGraphPinDirection::EGPD_Input);
+	CreateRuntimePins(OutputPins, EEdGraphPinDirection::EGPD_Output);
 
-	if (CanCreateRuntimeOutputPins())
-	{
-		const TArray<FText>* OutputOptions = NodeData->GetOutputOptions();
-		if (!OutputOptions) return;
-
-		CreatePinHelper(FText::FromString(TEXT("Output")), EEdGraphPinDirection::EGPD_Output, OutputOptions, OutputLinks);
-		
-	}
+	FuzzyMatchRuntimePins(InputLinks);
+	FuzzyMatchRuntimePins(OutputLinks);
 }
-
-void UEventflowEdGraphNode::SyncBlueprintGraph(TSubclassOf<UEventflowBlueprint> BlueprintClass)
-{
-	if (!CachedNodeData) return;
-
-	CachedNodeData->GraphBlueprint = BlueprintClass;
-}
-
-
-
-bool UEventflowEdGraphNode::CanCreateRuntimeInputPins() const
-{
-	return false;
-}
-
-bool UEventflowEdGraphNode::CanCreateRuntimeOutputPins() const
-{
-	return false;
-}
-
-void UEventflowEdGraphNode::CreatePinHelper(FText FriendlyName, EEdGraphPinDirection Direction, const TArray<FText>* Options, const TArray<UEdGraphPin*>& CachedLinks)
-{
-	if (!Options) return;
-	
-	const UEdGraphSchema* Schema = GetSchema();
-
-	int Count = Options->Num();
-	for (int i = 0; i < Count; i++)
-	{
-		FText Option = (*Options)[i];
-
-		FName PinName = FName(FGuid::NewGuid().ToString());
-		UEdGraphPin* Pin = CreatePin(Direction, UEventflowEdGraphSchema::PC_Wildcard, PinName);
-		if (!Pin) continue;
-
-		Pin->PinFriendlyName = Option.IsEmpty() ? FriendlyName : FText::FromString(LimitTextLength(Option.ToString(), 10));
-		Pin->PinType.bIsConst = false;
-
-		if (CachedLinks.IsValidIndex(i))
-		{
-			if (CachedLinks[i])
-			{
-				Schema->TryCreateConnection(Pin, CachedLinks[i]);
-				// Pin->MakeLinkTo(CachedLinks[i]);
-			}
-		}
-	}
-}
-
-FString UEventflowEdGraphNode::LimitTextLength(const FString& InText, int MaxCharacters) const
-{
-	if (InText.Len() > MaxCharacters)
-	{
-		return InText.Left(MaxCharacters) + TEXT("...");
-	}
-	return InText;
-}
-
 
 
 FText UEventflowEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
@@ -203,5 +117,44 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 			}
 		))
 	);
+}
+
+
+void UEventflowEdGraphNode::CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction)
+{
+	const UEdGraphSchema* Schema = GetSchema();
+	for (const FText& PinName : PinNames)
+	{
+		FName SafePinName = CreateUniquePinName(FName(*PinName.ToString()));
+		UEdGraphPin* Pin = CreatePin(Direction, UEventflowEdGraphSchema::PC_Exec, SafePinName);
+		if (!Pin)
+		{
+			continue;
+		}
+		Pin->PinId = FGuid::NewGuid();
+		Pin->PinFriendlyName = FText::FromName(SafePinName);
+		Pin->PinType.bIsConst = false;
+	}
+}
+
+void UEventflowEdGraphNode::FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins)
+{
+	for (const TPair<FString, TArray<UEdGraphPin*>>& Pair : FuzzyPins)
+	{
+		UEdGraphPin* Pin = FindPin(Pair.Key);
+		if (!Pin)
+		{
+			continue;
+		}
+
+		const TArray<UEdGraphPin*>& LinkedPins = Pair.Value;
+		for (UEdGraphPin* LinkedPin : LinkedPins)
+		{
+			if (LinkedPin)
+			{
+				Pin->MakeLinkTo(LinkedPin);
+			}
+		}
+	}
 }
 

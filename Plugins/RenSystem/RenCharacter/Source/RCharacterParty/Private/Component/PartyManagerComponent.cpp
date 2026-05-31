@@ -6,13 +6,14 @@
 // Engine Headers
 #include "GameFramework/Character.h"
 #include "UObject/ObjectSaveContext.h"
+#include "Engine/AssetManager.h"
 
 // Project Headers
 #include "Actor/AvatarCharacter.h"
 #include "Asset/CharacterAsset.h"
+#include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Manager/RAssetManager.inl"
 #include "Settings/PartySettings.h"
 #include "Storage/PartyStorageManager.h"
 #include "Subsystem/PartySubsystem.h"
@@ -27,7 +28,7 @@ UPartyManagerComponent::UPartyManagerComponent(const FObjectInitializer& ObjectI
 
 void UPartyManagerComponent::BeginPlay()
 {
-	AssetManager = URAssetManager::Get();
+	AssetManager = UAssetManager::GetIfInitialized();
 
 	if (SourceType == EDataSource::Runtime)
 	{
@@ -44,6 +45,8 @@ void UPartyManagerComponent::BeginPlay()
 
 void UPartyManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+
 	if (IsValid(PartySubsystem))
 	{
 		PartySubsystem->OnSyncParty.RemoveAll(this);
@@ -92,32 +95,22 @@ void UPartyManagerComponent::SpawnParty()
 		return;
 	}
 
-	AssetManager->CancelFetch(_SpawnId);
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
 
-	_SpawnId = FGuid::NewGuid();
+	const UPartySettings* Settings = UPartySettings::Get();
+	const TArray<FName>& AssetBundles = Settings->CharacterBundles;
 
-	const TArray<FName>& AssetBundles = UPartySettings::Get()->CharacterBundles;
-
-	TWeakObjectPtr<UPartyManagerComponent> WeakThis(this);
-	TFuture<FLatentLoadedAssets<UCharacterAsset>> Future = AssetManager->FetchPrimaryAssets<UCharacterAsset>(_SpawnId, CharacterAssetIds, AssetBundles, false);
-	Future.Next([WeakThis](const FLatentLoadedAssets<UCharacterAsset>& Result)
-		{
-			UPartyManagerComponent* This = WeakThis.Get();
-			if (IsValid(This) && Result.IsCompleted())
-			{
-				This->SpawnPartyCharacters();
-			}
-		}
-	);
+	_SpawnHandle = AssetManager->LoadPrimaryAssets(CharacterAssetIds, AssetBundles, FStreamableDelegate::CreateUObject(this, &UPartyManagerComponent::SpawnPartyCharacters));
 }
 
 void UPartyManagerComponent::SpawnPartyCharacters()
 {
+	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
+
 	for (const FCharacterInitializationData& Data : CharacterData)
 	{
 		SpawnCharacter(Data.AssetId, Data);
 	}
-
 	PossessAliveCharacter();
 }
 

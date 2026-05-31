@@ -7,6 +7,7 @@
 #include "InstancedStruct.h"
 #include "UObject/ObjectSaveContext.h"
 #include "AbilitySystemBlueprintLibrary.h"
+#include "Engine/AssetManager.h"
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
@@ -15,10 +16,10 @@
 #include "Definition/EquipmentData.h"
 #include "Interface/Actor/AssetInstanceContextProvider.h"
 #include "Interface/SpawnContextProvider.h"
+#include "Library/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Manager/RAssetManager.inl"
 #include "Object/EquipmentMetadata.h"
 #include "Settings/EquipmentSettings.h"
 #include "Storage/EquipmentStorageManager.h"
@@ -72,7 +73,7 @@ void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext
 
 void UEquipmentManagerComponent::InitializeManager()
 {
-	AssetManager = URAssetManager::Get();
+	AssetManager = UAssetManager::GetIfInitialized();
 	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
 
 	ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
@@ -107,10 +108,7 @@ void UEquipmentManagerComponent::DeinitializeManager()
 	}
 	EquipmentSubsystem = nullptr;
 
-	if (IsValid(AssetManager) && _SpawnId.IsValid())
-	{
-		AssetManager->CancelFetch(_SpawnId);
-	}
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
 	AssetManager = nullptr;
 	ActorFreelist = nullptr;
 
@@ -138,24 +136,12 @@ void UEquipmentManagerComponent::SpawnEquipment()
 		return;
 	}
 
-	AssetManager->CancelFetch(_SpawnId);
-
-	_SpawnId = FGuid::NewGuid();
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
 
 	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 	const TArray<FName>& AssetBundles = Settings->EquipmentBundles;
 
-	TWeakObjectPtr<UEquipmentManagerComponent> WeakThis(this);
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(_SpawnId, EquippedAssetIds, AssetBundles, false);
-	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
-		{
-			UEquipmentManagerComponent* This = WeakThis.Get();
-			if (IsValid(This) && Result.IsCompleted())
-			{
-				This->SpawnEquipmentActors();
-			}
-		}
-	);
+	_SpawnHandle = AssetManager->LoadPrimaryAssets(EquippedAssetIds, AssetBundles, FStreamableDelegate::CreateUObject(this, &UEquipmentManagerComponent::SpawnEquipmentActors));
 }
 
 void UEquipmentManagerComponent::RemoveEquipment()
@@ -185,6 +171,8 @@ UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(co
 
 void UEquipmentManagerComponent::SpawnEquipmentActors()
 {
+	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
+
 	UWorld* World = GetWorld();
 
 	for (const FEquipmentData& Data : EquipmentSpawnData)

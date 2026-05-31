@@ -27,7 +27,9 @@ public class RenEventflow : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+                "StructUtils",
+                "RCorePool",
+            }
 			);
 			
 		
@@ -40,6 +42,7 @@ public class RenEventflow : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"RCoreLibrary",
+                "RCoreAssetManager",
             }
 			);
 		

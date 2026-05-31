@@ -3,13 +3,10 @@
 // Parent Header
 #include "DialogueEdAssetTypeAction.h"
 
-// Engine Headers
-
 // Project Headers
-#include "DialogueAsset.h"
-#include "App/EventflowEdApp.h"
 #include "App/DialogueEdApp.h"
-
+#include "App/EventflowEdApp.h"
+#include "DialogueAsset.h"
 
 
 FDialogueEdAssetTypeAction::FDialogueEdAssetTypeAction(EAssetTypeCategories::Type InAssetCategory)

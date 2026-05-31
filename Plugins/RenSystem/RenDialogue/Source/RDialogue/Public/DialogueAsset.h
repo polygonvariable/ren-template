@@ -12,8 +12,8 @@
 /**
  * 
  */
-UCLASS(BlueprintType)
-class RDIALOGUE_API UDialogueAsset : public UEventflowAsset
+UCLASS(MinimalAPI, BlueprintType)
+class UDialogueAsset : public UEventflowAsset
 {
 
 	GENERATED_BODY()

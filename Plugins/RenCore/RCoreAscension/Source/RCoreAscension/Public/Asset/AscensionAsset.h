@@ -13,7 +13,8 @@
 
 
 /**
- * 
+ * TODO:
+ * will be replaced by asset frament
  */
 UCLASS(MinimalAPI)
 class UExperiencePointAsset : public UMetadataAsset

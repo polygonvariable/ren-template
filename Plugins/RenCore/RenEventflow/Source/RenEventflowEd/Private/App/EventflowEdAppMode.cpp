@@ -3,21 +3,18 @@
 // Parent Header
 #include "App/EventflowEdAppMode.h"
 
-// Engine Headers
-
 // Project Headers
 #include "App/EventflowEdApp.h"
 #include "Graph/EventflowEdTabFactory.h"
 
 
-
 FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FApplicationMode(TEXT("RGraphEditorAppMode"))
 {
-	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTab(InEventflowEdApp)));
-	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdNodePropertyTab(InEventflowEdApp)));
-	AllowedTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphPropertyTab(InEventflowEdApp)));
-
 	EventflowEdApp = InEventflowEdApp;
+
+	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTab(InEventflowEdApp)));
+	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdNodePropertyTab(InEventflowEdApp)));
+	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphPropertyTab(InEventflowEdApp)));
 
 	TabLayout = FTabManager::NewLayout("RGraphEditorAppLayout_v1")
 		->AddArea(
@@ -48,18 +45,8 @@ FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflow
 void FEventflowEdAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabManager)
 {
 	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
-	App->PushTabFactories(AllowedTabSet);
-
+	App->PushTabFactories(EventflowEdTabSet);
+	
 	FApplicationMode::RegisterTabFactories(InTabManager);
-}
-
-void FEventflowEdAppMode::PreDeactivateMode()
-{
-	FApplicationMode::PreDeactivateMode();
-}
-
-void FEventflowEdAppMode::PostActivateMode()
-{
-	FApplicationMode::PostActivateMode();
 }
 

@@ -3,23 +3,22 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
-// Project Headers
-
-// Generated Headers
+// Module Macros
+#define REN_API RENEVENTFLOWED_API
 
 // Forward Declarations
 class UEventflowAsset;
-
 class UEventflowEdGraph;
 class UEventflowEdGraphNode;
 class UEventflowEdGraphSchema;
 
 
-
-class RENEVENTFLOWED_API FEventflowEdApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
+/*
+ * 
+ */
+class REN_API FEventflowEdApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 
 public:
@@ -29,54 +28,53 @@ public:
 	UEventflowAsset* GetWorkingAsset() const;
 	UEventflowEdGraph* GetWorkingGraph() const;
 
-	void SetGraphEditorSlate(TSharedPtr<SGraphEditor> InGraphEditor);
-	void SetGraphPropertySlate(TSharedPtr<IDetailsView> InDetailsView);
-	void SetNodePropertySlate(TSharedPtr<IDetailsView> InDetailsView);
+	void RegisterGraphEvent(SGraphEditor::FGraphEditorEvents& GraphEvents);
+	void RegisterGraphEditor(TSharedPtr<SGraphEditor> GraphEditor);
+	void RegisterGraphProperty(TSharedPtr<IDetailsView> DetailsView);
+	void RegisterNodeProperty(TSharedPtr<IDetailsView> DetailsView);
 
-	virtual void RegisterGraphEditorEvents(SGraphEditor::FGraphEditorEvents& GraphEvents);
-
-protected:
-
-	virtual void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectedNodes);
-	virtual void OnGraphNodeDoubleClicked(UEdGraphNode* Node);
-
-	virtual void OnGraphPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
-	virtual void OnNodePropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
-
-	virtual TArray<FName> GetTriggerGraphProperties() const;
-	virtual TArray<FName> GetTriggerNodeProperties() const;
-
-	void UpdateWorkingAsset();
-
-	UEventflowEdGraphNode* GetFirstSelectedNode(const FGraphPanelSelectionSet& SelectedNodes) const;
-
-	virtual TSubclassOf<UEventflowEdGraph> GetGraphClass() const;
-	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const;
-
-public:
-
+	// ~ FAssetEditorToolkit
 	virtual FName GetToolkitFName() const override;
 	virtual FText GetBaseToolkitName() const override;
 	virtual FString GetWorldCentricTabPrefix() const override;
 	virtual FLinearColor GetWorldCentricTabColorScale() const override;
+	// ~ End of FAssetEditorToolkit
 
-	virtual void RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager) override;
-
+	// ~ FWorkflowCentricApplication
 	virtual void OnClose() override;
+	// ~ End of FWorkflowCentricApplication
 
 protected:
 
 	UPROPERTY()
-	UEventflowAsset* WorkingAsset = nullptr;
+	TObjectPtr<UEventflowAsset>  WorkingAsset = nullptr;
 
 	UPROPERTY()
-	UEventflowEdGraph* WorkingGraph = nullptr;
+	TObjectPtr<UEventflowEdGraph> WorkingGraph = nullptr;
 
 	TSharedPtr<SGraphEditor> GraphEditorSlate;
 	TSharedPtr<IDetailsView> GraphPropertySlate;
 	TSharedPtr<IDetailsView> NodePropertySlate;
 
-	FDelegateHandle EventflowAssetSaved;
-	FDelegateHandle GraphChangedHandle;
+
+	virtual TSubclassOf<UEventflowEdGraph> GetGraphClass() const;
+	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const;
+
+	virtual void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectedNodes);
+	virtual void OnGraphPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
+	virtual void OnNodePropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
+
+	UEventflowEdGraphNode* GetFirstSelectedNode(const FGraphPanelSelectionSet& SelectedNodes) const;
+	virtual TArray<FName> GetTriggerGraphProperties() const;
+	virtual TArray<FName> GetTriggerNodeProperties() const;
+
+	// ~ FAssetEditorToolkit
+	virtual void SaveAsset_Execute() override;
+	// ~ End of FAssetEditorToolkit
 
 };
+
+
+// Module Macros
+#undef REN_API
+

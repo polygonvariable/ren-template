@@ -27,7 +27,7 @@ public class RDialogueEd : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+            }
 			);
 			
 		
@@ -39,7 +39,8 @@ public class RDialogueEd : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"AssetTools",
+				"StructUtils",
+                "AssetTools",
                 "UnrealEd",
                 "PropertyEditor",
                 "EditorScriptingUtilities",

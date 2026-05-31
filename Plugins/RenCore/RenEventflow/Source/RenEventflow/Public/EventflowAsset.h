@@ -3,69 +3,63 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
+#include "EventflowDefinition.h"
 
 // Generated Headers
 #include "EventflowAsset.generated.h"
 
-// Forward Declarations
-class UEventflowData;
-class UEventflowBlueprint;
-
-
+// Module Macros
+#define REN_API RENEVENTFLOW_API
 
 /**
  *
  *
  */
-UCLASS(BlueprintType)
-class RENEVENTFLOW_API UEventflowAsset : public UDataAsset
+UCLASS(MinimalAPI, BlueprintType)
+class UEventflowAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UEventflowBlueprint> GraphBlueprint;
+	UPROPERTY(VisibleAnywhere)
+	TMap<FGuid, FEventflowNodeDefinition> NodeCollection;
 
-	UPROPERTY()
-	TObjectPtr<UEventflowData> GraphData = nullptr;
+	UPROPERTY(VisibleAnywhere)
+	TMap<FGuid, FEventflowPinRelation> PinRelation;
 
-#if WITH_EDITORONLY_DATA
+	UPROPERTY(VisibleAnywhere)
+	FGuid EntryNodeId = FGuid::NewGuid();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bUseMultiEntry = false;
-
-#endif
+	// ~ UPrimaryDataAsset
+	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	// ~ End of UPrimaryDataAsset
 
 #if WITH_EDITOR
 
-	DECLARE_MULTICAST_DELEGATE(FOnEventflowAssetSaved);
-	FOnEventflowAssetSaved OnEventflowAssetSaved;
-
-	virtual void PostPropertyUpdate();
+	// ~ UObject
+	REN_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UObject
 
 protected:
-
+	
 	// ~ UObject
-	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
-	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+	REN_API virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
 	// ~ End of UObject
-
-public:
-
-	// ~ UObject
-	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const;
-	// ~ End of UObject
-
-	bool ValidateGraphData(FString& Message) const;
-	bool ValidateGraphNodes(FString& Message) const;
 
 #endif
 
+public:
+
+	static REN_API FPrimaryAssetType GetPrimaryAssetType();
+
 };
+
+
+// Module Macros
+#undef REN_API
 

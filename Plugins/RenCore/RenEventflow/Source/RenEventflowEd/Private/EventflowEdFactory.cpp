@@ -3,11 +3,8 @@
 // Parent Header
 #include "EventflowEdFactory.h"
 
-// Engine Headers
-
 // Project Headers
 #include "EventflowAsset.h"
-
 
 
 UEventflowEdFactory::UEventflowEdFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -17,8 +14,7 @@ UEventflowEdFactory::UEventflowEdFactory(const FObjectInitializer& ObjectInitial
 
 UObject* UEventflowEdFactory::FactoryCreateNew(UClass* Class, UObject* InParent, FName Name, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
-    UEventflowAsset* NewAsset = NewObject<UEventflowAsset>(InParent, Class, Name, Flags);
-	return NewAsset;
+	return NewObject<UEventflowAsset>(InParent, Class, Name, Flags);
 }
 
 bool UEventflowEdFactory::CanCreateNew() const

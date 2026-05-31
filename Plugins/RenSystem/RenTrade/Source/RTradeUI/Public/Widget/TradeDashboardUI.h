@@ -21,7 +21,7 @@ class UTradeDetailUI;
 class UAssetEntry;
 class UTradeAsset;
 class UCoreDataAsset;
-
+struct FStreamableHandle;
 
 
 /**
@@ -36,6 +36,7 @@ class UTradeDashboardUI : public UAssetDashboardUI
 public:
 
 	// ~ UAssetDashboardUI
+	REN_API virtual void InitializeDetail() override;
 	REN_API virtual void ResetDetail() override;
 	// ~ End of UAssetDashboardUI
 
@@ -57,12 +58,12 @@ protected:
 	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
 
 
-	REN_API virtual void InitializeTradeDetails(const UTradeAsset* Asset);
+	REN_API virtual void InitializeTradeDetail();
 	REN_API virtual const UAssetCollection* GetTradeMaterialCollection(const UCoreDataAsset* Asset) const;
 
 	// ~ UAssetDashboardUI
-	REN_API virtual void InitializeDetail() override;
 	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	REN_API virtual void CancelInitialization() override;
 	// ~ End of UAssetDashboardUI
 	
 	// ~ UUserWidget
@@ -72,7 +73,7 @@ protected:
 
 private:
 
-	FGuid _TradeLoadId;
+	TSharedPtr<FStreamableHandle> _TradeHandle;
 
 };
 

@@ -40,7 +40,7 @@ public:
 	FName SplineTag = TEXT_EMPTY;
 
 	UPROPERTY(EditAnywhere)
-	TEnumAsByte<EBuildingType> BuildingType;
+	TEnumAsByte<EBuildingType> BuildingType = EBuildingType::Wall;
 
 	UPROPERTY(EditAnywhere)
 	bool bFill = false;
@@ -119,7 +119,7 @@ public:
 	TArray<int> Indices;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector Position;
+	FVector Position = FVector::ZeroVector;
 
 };
 

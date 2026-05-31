@@ -9,13 +9,10 @@
 #include "DialogueAsset.h"
 #include "DialogueNodeData.h"
 #include "Graph/EventflowEdGraphSchema.h"
+#include "EventflowTask.h"
 
 
 
-FName UDialogueEdBeginNode::GetNodeType() const
-{
-	return FName(TEXT("REN.EF.DIA.BEGIN"));
-}
 
 FText UDialogueEdBeginNode::GetNodeDescription() const
 {
@@ -24,19 +21,7 @@ FText UDialogueEdBeginNode::GetNodeDescription() const
 
 FText UDialogueEdBeginNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetNodeData());
-	if (!NodeData)
-	{
-		return FText::FromString(TEXT("Begin"));
-	}
-
-	FString NodeContent = LimitTextLength(NodeData->DialogueTitle.ToString(), 15);
-	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
-}
-
-TSubclassOf<UEventflowNodeData> UDialogueEdBeginNode::GetNodeDataClass() const
-{
-	return UDialogueNodeData::StaticClass();
+	return FText::FromString(TEXT("Begin"));
 }
 
 FLinearColor UDialogueEdBeginNode::GetNodeTitleColor() const
@@ -51,22 +36,7 @@ void UDialogueEdBeginNode::AllocateDefaultPins()
 	Pin->PinType.bIsConst = true;
 }
 
-bool UDialogueEdBeginNode::IsEntryNode() const
-{
-	return true;
-}
 
-bool UDialogueEdBeginNode::CanCreateRuntimeOutputPins() const
-{
-	return false;
-}
-
-
-
-FName UDialogueEdEndNode::GetNodeType() const
-{
-	return FName(TEXT("REN.EF.DIA.END"));
-}
 
 FText UDialogueEdEndNode::GetNodeDescription() const
 {
@@ -76,11 +46,6 @@ FText UDialogueEdEndNode::GetNodeDescription() const
 FText UDialogueEdEndNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
 	return FText::FromString(TEXT("End"));
-}
-
-TSubclassOf<UEventflowNodeData> UDialogueEdEndNode::GetNodeDataClass() const
-{
-	return UDialogueNodeData::StaticClass();
 }
 
 FLinearColor UDialogueEdEndNode::GetNodeTitleColor() const
@@ -95,17 +60,7 @@ void UDialogueEdEndNode::AllocateDefaultPins()
 	Pin->PinType.bIsConst = true;
 }
 
-bool UDialogueEdEndNode::CanCreateRuntimeOutputPins() const
-{
-	return false;
-}
 
-
-
-FName UDialogueEdDialogNode::GetNodeType() const
-{
-	return FName(TEXT("REN.EF.DIA.DIALOG"));
-}
 
 FText UDialogueEdDialogNode::GetNodeDescription() const
 {
@@ -114,19 +69,7 @@ FText UDialogueEdDialogNode::GetNodeDescription() const
 
 FText UDialogueEdDialogNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	UDialogueNodeData* NodeData = Cast<UDialogueNodeData>(GetNodeData());
-	if (!NodeData)
-	{
-		return FText::FromString(TEXT("Dialogue"));
-	}
-	
-	FString NodeContent = LimitTextLength(NodeData->DialogueContent.ToString(), 15);
-	return FText::FromString(TEXT("Dialogue: ") + NodeContent);
-}
-
-TSubclassOf<UEventflowNodeData> UDialogueEdDialogNode::GetNodeDataClass() const
-{
-	return UDialogueNodeData::StaticClass();
+	return FText::FromString(TEXT("Dialog"));
 }
 
 FLinearColor UDialogueEdDialogNode::GetNodeTitleColor() const
@@ -136,12 +79,45 @@ FLinearColor UDialogueEdDialogNode::GetNodeTitleColor() const
 
 void UDialogueEdDialogNode::AllocateDefaultPins()
 {
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("In"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("In"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("Out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("Out"));
+	PinOut->PinType.bIsConst = true;
+}
+
+
+
+
+TArray<FText> UDialogueEdBranchNode::GetRuntimeOutputPins() const
+{
+	if (!IsValid(PrimaryTask))
+	{
+		return TArray<FText>();
+	}
+	return PrimaryTask->GetRuntimeOutputs();
+}
+
+FText UDialogueEdBranchNode::GetNodeDescription() const
+{
+	return FText::FromString(TEXT("Conversation branch node."));
+}
+
+FText UDialogueEdBranchNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
+{
+	return FText::FromString(TEXT("Branch"));
+}
+
+FLinearColor UDialogueEdBranchNode::GetNodeTitleColor() const
+{
+	return FLinearColor(0.0f, 1.0f, 0.5f);
+}
+
+void UDialogueEdBranchNode::AllocateDefaultPins()
+{
 	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("Exec"));
 	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
 	Pin->PinType.bIsConst = true;
-}
-
-bool UDialogueEdDialogNode::CanCreateRuntimeOutputPins() const
-{
-	return true;
 }

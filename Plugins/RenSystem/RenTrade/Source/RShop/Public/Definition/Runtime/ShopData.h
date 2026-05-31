@@ -32,7 +32,7 @@ public:
 
 
 	UPROPERTY(SaveGame)
-	int PurchaseCount;
+	int PurchaseCount = 0;
 
 
 	REN_API bool IsValid() const;

@@ -7,279 +7,182 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
+#include "EventflowAsset.h"
+#include "EventflowTask.h"
+#include "Library/AssetManagerUtil.h"
+#include "Library/PoolHelper.h"
 #include "Log/LogMacro.h"
 
-#include "EventflowAsset.h"
-#include "EventflowBlueprint.h"
-#include "EventflowData.h"
-#include "EventflowNode.h"
-#include "EventflowNodeData.h"
-#include "EventflowNodeTask.h"
 
-
-
-FPrimaryAssetId UEventflowEngine::GetOwningAssetId() const
+void UEventflowEngine::InitializeEngine(const FPrimaryAssetId& AssetId)
 {
-	return CurrentAssetId;
-}
+	AssetManager = UAssetManager::GetIfInitialized();
 
-UEventflowAsset* UEventflowEngine::GetOwningAsset() const
-{
-	return CurrentAsset;
-}
-
-void UEventflowEngine::LoadAsset(const FPrimaryAssetId& AssetId)
-{
-	if (IsValid(CurrentAsset))
+	if (CurrentAssetId.IsValid() || IsValid(CurrentAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("Asset is already loaded"));
+		Fail(TEXT("Engine is already initialized"));
 		return;
 	}
 
-	if (!AssetId.IsValid())
+	if (!AssetId.IsValid() || !IsValid(AssetManager))
 	{
-		LOG_ERROR(LogTemp, TEXT("AssetId is invalid"));
+		Fail(TEXT("AssetId, AssetManager is invalid"));
 		return;
 	}
 
 	CurrentAssetId = AssetId;
 
-	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
-	if (IsValid(AssetManager))
-	{
-		AssetManager->LoadPrimaryAsset(AssetId, TArray<FName>{}, FStreamableDelegate::CreateUObject(this, &UEventflowEngine::HandleAssetLoaded));
-	}
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+
+	_SpawnHandle = AssetManager->LoadPrimaryAsset(CurrentAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UEventflowEngine::HandleInitialization));
 }
 
-void UEventflowEngine::LoadAsset(UEventflowAsset* Asset)
+void UEventflowEngine::DeinitializeEngine()
 {
-	if (IsValid(CurrentAsset))
-	{
-		LOG_ERROR(LogTemp, TEXT("Asset is already loaded"));
-		return;
-	}
-
-	if (!IsValid(Asset))
-	{
-		LOG_ERROR(LogTemp, TEXT("Asset is invalid"));
-		return;
-	}
-
-	CurrentAsset = Asset;
-
-	InitializeEngine();
-	HandleOnGraphStarted();
-}
-
-void UEventflowEngine::UnloadAsset()
-{
-	DestructBlueprint();
-
-	CachedGraphData = nullptr;
 	CurrentAsset = nullptr;
+	CurrentNodeId = FGuid();
 
-	if (CurrentAssetId.IsValid())
-	{
-		UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
-		if (IsValid(AssetManager))
-		{
-			AssetManager->UnloadPrimaryAsset(CurrentAssetId);
-		}
-	}
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	AssetManager->UnloadPrimaryAsset(CurrentAssetId);
+	AssetManager = nullptr;
+
+	CurrentAssetId = FPrimaryAssetId();
 }
 
-UEventflowNode* UEventflowEngine::GetNodeById(FGuid NodeId) const
+void UEventflowEngine::HandleInitialization()
 {
-	if (!IsValid(CachedGraphData))
-	{
-		LOG_ERROR(LogTemp, TEXT("CachedGraphData is invalid"));
-		return nullptr;
-	};
+	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
 
-	TMap<FGuid, TObjectPtr<UEventflowNode>>& NodeList = CachedGraphData->NodeList;
-	const TObjectPtr<UEventflowNode>* NodeObject = NodeList.Find(NodeId);
-
-	if (!NodeObject)
-	{
-		LOG_ERROR(LogTemp, TEXT("Node is invalid"));
-		return nullptr;
-	}
-
-	return NodeObject->Get();
-}
-
-void UEventflowEngine::InitializeEngine()
-{
+	CurrentAsset = AssetManager->GetPrimaryAssetObject<UEventflowAsset>(CurrentAssetId);
 	if (!IsValid(CurrentAsset))
 	{
-		LOG_ERROR(LogTemp, TEXT("Asset invalid"));
+		Fail(TEXT("Failed to load asset"));
+		return;
+	}
+	StartEngine();
+}
+
+
+void UEventflowEngine::StartEngine()
+{
+	OnStarted.ExecuteIfBound();
+	ReachEntryNode();
+}
+
+void UEventflowEngine::StopEngine(bool bInterrupted)
+{
+	RemoveActiveTask();
+	OnEnded.ExecuteIfBound();
+}
+
+
+const FEventflowNodeDefinition* UEventflowEngine::GetNode(const FGuid& NodeId) const
+{
+	return CurrentAsset->NodeCollection.Find(NodeId);
+}
+
+const FEventflowPinRelation* UEventflowEngine::GetPinRelation(const FGuid& PinId) const
+{
+	return CurrentAsset->PinRelation.Find(PinId);
+}
+
+
+void UEventflowEngine::ReachNode(const FGuid& NodeId)
+{
+	const FEventflowNodeDefinition* Node = GetNode(NodeId);
+	if (!Node)
+	{
+		Fail(TEXT("Failed to find entry node"));
 		return;
 	}
 
-	CachedGraphData = CurrentAsset->GraphData;
+	CurrentNodeId = NodeId;
 
-	if (!CurrentAsset->GraphBlueprint)
+	RemoveActiveTask();
+	CreateActiveTask(NodeId, Node);
+}
+
+void UEventflowEngine::ReachEntryNode()
+{
+	ReachNode(CurrentAsset->EntryNodeId);
+}
+
+void UEventflowEngine::ReachNextNode(int Index)
+{
+	const FEventflowNodeDefinition* CurrentNode = GetNode(CurrentNodeId);
+	if (!CurrentNode)
 	{
-		LOG_ERROR(LogTemp, TEXT("GraphBlueprint is invalid"));
+		Fail(TEXT("Failed to find node"));
 		return;
 	}
 
-	ConstructBlueprint(CurrentAsset->GraphBlueprint);
-}
-
-bool UEventflowEngine::ReachEntryNode()
-{
-	if (!IsValid(CachedGraphData))
+	const TArray<FEventflowPinDefinition>& Outputs = CurrentNode->StaticOutputs;
+	if (Outputs.Num() == 0)
 	{
-		LOG_ERROR(LogTemp, TEXT("CachedGraphData is invalid"));
-		return false;
-	};
+		LOG_WARNING(LogTemp, TEXT("Node has no outputs, stopping engine"));
 
-	TMap<FGuid, TObjectPtr<UEventflowNode>>& NodeList = CachedGraphData->NodeList;
-	const TObjectPtr<UEventflowNode>* NodeObject = NodeList.Find(CachedGraphData->NodeEntry);
-
-	if (!NodeObject)
-	{
-		LOG_ERROR(LogTemp, TEXT("Node is invalid"));
-		return false;
-	}
-
-	UEventflowNode* Node = NodeObject->Get();
-	return ReachNode(Node);
-}
-
-bool UEventflowEngine::ReachNode(UEventflowNode* Node)
-{
-	if (!IsValid(Node))
-	{
-		LOG_ERROR(LogTemp, TEXT("Node is invalid"));
-		return false;
-	}
-
-	HandleOnNodeReached(Node);
-	return true;
-}
-
-bool UEventflowEngine::ReachNodeById(FGuid NodeId)
-{
-	UEventflowNode* Node = GetNodeById(NodeId);
-	return ReachNode(Node);
-}
-
-bool UEventflowEngine::ReachNextNode(UEventflowNode* Node, int Index)
-{
-	if (!IsValid(Node))
-	{
-		LOG_ERROR(LogTemp, TEXT("Node is invalid"));
-		return false;
-	}
-
-	UEventflowNode* ReachedNode = Node->GetNextNodeAt(Index);
-	if (!IsValid(ReachedNode))
-	{
-		LOG_ERROR(LogTemp, TEXT("ReachedNode is invalid"));
-		return false;
-	}
-
-	return ReachNode(ReachedNode);
-}
-
-bool UEventflowEngine::ReachImmediateNextNode(UEventflowNode* Node)
-{
-	return ReachNextNode(Node, 0);
-}
-
-void UEventflowEngine::ConstructBlueprint(TSubclassOf<UObject> InClass)
-{
-	if (!InClass)
-	{
-		LOG_ERROR(LogTemp, TEXT("InClass is invalid"));
+		StopEngine(false);
 		return;
 	}
 
-	UEventflowBlueprint* GraphBlueprint = NewObject<UEventflowBlueprint>(this, InClass);
-	if (!IsValid(GraphBlueprint))
+	if (!Outputs.IsValidIndex(Index))
 	{
-		LOG_ERROR(LogTemp, TEXT("GraphBlueprint is invalid"));
+		Fail(TEXT("Invalid output index"));
 		return;
 	}
 
-	CurrentBlueprint = GraphBlueprint;
-
-	GraphBlueprint->OnNodeExited.BindUObject(this, &UEventflowEngine::HandleOnNodeExited);
-	GraphBlueprint->RegisterBlueprint(CurrentAsset);
-}
-
-void UEventflowEngine::DestructBlueprint()
-{
-	if (IsValid(CurrentBlueprint))
+	const FEventflowPinRelation* Relation = GetPinRelation(Outputs[Index].UniqueId);
+	if (!Relation)
 	{
-		CurrentBlueprint->OnNodeExited.Unbind();
-		CurrentBlueprint->UnregisterBlueprint();
-		CurrentBlueprint->MarkAsGarbage();
-	}
-	CurrentBlueprint = nullptr;
-}
-
-UEventflowBlueprint* UEventflowEngine::GetCurrentBlueprint() const
-{
-	return CurrentBlueprint;
-}
-
-bool UEventflowEngine::ExecuteNode(UEventflowNode* Node)
-{
-	if (!IsValid(CurrentBlueprint))
-	{
-		return false;
-	}
-	return CurrentBlueprint->StartNodeExecution(Node);
-}
-
-void UEventflowEngine::HandleAssetLoaded()
-{
-	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
-	if (!IsValid(AssetManager))
-	{
-		LOG_ERROR(LogTemp, TEXT("AssetManager is invalid"));
+		Fail(TEXT("Failed to find output relation"));
 		return;
 	}
 
-	UObject* LoadedAsset = AssetManager->GetPrimaryAssetObject(CurrentAssetId);
-	if (!IsValid(LoadedAsset))
+	ReachNode(Relation->LinkedToNode);
+}
+
+
+void UEventflowEngine::CreateActiveTask(const FGuid& NodeId, const FEventflowNodeDefinition* Node)
+{
+	if (!IsValid(Node->PrimaryTask))
 	{
-		LOG_ERROR(LogTemp, TEXT("LoadedAsset is invalid"));
+		LOG_WARNING(LogTemp, TEXT("Task class is invalid, no task will be created"));
 		return;
 	}
 
-	CurrentAsset = Cast<UEventflowAsset>(LoadedAsset);
-	if (!IsValid(CurrentAsset))
+	UClass* TaskClass = Node->PrimaryTask->GetClass();
+
+	CurrentTask = FPoolHelper::AcquireFromContainer<UEventflowTask>(_TaskPool, TaskClass, this);
+	CurrentTask->CopyFromTemplate(Node->PrimaryTask);
+	CurrentTask->OnTaskFinished.BindUObject(this, &UEventflowEngine::HandleTaskFinished);
+	CurrentTask->InitializeTask(NodeId, Node);
+}
+
+void UEventflowEngine::RemoveActiveTask()
+{
+	if (IsValid(CurrentTask))
 	{
-		LOG_ERROR(LogTemp, TEXT("CurrentAsset is invalid"));
-		return;
+		CurrentTask->OnTaskFinished.Unbind();
+		CurrentTask->DeinitializeTask();
+		FPoolHelper::ReturnToContainer(_TaskPool, CurrentTask);
 	}
+	CurrentTask = nullptr;
+}
 
-	InitializeEngine();
-	HandleOnGraphStarted();
+void UEventflowEngine::HandleTaskFinished(EEventflowDirection Direction, int Index)
+{
+	if (Direction == EEventflowDirection::Next)
+	{
+		RemoveActiveTask();
+		ReachNextNode(Index);
+	}
 }
 
 
-
-void UEventflowEngine::HandleOnNodeReached(UEventflowNode* Node)
+void UEventflowEngine::Fail(const FString& Message)
 {
-}
-
-void UEventflowEngine::HandleOnNodeExited(UEventflowNode* Node, bool bSuccess, int NextNodeIndex)
-{
-}
-
-void UEventflowEngine::HandleOnGraphStarted()
-{
-	OnGraphStarted.ExecuteIfBound();
-}
-
-void UEventflowEngine::HandleOnGraphEnded()
-{
-	OnGraphEnded.ExecuteIfBound();
+	LOG_ERROR(LogTemp, TEXT("%s"), *Message);
+	StopEngine(true);
 }
 
 

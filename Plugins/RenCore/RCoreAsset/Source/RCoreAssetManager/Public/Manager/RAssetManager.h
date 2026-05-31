@@ -29,6 +29,7 @@ class URAssetManager : public UAssetManager
 
 public:
 
+	UE_DEPRECATED(5.4, "Use FStreamableDelegate to cancel loading.")
 	REN_API void CancelFetch(const FGuid& LatentId);
 
 	REN_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftClassPath& Path, UClass* Type);
@@ -37,11 +38,12 @@ public:
 	REN_API TFuture<FLatentLoadedAsset<UClass>> FetchSecondaryClass(const FGuid& LatentId, const FSoftObjectPath& Path, UClass* Type);
 	REN_API TFuture<FLatentLoadedAssets<UClass>> FetchSecondaryClasses(const FGuid& LatentId, const TArray<FSoftObjectPath>& Paths, UClass* Type);
 
-
 	template<typename T>
+	UE_DEPRECATED(5.4, "Use the LoadPrimaryAsset function.")
 	TFuture<FLatentLoadedAsset<T>> FetchPrimaryAsset(const FGuid& LatentId, const FPrimaryAssetId& AssetId, const TArray<FName>& AssetBundles = TArray<FName>());
 
 	template<typename T>
+	UE_DEPRECATED(5.4, "Use the LoadPrimaryAssets function.")
 	TFuture<FLatentLoadedAssets<T>> FetchPrimaryAssets(const FGuid& LatentId, const TArray<FPrimaryAssetId>& AssetIds, const TArray<FName>& AssetBundles = TArray<FName>(), bool bResolveObjects = true);
 
 

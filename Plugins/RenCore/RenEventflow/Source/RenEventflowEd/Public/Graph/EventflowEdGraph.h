@@ -3,59 +3,48 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "EdGraph/EdGraph.h"
-
-// Project Headers
 
 // Generated Headers
 #include "EventflowEdGraph.generated.h"
 
+// Module Macros
+#define REN_API RENEVENTFLOWED_API
+
 // Forward Declarations
 class UEventflowAsset;
-class UEventflowData;
-class UEventflowNode;
-class UEventflowPin;
-class UEventflowNodeData;
-class UEventflowBlueprint;
-
-class UEventflowEdGraphNode;
+struct FEventflowNodeDefinition;
+struct FEventflowPinDefinition;
+struct FEventflowPinRelation;
 
 
-
-UCLASS()
-class RENEVENTFLOWED_API UEventflowEdGraph : public UEdGraph
+/*
+ * 
+ */
+UCLASS(MinimalAPI)
+class UEventflowEdGraph : public UEdGraph
 {
 
 	GENERATED_BODY()
 
 public:
 
-	void RegisterNodeClasses();
-
-	void UpdateAssetData(UEventflowAsset* GraphAsset);
-	void UpdateGraphData(UEventflowAsset* GraphAsset);
-
-	//virtual bool ValidateGraphData();
-
-	void SyncGraphBlueprint(TSubclassOf<UEventflowBlueprint> InGraphBlueprint);
-
+	void InitializeGraph(UEventflowAsset* GraphAsset);
+	void SerializeGraph(UEventflowAsset* GraphAsset);
+	
 protected:
 
-	bool AddNodePin(EEdGraphPinDirection Direction, UEventflowPin* AssetPin, UEventflowEdGraphNode* UINode, TMap<FGuid, UEdGraphPin*>& PinMap);
+	void SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNodeDefinition>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation);
+	void SerializePin(UEdGraphPin* Pin, FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation);
 
-	virtual TSubclassOf<UEventflowEdGraphNode> GetRegisteredNodeClass(FName NodeType) const;
-	virtual TSubclassOf<UEventflowNode> GetAssetNodeClass() const;
-	virtual TSubclassOf<UEventflowPin> GetAssetPinClass() const;
-
-public:
-
-	virtual void AddNode(UEdGraphNode* NodeToAdd, bool bUserAction = false, bool bSelectNewNode = true) override;
-
-private:
-
-	TSubclassOf<UEventflowBlueprint> GraphBlueprint;
-	TMap<FName, TSubclassOf<UEventflowEdGraphNode>> NodeTypes;
+	void RenderGraph(UEventflowAsset* GraphAsset);
+	void RenderNode(const FGuid NodeId, const FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection);
+	void RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPinDefinition& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection);
+	void RenderNodePinLink(const TMap<FGuid, FEventflowPinRelation>& PinRelation, TMap<FGuid, UEdGraphPin*>& PinCollection);
 
 };
+
+
+// Module Macros
+#undef REN_API
 

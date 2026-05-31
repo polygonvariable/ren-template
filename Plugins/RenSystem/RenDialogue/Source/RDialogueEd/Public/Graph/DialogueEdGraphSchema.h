@@ -2,31 +2,27 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Project Headers
 #include "Graph/EventflowEdGraphSchema.h"
 
 // Generated Headers
 #include "DialogueEdGraphSchema.generated.h"
 
-// Forward Declarations
-class UEventflowNodeData;
 
-
-
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdGraphSchema : public UEventflowEdGraphSchema
 {
 
 	GENERATED_BODY()
 
-public:
+protected:
 
-	virtual TArray<UClass*> GetNodeClasses() const override;
-
-	virtual void GetGraphContextActions(FGraphContextMenuBuilder& ContextMenuBuilder) const override;
+	// ~ UEventflowEdGraphSchema
+	virtual TMap<FName, UClass*> GetRegisteredNodeClasses() const override;
+	// ~ End of UEventflowEdGraphSchema
 
 };
 

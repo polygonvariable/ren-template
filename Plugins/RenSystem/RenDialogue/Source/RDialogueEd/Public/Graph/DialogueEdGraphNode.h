@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 
 // Project Headers
-#include "EventflowEdMacro.h"
+#include "DialogueNodeData.h"
 #include "Graph/EventflowEdGraphNode.h"
 
 // Generated Headers
@@ -18,73 +18,85 @@ class UEventflowNodeData;
 
 
 UCLASS()
-class UDialogueEdBeginNode : public UEventflowEdGraphNode
+class UDialogueEdNode_Base : public UEventflowEdGraphNode
 {
 
 	GENERATED_BODY()
-
-public:
-
-	virtual FName GetNodeType() const override;
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
-
-	virtual FLinearColor GetNodeTitleColor() const override;
-	virtual void AllocateDefaultPins() override;
-	virtual bool IsEntryNode() const override;
-
-protected:
-
-	virtual bool CanCreateRuntimeOutputPins() const override;
 
 };
 
 
-
 UCLASS()
-class UDialogueEdEndNode : public UEventflowEdGraphNode
+class UDialogueEdBeginNode : public UDialogueEdNode_Base
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual FName GetNodeType() const override;
+	// ~ UEdGraphNode
 	virtual FText GetNodeDescription() const override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
-
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
 
-protected:
+};
 
-	virtual bool CanCreateRuntimeOutputPins() const override;
+UCLASS()
+class UDialogueEdEndNode : public UDialogueEdNode_Base
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ UEdGraphNode
+	virtual FText GetNodeDescription() const override;
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
 
 };
 
 
-
 UCLASS()
-class UDialogueEdDialogNode : public UEventflowEdGraphNode
+class UDialogueEdDialogNode : public UDialogueEdNode_Base
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual FName GetNodeType() const override;
+	// ~ UEdGraphNode
 	virtual FText GetNodeDescription() const override;
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual TSubclassOf<UEventflowNodeData> GetNodeDataClass() const override;
-
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
 
-protected:
+};
 
-	virtual bool CanCreateRuntimeOutputPins() const override;
+
+UCLASS()
+class UDialogueEdBranchNode : public UDialogueEdNode_Base
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ UEventflowEdGraphNode
+	virtual TArray<FText> GetRuntimeOutputPins() const override;
+	// ~ End of UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FText GetNodeDescription() const override;
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
 
 };
 

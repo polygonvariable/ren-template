@@ -3,19 +3,13 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
-
 #include "EdGraphUtilities.h"
 #include "SGraphPin.h"
 
-// Project Headers
 
-// Generated Headers
-
-// Forward Declarations
-
-
-
+/*
+ * 
+ */
 class SEventflowEdGraphPin : public SGraphPin
 {
 
@@ -28,12 +22,17 @@ public:
 
 protected:
 
+	// ~ SGraphPin
 	virtual FSlateColor GetPinColor() const override;
+	virtual const FSlateBrush* GetPinIcon() const override;
+	// ~ End of SGraphPin
 
 };
 
 
-
+/*
+ *
+ */
 class SEventflowEdGraphFlowPin : public SGraphPin
 {
 
@@ -46,19 +45,26 @@ public:
 
 protected:
 
+	// ~ SGraphPin
 	virtual FSlateColor GetPinColor() const override;
+	virtual const FSlateBrush* GetPinIcon() const override;
+	// ~ End of SGraphPin
 
 };
 
 
-
+/*
+ *
+ */
 struct FEventflowEdPanelPinFactory : public FGraphPanelPinFactory
 {
 
 public:
 
+	// ~ FGraphPanelPinFactory
 	virtual ~FEventflowEdPanelPinFactory();
 	virtual TSharedPtr<SGraphPin> CreatePin(class UEdGraphPin* Pin) const override;
+	// ~ End of FGraphPanelPinFactory
 
 };
 

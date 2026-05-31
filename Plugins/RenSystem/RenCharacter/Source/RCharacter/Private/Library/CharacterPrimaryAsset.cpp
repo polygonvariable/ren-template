@@ -7,7 +7,6 @@
 #include "Asset/CharacterAsset.h"
 
 
-
 FPrimaryAssetType FCharacterPrimaryAsset::GetAssetType()
 {
 	return UCharacterAsset::GetPrimaryAssetType();

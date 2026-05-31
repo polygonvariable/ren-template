@@ -3,11 +3,8 @@
 // Parent Header
 #include "Graph/EventflowEdGraphPin.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Graph/EventflowEdGraphSchema.h"
-
 
 
 void SEventflowEdGraphPin::Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -20,6 +17,10 @@ FSlateColor SEventflowEdGraphPin::GetPinColor() const
 	return FSlateColor(FLinearColor(0.0f, 1.0f, 1.0f));
 }
 
+const FSlateBrush* SEventflowEdGraphPin::GetPinIcon() const
+{
+	return IsConnected() ? FAppStyle::GetBrush(TEXT("Graph.ExecPin.Connected")) : FAppStyle::GetBrush(TEXT("Graph.ExecPin.Disconnected"));
+}
 
 
 void SEventflowEdGraphFlowPin::Construct(const FArguments& InArgs, UEdGraphPin* InPin)
@@ -32,6 +33,10 @@ FSlateColor SEventflowEdGraphFlowPin::GetPinColor() const
 	return FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f));
 }
 
+const FSlateBrush* SEventflowEdGraphFlowPin::GetPinIcon() const
+{
+	return IsConnected() ? FAppStyle::GetBrush(TEXT("Graph.ExecPin.Connected")) : FAppStyle::GetBrush(TEXT("Graph.ExecPin.Disconnected"));
+}
 
 
 FEventflowEdPanelPinFactory::~FEventflowEdPanelPinFactory()

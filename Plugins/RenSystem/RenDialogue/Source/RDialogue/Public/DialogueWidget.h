@@ -3,21 +3,49 @@
 #pragma once
 
 // Engine Headers
+#include "UObject/Interface.h"
 #include "Blueprint/UserWidget.h"
+
+// Project Headers
+#include "DialogueNodeData.h"
 
 // Generated Headers
 #include "DialogueWidget.generated.h"
 
 // Forward Declarations
+class UImage;
 class UButton;
 class UTextBlock;
+class UPanelWidget;
 class UVerticalBox;
-
-class UEventflowAsset;
-class UEventflowNode;
-class UEventflowEngine;
-
 class UDialogueAsset;
+
+
+
+DECLARE_DELEGATE_OneParam(FOnDialogueCompleted, int /* Next Index */);
+
+
+UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+class UDialogueProvider : public UInterface
+{
+	GENERATED_BODY()
+};
+
+class IDialogueProvider
+{
+
+	GENERATED_BODY()
+
+public:
+
+
+	virtual void InitializeDialogue(const FDialogueData* Dialogue) = 0;
+	virtual void ClearDialogue() = 0;
+
+	virtual FOnDialogueCompleted& GetOnDialogueCompleted() = 0;
+
+};
+
 
 
 /**
@@ -31,24 +59,29 @@ class UDialogueOptionWidget : public UUserWidget
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	void InitializeDetails(FText Option, int Index);
+	DECLARE_DELEGATE_OneParam(FDialogueSelectDelegate, int /* Index */);
+	FDialogueSelectDelegate OnDialogueSelect;
+
+	void InitializeOption(int Index, const FText& FText);
+	void ResetOption();
 
 protected:
 
-	UEventflowNode* OptionNode = nullptr;
-	int OptionIndex = -1;
+	int CurrentIndex = 0;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
-	TObjectPtr<UTextBlock> OptionText;
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UTextBlock> OptionText = nullptr;
 
-	UFUNCTION(BlueprintCallable)
-	void SelectOption();
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UButton> SelectButton = nullptr;
 
-public:
+	UFUNCTION()
+	void HandleSelectClicked();
 
-	DECLARE_DELEGATE_OneParam(FOnOptionSelected, int /* Index */);
-	FOnOptionSelected OnOptionSelected;
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 
@@ -57,54 +90,59 @@ public:
  * 
  */
 UCLASS(Abstract)
-class UDialogueWidget : public UUserWidget
+class UDialogueWidget : public UUserWidget, public IDialogueProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FPrimaryAssetId DialogueId;
-
-	void SetDialogueContent(UEventflowNode* Node);
+	// ~ IDialogueProvider
+	virtual void InitializeDialogue(const FDialogueData* Dialogue) override;
+	virtual void ClearDialogue() override;
+	virtual FOnDialogueCompleted& GetOnDialogueCompleted() override;
+	// ~ End of IDialogueProvider
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<UEventflowEngine> EventflowEngine;
+	FOnDialogueCompleted OnDialogueCompleted;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UTextBlock> DialogueTitle;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UDialogueOptionWidget> OptionWidgetClass = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UTextBlock> DialogueContent;
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UImage> SpeakerImage = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
-	TObjectPtr<UVerticalBox> DialogueOptions;
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UTextBlock> SpeakerName = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<UDialogueOptionWidget> OptionWidgetClass;
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UTextBlock> DialogueText = nullptr;
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UButton> NextButton = nullptr;
+
+	UPROPERTY(Meta = (BindWidget))
+	TObjectPtr<UPanelWidget> OptionPanel = nullptr;
 
 
-	UFUNCTION(BlueprintCallable)
-	void LoadDialogue();
-
-	void UnloadDialogue();
-
-	void ShowOptions(UEventflowNode* Node);
+	virtual void InitializeOption(const FDialogueData* Dialogue);
+	virtual void ResetOption();
 
 	UFUNCTION()
-	void NextDialogue();
+	void HandleNextClicked();
 
-	void TrySelectOption(int Index);
+	UFUNCTION()
+	void HandleOptionClicked(int Index);
 
-	//void SetCurrentNode(UEventflowNode* Node);
-
-protected:
-
+	// ~ UUserWidget
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
+
+private:
+
+	TArray<TObjectPtr<UDialogueOptionWidget>> _OptionPool;
 
 };
 

@@ -3,12 +3,9 @@
 // Parent Header
 #include "EventflowEdAction.h"
 
-// Engine Headers
-
 // Project Headers
-#include "EventflowAsset.h"
 #include "App/EventflowEdApp.h"
-
+#include "EventflowAsset.h"
 
 
 FEventflowEdAction::FEventflowEdAction(EAssetTypeCategories::Type InAssetCategory)
@@ -36,12 +33,12 @@ uint32 FEventflowEdAction::GetCategories()
     return AssetCategory;
 }
 
-void FEventflowEdAction::OpenAssetEditor(const TArray<UObject*>& InObjects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
+void FEventflowEdAction::OpenAssetEditor(const TArray<UObject*>& Objects, TSharedPtr<IToolkitHost> EditWithinLevelEditor)
 {
     EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
-    for (auto Obj : InObjects)
+    for (UObject* Object : Objects)
 	{
-        UEventflowAsset* Graph = Cast<UEventflowAsset>(Obj);
+        UEventflowAsset* Graph = Cast<UEventflowAsset>(Object);
         if(Graph != nullptr)
 		{
             TSharedRef<FEventflowEdApp> App(new FEventflowEdApp());

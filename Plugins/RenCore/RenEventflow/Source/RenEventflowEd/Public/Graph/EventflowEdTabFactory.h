@@ -3,67 +3,64 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "WorkflowOrientedApp/WorkflowTabFactory.h"
-
-// Project Headers
-
-// Generated Headers
 
 // Forward Declarations
 class SWidget;
-
 class FEventflowEdApp;
 
 
-
+/*
+ *
+ */
 class FEventflowEdGraphTab : public FWorkflowTabFactory
 {
 
 public:
 
-	FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
+	FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> App);
 
+	// ~ FWorkflowTabFactory
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
-
-private:
-
-	TWeakPtr<FEventflowEdApp> EventflowEdApp;
+	// ~ End of FWorkflowTabFactory
 
 };
 
 
-
+/*
+ *
+ */
 class FEventflowEdGraphPropertyTab : public FWorkflowTabFactory
 {
 
 public:
 
-	FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
+	FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> App);
 
+	// ~ FWorkflowTabFactory
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
+	// ~ End of FWorkflowTabFactory
 
-private:
+protected:
 
-	TWeakPtr<FEventflowEdApp> EventflowEdApp;
+	int GetNumberOfObjects() const;
 
 };
 
 
-
-
+/*
+ *
+ */
 class FEventflowEdNodePropertyTab : public FWorkflowTabFactory
 {
 
 public:
 
-	FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp);
+	FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> App);
 
+	// ~ FWorkflowTabFactory
 	virtual TSharedRef<SWidget> CreateTabBody(const FWorkflowTabSpawnInfo& Info) const override;
-
-private:
-
-	TWeakPtr<FEventflowEdApp> EventflowEdApp;
+	// ~ End of FWorkflowTabFactory
 
 };
 

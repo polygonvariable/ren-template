@@ -13,7 +13,6 @@
 #include "Manager/RAssetManager.inl"
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
 #include "RCoreClock/Public/ClockManagerInterface.h"
-#include "Util/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"

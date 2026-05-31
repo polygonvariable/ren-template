@@ -9,16 +9,15 @@
 #include "PropertyEditorModule.h"
 
 // Project Headers
-#include "EventflowAsset.h"
 #include "App/EventflowEdApp.h"
+#include "EventflowAsset.h"
 #include "Graph/EventflowEdGraph.h"
 
 
-
-FEventflowEdGraphTab::FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdGraphTab"), InEventflowEdApp)
+FEventflowEdGraphTab::FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> App) : FWorkflowTabFactory(FName("EventflowEdGraphTab"), App)
 {
-	EventflowEdApp = InEventflowEdApp;
-
+	HostingApp = App;
+	
 	TabLabel = FText::FromString(TEXT("Editor Graph"));
 	ViewMenuDescription = FText::FromString(TEXT("Editor Graph"));
 	ViewMenuTooltip = FText::FromString(TEXT("Editor Graph"));
@@ -26,35 +25,34 @@ FEventflowEdGraphTab::FEventflowEdGraphTab(TSharedPtr<FEventflowEdApp> InEventfl
 
 TSharedRef<SWidget> FEventflowEdGraphTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
-
+	TSharedPtr<FEventflowEdApp> App = StaticCastSharedPtr<FEventflowEdApp>(HostingApp.Pin());
 	UEventflowEdGraph* WorkingGraph = App->GetWorkingGraph();
 
 	SGraphEditor::FGraphEditorEvents GraphEvents;
-	App->RegisterGraphEditorEvents(GraphEvents);
-	
+	App->RegisterGraphEvent(GraphEvents);
+
 	TSharedPtr<SGraphEditor> GraphEditor =
 		SNew(SGraphEditor)
 			.IsEditable(true)
 			.GraphEvents(GraphEvents)
 			.GraphToEdit(WorkingGraph);
+	
+	App->RegisterGraphEditor(GraphEditor);
 
-	App->SetGraphEditorSlate(GraphEditor);
-
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			GraphEditor.ToSharedRef()
-		];
+	return
+		SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+				.FillHeight(1.0f)
+				.HAlign(HAlign_Fill)
+				[
+					GraphEditor.ToSharedRef()
+				];
 }
 
 
-
-FEventflowEdGraphPropertyTab::FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdGraphPropertyTab"), InEventflowEdApp)
+FEventflowEdGraphPropertyTab::FEventflowEdGraphPropertyTab(TSharedPtr<FEventflowEdApp> App) : FWorkflowTabFactory(FName("EventflowEdGraphPropertyTab"), App)
 {
-	EventflowEdApp = InEventflowEdApp;
+	HostingApp = App;
 
 	TabLabel = FText::FromString(TEXT("Graph Property"));
 	ViewMenuDescription = FText::FromString(TEXT("Graph Property"));
@@ -63,7 +61,7 @@ FEventflowEdGraphPropertyTab::FEventflowEdGraphPropertyTab(TSharedPtr<FEventflow
 
 TSharedRef<SWidget> FEventflowEdGraphPropertyTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
+	TSharedPtr<FEventflowEdApp> App = StaticCastSharedPtr<FEventflowEdApp>(HostingApp.Pin());
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 
 	FDetailsViewArgs Args;
@@ -81,9 +79,31 @@ TSharedRef<SWidget> FEventflowEdGraphPropertyTab::CreateTabBody(const FWorkflowT
 
 	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(Args);
 	DetailsView->SetObject(App->GetWorkingAsset());
-	App->SetGraphPropertySlate(DetailsView);
+	App->RegisterGraphProperty(DetailsView);
 
-	int32 ObjectCount = 0;
+	return
+		SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+				.FillHeight(1.0f)
+				.HAlign(HAlign_Fill)
+				[
+					DetailsView.ToSharedRef()
+				]
+			+ SVerticalBox::Slot()
+				.AutoHeight()
+				.Padding(4.0f)
+				.HAlign(HAlign_Fill)
+				[
+					SNew(STextBlock)
+						.Text(FText::FromString(FString::Printf(TEXT("Number of unique objects: %d"), GetNumberOfObjects())))
+				];
+}
+
+int FEventflowEdGraphPropertyTab::GetNumberOfObjects() const
+{
+	TSharedPtr<FEventflowEdApp> App = StaticCastSharedPtr<FEventflowEdApp>(HostingApp.Pin());
+
+	int ObjectCount = 0;
 	ForEachObjectWithOuter(App->GetWorkingAsset(),
 		[&ObjectCount](UObject* InnerObject)
 		{
@@ -92,28 +112,13 @@ TSharedRef<SWidget> FEventflowEdGraphPropertyTab::CreateTabBody(const FWorkflowT
 		true
 	);
 
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			DetailsView.ToSharedRef()
-		]
-		+ SVerticalBox::Slot()
-		.AutoHeight()
-		.Padding(4.0f)
-		.HAlign(HAlign_Fill)
-		[
-			SNew(STextBlock)
-			.Text(FText::FromString(FString::Printf(TEXT("Number of Objects: %d"), ObjectCount)))
-		];
+	return ObjectCount;
 }
 
 
-
-FEventflowEdNodePropertyTab::FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FWorkflowTabFactory(FName("EventflowEdNodePropertyTab"), InEventflowEdApp)
+FEventflowEdNodePropertyTab::FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> App) : FWorkflowTabFactory(FName("EventflowEdNodePropertyTab"), App)
 {
-	EventflowEdApp = InEventflowEdApp;
+	HostingApp = App;
 
 	TabLabel = FText::FromString(TEXT("Node Property"));
 	ViewMenuDescription = FText::FromString(TEXT("Node Property"));
@@ -122,7 +127,7 @@ FEventflowEdNodePropertyTab::FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEd
 
 TSharedRef<SWidget> FEventflowEdNodePropertyTab::CreateTabBody(const FWorkflowTabSpawnInfo& Info) const
 {
-	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
+	TSharedPtr<FEventflowEdApp> App = StaticCastSharedPtr<FEventflowEdApp>(HostingApp.Pin());
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::Get().LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
 	
 	FDetailsViewArgs Args;
@@ -140,14 +145,15 @@ TSharedRef<SWidget> FEventflowEdNodePropertyTab::CreateTabBody(const FWorkflowTa
 
 	TSharedPtr<IDetailsView> DetailsView = PropertyEditorModule.CreateDetailView(Args);
 	DetailsView->SetObject(nullptr);
-	App->SetNodePropertySlate(DetailsView);
+	App->RegisterNodeProperty(DetailsView);
 
-	return SNew(SVerticalBox)
-		+ SVerticalBox::Slot()
-		.FillHeight(1.0f)
-		.HAlign(HAlign_Fill)
-		[
-			DetailsView.ToSharedRef()
-		];
+	return
+		SNew(SVerticalBox)
+			+ SVerticalBox::Slot()
+				.FillHeight(1.0f)
+				.HAlign(HAlign_Fill)
+				[
+					DetailsView.ToSharedRef()
+				];
 }
 

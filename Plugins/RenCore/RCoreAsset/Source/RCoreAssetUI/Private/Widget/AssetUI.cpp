@@ -3,18 +3,16 @@
 // Parent Header
 #include "Widget/AssetUI.h"
 
+// Engine Headers
+#include "Engine/AssetManager.h"
+
 // Project Headers
 #include "Asset/CoreDataAsset.h"
+#include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Manager/RAssetManager.inl"
 #include "Widget/AssetEntry.h"
 
-
-void UAssetUI::InitializeDetail()
-{
-
-}
 
 void UAssetUI::InitializeAssetByEntry(const UAssetEntry* Entry)
 {
@@ -36,38 +34,23 @@ void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
 		return;
 	}
 
-	if (_ActiveAssetId == AssetId && IsValid(_ActiveAsset))
+	if (_AssetId == AssetId)
 	{
-		InitializeAssetDetail(_ActiveAsset.Get());
+		InitializeAssetDetail(AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(AssetId));
 		return;
 	}
 
-	AssetManager->CancelFetch(_ActiveLoadId);
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 
-	_ActiveAssetId = AssetId;
-	_ActiveLoadId = FGuid::NewGuid();
-
-	TWeakObjectPtr<UAssetUI> WeakThis(this);
-	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(_ActiveLoadId, _ActiveAssetId);
-	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
-		{
-			UAssetUI* This = WeakThis.Get();
-			if (IsValid(This) && Result.IsValid())
-			{
-				const UCoreDataAsset* Asset = Result.Get();
-
-				This->_ActiveAsset = Asset;
-				This->InitializeAssetDetail(Asset);
-			}
-		}
-	);
+	_AssetId = AssetId;
+	_AssetHandle = AssetManager->LoadPrimaryAsset(AssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAssetUI::HandleAssetLoaded));
 }
 
 void UAssetUI::InitializeAssetDetail(const UCoreDataAsset* Asset)
 {
 	if (IsValid(Asset))
 	{
-		_ActiveAssetId = Asset->GetPrimaryAssetId();
+		_AssetId = Asset->GetPrimaryAssetId();
 	}
 	SetPrimaryDetail(Asset);
 }
@@ -84,45 +67,25 @@ TArray<UWidget*> UAssetUI::GetLockingControls_Implementation() const
 
 const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 {
-	return _ActiveAssetId;
+	return _AssetId;
 }
 
 const UCoreDataAsset* UAssetUI::GetActiveAsset() const
 {
-	return _ActiveAsset.Get();
-}
-
-void UAssetUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
-{
-
-}
-
-void UAssetUI::SetSecondaryDetail(const UAssetEntry* Entry)
-{
-
-}
-
-void UAssetUI::RefreshDetail()
-{
-
-}
-
-void UAssetUI::ResetDetail()
-{
-
+	return AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(_AssetId);
 }
 
 void UAssetUI::CancelInitialization()
 {
-	if (_ActiveLoadId.IsValid() && IsValid(AssetManager))
-	{
-		AssetManager->CancelFetch(_ActiveLoadId);
-	}
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 }
 
-void UAssetUI::SwitchDetail(bool bPrimary)
+void UAssetUI::HandleAssetLoaded()
 {
+	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
 
+	UCoreDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(_AssetId);
+	InitializeAssetDetail(Asset);
 }
 
 void UAssetUI::CloseWidget()
@@ -132,7 +95,7 @@ void UAssetUI::CloseWidget()
 
 void UAssetUI::NativeConstruct()
 {
-	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
+	AssetManager = UAssetManager::GetIfInitialized();
 
 	Super::NativeConstruct();
 }

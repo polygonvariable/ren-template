@@ -3,18 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "Factories/Factory.h"
-
-// Project Headers
 
 // Generated Headers
 #include "DialogueEdFactory.generated.h"
 
-// Forward Declarations
 
-
-
+/*
+ * 
+ */
 UCLASS()
 class UDialogueEdFactory : public UFactory
 {
@@ -25,8 +22,10 @@ public:
 
 	UDialogueEdFactory(const FObjectInitializer& ObjectInitializer);
 
+	// ~ UFactory
 	virtual UObject* FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn, FName CallingContext) override;
 	virtual bool CanCreateNew() const override;
+	// ~ End of UFactory
 
 };
 
