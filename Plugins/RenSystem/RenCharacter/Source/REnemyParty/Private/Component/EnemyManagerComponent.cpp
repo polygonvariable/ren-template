@@ -4,21 +4,20 @@
 #include "Component/EnemyManagerComponent.h"
 
 // Engine Headers
+#include "Engine/AssetManager.h"
 #include "UObject/ObjectSaveContext.h"
-#include "Abilities/GameplayAbilityTypes.h"
 
 // Project Headers
 #include "Actor/EnemyCharacter.h"
 #include "Asset/CharacterAsset.h"
-#include "Log/LogCategory.h"
+#include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Log/LogMacro.h"
-#include "Manager/RAssetManager.inl"
-#include "Settings/EnemySettings.h"
-#include "Subsystem/BroadcastSubsystem.h"
-#include "Definition/Runtime/EnemyPayload.h"
 #include "Settings/CharacterSettings.h"
+#include "Settings/EnemySettings.h"
+#include "Storage/EnemyStorageManager.h"
+#include "Subsystem/BroadcastSubsystem.h"
+#include "Subsystem/EnemySubsystem.h"
 
 
 UEnemyManagerComponent::UEnemyManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -28,18 +27,27 @@ UEnemyManagerComponent::UEnemyManagerComponent(const FObjectInitializer& ObjectI
 	SetIsReplicatedByDefault(true);
 }
 
-
 void UEnemyManagerComponent::BeginPlay()
 {
-	AssetManager = URAssetManager::Get();
+	AssetManager = UAssetManager::GetIfInitialized();
+
+	UEnemySubsystem* EnemySubsystem = UEnemySubsystem::Get(GetWorld());
+	if (IsValid(EnemySubsystem))
+	{
+		StorageManager = EnemySubsystem->GetStorageManager();
+	}
+
 	Super::BeginPlay();
 }
 
 void UEnemyManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
 	CleanupEnemies();
 
 	AssetManager = nullptr;
+	StorageManager = nullptr;
+
 	Super::EndPlay(EndPlayReason);
 }
 
@@ -55,7 +63,11 @@ void UEnemyManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext)
 #if WITH_EDITOR
 	for (FEnemySpawnData& Data : SpawnData)
 	{
-		Data.EnemyData.EnemyId = FGuid::NewGuid();
+		FGuid& EnemyId = Data.EnemyData.EnemyId;
+		if (!EnemyId.IsValid())
+		{
+			EnemyId = FGuid::NewGuid();
+		}
 	}
 #endif
 }
@@ -81,28 +93,18 @@ void UEnemyManagerComponent::TrySpawnEnemies()
 		return;
 	}
 
-	AssetManager->CancelFetch(_SpawnId);
-
-	_SpawnId = FGuid::NewGuid();
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
 
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
 	const TArray<FName>& AssetBundles = Settings->CharacterBundles;
 
-	TWeakObjectPtr<UEnemyManagerComponent> WeakThis(this);
-	TFuture<FLatentLoadedAssets<UCharacterAsset>> Future = AssetManager->FetchPrimaryAssets<UCharacterAsset>(_SpawnId, AssetIds, AssetBundles, false);
-	Future.Next([WeakThis](const FLatentLoadedAssets<UCharacterAsset>& Result)
-		{
-			UEnemyManagerComponent* This = WeakThis.Get();
-			if (IsValid(This) && Result.IsCompleted())
-			{
-				This->SpawnEnemies();
-			}
-		}
-	);
+	_SpawnHandle = AssetManager->LoadPrimaryAssets(AssetIds, AssetBundles, FStreamableDelegate::CreateUObject(this, &UEnemyManagerComponent::SpawnEnemies));
 }
 
 void UEnemyManagerComponent::SpawnEnemies()
 {
+	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
+
 	for (const FEnemySpawnData& Data : SpawnData)
 	{
 		SpawnEnemy(Data);
@@ -111,7 +113,16 @@ void UEnemyManagerComponent::SpawnEnemies()
 
 void UEnemyManagerComponent::SpawnEnemy(const FEnemySpawnData& Data)
 {
-	const UCharacterAsset* Asset = AssetManager->GetPrimaryAssetObject<UCharacterAsset>(Data.CharacterData.AssetId);
+	const FCharacterInitializationData& CharacterData = Data.CharacterData;
+	const FEnemyInitializationData& EnemyData = Data.EnemyData;
+
+	if (!SpawnCondition(Data))
+	{
+		LOG_WARNING(LogCharacterParty, TEXT("Spawn condition failed"));
+		return;
+	}
+
+	const UCharacterAsset* Asset = AssetManager->GetPrimaryAssetObject<UCharacterAsset>(CharacterData.AssetId);
 	if (!IsValid(Asset))
 	{
 		LOG_ERROR(LogCharacterParty, TEXT("Failed to get enemy asset"));
@@ -128,7 +139,7 @@ void UEnemyManagerComponent::SpawnEnemy(const FEnemySpawnData& Data)
 	UWorld* World = GetWorld();
 	AActor* Owner = GetOwner();
 
-	FTransform SpawnTransform = Owner->GetActorTransform() * Data.EnemyData.SpawnTransform;
+	FTransform SpawnTransform = Owner->GetActorTransform() * EnemyData.SpawnTransform;
 	AEnemyCharacter* Character = World->SpawnActorDeferred<AEnemyCharacter>(CharacterClass, SpawnTransform, Owner, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (!IsValid(Character))
 	{
@@ -136,24 +147,58 @@ void UEnemyManagerComponent::SpawnEnemy(const FEnemySpawnData& Data)
 		return;
 	}
 	
-	FGuid EnemyId = FGuid::NewGuid();
-
 	Character->CharacterAsset = Asset;
-	Character->CharacterData = Data.CharacterData;
-	Character->EnemyData = Data.EnemyData;
-	Character->EnemyData.EnemyId = EnemyId;
+	Character->CharacterData = CharacterData;
+	Character->EnemyData = EnemyData;
 	Character->InitializeCharacter();
 	Character->FinishSpawning(SpawnTransform);
 
-	RegisterEnemy(EnemyId, Character);
+	RegisterEnemy(EnemyData.EnemyId, Character);
+}
+
+bool UEnemyManagerComponent::SpawnCondition(const FEnemySpawnData& Data) const
+{
+	const FEnemyInitializationData& EnemyData = Data.EnemyData;
+
+	if (EnemyData.RespawnType == EEnemyRespawnType::SpawnOnce)
+	{
+		if (IsValid(StorageManager) && StorageManager->ContainsKillTimestamp(EnemyData.EnemyId))
+		{
+			return false;
+		}
+	}
+	else if (EnemyData.RespawnType == EEnemyRespawnType::RespawnAfterDelay)
+	{
+		if (IsValid(StorageManager))
+		{
+			FDateTime KillTimestamp = StorageManager->GetKillTimestamp(EnemyData.EnemyId);
+			FDateTime ExpectedRespawnTime = KillTimestamp + EnemyData.RespawnDelay;
+			FDateTime Now = FDateTime::Now();
+
+			if (ExpectedRespawnTime > Now)
+			{
+				return false;
+			}
+		}
+	}
+	else if (EnemyData.RespawnType == EEnemyRespawnType::RespawnImmediately)
+	{
+		return true;
+	}
+	else if (EnemyData.RespawnType == EEnemyRespawnType::Never)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 void UEnemyManagerComponent::RegisterEnemy(FGuid EnemyId, AEnemyCharacter* Character)
 {
 	if (IsValid(Character))
 	{
-		Character->OnCharacterDied.AddUObject(this, &UEnemyManagerComponent::OnEnemyDataUpdated);
-		Character->OnCharacterRevived.AddUObject(this, &UEnemyManagerComponent::OnEnemyDataUpdated);
+		Character->OnCharacterDied.AddUObject(this, &UEnemyManagerComponent::HandleOnEnemyStateChanged, EnemyId, false);
+		Character->OnCharacterRevived.AddUObject(this, &UEnemyManagerComponent::HandleOnEnemyStateChanged, EnemyId, true);
 
 		ActiveEnemies.Add(EnemyId, Character);
 	}
@@ -180,28 +225,47 @@ void UEnemyManagerComponent::CleanupEnemies()
 	ActiveEnemies.Empty();
 }
 
-void UEnemyManagerComponent::OnEnemyDataUpdated()
+void UEnemyManagerComponent::HandleOnEnemyStateChanged(FGuid EnemyId, bool bIsAlive)
 {
-	int TotalCount = ActiveEnemies.Num();
-	int RemainingCount = GetRemainingEnemiesCount();
-
-	if (RemainingCount <= 0)
+	const FEnemySpawnData* Data = SpawnData.FindByPredicate([EnemyId](const FEnemySpawnData& Data) { return Data.EnemyData.EnemyId == EnemyId; });
+	if (Data)
 	{
-		PRINT_WARNING(LogTemp, 2.0f, TEXT("All enemies died"));
+		HandleEnemyTimestamp(Data, bIsAlive);
+		HandleEnemyDrop(Data, bIsAlive);
 	}
 }
 
-int UEnemyManagerComponent::GetRemainingEnemiesCount() const
+void UEnemyManagerComponent::HandleEnemyTimestamp(const FEnemySpawnData* Data, bool bIsAlive)
 {
-	int AliveCount = 0;
-	for (const TPair<FGuid, TObjectPtr<AEnemyCharacter>>& Kv : ActiveEnemies)
+	const FEnemyInitializationData& EnemyData = Data->EnemyData;
+	const EEnemyRespawnType& RespawnType = EnemyData.RespawnType;
+
+	if (IsValid(StorageManager) && (RespawnType == EEnemyRespawnType::SpawnOnce || RespawnType == EEnemyRespawnType::RespawnAfterDelay))
 	{
-		AEnemyCharacter* Enemy = Kv.Value.Get();
-		if (IsValid(Enemy) && Enemy->IsAlive())
+		if (bIsAlive)
 		{
-			++AliveCount;
+			StorageManager->RemoveKillTimestamp(EnemyData.EnemyId);
+		}
+		else
+		{
+			StorageManager->AddKillTimestamp(EnemyData.EnemyId);
 		}
 	}
-	return AliveCount;
+}
+
+void UEnemyManagerComponent::HandleEnemyDrop(const FEnemySpawnData* Data, bool bIsAlive)
+{
+	const FEnemyInitializationData& EnemyData = Data->EnemyData;
+	if (EnemyData.bEnableDrop && EnemyData.DropData.IsValid() && !bIsAlive)
+	{
+		const UEnemySettings* Settings = UEnemySettings::Get();
+		const FGameplayTag& DropRewardTag = Settings->TagEvent_DropReward;
+
+		UBroadcastSubsystem* BroadcastSubsystem = UBroadcastSubsystem::Get(GetWorld());
+		if (IsValid(BroadcastSubsystem) && DropRewardTag.IsValid())
+		{
+			BroadcastSubsystem->BroadcastMessage(DropRewardTag, EnemyData.DropData);
+		}
+	}
 }
 

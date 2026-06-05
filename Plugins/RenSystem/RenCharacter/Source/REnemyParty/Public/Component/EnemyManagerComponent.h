@@ -4,17 +4,16 @@
 
 // Project Headers
 #include "Definition/EnemyData.h"
-#include "Definition/QueryType.h"
 
 // Generated Headers
 #include "EnemyManagerComponent.generated.h"
 
 // Forward Declarations
 class FObjectPreSaveContext;
-class URAssetManager;
-class UPartySubsystem;
-class UPartyStorageManager;
+class UAssetManager;
 class AEnemyCharacter;
+class UEnemyStorageManager;
+struct FStreamableHandle;
 
 
 /**
@@ -51,34 +50,33 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Source")
-	EDataSource SourceType = EDataSource::Static;
-
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Collection")
 	TMap<FGuid, TObjectPtr<AEnemyCharacter>> ActiveEnemies;
 
-	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager = nullptr;
+	TObjectPtr<UAssetManager> AssetManager = nullptr;
+	TObjectPtr<UEnemyStorageManager> StorageManager = nullptr;
 
 
 	void GetSpawningAssetIds(TArray<FPrimaryAssetId>& OutAssetIds) const;
 
 	void SpawnEnemies();
 	void SpawnEnemy(const FEnemySpawnData& Data);
+	bool SpawnCondition(const FEnemySpawnData& Data) const;
 
 	void RegisterEnemy(FGuid EnemyId, AEnemyCharacter* Character);
 	void UnregisterEnemy(AEnemyCharacter* Character);
 
 	void CleanupEnemies();
 	
-	void OnEnemyDataUpdated();
-
-	int GetRemainingEnemiesCount() const;
+	// ~ Binding
+	void HandleOnEnemyStateChanged(FGuid EnemyId, bool bIsAlive);
+	void HandleEnemyTimestamp(const FEnemySpawnData* Data, bool bIsAlive);
+	void HandleEnemyDrop(const FEnemySpawnData* Data, bool bIsAlive);
+	// ~ End of Binding
 
 private:
 
-	FGuid _SpawnId;
-	FVector _SpawnLocation;
+	TSharedPtr<FStreamableHandle> _SpawnHandle = nullptr;
 
 };
 
