@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Definition/PoolCollection.h"
-#include "EventflowDefinition.h"
+#include "StateMachine/FiniteStateMachine.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"
@@ -15,76 +15,135 @@
 // Forward Declarations
 class UAssetManager;
 class UEventflowAsset;
-class UEventflowTask;
+class UEventflowPrimaryTask;
 struct FStreamableHandle;
-struct FEventflowNodeDefinition;
+struct FEventflowNode;
 struct FEventflowPinRelation;
 
+
+/**
+ *
+ */
+UENUM(BlueprintType)
+enum class EEventflowEntryLocation : uint8
+{
+	Root UMETA(DisplayName = "Root"),
+	Custom UMETA(DisplayName = "Custom")
+};
+
+
+/**
+ *
+ */
+USTRUCT(BlueprintType)
+struct FEventflowEntryDefinition
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bAutoStart==true", EditConditionHides))
+	EEventflowEntryLocation EntryLocation = EEventflowEntryLocation::Root;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "EntryLocation==EEventflowEntryLocation::Custom", EditConditionHides))
+	FGuid NodeId = FGuid();
+
+	void Reset()
+	{
+		EntryLocation = EEventflowEntryLocation::Root;
+		NodeId = FGuid();
+	}
+
+};
 
 
 /**
  *
  */
 UCLASS(MinimalAPI, BlueprintType, Blueprintable)
-class UEventflowEngine : public UObject
+class UEventflowEngine : public UFiniteStateMachine
 {
 
 	GENERATED_BODY()
 
 public:
 
-	DECLARE_DELEGATE(FEventflowEngineDelegate);
-	FEventflowEngineDelegate OnStarted;
-	FEventflowEngineDelegate OnEnded;
-
-
 	UFUNCTION(BlueprintCallable)
-	REN_API void InitializeEngine(const FPrimaryAssetId& AssetId);
+	REN_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntryDefinition& EntryDefinition);
 
-	UFUNCTION(BlueprintCallable)
-	REN_API void DeinitializeEngine();
+	// ~ UObject
+	REN_API virtual UWorld* GetWorld() const override;
+	// ~ End of UObject
 
-	UFUNCTION(BlueprintCallable)
-	REN_API virtual void StartEngine();
+	REN_API UEventflowPrimaryTask* GetTask() const;
 
-	UFUNCTION(BlueprintCallable)
-	REN_API virtual void StopEngine(bool bInterrupted);
+	template<typename T>
+	T* GetTask()
+	{
+		return Cast<T>(GetTask());
+	}
+
+	REN_API UEventflowAsset* GetAsset() const;
+
+	template<typename T>
+	T* GetAsset()
+	{
+		return Cast<T>(GetAsset());
+	}
 
 protected:
 
-	FGuid CurrentLoadId;
-	FPrimaryAssetId CurrentAssetId;
-	FGuid CurrentNodeId;
+	REN_API virtual void GetAssetBundle(TArray<FName>& OutBundle) const;
 
-	UPROPERTY()
-	TObjectPtr<UEventflowAsset> CurrentAsset = nullptr;
+	REN_API const FEventflowNode* GetNode(const FGuid& NodeId) const;
+	REN_API const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
 
-	UPROPERTY()
-	TObjectPtr<UEventflowTask> CurrentTask = nullptr;
+	REN_API void ReachNode(const FGuid& NodeId);
+	REN_API void ReachEntryNode();
+	REN_API void ReachNextNode(int Index = 0);
+	REN_API void ReachPreviousNode();
 
-	UPROPERTY()
-	TObjectPtr<UAssetManager> AssetManager = nullptr;
+	REN_API void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
+	REN_API void RemoveTask();
 
-	const FEventflowNodeDefinition* GetNode(const FGuid& NodeId) const;
-	const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
+	// ~ Bindings
+	REN_API virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	// ~ End of Bindings
 
-	void ReachNode(const FGuid& NodeId);
-	void ReachEntryNode();
-	void ReachNextNode(int Index = 0);
+	// ~ UFiniteStateMachine
+	REN_API virtual void OnInitialized(EFSMState PreviousState) override;
+	REN_API virtual void OnLoaded(EFSMState PreviousState) override;
+	REN_API virtual void OnReady(EFSMState PreviousState) override;
 
-	void CreateActiveTask(const FGuid& NodeId, const FEventflowNodeDefinition* Node);
-	void RemoveActiveTask();
-	void HandleTaskFinished(EEventflowDirection Direction, int Index);
+	REN_API virtual void OnActive(EFSMState PreviousState) override;
+	REN_API virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
 
-	void HandleInitialization();
-	void Fail(const FString& Message);
+	REN_API virtual void OnFinished(EFSMResult Result) override;
+	REN_API virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
+	REN_API virtual void OnReset() override;
+	// ~ End of UFiniteStateMachine
 
 private:
 
-	TSharedPtr<FStreamableHandle> _SpawnHandle;
+	FEventflowEntryDefinition _EntryDefinition;
 
 	UPROPERTY()
 	TMap<UClass*, FPoolCollection> _TaskPool;
+
+	UPROPERTY()
+	TObjectPtr<UEventflowPrimaryTask> _ActiveTask = nullptr;
+
+	FGuid _ActiveNodeId;
+
+	FPrimaryAssetId _AssetId;
+
+	TSharedPtr<FStreamableHandle> _AssetHandle = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UEventflowAsset> _Asset = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UAssetManager> _AssetManager = nullptr;
 
 };
 

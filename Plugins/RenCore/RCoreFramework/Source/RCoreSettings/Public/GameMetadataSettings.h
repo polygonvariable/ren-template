@@ -20,7 +20,7 @@
 /**
  *
  */
-UCLASS(Config = Game, defaultconfig, Meta = (DisplayName = "Game Metadata"))
+UCLASS(Config = Game, defaultconfig, meta = (DisplayName = "Game Metadata"))
 class REN_API UGameMetadataSettings : public UDeveloperSettings
 {
 

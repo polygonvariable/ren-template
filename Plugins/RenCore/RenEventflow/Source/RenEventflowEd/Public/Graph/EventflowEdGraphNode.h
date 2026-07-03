@@ -4,7 +4,9 @@
 
 // Engine Headers
 #include "EdGraph/EdGraphNode.h"
-#include "InstancedStruct.h"
+
+// Project Headers
+#include "Definition/EventflowTransition.h"
 
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"
@@ -13,7 +15,8 @@
 #define REN_API RENEVENTFLOWED_API
 
 // Forward Declarations
-class UEventflowTask;
+class UEventflowPrimaryTask;
+class UEventflowSubTask;
 
 
 /*
@@ -27,20 +30,25 @@ class REN_API UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	UPROPERTY(EditAnywhere, Instanced)
-	TObjectPtr<UEventflowTask> PrimaryTask = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Task Transition")
+	TArray<FEventflowTransition> TaskTransitions;
 
-	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<UEventflowTask>> SecondaryTasks;
+	UPROPERTY(EditAnywhere, Category = "Sub Task Condition")
+	TMap<EFSMResult, FEventflowCondition_TaskState> SubTaskConditions;
 
 
-	virtual bool GetIsEntryNode() const;
+	virtual UEventflowPrimaryTask* GetTask() const;
+	virtual void SetTask(UEventflowPrimaryTask* Task);
+
+	virtual TArray<UEventflowSubTask*> GetSubTasks() const;
+	virtual void SetSubTasks(const TArray<UEventflowSubTask*>& Tasks);
+
+	virtual bool IsEntryNode() const;
 	virtual FText GetNodeDescription() const;
 
 	virtual TArray<FText> GetRuntimeInputPins() const;
 	virtual TArray<FText> GetRuntimeOutputPins() const;
-
-	virtual void SyncRuntimePins();
+	virtual void SyncRuntimeData();
 
 	// ~ UEdGraphNode
 	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;

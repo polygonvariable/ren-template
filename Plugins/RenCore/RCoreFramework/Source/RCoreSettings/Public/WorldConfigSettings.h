@@ -33,10 +33,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "World Config Settings")
 	FVector SpawnLocation;
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
+	UPROPERTY(EditAnywhere, meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> ClockAsset;
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"), Category = "World Config Settings")
+	UPROPERTY(EditAnywhere, meta = (AllowedClasses = "/Script/RenEnvironment.EnvironmentAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> EnvironmentAsset;
 
 };

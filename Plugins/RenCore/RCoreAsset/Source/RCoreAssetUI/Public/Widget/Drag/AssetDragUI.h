@@ -34,10 +34,10 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> AssetIcon = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> AssetDisplayName = nullptr;
 
 };

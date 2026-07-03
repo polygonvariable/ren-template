@@ -1,0 +1,43 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Ren Quest",
+	"Description": "",
+	"Category": "Ren System",
+	"CreatedBy": "polygonvariable",
+	"CreatedByURL": "",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "RQuest",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RQuestEd",
+			"Type": "Editor",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "RCoreFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "RCoreStorage",
+			"Enabled": true
+		},
+		{
+			"Name": "RenEventflow",
+			"Enabled": true
+		}
+	]
+}

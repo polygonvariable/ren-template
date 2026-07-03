@@ -22,7 +22,7 @@ struct FGameplayEventData;
  * 
  * 
  */
-UCLASS(BlueprintType, Meta = (ExposedAsyncProxy = AsyncTask))
+UCLASS(BlueprintType, meta = (ExposedAsyncProxy = AsyncTask))
 class UWaitForGameplayNotify : public UBlueprintAsyncActionBase
 {
 
@@ -35,7 +35,7 @@ public:
 	FOnNotifyReceived OnReceived;
 
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintInternalUseOnly = "true", WorldContext = "InWorldContext"))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", WorldContext = "InWorldContext"))
 	static UWaitForGameplayNotify* WaitForGameplayNotify(FGameplayTag InNotifyTag, UObject* InWorldContext);
 
 	UFUNCTION(BlueprintCallable)

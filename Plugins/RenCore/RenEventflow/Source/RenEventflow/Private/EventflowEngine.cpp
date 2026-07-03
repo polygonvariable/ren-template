@@ -7,182 +7,309 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "EventflowAsset.h"
-#include "EventflowTask.h"
+#include "Asset/EventflowAsset.h"
 #include "Library/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
+#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Task/EventflowPrimaryTask.h"
 
 
-void UEventflowEngine::InitializeEngine(const FPrimaryAssetId& AssetId)
+void UEventflowEngine::InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntryDefinition& EntryDefinition)
 {
-	AssetManager = UAssetManager::GetIfInitialized();
-
-	if (CurrentAssetId.IsValid() || IsValid(CurrentAsset))
-	{
-		Fail(TEXT("Engine is already initialized"));
-		return;
-	}
-
-	if (!AssetId.IsValid() || !IsValid(AssetManager))
-	{
-		Fail(TEXT("AssetId, AssetManager is invalid"));
-		return;
-	}
-
-	CurrentAssetId = AssetId;
-
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
-
-	_SpawnHandle = AssetManager->LoadPrimaryAsset(CurrentAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UEventflowEngine::HandleInitialization));
-}
-
-void UEventflowEngine::DeinitializeEngine()
-{
-	CurrentAsset = nullptr;
-	CurrentNodeId = FGuid();
-
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
-	AssetManager->UnloadPrimaryAsset(CurrentAssetId);
-	AssetManager = nullptr;
-
-	CurrentAssetId = FPrimaryAssetId();
-}
-
-void UEventflowEngine::HandleInitialization()
-{
-	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
-
-	CurrentAsset = AssetManager->GetPrimaryAssetObject<UEventflowAsset>(CurrentAssetId);
-	if (!IsValid(CurrentAsset))
-	{
-		Fail(TEXT("Failed to load asset"));
-		return;
-	}
-	StartEngine();
+	_AssetId = AssetId;
+	_EntryDefinition = EntryDefinition;
 }
 
 
-void UEventflowEngine::StartEngine()
+UWorld* UEventflowEngine::GetWorld() const
 {
-	OnStarted.ExecuteIfBound();
-	ReachEntryNode();
+	return GetOuter()->GetWorld();
 }
 
-void UEventflowEngine::StopEngine(bool bInterrupted)
+UEventflowPrimaryTask* UEventflowEngine::GetTask() const
 {
-	RemoveActiveTask();
-	OnEnded.ExecuteIfBound();
+	return _ActiveTask.Get();
+}
+
+UEventflowAsset* UEventflowEngine::GetAsset() const
+{
+	return _Asset;
 }
 
 
-const FEventflowNodeDefinition* UEventflowEngine::GetNode(const FGuid& NodeId) const
+void UEventflowEngine::GetAssetBundle(TArray<FName>& OutBundle) const
 {
-	return CurrentAsset->NodeCollection.Find(NodeId);
+}
+
+
+const FEventflowNode* UEventflowEngine::GetNode(const FGuid& NodeId) const
+{
+	return _Asset->NodeCollection.Find(NodeId);
 }
 
 const FEventflowPinRelation* UEventflowEngine::GetPinRelation(const FGuid& PinId) const
 {
-	return CurrentAsset->PinRelation.Find(PinId);
+	return _Asset->PinRelation.Find(PinId);
 }
 
 
 void UEventflowEngine::ReachNode(const FGuid& NodeId)
 {
-	const FEventflowNodeDefinition* Node = GetNode(NodeId);
+	const FEventflowNode* Node = GetNode(NodeId);
 	if (!Node)
 	{
-		Fail(TEXT("Failed to find entry node"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find entry node"));
+		Finish(EFSMResult::Failed);
 		return;
 	}
 
-	CurrentNodeId = NodeId;
+	_ActiveNodeId = NodeId;
 
-	RemoveActiveTask();
-	CreateActiveTask(NodeId, Node);
+	RemoveTask();
+	CreateTask(NodeId, Node);
 }
 
 void UEventflowEngine::ReachEntryNode()
 {
-	ReachNode(CurrentAsset->EntryNodeId);
+	ReachNode(_Asset->EntryNodeId);
 }
 
 void UEventflowEngine::ReachNextNode(int Index)
 {
-	const FEventflowNodeDefinition* CurrentNode = GetNode(CurrentNodeId);
+	const FEventflowNode* CurrentNode = GetNode(_ActiveNodeId);
 	if (!CurrentNode)
 	{
-		Fail(TEXT("Failed to find node"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
+		Finish(EFSMResult::Failed);
 		return;
 	}
 
-	const TArray<FEventflowPinDefinition>& Outputs = CurrentNode->StaticOutputs;
+	const TArray<FEventflowPin>& Outputs = CurrentNode->StaticOutputs;
 	if (Outputs.Num() == 0)
 	{
-		LOG_WARNING(LogTemp, TEXT("Node has no outputs, stopping engine"));
-
-		StopEngine(false);
+		Finish(EFSMResult::Success);
 		return;
 	}
 
 	if (!Outputs.IsValidIndex(Index))
 	{
-		Fail(TEXT("Invalid output index"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Invalid output index"));
+		Finish(EFSMResult::Failed);
 		return;
 	}
 
 	const FEventflowPinRelation* Relation = GetPinRelation(Outputs[Index].UniqueId);
 	if (!Relation)
 	{
-		Fail(TEXT("Failed to find output relation"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find output relation"));
+		Finish(EFSMResult::Failed);
 		return;
 	}
 
 	ReachNode(Relation->LinkedToNode);
 }
 
-
-void UEventflowEngine::CreateActiveTask(const FGuid& NodeId, const FEventflowNodeDefinition* Node)
+void UEventflowEngine::ReachPreviousNode()
 {
-	if (!IsValid(Node->PrimaryTask))
+	const FEventflowNode* CurrentNode = GetNode(_ActiveNodeId);
+	if (!CurrentNode)
 	{
-		LOG_WARNING(LogTemp, TEXT("Task class is invalid, no task will be created"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
+		Finish(EFSMResult::Failed);
 		return;
 	}
 
-	UClass* TaskClass = Node->PrimaryTask->GetClass();
-
-	CurrentTask = FPoolHelper::AcquireFromContainer<UEventflowTask>(_TaskPool, TaskClass, this);
-	CurrentTask->CopyFromTemplate(Node->PrimaryTask);
-	CurrentTask->OnTaskFinished.BindUObject(this, &UEventflowEngine::HandleTaskFinished);
-	CurrentTask->InitializeTask(NodeId, Node);
-}
-
-void UEventflowEngine::RemoveActiveTask()
-{
-	if (IsValid(CurrentTask))
+	const TArray<FEventflowPin>& Inputs = CurrentNode->StaticInputs;
+	if (Inputs.Num() == 0)
 	{
-		CurrentTask->OnTaskFinished.Unbind();
-		CurrentTask->DeinitializeTask();
-		FPoolHelper::ReturnToContainer(_TaskPool, CurrentTask);
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find input"));
+		Finish(EFSMResult::Failed);
+		return;
 	}
-	CurrentTask = nullptr;
-}
 
-void UEventflowEngine::HandleTaskFinished(EEventflowDirection Direction, int Index)
-{
-	if (Direction == EEventflowDirection::Next)
+	const TMap<FGuid, FEventflowPinRelation>& PinRelation = _Asset->PinRelation;
+	for (const TPair<FGuid, FEventflowPinRelation>& Kv : PinRelation)
 	{
-		RemoveActiveTask();
-		ReachNextNode(Index);
+		if (Kv.Value.LinkedToPin == Inputs[0].UniqueId)
+		{
+			ReachNode(Kv.Value.LinkedToNode);
+			return;
+		}
+	}
+
+	LOG_ERROR(LogEventflowEngine, TEXT("Failed to find input relation"));
+	Finish(EFSMResult::Failed);
+}
+
+
+void UEventflowEngine::CreateTask(const FGuid& NodeId, const FEventflowNode* Node)
+{
+	const UEventflowPrimaryTask* AssetTask = Node->Task;
+	if (!IsValid(AssetTask))
+	{
+		LOG_WARNING(LogEventflowEngine, TEXT("Primary task is invalid"));
+		return;
+	}
+
+	UClass* Class = AssetTask->GetClass();
+
+	_ActiveTask = FPoolHelper::AcquireFromContainer<UEventflowPrimaryTask>(_TaskPool, Class, this);
+	_ActiveTask->OnStateChanged.BindUObject(this, &UEventflowEngine::HandleOnTaskStateChanged);
+	_ActiveTask->CopyFromAsset(AssetTask);
+	_ActiveTask->InitializeData(NodeId, Node);
+	_ActiveTask->Initialize();
+}
+
+void UEventflowEngine::RemoveTask()
+{
+	if (IsValid(_ActiveTask))
+	{
+		_ActiveTask->OnStateChanged.Unbind();
+
+		if (_ActiveTask->GetState() == EFSMState::Active)
+		{
+			_ActiveTask->Finish(EFSMResult::Aborted);
+		}
+		if (_ActiveTask->GetState() != EFSMState::Uninitialized)
+		{
+			_ActiveTask->Reset();
+		}
+
+		FPoolHelper::ReturnToContainer(_TaskPool, _ActiveTask);
+		LOG_WARNING(LogEventflowEngine, TEXT("Primary task removed and returned to pool"));
+	}
+
+	_ActiveTask = nullptr;
+}
+
+void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result)
+{
+	FString TaskState = UEnum::GetDisplayValueAsText(NewState).ToString();
+
+	if (NewState == EFSMState::Finished)
+	{
+		UEventflowPrimaryTask* Task = GetTask();
+		if (IsValid(Task))
+		{
+			int TransitionIndex = Task->GetTransitionIndex(Result);
+			EEventflowTransitionType TransitionType = Task->GetTransitionType(Result);
+
+			switch (TransitionType)
+			{
+			case EEventflowTransitionType::GraphFail:
+				LOG_ERROR(LogEventflowEngine, TEXT("Graph failed caused by task transition"));
+				Finish(EFSMResult::Failed);
+				break;
+			case EEventflowTransitionType::GraphSuccess:
+				LOG_WARNING(LogEventflowEngine, TEXT("Graph success caused by task transition"))
+				Finish(EFSMResult::Success);
+				break;
+			case EEventflowTransitionType::NextNode:
+				ReachNextNode(TransitionIndex);
+				break;
+			case EEventflowTransitionType::RestartNode:
+				Task->Restart();
+				break;
+			default:
+				LOG_ERROR(LogTemp, TEXT("Unknown transition type"));
+				break;
+			}
+		}
+		else
+		{
+			LOG_ERROR(LogEventflowEngine, TEXT("Primary task is invalid, no task will be handled"));
+			Finish(EFSMResult::Failed);
+		}
 	}
 }
 
 
-void UEventflowEngine::Fail(const FString& Message)
+void UEventflowEngine::OnInitialized(EFSMState PreviousState)
 {
-	LOG_ERROR(LogTemp, TEXT("%s"), *Message);
-	StopEngine(true);
+	_AssetManager = UAssetManager::GetIfInitialized();
+	if (!_AssetId.IsValid() || !IsValid(_AssetManager))
+	{
+		LOG_ERROR(LogEventflowEngine, TEXT("AssetId or _AssetManager is invalid"));
+		Finish(EFSMResult::Aborted);
+		return;
+	}
+
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
+
+	TArray<FName> AssetBundle;
+	GetAssetBundle(AssetBundle);
+
+	_AssetHandle = _AssetManager->LoadPrimaryAsset(_AssetId, AssetBundle, FStreamableDelegate::CreateUObject(this, &UEventflowEngine::Load));
 }
 
+void UEventflowEngine::OnLoaded(EFSMState PreviousState)
+{
+	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+
+	_Asset = _AssetManager->GetPrimaryAssetObject<UEventflowAsset>(_AssetId);
+	if (!IsValid(_Asset))
+	{
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to load asset"));
+		Finish(EFSMResult::Aborted);
+		return;
+	}
+
+	Ready();
+}
+
+void UEventflowEngine::OnReady(EFSMState PreviousState)
+{
+	Execute();
+}
+
+void UEventflowEngine::OnActive(EFSMState PreviousState)
+{
+	switch (_EntryDefinition.EntryLocation)
+	{
+	case EEventflowEntryLocation::Root:
+		ReachEntryNode();
+		break;
+	case EEventflowEntryLocation::Custom:
+		ReachNode(_EntryDefinition.NodeId);
+		break;
+	default:
+		LOG_ERROR(LogEventflowEngine, TEXT("Unknown entry location"));
+	}
+}
+
+void UEventflowEngine::OnEndActive(EFSMState NextState, EFSMResult Result)
+{
+
+}
+
+void UEventflowEngine::OnFinished(EFSMResult Result)
+{
+
+}
+
+void UEventflowEngine::OnRestart(EFSMState PreviousState, EFSMResult PreviousResult)
+{
+
+}
+
+void UEventflowEngine::OnReset()
+{
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
+
+	RemoveTask();
+
+	_Asset = nullptr;
+
+	if (IsValid(_AssetManager))
+	{
+		_AssetManager->UnloadPrimaryAsset(_AssetId);
+	}
+	_AssetManager = nullptr;
+
+	_AssetId = FPrimaryAssetId();
+	_EntryDefinition.Reset();
+
+	_ActiveNodeId.Invalidate();
+}
 

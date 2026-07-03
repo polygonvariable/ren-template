@@ -28,13 +28,13 @@ public:
     UPROPERTY(EditDefaultsOnly)
     FLinearColor Tint = FColor::Transparent;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Specular = 0.0f;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Roughness = 0.0f;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Opacity = 0.0f;
 
     void Reset();

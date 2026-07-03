@@ -28,7 +28,7 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> InteractTitle;
 
 

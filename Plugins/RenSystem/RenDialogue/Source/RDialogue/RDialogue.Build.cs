@@ -30,6 +30,7 @@ public class RDialogue : ModuleRules
 				"UMG",
 				"StructUtils",
                 "RenEventflow",
+                "RCoreCommon",
             }
 			);
 			

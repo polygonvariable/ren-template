@@ -47,12 +47,12 @@ protected:
 
 #if WITH_EDITORONLY_DATA
 
-	UPROPERTY(EditDefaultsOnly, Meta = (DisplayName = "Asset List (Editor)"))
+	UPROPERTY(EditDefaultsOnly, meta = (DisplayName = "Asset List (Editor)"))
 	TArray<FAssetDetail> AssetListEd;
 
 #endif
 
-	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset List"))
+	UPROPERTY(VisibleAnywhere, meta = (DisplayName = "Asset List"))
 	TMap<FPrimaryAssetId, FAssetDetail> AssetList;
 
 };

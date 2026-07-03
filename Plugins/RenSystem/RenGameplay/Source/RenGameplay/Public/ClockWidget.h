@@ -32,7 +32,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UClockSubsystem> ClockSubsystem;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TimeTextBlock;
 
 

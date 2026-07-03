@@ -26,7 +26,7 @@ class UEquipmentSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Equipment"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Equipment"))
 class UEquipmentSettings : public UDeveloperSettings
 {
 
@@ -92,7 +92,7 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Equipment Settings"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Equipment Settings"))
 	static REN_API const UEquipmentSettings* Get();
 
 

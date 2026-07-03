@@ -45,7 +45,7 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UPanelWidget> EffectStackPanel;
 
 	UPROPERTY(BlueprintReadOnly)

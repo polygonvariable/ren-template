@@ -68,10 +68,10 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> FilterTitle = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> FilterButton = nullptr;
 
 
@@ -110,7 +110,7 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UPanelWidget> FilterBox = nullptr;
 
 	UPROPERTY(EditAnywhere)

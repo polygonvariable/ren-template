@@ -31,7 +31,7 @@ public:
 
 protected:
 
-	//UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Equipment", MetaClass = "EquipmentActor", AllowAbstract = false))
+	//UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Equipment", MetaClass = "EquipmentActor", AllowAbstract = false))
 	//FSoftClassPath EquipmentActorClass;
 	
 	//UPROPERTY()

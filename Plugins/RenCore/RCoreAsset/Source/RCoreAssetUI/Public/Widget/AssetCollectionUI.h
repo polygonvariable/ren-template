@@ -37,7 +37,7 @@ public:
 	DECLARE_DELEGATE(FOnSelectionCleared);
 	FOnSelectionCleared OnSelectionCleared;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true))
 	FName PrimarySourceId = NAME_None;
 
 
@@ -85,7 +85,7 @@ protected:
 	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
 	TObjectPtr<UFilterGroup> FilterRule = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UListView> EntryList = nullptr;
 
 	UPROPERTY()

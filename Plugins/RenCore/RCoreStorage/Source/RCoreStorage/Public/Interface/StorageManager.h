@@ -15,7 +15,7 @@
 #define REN_API RCORESTORAGE_API
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UStorageManager : public UInterface
 {
 	GENERATED_BODY()

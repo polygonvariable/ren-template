@@ -34,16 +34,16 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> EquipmentCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetDetailUI> OwnerDetail = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UEquipmentSlotCollectionUI> SlotCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> SyncButton = nullptr;
 
 	UPROPERTY()

@@ -48,19 +48,19 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> LevelItemCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> RankItemCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> LevelUpButton = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> RankUpButton = nullptr;
 
 	FGuid ActiveItemId;

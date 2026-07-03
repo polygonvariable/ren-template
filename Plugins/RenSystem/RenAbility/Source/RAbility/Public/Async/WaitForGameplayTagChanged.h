@@ -20,7 +20,7 @@ class UAbilitySystemComponent;
 /**
  *
  */
-UCLASS(BlueprintType, Meta = (ExposedAsyncProxy = AsyncTask))
+UCLASS(BlueprintType, meta = (ExposedAsyncProxy = AsyncTask))
 class UWaitForGameplayTagChanged : public UBlueprintAsyncActionBase
 {
 
@@ -32,7 +32,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnTagChanged OnTagChanged;
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintInternalUseOnly = "true", DefaultToSelf = "Actor"))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", DefaultToSelf = "Actor"))
 	static UWaitForGameplayTagChanged* WaitForGameplayTagChanged(AActor* Actor, FGameplayTag Tag);
 
 	UFUNCTION(BlueprintCallable)

@@ -28,7 +28,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UShopSubsystem> ShopSubsystem;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> ShopButton = nullptr;
 
 

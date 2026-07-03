@@ -52,10 +52,10 @@ protected:
 
 
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TitleTextBlock;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ValueTextBlock;
 
 
@@ -128,7 +128,7 @@ class UAbilityDebugWidget : public UUserWidget
 
 protected:
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> EffectCount;
 
 

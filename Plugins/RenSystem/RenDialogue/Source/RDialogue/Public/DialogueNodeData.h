@@ -20,13 +20,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	FText Speaker;
 
-	UPROPERTY(EditAnywhere, Meta = (AssetBundles = "Dialogue"))
+	UPROPERTY(EditAnywhere, meta = (AssetBundles = "Dialogue"))
 	TSoftObjectPtr<UTexture2D> SpeakerImage;
 
 	UPROPERTY(EditAnywhere)
 	FText Content;
 
-	UPROPERTY(EditAnywhere, Meta = (AssetBundles = "Dialogue"))
+	UPROPERTY(EditAnywhere, meta = (AssetBundles = "Dialogue"))
 	TSoftObjectPtr<USoundBase> Audio;
 
 	UPROPERTY(EditAnywhere)

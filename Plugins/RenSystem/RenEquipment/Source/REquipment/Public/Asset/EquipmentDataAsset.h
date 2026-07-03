@@ -35,7 +35,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bEnableInput = false;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnableInput==true", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnableInput==true", EditConditionHides))
 	int InputId = -1;
 
 };

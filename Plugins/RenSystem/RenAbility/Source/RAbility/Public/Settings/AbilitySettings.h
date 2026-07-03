@@ -16,7 +16,7 @@ class UGameplayEffect;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Ability"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Ability"))
 class UAbilitySettings : public UDeveloperSettings
 {
 

@@ -4,10 +4,11 @@
 #include "Graph/EventflowEdGraph.h"
 
 // Project Headers
-#include "EventflowAsset.h"
-#include "EventflowTask.h"
+#include "Asset/EventflowAsset.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
+#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowSubTask.h"
 
 
 void UEventflowEdGraph::InitializeGraph(UEventflowAsset* GraphAsset)
@@ -22,7 +23,7 @@ void UEventflowEdGraph::SerializeGraph(UEventflowAsset* GraphAsset)
 		return;
 	}
 
-	TMap<FGuid, FEventflowNodeDefinition>& NodeCollection = GraphAsset->NodeCollection;
+	TMap<FGuid, FEventflowNode>& NodeCollection = GraphAsset->NodeCollection;
 	NodeCollection.Empty();
 
 	TMap<FGuid, FEventflowPinRelation>& PinRelation = GraphAsset->PinRelation;
@@ -38,7 +39,7 @@ void UEventflowEdGraph::SerializeGraph(UEventflowAsset* GraphAsset)
 }
 
 
-void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNodeDefinition>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation)
+void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNode>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation)
 {
 	UEventflowEdGraphNode* EdNode = Cast<UEventflowEdGraphNode>(Node);
 	if (!IsValid(EdNode))
@@ -46,14 +47,14 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 		return;
 	}
 
-	FEventflowNodeDefinition NodeDefinition;
+	FEventflowNode NodeDefinition;
 	NodeDefinition.Position.X = Node->NodePosX;
 	NodeDefinition.Position.Y = Node->NodePosY;
-	NodeDefinition.PrimaryTask = DuplicateObject(EdNode->PrimaryTask, GraphAsset);
-	//NodeDefinition.SecondaryTasks = EdNode->SecondaryTasks;
 	NodeDefinition.RuntimeInputs = EdNode->GetRuntimeInputPins();
 	NodeDefinition.RuntimeOutputs = EdNode->GetRuntimeOutputPins();
 	NodeDefinition.ClassName = FName(Node->GetClass()->GetName());
+	
+	SerializeTask(GraphAsset, NodeDefinition, EdNode);
 
 	const TArray<UEdGraphPin*>& Pins = Node->Pins;
 	for (UEdGraphPin* Pin : Pins)
@@ -63,20 +64,43 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 
 	NodeCollection.Add(Node->NodeGuid, NodeDefinition);
 
-	if (EdNode->GetIsEntryNode())
+	if (EdNode->IsEntryNode())
 	{
 		EntryId = Node->NodeGuid;
 	}
 }
 
-void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation)
+void UEventflowEdGraph::SerializeTask(UEventflowAsset* GraphAsset, FEventflowNode& NodeDefinition, UEventflowEdGraphNode* EdNode)
 {
-	if (Pin->LinkedTo.Num() == 0)
+	UEventflowPrimaryTask* TemplateTask = EdNode->GetTask();
+	if (!IsValid(TemplateTask))
 	{
 		return;
 	}
 
-	FEventflowPinDefinition PinDefinition;
+	NodeDefinition.Task = DuplicateObject(TemplateTask, GraphAsset);
+	NodeDefinition.Task->SubTasks.Empty();
+	NodeDefinition.Task->TaskTransitions = EdNode->TaskTransitions;
+	NodeDefinition.Task->SubTaskConditions = EdNode->SubTaskConditions;
+
+	TArray<UEventflowSubTask*> TemplateSubTasks = EdNode->GetSubTasks();
+	for (UEventflowSubTask* Task : TemplateSubTasks)
+	{
+		if (IsValid(Task))
+		{
+			NodeDefinition.Task->SubTasks.Add(DuplicateObject(Task, NodeDefinition.Task));
+		}
+	}
+}
+
+void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNode& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation)
+{
+	if (!Pin || Pin->LinkedTo.Num() == 0)
+	{
+		return;
+	}
+
+	FEventflowPin PinDefinition;
 	PinDefinition.UniqueId = Pin->PinId;
 	PinDefinition.Name = Pin->PinName;
 	PinDefinition.FriendlyName = Pin->PinFriendlyName;
@@ -116,8 +140,8 @@ void UEventflowEdGraph::RenderGraph(UEventflowAsset* GraphAsset)
 
 	TMap<FGuid, UEdGraphPin*> PinCollection;
 
-	const TMap<FGuid, FEventflowNodeDefinition>& NodeCollection = GraphAsset->NodeCollection;
-	for (const TPair<FGuid, FEventflowNodeDefinition>& Kv : NodeCollection)
+	const TMap<FGuid, FEventflowNode>& NodeCollection = GraphAsset->NodeCollection;
+	for (const TPair<FGuid, FEventflowNode>& Kv : NodeCollection)
 	{
 		RenderNode(Kv.Key, Kv.Value, PinCollection);
 	}
@@ -125,11 +149,11 @@ void UEventflowEdGraph::RenderGraph(UEventflowAsset* GraphAsset)
 	RenderNodePinLink(GraphAsset->PinRelation, PinCollection);
 }
 
-void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection)
+void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNode& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection)
 {
 	const UEventflowEdGraphSchema* EdSchema = Cast<UEventflowEdGraphSchema>(GetSchema());
 	UClass* NodeClass = EdSchema->GetRegisteredNodeClass(NodeDefinition.ClassName);
-	if (!IsValid(NodeClass))
+	if (!IsValid(NodeClass) || !IsValid(NodeDefinition.Task))
 	{
 		return;
 	}
@@ -140,21 +164,24 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNodeDefin
 		return;
 	}
 
-	EdNode->AllocateDefaultPins();
 	EdNode->NodeGuid = NodeId;
 	EdNode->NodePosX = NodeDefinition.Position.X;
 	EdNode->NodePosY = NodeDefinition.Position.Y;
-	EdNode->PrimaryTask = NodeDefinition.PrimaryTask;
-	//EdNode->SecondaryTasks = NodeDefinition.SecondaryTasks;
+	EdNode->SetTask(NodeDefinition.Task);
+	EdNode->SetSubTasks(NodeDefinition.Task->SubTasks);
+	EdNode->TaskTransitions = NodeDefinition.Task->TaskTransitions;
+	EdNode->SubTaskConditions = NodeDefinition.Task->SubTaskConditions;
 
-	const TArray<FEventflowPinDefinition>& OutputPins = NodeDefinition.StaticOutputs;
-	for (const FEventflowPinDefinition& Pin : OutputPins)
+	EdNode->AllocateDefaultPins();
+
+	const TArray<FEventflowPin>& OutputPins = NodeDefinition.StaticOutputs;
+	for (const FEventflowPin& Pin : OutputPins)
 	{
 		RenderNodePin(EEdGraphPinDirection::EGPD_Output, Pin, EdNode, PinCollection);
 	}
 
-	const TArray<FEventflowPinDefinition>& InputPins = NodeDefinition.StaticInputs;
-	for (const FEventflowPinDefinition& Pin : InputPins)
+	const TArray<FEventflowPin>& InputPins = NodeDefinition.StaticInputs;
+	for (const FEventflowPin& Pin : InputPins)
 	{
 		RenderNodePin(EEdGraphPinDirection::EGPD_Input, Pin, EdNode, PinCollection);
 	}
@@ -162,7 +189,7 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNodeDefin
 	AddNode(EdNode, false, false);
 }
 
-void UEventflowEdGraph::RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPinDefinition& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection)
+void UEventflowEdGraph::RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPin& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection)
 {
 	FGuid UniqueId = Definition.UniqueId;
 	UEdGraphPin* EdPin = nullptr;
@@ -177,8 +204,11 @@ void UEventflowEdGraph::RenderNodePin(EEdGraphPinDirection Direction, const FEve
 		EdPin->PinType.bIsConst = false;
 	}
 
-	EdPin->PinId = UniqueId;
-	Collection.Add(UniqueId, EdPin);
+	if (EdPin)
+	{
+		EdPin->PinId = UniqueId;
+		Collection.Add(UniqueId, EdPin);
+	}
 }
 
 void UEventflowEdGraph::RenderNodePinLink(const TMap<FGuid, FEventflowPinRelation>& PinRelation, TMap<FGuid, UEdGraphPin*>& PinCollection)

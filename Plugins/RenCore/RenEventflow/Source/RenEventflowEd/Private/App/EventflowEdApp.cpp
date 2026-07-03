@@ -9,10 +9,11 @@
 
 // Project Headers
 #include "App/EventflowEdAppMode.h"
-#include "EventflowAsset.h"
+#include "Asset/EventflowAsset.h"
 #include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
+#include "Task/EventflowTask.h"
 
 
 void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit)
@@ -147,7 +148,7 @@ void FEventflowEdApp::OnNodePropertyChanged(const FPropertyChangedEvent& Propert
 		UEventflowEdGraphNode* SelectedNode = GetFirstSelectedNode(GraphEditorSlate->GetSelectedNodes());
 		if (SelectedNode)
 		{
-			SelectedNode->SyncRuntimePins();
+			SelectedNode->SyncRuntimeData();
 		}
 		GraphEditorSlate->NotifyGraphChanged();
 	}

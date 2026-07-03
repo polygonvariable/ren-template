@@ -45,13 +45,13 @@ protected:
 
 
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UProgressBar> DurationProgressBar;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> DurationTextBlock;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> StackTextBlock;
 
 	UPROPERTY(BlueprintReadOnly)

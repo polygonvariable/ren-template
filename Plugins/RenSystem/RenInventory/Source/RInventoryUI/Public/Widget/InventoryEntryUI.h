@@ -24,10 +24,10 @@ class UInventoryEntryUI : public UAssetEntryUI
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UOverlay> ItemRelation = nullptr;
 
 	// ~ UInventoryUI

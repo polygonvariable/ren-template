@@ -58,13 +58,13 @@ protected:
 
 
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> TitleTextBlock;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UTextBlock> ValueTextBlock;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidgetOptional))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 	TObjectPtr<UProgressBar> ValueProgressBar;
 
 

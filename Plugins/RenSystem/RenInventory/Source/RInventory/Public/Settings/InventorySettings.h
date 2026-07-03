@@ -20,7 +20,7 @@ class UInventorySubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Inventory"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Inventory"))
 class UInventorySettings : public UDeveloperSettings
 {
 
@@ -46,11 +46,11 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UInventorySubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", Meta = (AllowedTypes = "Asset.Inventory"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", meta = (AllowedTypes = "Asset.Inventory"))
 	TMap<FPrimaryAssetId, FInventoryStack> DefaultInventory;
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Inventory Settings"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Inventory Settings"))
 	static const UInventorySettings* Get()
 	{
 		return GetDefault<UInventorySettings>();

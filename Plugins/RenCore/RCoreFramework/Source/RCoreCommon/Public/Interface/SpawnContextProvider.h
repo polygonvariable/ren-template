@@ -19,7 +19,7 @@ struct FGameplayTag;
 struct FInstancedStruct;
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class USpawnContextProvider : public UInterface
 {
 	GENERATED_BODY()

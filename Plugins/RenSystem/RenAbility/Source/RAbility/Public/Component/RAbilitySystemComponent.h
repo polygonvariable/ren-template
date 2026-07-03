@@ -22,35 +22,35 @@ class URAbilitySystemComponent : public UAbilitySystemComponent
 
 public:
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Try Give Ability With Source"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Try Give Ability With Source"))
 	FGameplayAbilitySpecHandle BP_TryGiveAbilityWithSource(TSubclassOf<UGameplayAbility> AbilityClass, int32 Level, int32 InputID, const FGameplayTagContainer& Tags, UObject* SourceObject);
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities With Tags"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cancel Abilities With Tags"))
 	void BP_CancelAbilitiesWithTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities Without Tags"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cancel Abilities Without Tags"))
 	void BP_CancelAbilitiesWithoutTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities With Dynamic Tags"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cancel Abilities With Dynamic Tags"))
 	void BP_CancelAbilitiesWithDynamicTags(const FGameplayTagContainer& Tags);
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Cancel Abilities With Handle"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Cancel Abilities With Handle"))
 	void BP_CancelAbilityWithHandle(const FGameplayAbilitySpecHandle& Handle);
 
 
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DisplayName = "Is Gameplay Effect Active"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DisplayName = "Is Gameplay Effect Active"))
 	bool BP_IsGameplayEffectActive(UPARAM(ref) FActiveGameplayEffectHandle& Handle) const;
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DisplayName = "Is Gameplay Effect Inhibited"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DisplayName = "Is Gameplay Effect Inhibited"))
 	bool BP_IsGameplayEffectInhibited(UPARAM(ref) FActiveGameplayEffectHandle& Handle) const;
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Inhibit Gameplay Effect"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Inhibit Gameplay Effect"))
 	void BP_InhibitGameplayEffect(UPARAM(ref) FActiveGameplayEffectHandle& InHandle, bool bInInhibit, bool bInInvokeCue, FActiveGameplayEffectHandle& OutHandle);
 
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Owned Gameplay Tags"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Owned Gameplay Tags"))
 	const FGameplayTagContainer& BP_GetOwnedGameplayTags() const { return GetOwnedGameplayTags(); }
 
 

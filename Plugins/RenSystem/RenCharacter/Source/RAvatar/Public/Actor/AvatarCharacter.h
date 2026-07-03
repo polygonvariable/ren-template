@@ -76,10 +76,10 @@ protected:
 	// ~ End of ACharacterBase
 
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	void CameraPan(FVector2D Axis);
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintProtected))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
 	void CameraZoom(float Delta, float Multiplier = 5.0f);
 
 };

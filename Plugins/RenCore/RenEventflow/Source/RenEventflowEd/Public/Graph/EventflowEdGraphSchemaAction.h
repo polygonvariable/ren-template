@@ -35,7 +35,7 @@ public:
 
 protected:
 
-	TSubclassOf<UEventflowEdGraphNode> NodeClass;
+	TSubclassOf<UEventflowEdGraphNode> NodeClass = nullptr;
 
 };
 

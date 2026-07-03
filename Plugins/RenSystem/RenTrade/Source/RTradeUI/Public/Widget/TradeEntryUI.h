@@ -28,10 +28,10 @@ class UTradeEntryUI : public UAssetEntryUI
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> TradeQuota = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> TradeQuantity = nullptr;
 
 

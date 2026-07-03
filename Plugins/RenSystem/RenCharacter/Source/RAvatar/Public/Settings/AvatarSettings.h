@@ -20,7 +20,7 @@ class UAvatarSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Avatar"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Character Avatar"))
 class UAvatarSettings : public UDeveloperSettings
 {
 
@@ -46,7 +46,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UAvatarSubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", Meta = (AllowedTypes = "Asset.Character"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", meta = (AllowedTypes = "Asset.Character"))
 	TMap<FPrimaryAssetId, FAvatarInstance> DefaultAvatars;
 
 

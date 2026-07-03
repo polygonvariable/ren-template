@@ -44,16 +44,16 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int ExperienceInterval = 5000;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int LevelInterval = 10;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int MaxLevel = 100;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int MaxRank = 100;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)

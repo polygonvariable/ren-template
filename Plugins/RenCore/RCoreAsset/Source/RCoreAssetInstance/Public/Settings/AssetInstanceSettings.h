@@ -12,7 +12,7 @@
 /**
  *
  */
-UCLASS(Config = RenProject, DefaultConfig, Meta = (DisplayName = "RCore - Asset Instance"))
+UCLASS(Config = RenProject, DefaultConfig, meta = (DisplayName = "RCore - Asset Instance"))
 class UAssetInstanceSettings : public UDeveloperSettings
 {
 

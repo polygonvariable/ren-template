@@ -68,7 +68,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 	TObjectPtr<UStaticMeshComponent> MoonMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
 	float TimeOfDay = 0.0f;
 
 protected:

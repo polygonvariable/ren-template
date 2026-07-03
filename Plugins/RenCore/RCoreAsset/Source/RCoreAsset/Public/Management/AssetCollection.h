@@ -42,7 +42,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	FGuid CollectionId;
 
-	UPROPERTY(VisibleAnywhere, Meta = (DisplayName = "Asset Type (Debug)"))
+	UPROPERTY(VisibleAnywhere, meta = (DisplayName = "Asset Type (Debug)"))
 	FPrimaryAssetType AssetType;
 
 };

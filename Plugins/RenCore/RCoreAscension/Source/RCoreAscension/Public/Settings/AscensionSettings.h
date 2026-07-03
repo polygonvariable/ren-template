@@ -12,7 +12,7 @@
 /**
  *
  */
-UCLASS(Config = RenProject, DefaultConfig, Meta = (DisplayName = "RCore - Ascension"))
+UCLASS(Config = RenProject, DefaultConfig, meta = (DisplayName = "RCore - Ascension"))
 class UAscensionSettings : public UDeveloperSettings
 {
 

@@ -16,7 +16,7 @@ class UAssetCollection;
 struct FAscensionData;
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAscensionProvider : public UInterface
 {
 	GENERATED_BODY()

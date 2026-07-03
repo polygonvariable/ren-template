@@ -13,8 +13,9 @@
 
 // Forward Declarations
 class UEventflowAsset;
-struct FEventflowNodeDefinition;
-struct FEventflowPinDefinition;
+class UEventflowEdGraphNode;
+struct FEventflowNode;
+struct FEventflowPin;
 struct FEventflowPinRelation;
 
 
@@ -34,12 +35,13 @@ public:
 	
 protected:
 
-	void SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNodeDefinition>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation);
-	void SerializePin(UEdGraphPin* Pin, FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation);
+	void SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNode>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation);
+	void SerializeTask(UEventflowAsset* GraphAsset, FEventflowNode& NodeDefinition, UEventflowEdGraphNode* EdNode);
+	void SerializePin(UEdGraphPin* Pin, FEventflowNode& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation);
 
 	void RenderGraph(UEventflowAsset* GraphAsset);
-	void RenderNode(const FGuid NodeId, const FEventflowNodeDefinition& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection);
-	void RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPinDefinition& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection);
+	void RenderNode(const FGuid NodeId, const FEventflowNode& NodeDefinition, TMap<FGuid, UEdGraphPin*>& PinCollection);
+	void RenderNodePin(EEdGraphPinDirection Direction, const FEventflowPin& Definition, UEdGraphNode* EdNode, TMap<FGuid, UEdGraphPin*>& Collection);
 	void RenderNodePinLink(const TMap<FGuid, FEventflowPinRelation>& PinRelation, TMap<FGuid, UEdGraphPin*>& PinCollection);
 
 };

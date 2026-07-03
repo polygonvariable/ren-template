@@ -61,19 +61,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool bEnabled = false;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnabled"))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnabled"))
 	TWeakObjectPtr<AActor> Actor;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnabled"))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnabled"))
 	ESegmentType SegmentType = ESegmentType::Socket;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Spline", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Spline", EditConditionHides))
 	ESegmentSplinePosition SplinePosition = ESegmentSplinePosition::Start;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Socket", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Socket", EditConditionHides))
 	FName SocketName = NAME_None;
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Socket", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnabled && SegmentType==ESegmentType::Socket", EditConditionHides))
 	float TangentSize = 250.0f;
 
 };
@@ -183,7 +183,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Landscape")
 	TSoftObjectPtr<ALandscapeSplineActor> LandscapeSpline;
 
-	UPROPERTY(EditAnywhere, Category = "Export", Meta = (ContentDir))
+	UPROPERTY(EditAnywhere, Category = "Export", meta = (ContentDir))
 	FDirectoryPath ExportPath;
 
 	UPROPERTY(EditAnywhere, Category = "Export")
@@ -192,19 +192,19 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Segment")
 	bool bAutoUpdate = false;
 
-	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate"))
+	UPROPERTY(EditAnywhere, Category = "Segment", meta = (EditCondition = "bAutoUpdate"))
 	bool bEnableMeshBuild = false;
 	
-	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableMeshBuild", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Segment", meta = (EditCondition = "bAutoUpdate && bEnableMeshBuild", EditConditionHides))
 	bool bBuildMeshByPoints = true;
 
-	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate"))
+	UPROPERTY(EditAnywhere, Category = "Segment", meta = (EditCondition = "bAutoUpdate"))
 	bool bEnableSnap = false;
 
-	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Segment", meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
 	bool bEnableSnapRotation = false;
 
-	UPROPERTY(EditAnywhere, Category = "Segment", Meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
+	UPROPERTY(EditAnywhere, Category = "Segment", meta = (EditCondition = "bAutoUpdate && bEnableSnap", EditConditionHides))
 	float SnapOffset = 10.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Export")

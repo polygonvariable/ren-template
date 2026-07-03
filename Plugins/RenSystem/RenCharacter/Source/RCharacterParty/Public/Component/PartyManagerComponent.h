@@ -22,7 +22,7 @@ struct FStreamableHandle;
  *
  *
  */
-UCLASS(Meta = (BlueprintSpawnableComponent))
+UCLASS(meta = (BlueprintSpawnableComponent))
 class UPartyManagerComponent : public UActorComponent
 {
 
@@ -32,7 +32,7 @@ public:
 
 	UPartyManagerComponent(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, Meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
 	TArray<FCharacterInitializationData> CharacterData;
 
 

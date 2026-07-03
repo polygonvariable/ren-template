@@ -34,18 +34,18 @@ public:
 
 
 	UE_DEPRECATED(5.4, "Use Method provided from RAbilitySystemComponent instead")
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target", DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Target", DeprecatedFunction))
 	static void CancelAbilityWithTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
 	UE_DEPRECATED(5.4, "Use Method provided from RAbilitySystemComponent instead")
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target", DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Target", DeprecatedFunction))
 	static void CancelAbilityWithoutTags(AActor* Target, UPARAM(ref) const FGameplayTagContainer& InTags);
 
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DefaultToSelf = "Target"))
 	static FGameplayTagContainer GetDynamicGameplayTags(AActor* Target, UPARAM(ref) const FGameplayAbilitySpecHandle& Handle);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Ability"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DefaultToSelf = "Ability"))
 	static FGameplayTagContainer GetDynamicGameplayTagsFromAbility(UGameplayAbility* Ability);
 
 
@@ -57,19 +57,19 @@ public:
 
 
 	UE_DEPRECATED(5.4, "Use Method provided from RAbilitySystemComponent instead")
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target", DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DefaultToSelf = "Target", DeprecatedFunction))
 	static bool IsGameplayEffectInhibited(AActor* Target, UPARAM(ref) FActiveGameplayEffectHandle& Handle);
 
 	UE_DEPRECATED(5.4, "Use Method provided from RAbilitySystemComponent instead")
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "InTarget", DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "InTarget", DeprecatedFunction))
 	static void InhibitGameplayEffect(AActor* InTarget, UPARAM(ref) FActiveGameplayEffectHandle& InHandle, bool bInInhibit, bool bInInvokeCue, FActiveGameplayEffectHandle& OutHandle);
 
 	UE_DEPRECATED(5.4, "Use Method provided from RAbilitySystemComponent instead")
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target", DeprecatedFunction))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DefaultToSelf = "Target", DeprecatedFunction))
 	static bool IsGameplayEffectValid(AActor* Target, UPARAM(ref) FActiveGameplayEffectHandle& Handle);
 
 
-	UFUNCTION(BlueprintCallable, BlueprintPure, Meta = (DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, meta = (DefaultToSelf = "Target"))
 	static int GetGameplayEffectCount(AActor* Target);
 
 protected:

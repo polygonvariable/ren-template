@@ -47,13 +47,13 @@ public:
 	UPROPERTY(EditAnywhere)
 	EEnemyRespawnType RespawnType = EEnemyRespawnType::SpawnOnce;
 
-	UPROPERTY(EditAnywhere, Meta = (EditConditionHides, EditCondition = "RespawnType==EEnemyRespawnType::RespawnAfterDelay"))
+	UPROPERTY(EditAnywhere, meta = (EditConditionHides, EditCondition = "RespawnType==EEnemyRespawnType::RespawnAfterDelay"))
 	FTimespan RespawnDelay = FTimespan::FromSeconds(60.0f);
 
 	UPROPERTY(EditAnywhere)
 	bool bEnableDrop = false;
 	
-	UPROPERTY(EditAnywhere, Meta = (EditConditionHides, EditCondition = "bEnableDrop==true"))
+	UPROPERTY(EditAnywhere, meta = (EditConditionHides, EditCondition = "bEnableDrop==true"))
 	FInstancedStruct DropData;
 
 };

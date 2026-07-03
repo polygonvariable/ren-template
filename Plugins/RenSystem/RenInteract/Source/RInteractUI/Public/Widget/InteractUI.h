@@ -28,7 +28,7 @@ class UInteractUI : public UUserWidget
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UListView> InteractList;
 
 	UPROPERTY()

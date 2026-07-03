@@ -34,10 +34,10 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UButton> CloseButton = nullptr;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UOverlay> LoaderOverlay = nullptr;
 
 
@@ -46,7 +46,7 @@ protected:
 	REN_API virtual void GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets);
 
 	UFUNCTION(BlueprintCallable)
-	REN_API virtual void RedirectToWidget(UPARAM(Meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
+	REN_API virtual void RedirectToWidget(UPARAM(meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
 
 	// ~ UAssetUI
 	REN_API virtual void LockControls_Implementation() override;

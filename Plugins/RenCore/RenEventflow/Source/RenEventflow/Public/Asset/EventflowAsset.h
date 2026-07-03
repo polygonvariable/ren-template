@@ -6,13 +6,14 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "EventflowDefinition.h"
+#include "Definition/EventflowGraphData.h"
 
 // Generated Headers
 #include "EventflowAsset.generated.h"
 
 // Module Macros
 #define REN_API RENEVENTFLOW_API
+
 
 /**
  *
@@ -26,27 +27,36 @@ class UEventflowAsset : public UPrimaryDataAsset
 
 public:
 
+	/* TMap<NodeId, NodeDefinition> */
 	UPROPERTY(VisibleAnywhere)
-	TMap<FGuid, FEventflowNodeDefinition> NodeCollection;
+	TMap<FGuid, FEventflowNode> NodeCollection;
 
+	/* TMap<PinId(OutputPin), PinRelation(InputPin, NodeId)> */
 	UPROPERTY(VisibleAnywhere)
 	TMap<FGuid, FEventflowPinRelation> PinRelation;
 
 	UPROPERTY(VisibleAnywhere)
 	FGuid EntryNodeId = FGuid::NewGuid();
 
+
 	// ~ UPrimaryDataAsset
 	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
-#if WITH_EDITOR
+#if WITH_EDITORONLY_DATA
 
-	// ~ UObject
+	// ~ UPrimaryDataAsset
+	REN_API virtual void Serialize(FArchive& Ar) override;
 	REN_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
-	// ~ End of UObject
+	REN_API virtual void UpdateAssetBundleData() override;
+	// ~ End of UPrimaryDataAsset
+
+#endif
 
 protected:
-	
+
+#if WITH_EDITOR
+
 	// ~ UObject
 	REN_API virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
 	// ~ End of UObject

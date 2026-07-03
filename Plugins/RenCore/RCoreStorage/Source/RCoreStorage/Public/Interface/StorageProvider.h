@@ -19,7 +19,7 @@
 class IStorageManager;
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UStorageProvider : public UInterface
 {
 

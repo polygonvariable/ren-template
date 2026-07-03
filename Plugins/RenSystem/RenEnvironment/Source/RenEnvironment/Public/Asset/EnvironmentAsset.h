@@ -43,7 +43,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Environment")
     TArray<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Profile"), Category = "Environment")
+    UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Profile"), Category = "Environment")
     TArray<FPrimaryAssetId> DefaultProfiles;
 
     UPROPERTY(EditDefaultsOnly, Category = "Environment")
@@ -53,10 +53,10 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     bool bWeatherEnabled = true;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (MetaClass = "WeatherManagerActor"), Category = "Weather")
+    UPROPERTY(EditDefaultsOnly, meta = (MetaClass = "WeatherManagerActor"), Category = "Weather")
     FSoftClassPath WeatherManager;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Weather"), Category = "Weather")
+    UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Weather"), Category = "Weather")
     FPrimaryAssetId DefaultWeather;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
@@ -65,7 +65,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     TObjectPtr<UMaterialParameterCollection> WeatherParameterCollection;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedClasses = "/Script/RenWeather.WeatherController"), Category = "Weather")
+    UPROPERTY(EditDefaultsOnly, meta = (AllowedClasses = "/Script/RenWeather.WeatherController"), Category = "Weather")
     UClass* WeatherController;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
@@ -75,7 +75,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Season")
     bool bSeasonEnabled = true;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Season"), Category = "Season")
+    UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Season"), Category = "Season")
     TArray<FPrimaryAssetId> DefaultSeasons;
 
     UPROPERTY(EditDefaultsOnly, Category = "Season")

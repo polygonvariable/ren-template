@@ -3,10 +3,13 @@
 #pragma once
 
 // Project Headers
-#include "EventflowAsset.h"
+#include "Asset/EventflowAsset.h"
 
 // Generated Headers
 #include "DialogueAsset.generated.h"
+
+// Forward Declarations
+class UUserWidget;
 
 
 /**
@@ -17,6 +20,14 @@ class UDialogueAsset : public UEventflowAsset
 {
 
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FText Summary;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> DialogueWidgetClass;
 
 };
 

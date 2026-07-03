@@ -20,7 +20,7 @@ struct FStreamableHandle;
  *
  *
  */
-UCLASS(MinimalAPI, Meta = (BlueprintSpawnableComponent))
+UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))
 class UEnemyManagerComponent : public UActorComponent
 {
 

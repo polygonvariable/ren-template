@@ -16,7 +16,7 @@ class UHealthSet;
 /**
  * 
  */
-UCLASS(MinimalAPI, Meta = (BlueprintSpawnableComponent))
+UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
 

@@ -2,11 +2,7 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Project Headers
-#include "DialogueNodeData.h"
 #include "Graph/EventflowEdGraphNode.h"
 
 // Generated Headers
@@ -14,18 +10,36 @@
 
 // Forward Declarations
 class UEventflowNodeData;
+class UDialogueTask;
 
 
-
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdNode_Base : public UEventflowEdGraphNode
 {
 
 	GENERATED_BODY()
 
+public:
+
+	// ~ UEventflowEdGraphNode
+	virtual UEventflowPrimaryTask* GetTask() const override;
+	virtual void SetTask(UEventflowPrimaryTask* Task) override;
+	// ~ End of UEventflowEdGraphNode
+
+protected:
+
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UDialogueTask> PrimaryTask = nullptr;
+
 };
 
 
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdBeginNode : public UDialogueEdNode_Base
 {
@@ -43,6 +57,10 @@ public:
 
 };
 
+
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdEndNode : public UDialogueEdNode_Base
 {
@@ -61,6 +79,9 @@ public:
 };
 
 
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdDialogNode : public UDialogueEdNode_Base
 {
@@ -79,6 +100,9 @@ public:
 };
 
 
+/*
+ *
+ */
 UCLASS()
 class UDialogueEdBranchNode : public UDialogueEdNode_Base
 {

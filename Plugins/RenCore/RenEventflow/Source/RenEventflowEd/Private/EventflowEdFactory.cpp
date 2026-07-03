@@ -4,7 +4,7 @@
 #include "EventflowEdFactory.h"
 
 // Project Headers
-#include "EventflowAsset.h"
+#include "Asset/EventflowAsset.h"
 
 
 UEventflowEdFactory::UEventflowEdFactory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

@@ -15,7 +15,7 @@
 class UAssetCollection;
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetCompositionInterface : public UInterface
 {
 

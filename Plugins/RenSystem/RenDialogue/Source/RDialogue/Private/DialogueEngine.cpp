@@ -6,45 +6,60 @@
 // Project Headers
 #include "DialogueNodeData.h"
 #include "DialogueWidget.h"
-#include "EventflowDefinition.h"
+#include "DialogueAsset.h"
+#include "Definition/EventflowGraphData.h"
+#include "Definition/EventflowTransition.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
-void UDialogueEngine::StartEngine()
-{
-	DialogueWidget->SetVisibility(ESlateVisibility::Visible);
-	Super::StartEngine();
-}
-
-void UDialogueEngine::StopEngine(bool bInterrupted)
-{
-	DialogueWidget->SetVisibility(ESlateVisibility::Collapsed);
-	Super::StopEngine(bInterrupted);
-}
 
 IDialogueProvider* UDialogueEngine::GetDialogue() const
 {
 	return Cast<IDialogueProvider>(DialogueWidget);
 }
 
+//bool UDialogueEngine::Initialization()
+//{
+//	if (!Super::Initialization())
+//	{
+//		return false;
+//	}
+//
+//	UDialogueAsset* Asset = Cast<UDialogueAsset>(CurrentAsset);
+//
+//	UWorld* World = GetWorld();
+//	DialogueWidget = CreateWidget<UDialogueWidget>(World, Asset->DialogueWidgetClass);
+//	DialogueWidget->AddToViewport();
+//
+//	return true;
+//}
+//
+//void UDialogueEngine::Deinitialization()
+//{
+//	Super::Deinitialization();
+//
+//	DialogueWidget->RemoveFromParent();
+//	DialogueWidget = nullptr;
+//}
 
 
 
 
-void UDialogueTask::CopyFromTemplate(const UEventflowTask* Template)
-{
-	const UDialogueTask* DialogueTemplate = Cast<UDialogueTask>(Template);
-	if (IsValid(DialogueTemplate))
-	{
-		DialogueData2 = DialogueTemplate->DialogueData2;
-	}
-}
 
-TArray<FText> UDialogueTask::GetRuntimeOutputs() const
-{
-	return DialogueData2.Options;
-}
+//void UDialogueTask::CopyFromAsset(const UEventflowTask* Template)
+//{
+//	const UDialogueTask* DialogueTemplate = Cast<UDialogueTask>(Template);
+//	if (IsValid(DialogueTemplate))
+//	{
+//		DialogueData = DialogueTemplate->DialogueData;
+//	}
+//}
+
+//TArray<FText> UDialogueTask::GetRuntimeOutputs() const
+//{
+//	return DialogueData.Options;
+//}
 
 IDialogueProvider* UDialogueTask::GetDialogue() const
 {
@@ -58,34 +73,34 @@ IDialogueProvider* UDialogueTask::GetDialogue() const
 
 void UDialogueTask::HandleDialogueCompleted(int NextIndex)
 {
-	FinishTask(EEventflowDirection::Next, NextIndex);
+	//FinishTask(EEventflowTaskState::Completed, NextIndex);
 }
 
-void UDialogueTask::Initialization()
-{
-	IDialogueProvider* Dialogue = GetDialogue();
-	if (!Dialogue)
-	{
-		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
-		return;
-	}
-
-	Dialogue->GetOnDialogueCompleted().BindUObject(this, &UDialogueTask::HandleDialogueCompleted);
-
-	//FInstancedStruct Data = CurrentNode->NodeData;
-	//Dialogue->InitializeDialogue(Data.GetPtr<FDialogueData>());
-	Dialogue->InitializeDialogue(&DialogueData2);
-}
-
-void UDialogueTask::Deinitialization()
-{
-	IDialogueProvider* Dialogue = GetDialogue();
-	if (!Dialogue)
-	{
-		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
-		return;
-	}
-	
-	Dialogue->GetOnDialogueCompleted().Unbind();
-	Dialogue->ClearDialogue();
-}
+//void UDialogueTask::Initialization()
+//{
+//	IDialogueProvider* Dialogue = GetDialogue();
+//	if (!Dialogue)
+//	{
+//		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
+//		return;
+//	}
+//
+//	Dialogue->GetOnDialogueCompleted().BindUObject(this, &UDialogueTask::HandleDialogueCompleted);
+//
+//	//FInstancedStruct Data = CurrentNode->NodeData;
+//	//Dialogue->InitializeDialogue(Data.GetPtr<FDialogueData>());
+//	Dialogue->InitializeDialogue(&DialogueData);
+//}
+//
+//void UDialogueTask::Deinitialization()
+//{
+//	IDialogueProvider* Dialogue = GetDialogue();
+//	if (!Dialogue)
+//	{
+//		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
+//		return;
+//	}
+//	
+//	Dialogue->GetOnDialogueCompleted().Unbind();
+//	Dialogue->ClearDialogue();
+//}

@@ -70,6 +70,10 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacterParty, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEquipment, Log, All);
 // ~ End of Equipment Categories
 
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogFSM, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEventflowEngine, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEventflowTask, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogQuestObjective, Log, All);
 
 
 

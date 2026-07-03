@@ -33,7 +33,7 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 	UPROPERTY()

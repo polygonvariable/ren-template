@@ -89,7 +89,7 @@ public:
 /**
  *
  */
-UCLASS(Const, Blueprintable, Meta = (DisplayName = "Equipment Data Definition (Weapon)"))
+UCLASS(Const, Blueprintable, meta = (DisplayName = "Equipment Data Definition (Weapon)"))
 class UEquipmentDataDefinition_Weapon : public UEquipmentDataDefinition
 {
 

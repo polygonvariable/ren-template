@@ -33,10 +33,10 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> AvatarCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetDetailUI> AvatarDetail = nullptr;
 
 

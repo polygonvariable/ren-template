@@ -31,10 +31,10 @@ public:
 
 
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "1", ClampMin = "1"))
     int StartDay = 1;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "1", ClampMin = "1"))
+	UPROPERTY(EditDefaultsOnly, meta = (UIMin = "1", ClampMin = "1"))
 	int EndDay = 10;
 
 

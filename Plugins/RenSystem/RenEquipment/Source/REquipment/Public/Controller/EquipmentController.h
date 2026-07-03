@@ -168,7 +168,7 @@ enum class EEquipmentAttachmentState : uint8
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller"))
+UCLASS(Abstract, MinimalAPI, Blueprintable, meta = (DisplayName = "Equipment Controller"))
 class UEquipmentAttachmentController : public UEquipmentController
 {
 
@@ -246,7 +246,7 @@ protected:
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Weapon)"))
+UCLASS(Abstract, MinimalAPI, Blueprintable, meta = (DisplayName = "Equipment Controller (Weapon)"))
 class UEquipmentWeaponController : public UEquipmentAttachmentController
 {
 
@@ -263,7 +263,7 @@ public:
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Projectile Weapon)"))
+UCLASS(Abstract, MinimalAPI, Blueprintable, meta = (DisplayName = "Equipment Controller (Projectile Weapon)"))
 class UEquipmentProjectileWeaponController : public UEquipmentWeaponController
 {
 
@@ -345,7 +345,7 @@ protected:
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI, Blueprintable, Meta = (DisplayName = "Equipment Controller (Skill)"))
+UCLASS(Abstract, MinimalAPI, Blueprintable, meta = (DisplayName = "Equipment Controller (Skill)"))
 class UEquipmentSkillController : public UEquipmentController
 {
 

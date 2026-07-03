@@ -17,7 +17,7 @@ class UShopSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Trade Shop"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Trade Shop"))
 class UShopSettings : public UDeveloperSettings
 {
 

@@ -17,7 +17,7 @@ class UAssetEntry;
 
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetWidget : public UInterface
 {
 

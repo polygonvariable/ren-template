@@ -72,7 +72,7 @@ struct FAttributeEffects
 /**
  *
  */
-UCLASS(Blueprintable, ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UAttributeObserverComponent : public UActorComponent
 {
 
@@ -117,7 +117,7 @@ public:
 /**
  *
  */
-UCLASS(Blueprintable, ClassGroup = (Custom), Meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class UAttributeLevelObserversComponent : public UAttributeObserverComponent
 {
 

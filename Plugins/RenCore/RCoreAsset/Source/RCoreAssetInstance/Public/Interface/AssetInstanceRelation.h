@@ -12,7 +12,7 @@
 #define REN_API RCOREASSETINSTANCE_API
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceRelation : public UInterface
 {
 	GENERATED_BODY()

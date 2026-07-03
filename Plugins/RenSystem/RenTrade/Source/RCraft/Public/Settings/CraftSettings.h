@@ -17,7 +17,7 @@ class UCraftSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Trade Craft"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Trade Craft"))
 class UCraftSettings : public UDeveloperSettings
 {
 

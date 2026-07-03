@@ -12,7 +12,7 @@
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Storage"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Storage"))
 class UStorageSettings : public UDeveloperSettings
 {
 

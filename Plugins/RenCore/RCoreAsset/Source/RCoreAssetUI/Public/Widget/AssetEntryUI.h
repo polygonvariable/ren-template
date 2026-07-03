@@ -40,10 +40,10 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> EntryIcon = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryName = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)

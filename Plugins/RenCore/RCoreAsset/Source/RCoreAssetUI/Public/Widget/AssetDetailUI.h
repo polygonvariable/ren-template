@@ -37,19 +37,19 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Meta = (BindWidget))
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	bool bAutoRefresh = false;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> EntryIcon = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryName = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> EntryDescription = nullptr;
 
-	UPROPERTY(Meta = (BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UWidgetSwitcher> DetailSwitch = nullptr;
 
 

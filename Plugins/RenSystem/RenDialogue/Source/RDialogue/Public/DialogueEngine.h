@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "EventflowEngine.h"
-#include "EventflowTask.h"
+#include "Task/EventflowPrimaryTask.h"
 
 #include "DialogueNodeData.h"
 
@@ -27,17 +27,18 @@ class UDialogueEngine : public UEventflowEngine
 
 public:
 
-	// ~ UEventflowEngine
-	virtual void StartEngine() override;
-	virtual void StopEngine(bool bInterrupted) override;
-	// ~ End of UEventflowEngine
-
 	IDialogueProvider* GetDialogue() const;
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+	UPROPERTY()
 	TObjectPtr<UDialogueWidget> DialogueWidget = nullptr;
+
+
+	// ~ UEventflowEngine
+	//virtual bool Initialization() override;
+	//virtual void Deinitialization() override;
+	// ~ End of UEventflowEngine
 
 };
 
@@ -45,8 +46,8 @@ protected:
 /**
  *
  */
-UCLASS(MinimalAPI, EditInlineNew, DefaultToInstanced)
-class UDialogueTask : public UEventflowTask
+UCLASS(MinimalAPI, meta = (DisplayName = "Dialogue"))
+class UDialogueTask : public UEventflowPrimaryTask
 {
 
 	GENERATED_BODY()
@@ -54,23 +55,24 @@ class UDialogueTask : public UEventflowTask
 public:
 	
 	// ~ UEventflowTask
-	virtual void CopyFromTemplate(const UEventflowTask* Template) override;
+	//virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
-
-	virtual TArray<FText> GetRuntimeOutputs() const override;
 
 protected:
 
 	UPROPERTY(EditAnywhere)
-	FDialogueData DialogueData2;
+	FDialogueData DialogueData;
 
 
 	IDialogueProvider* GetDialogue() const;
+
+	// ~ Binding
 	void HandleDialogueCompleted(int NextIndex);
+	// ~ End of Binding
 
 	// ~ UEventflowTask
-	virtual void Initialization() override;
-	virtual void Deinitialization() override;
+	//virtual void Initialization() override;
+	//virtual void Deinitialization() override;
 	// ~ End of UEventflowTask
 
 };

@@ -34,7 +34,7 @@ public:
 	FText TabTitle;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "Tab Control|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction), Category = "Tab Control|Action")
 	void SetSelected(bool bIsSelected = false);
 	virtual void SetSelected_Implementation(bool bIsSelected = false);
 
@@ -48,11 +48,11 @@ protected:
 	FColor TabActiveColor = FColor::Red;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Tab Control|Binding")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Tab Control|Binding")
 	TObjectPtr<UButton> TabButton;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "Tab Control|Binding")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidgetOptional), Category = "Tab Control|Binding")
 	TObjectPtr<UTextBlock> TabTextBlock;
 
 
@@ -60,7 +60,7 @@ protected:
 	bool bSelected = false;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "Tab Control|Handler")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction, BlueprintProtected), Category = "Tab Control|Handler")
 	void HandleSelection();
 	virtual void HandleSelection_Implementation();
 
@@ -89,16 +89,16 @@ class RENWIDGET_API UTabBoxControl : public UUserWidget
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (BindWidgetOptional), Category = "TabBox Control|Binding")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (BindWidgetOptional), Category = "TabBox Control|Binding")
 	TObjectPtr<UPanelWidget> TabContainer;
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction), Category = "TabBox Control|Action")
 	void BuildTabs(const TMap<uint8, FName>& TabItems);
 	virtual void BuildTabs_Implementation(const TMap<uint8, FName>& TabItems);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction), Category = "TabBox Control|Action")
 	void ClearTabs();
 	virtual void ClearTabs_Implementation();
 
@@ -108,12 +108,12 @@ protected:
 	TSubclassOf<UTabControl> TabControlClass = UTabControl::StaticClass();
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction), Category = "TabBox Control|Action")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction), Category = "TabBox Control|Action")
 	void HandleTabSelected(UTabControl* SelectedTab);
 	virtual void HandleTabSelected_Implementation(UTabControl* SelectedTab);
 
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected), Category = "TabBox Control|Handler")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction, BlueprintProtected), Category = "TabBox Control|Handler")
 	void HandleTabSetup(UTabControl* NewTab);
 	virtual void HandleTabSetup_Implementation(UTabControl* NewTab);
 

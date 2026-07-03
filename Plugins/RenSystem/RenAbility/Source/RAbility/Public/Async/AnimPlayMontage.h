@@ -21,7 +21,7 @@ class URAbilitySystemComponent;
 /**
  *
  */
-UCLASS(BlueprintType, Meta = (ExposedAsyncProxy = AsyncTask))
+UCLASS(BlueprintType, meta = (ExposedAsyncProxy = AsyncTask))
 class UAnimPlayMontage : public UBlueprintAsyncActionBase
 {
 
@@ -61,7 +61,7 @@ public:
 
 
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintInternalUseOnly = "true"))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true"))
 	static UAnimPlayMontage* AnimPlayMontage(URAbilitySystemComponent* InRASC, UAnimMontage* InMontage, float InPlayRate = 1.0f, float InStartTime = 0.0f, float InBlendOutTime = 0.0f, bool bInStopAllMontages = false);
 
 

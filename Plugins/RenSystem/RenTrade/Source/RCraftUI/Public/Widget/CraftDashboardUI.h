@@ -28,7 +28,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UCraftSubsystem> CraftSubsystem;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> CraftButton = nullptr;
 
 

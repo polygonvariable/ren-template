@@ -48,13 +48,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGuid TradeCollectionId;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTradeCollectionUI> PrimaryCollection = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTradeDetailUI> PrimaryDetail = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAssetCollectionUI> SecondaryCollection = nullptr;
 
 

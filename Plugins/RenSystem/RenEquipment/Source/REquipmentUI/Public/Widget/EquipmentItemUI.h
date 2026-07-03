@@ -33,10 +33,10 @@ class UEquipmentItemUI : public UUserWidget
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UImage> EquipmentImage = nullptr;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> KeyTextBlock;
 
 	UPROPERTY(EditAnywhere)
@@ -111,10 +111,10 @@ class UEquipmentWeaponItemUI : public UEquipmentItemUI
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> CurrentTextBlock;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> MaxTextBlock;
 
 	void UpdateWeaponData();
@@ -151,13 +151,13 @@ class UEquipmentSkillItemUI : public UEquipmentItemUI
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UProgressBar> CooldownProgressBar;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> CooldownTextBlock;
 
-	UPROPERTY(BlueprintReadOnly, Meta = (BindWidget))
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UTextBlock> CostTextBlock;
 
 	UPROPERTY(EditAnywhere)

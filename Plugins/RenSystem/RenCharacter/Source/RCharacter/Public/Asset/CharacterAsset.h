@@ -53,10 +53,10 @@ public:
 	int ElementalDefense = 50;
 
 
-	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Character"))
+	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Character"))
 	TSoftClassPtr<ACharacterBase> CharacterClass;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (AssetBundles = "Ability"))
+	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Ability"))
 	TArray<TSoftClassPtr<UGameplayAbility>> CharacterAbilities;
 
 
@@ -75,16 +75,16 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int ExperienceInterval = 5000;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int LevelInterval = 10;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int MaxLevel = 100;
 
-	UPROPERTY(EditDefaultsOnly, Meta = (ClampMin = 1))
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
 	int MaxRank = 100;
 
 	UPROPERTY(EditDefaultsOnly, Instanced)

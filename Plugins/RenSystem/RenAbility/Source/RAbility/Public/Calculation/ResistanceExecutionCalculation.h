@@ -75,7 +75,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bApplyLevel = false;
 
-	UPROPERTY(EditAnywhere, Meta = (ClampMin = 1, ClampMax = 10000, EditCondition = "bApplyLevel==true", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 1, ClampMax = 10000, EditCondition = "bApplyLevel==true", EditConditionHides))
 	int MaxLevel = 100;
 
 	UPROPERTY(EditAnywhere)

@@ -63,3 +63,7 @@ DEFINE_LOG_CATEGORY(LogCharacterParty);
 DEFINE_LOG_CATEGORY(LogEquipment);
 // ~ End of Equipment Categories
 
+DEFINE_LOG_CATEGORY(LogFSM);
+DEFINE_LOG_CATEGORY(LogEventflowEngine);
+DEFINE_LOG_CATEGORY(LogEventflowTask);
+DEFINE_LOG_CATEGORY(LogQuestObjective);

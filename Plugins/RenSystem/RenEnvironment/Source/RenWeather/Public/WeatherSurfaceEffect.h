@@ -26,13 +26,13 @@ struct FWeatherSurfaceEffect
 
 public:
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float WindIntensity = 0.0f;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float RainIntensity = 0.0f;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
     float SnowIntensity = 0.0f;
 
     void Reset();

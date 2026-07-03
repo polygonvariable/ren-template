@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> SyncButton = nullptr;
 
 	UPROPERTY()

@@ -30,7 +30,7 @@ protected:
 
 	TWeakInterfacePtr<ISeasonProviderInterface> SeasonInterface;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (AllowedClasses = "/Script/RenSeason.SeasonAsset"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowedClasses = "/Script/RenSeason.SeasonAsset"))
 	TMap<TObjectPtr<UPrimaryDataAsset>, FWeatherCollection> WeatherCollections;
 
 protected:

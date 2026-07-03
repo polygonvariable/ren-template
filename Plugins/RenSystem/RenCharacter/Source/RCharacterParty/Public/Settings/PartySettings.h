@@ -17,7 +17,7 @@ class UPartySubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Party"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Character Party"))
 class UPartySettings : public UDeveloperSettings
 {
 
@@ -43,13 +43,13 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UPartySubsystem> SubsystemClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", Meta = (AllowedTypes = "Asset.Character"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data", meta = (AllowedTypes = "Asset.Character"))
 	TArray<FPrimaryAssetId> DefaultCharacters;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Party", Meta=(ClampMin=1, ClampMax=6))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Party", meta=(ClampMin=1, ClampMax=6))
 	int MinPartySize = 1;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Party", Meta=(ClampMin=1, ClampMax=6))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Party", meta=(ClampMin=1, ClampMax=6))
 	int MaxPartySize = 3;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Asset")

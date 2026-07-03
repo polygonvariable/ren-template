@@ -3,15 +3,21 @@
 // Parent Header
 #include "Graph/DialogueEdGraphNode.h"
 
-// Engine Headers
-
 // Project Headers
-#include "DialogueAsset.h"
-#include "DialogueNodeData.h"
+#include "DialogueEngine.h"
+#include "Task/EventflowTask.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "EventflowTask.h"
 
 
+UEventflowPrimaryTask* UDialogueEdNode_Base::GetTask() const
+{
+	return PrimaryTask;
+}
+
+void UDialogueEdNode_Base::SetTask(UEventflowPrimaryTask* Task)
+{
+	PrimaryTask = Cast<UDialogueTask>(Task);
+}
 
 
 FText UDialogueEdBeginNode::GetNodeDescription() const
@@ -37,7 +43,6 @@ void UDialogueEdBeginNode::AllocateDefaultPins()
 }
 
 
-
 FText UDialogueEdEndNode::GetNodeDescription() const
 {
 	return FText::FromString(TEXT("Ends a conversation."));
@@ -59,7 +64,6 @@ void UDialogueEdEndNode::AllocateDefaultPins()
 	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
 	Pin->PinType.bIsConst = true;
 }
-
 
 
 FText UDialogueEdDialogNode::GetNodeDescription() const
@@ -89,15 +93,14 @@ void UDialogueEdDialogNode::AllocateDefaultPins()
 }
 
 
-
-
 TArray<FText> UDialogueEdBranchNode::GetRuntimeOutputPins() const
 {
-	if (!IsValid(PrimaryTask))
-	{
-		return TArray<FText>();
-	}
-	return PrimaryTask->GetRuntimeOutputs();
+	//if (!IsValid(PrimaryTask))
+	//{
+	//	return TArray<FText>();
+	//}
+	//return PrimaryTask->GetRuntimeOutputs();
+	return TArray<FText>();
 }
 
 FText UDialogueEdBranchNode::GetNodeDescription() const
@@ -121,3 +124,4 @@ void UDialogueEdBranchNode::AllocateDefaultPins()
 	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
 	Pin->PinType.bIsConst = true;
 }
+

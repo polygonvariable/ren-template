@@ -42,17 +42,17 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (AllowedTypes = "Environment.Profile"), Category = "Environment Profile")
+    UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Profile"), Category = "Environment Profile")
     TArray<FPrimaryAssetId> EnvironmentProfiles;
 
     UPROPERTY(EditDefaultsOnly, Category = "Environment Profile")
     int ProfilePriority = 0;
 
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
     float TransitionRate = 0.5f;
 
-    UPROPERTY(EditDefaultsOnly, Meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
     float TransitionDuration = 5.0f;
 
 

@@ -15,7 +15,7 @@
 class UPrimaryDataAsset;
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UEquipmentDataProvider : public UInterface
 {
 	GENERATED_BODY()

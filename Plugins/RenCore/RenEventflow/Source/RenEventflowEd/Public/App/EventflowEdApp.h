@@ -52,17 +52,19 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UEventflowEdGraph> WorkingGraph = nullptr;
 
-	TSharedPtr<SGraphEditor> GraphEditorSlate;
-	TSharedPtr<IDetailsView> GraphPropertySlate;
-	TSharedPtr<IDetailsView> NodePropertySlate;
+	TSharedPtr<SGraphEditor> GraphEditorSlate = nullptr;
+	TSharedPtr<IDetailsView> GraphPropertySlate = nullptr;
+	TSharedPtr<IDetailsView> NodePropertySlate = nullptr;
 
 
 	virtual TSubclassOf<UEventflowEdGraph> GetGraphClass() const;
 	virtual TSubclassOf<UEventflowEdGraphSchema> GetGraphSchemaClass() const;
 
+	// ~ Binding
 	virtual void OnGraphSelectionChanged(const FGraphPanelSelectionSet& SelectedNodes);
 	virtual void OnGraphPropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
 	virtual void OnNodePropertyChanged(const FPropertyChangedEvent& PropertyChangedEvent);
+	// ~ End of Binding
 
 	UEventflowEdGraphNode* GetFirstSelectedNode(const FGraphPanelSelectionSet& SelectedNodes) const;
 	virtual TArray<FName> GetTriggerGraphProperties() const;

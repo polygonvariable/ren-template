@@ -25,7 +25,7 @@ class UDialogueAsset;
 DECLARE_DELEGATE_OneParam(FOnDialogueCompleted, int /* Next Index */);
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UDialogueProvider : public UInterface
 {
 	GENERATED_BODY()
@@ -69,10 +69,10 @@ protected:
 
 	int CurrentIndex = 0;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> OptionText = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> SelectButton = nullptr;
 
 	UFUNCTION()
@@ -110,19 +110,19 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UDialogueOptionWidget> OptionWidgetClass = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UImage> SpeakerImage = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SpeakerName = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> DialogueText = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> NextButton = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UPanelWidget> OptionPanel = nullptr;
 
 

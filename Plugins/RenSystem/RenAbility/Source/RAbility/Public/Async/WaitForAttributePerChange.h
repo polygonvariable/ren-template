@@ -40,7 +40,7 @@ enum class EChangeType : uint8
  * 
  * 
  */
-UCLASS(BlueprintType, Meta = (ExposedAsyncProxy = AsyncTask))
+UCLASS(BlueprintType, meta = (ExposedAsyncProxy = AsyncTask))
 class UWaitForAttributePerChange : public UBlueprintAsyncActionBase
 {
 
@@ -52,7 +52,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnValueChanged OnChanged;
 
-	UFUNCTION(BlueprintCallable, Meta = (BlueprintInternalUseOnly = "true", DefaultToSelf = "InActor"))
+	UFUNCTION(BlueprintCallable, meta = (BlueprintInternalUseOnly = "true", DefaultToSelf = "InActor"))
 	static UWaitForAttributePerChange* WaitForAttributePerChange(AActor* InActor, FGameplayAttribute InAttribute, EChangeType InChangeType, bool bInNegate = false);
 
 	UFUNCTION(BlueprintCallable)

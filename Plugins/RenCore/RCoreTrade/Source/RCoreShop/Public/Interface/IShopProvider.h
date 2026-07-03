@@ -20,7 +20,7 @@ struct FInstancedStruct;
 
 
 
-UINTERFACE(MinimalAPI, Meta = (CannotImplementInterfaceInBlueprint))
+UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UShopProvider : public UInterface
 {
 

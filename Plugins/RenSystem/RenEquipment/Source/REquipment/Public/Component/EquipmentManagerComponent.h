@@ -27,7 +27,7 @@ struct FStreamableHandle;
  *
  *
  */
-UCLASS(MinimalAPI, Meta = (BlueprintSpawnableComponent))
+UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))
 class UEquipmentManagerComponent : public UActorComponent
 {
 

@@ -139,7 +139,7 @@ protected:
 
 	TMap<FGameplayTag, float>& GetCharacterAttributes();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Meta = (ForceAsFunction, BlueprintProtected))
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction, BlueprintProtected))
 	void DirectionalMove(const FVector& Direction);
 	virtual void DirectionalMove_Implementation(const FVector& Direction);
 

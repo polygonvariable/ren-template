@@ -20,7 +20,7 @@ struct FCharacterInitializationData
 
 public:
 
-	UPROPERTY(EditAnywhere, Meta = (AllowedTypes = "Asset.Character"))
+	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Asset.Character"))
 	FPrimaryAssetId AssetId;
 
 	UPROPERTY(EditAnywhere)

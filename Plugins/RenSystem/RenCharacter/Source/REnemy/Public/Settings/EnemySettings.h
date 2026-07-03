@@ -19,7 +19,7 @@ class UEnemySubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Character Enemy"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Character Enemy"))
 class UEnemySettings : public UDeveloperSettings
 {
 
@@ -48,7 +48,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	FGameplayTag TagEvent_DropReward;
 
-	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly, Meta = (DisplayName = "Enemy Died Tag"))
+	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly, meta = (DisplayName = "Enemy Died Tag"))
 	FGameplayTag ETag_EnemyDied;
 
 	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly)
@@ -58,7 +58,7 @@ public:
 	FGameplayTag ETag_EnemyPartyDied;
 
 
-	UFUNCTION(BlueprintCallable, Meta = (DisplayName = "Get Enemy Settings"))
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Enemy Settings"))
 	static const UEnemySettings* Get()
 	{
 		return GetDefault<UEnemySettings>();

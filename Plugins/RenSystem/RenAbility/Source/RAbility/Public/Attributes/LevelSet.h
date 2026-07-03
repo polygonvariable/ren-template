@@ -97,10 +97,10 @@ class ULevelAttributeLibrary : public UBlueprintFunctionLibrary
 
 public:
 
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Target"))
 	static bool CanExperienceUp(AActor* Target);
 
-	UFUNCTION(BlueprintCallable, Meta = (DefaultToSelf = "Target"))
+	UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Target"))
 	static bool CanRankUp(AActor* Target);
 
 protected:

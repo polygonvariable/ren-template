@@ -41,10 +41,10 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 

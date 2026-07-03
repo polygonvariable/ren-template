@@ -13,7 +13,32 @@
 #include "Graph/EventflowEdGraphSchema.h"
 
 
-bool UEventflowEdGraphNode::GetIsEntryNode() const
+
+UEventflowPrimaryTask* UEventflowEdGraphNode::GetTask() const
+{
+	return nullptr;
+}
+
+void UEventflowEdGraphNode::SetTask(UEventflowPrimaryTask* Task)
+{
+
+}
+
+
+
+TArray<UEventflowSubTask*> UEventflowEdGraphNode::GetSubTasks() const
+{
+	return TArray<UEventflowSubTask*>();
+}
+
+void UEventflowEdGraphNode::SetSubTasks(const TArray<UEventflowSubTask*>& Tasks)
+{
+}
+
+
+
+
+bool UEventflowEdGraphNode::IsEntryNode() const
 {
 	int PinCount = Pins.Num();
 	int InputPinCount = 0;
@@ -44,7 +69,7 @@ TArray<FText> UEventflowEdGraphNode::GetRuntimeOutputPins() const
 	return TArray<FText>();
 }
 
-void UEventflowEdGraphNode::SyncRuntimePins()
+void UEventflowEdGraphNode::SyncRuntimeData()
 {
 	TArray<TPair<FString, TArray<UEdGraphPin*>>> InputLinks;
 	TArray<TPair<FString, TArray<UEdGraphPin*>>> OutputLinks;

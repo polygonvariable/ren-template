@@ -32,7 +32,7 @@ class UAssetUI : public UUserWidget, public IAssetWidget
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Meta = (ExposeOnSpawn = true))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true))
 	FName PrimarySourceId = NAME_None;
 
 

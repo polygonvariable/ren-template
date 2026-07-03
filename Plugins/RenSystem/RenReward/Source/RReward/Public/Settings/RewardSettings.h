@@ -18,7 +18,7 @@ class URewardSubsystem;
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, Meta = (DisplayName = "RSystem - Reward"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Reward"))
 class URewardSettings : public UDeveloperSettings
 {
 

@@ -4,7 +4,7 @@
 #include "RDialogueEd.h"
 
 // Project Headers
-#include "RDialogueEd/Public/DialogueEdAssetTypeAction.h"
+#include "DialogueEdAssetTypeAction.h"
 
 #define LOCTEXT_NAMESPACE "FRDialogueEdModule"
 

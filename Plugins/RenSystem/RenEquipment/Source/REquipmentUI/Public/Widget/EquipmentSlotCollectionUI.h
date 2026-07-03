@@ -27,7 +27,7 @@ class UEquipmentSlotCollectionUI : public UAssetUI
 
 protected:
 
-	UPROPERTY(Meta = (BindWidget))
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UPanelWidget> SlotBox = nullptr;
 
 	UPROPERTY(EditAnywhere)
