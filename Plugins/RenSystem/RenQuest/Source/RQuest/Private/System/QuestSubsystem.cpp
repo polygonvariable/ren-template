@@ -26,11 +26,11 @@ void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId)
 		return;
 	}
 
-	FEventflowEntryDefinition EntryDefinition;
-	EntryDefinition.EntryLocation = EEventflowEntryLocation::Root;
+	FEventflowEntry Entry;
+	Entry.EntryType = EEventflowEntryType::Root;
 
 	Engine->OnStateChanged.BindUObject(this, &UQuestSubsystem::HandleOnStateChanged, AssetId);
-	Engine->InitializeData(AssetId, EntryDefinition);
+	Engine->InitializeData(AssetId, Entry);
 	Engine->Initialize();
 
 	ActiveQuests.Add(AssetId, Engine);

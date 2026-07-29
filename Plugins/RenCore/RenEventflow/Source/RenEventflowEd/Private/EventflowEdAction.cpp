@@ -5,7 +5,7 @@
 
 // Project Headers
 #include "App/EventflowEdApp.h"
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 
 
 FEventflowEdAction::FEventflowEdAction(EAssetTypeCategories::Type InAssetCategory)

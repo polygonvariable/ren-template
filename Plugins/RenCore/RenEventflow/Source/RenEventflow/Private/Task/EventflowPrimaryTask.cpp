@@ -4,7 +4,7 @@
 #include "Task/EventflowPrimaryTask.h"
 
 // Project Headers
-#include "Definition/EventflowGraphData.h"
+#include "Type/EventflowGraphData.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/EventflowSubTask.h"

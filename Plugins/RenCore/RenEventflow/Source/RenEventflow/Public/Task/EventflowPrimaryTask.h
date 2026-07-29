@@ -3,8 +3,9 @@
 #pragma once
 
 // Project Headers
-#include "Definition/EventflowTransition.h"
-#include "Task/EventflowTask.h"
+#include "EventflowTask.h"
+#include "Type/EventflowCondition.h"
+#include "Type/EventflowTransition.h"
 
 // Generated Headers
 #include "EventflowPrimaryTask.generated.h"
@@ -35,7 +36,7 @@ public:
 	TArray<TObjectPtr<UEventflowSubTask>> SubTasks;
 
 	UPROPERTY()
-	TMap<EFSMResult, FEventflowCondition_TaskState> SubTaskConditions;
+	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
 
 
 	REN_API void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);

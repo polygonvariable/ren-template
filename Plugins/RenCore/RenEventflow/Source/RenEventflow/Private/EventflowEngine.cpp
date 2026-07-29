@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 #include "Library/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
@@ -15,10 +15,10 @@
 #include "Task/EventflowPrimaryTask.h"
 
 
-void UEventflowEngine::InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntryDefinition& EntryDefinition)
+void UEventflowEngine::InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition)
 {
-	_AssetId = AssetId;
-	_EntryDefinition = EntryDefinition;
+	_AssetId = AssetId; AActor;
+	_Entry = EntryDefinition;
 }
 
 
@@ -88,6 +88,7 @@ void UEventflowEngine::ReachNextNode(int Index)
 	const TArray<FEventflowPin>& Outputs = CurrentNode->StaticOutputs;
 	if (Outputs.Num() == 0)
 	{
+		LOG_WARNING(LogEventflowEngine, TEXT("Failed to find next linked node, stopping graph with success"));
 		Finish(EFSMResult::Success);
 		return;
 	}
@@ -265,13 +266,13 @@ void UEventflowEngine::OnReady(EFSMState PreviousState)
 
 void UEventflowEngine::OnActive(EFSMState PreviousState)
 {
-	switch (_EntryDefinition.EntryLocation)
+	switch (_Entry.EntryType)
 	{
-	case EEventflowEntryLocation::Root:
+	case EEventflowEntryType::Root:
 		ReachEntryNode();
 		break;
-	case EEventflowEntryLocation::Custom:
-		ReachNode(_EntryDefinition.NodeId);
+	case EEventflowEntryType::Custom:
+		ReachNode(_Entry.NodeId);
 		break;
 	default:
 		LOG_ERROR(LogEventflowEngine, TEXT("Unknown entry location"));
@@ -295,9 +296,10 @@ void UEventflowEngine::OnRestart(EFSMState PreviousState, EFSMResult PreviousRes
 
 void UEventflowEngine::OnReset()
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
-
 	RemoveTask();
+
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FPoolHelper::Clear(_TaskPool);
 
 	_Asset = nullptr;
 
@@ -308,7 +310,7 @@ void UEventflowEngine::OnReset()
 	_AssetManager = nullptr;
 
 	_AssetId = FPrimaryAssetId();
-	_EntryDefinition.Reset();
+	_Entry.Reset();
 
 	_ActiveNodeId.Invalidate();
 }

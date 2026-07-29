@@ -5,6 +5,7 @@
 // Project Headers
 #include "Definition/PoolCollection.h"
 #include "StateMachine/FiniteStateMachine.h"
+#include "Type/EventflowEntry.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"
@@ -24,42 +25,6 @@ struct FEventflowPinRelation;
 /**
  *
  */
-UENUM(BlueprintType)
-enum class EEventflowEntryLocation : uint8
-{
-	Root UMETA(DisplayName = "Root"),
-	Custom UMETA(DisplayName = "Custom")
-};
-
-
-/**
- *
- */
-USTRUCT(BlueprintType)
-struct FEventflowEntryDefinition
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bAutoStart==true", EditConditionHides))
-	EEventflowEntryLocation EntryLocation = EEventflowEntryLocation::Root;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "EntryLocation==EEventflowEntryLocation::Custom", EditConditionHides))
-	FGuid NodeId = FGuid();
-
-	void Reset()
-	{
-		EntryLocation = EEventflowEntryLocation::Root;
-		NodeId = FGuid();
-	}
-
-};
-
-
-/**
- *
- */
 UCLASS(MinimalAPI, BlueprintType, Blueprintable)
 class UEventflowEngine : public UFiniteStateMachine
 {
@@ -68,12 +33,7 @@ class UEventflowEngine : public UFiniteStateMachine
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	REN_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntryDefinition& EntryDefinition);
-
-	// ~ UObject
-	REN_API virtual UWorld* GetWorld() const override;
-	// ~ End of UObject
+	REN_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition);
 
 	REN_API UEventflowPrimaryTask* GetTask() const;
 
@@ -90,6 +50,10 @@ public:
 	{
 		return Cast<T>(GetAsset());
 	}
+
+	// ~ UObject
+	REN_API virtual UWorld* GetWorld() const override;
+	// ~ End of UObject
 
 protected:
 
@@ -125,7 +89,7 @@ protected:
 
 private:
 
-	FEventflowEntryDefinition _EntryDefinition;
+	FEventflowEntry _Entry;
 
 	UPROPERTY()
 	TMap<UClass*, FPoolCollection> _TaskPool;

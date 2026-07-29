@@ -36,36 +36,12 @@ public:
 	FEventflowTransition() {};
 	FEventflowTransition(EFSMResult InResult, EEventflowTransitionType InType) : Result(InResult), Type(InType) {};
 
+
 	UPROPERTY(EditAnywhere)
 	EFSMResult Result = EFSMResult::Success;
 
 	UPROPERTY(EditAnywhere)
 	EEventflowTransitionType Type = EEventflowTransitionType::NextNode;
-
-};
-
-/*
- *
- */
-USTRUCT()
-struct FEventflowCondition_TaskState
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	FName TaskId = NAME_None;
-
-	UPROPERTY(EditAnywhere)
-	EFSMState State = EFSMState::Uninitialized;
-
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "State == EFSMState::Finished", EditConditionHides))
-	bool bUseResult = false;
-
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "State == EFSMState::Finished && bUseResult", EditConditionHides))
-	EFSMResult Result = EFSMResult::None;
 
 };
 

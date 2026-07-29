@@ -10,7 +10,7 @@
 
 // Project Headers
 #include "App/EventflowEdApp.h"
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 #include "Graph/EventflowEdGraph.h"
 
 

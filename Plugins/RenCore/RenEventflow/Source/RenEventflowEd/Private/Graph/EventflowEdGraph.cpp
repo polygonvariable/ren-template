@@ -4,7 +4,7 @@
 #include "Graph/EventflowEdGraph.h"
 
 // Project Headers
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
 #include "Task/EventflowPrimaryTask.h"

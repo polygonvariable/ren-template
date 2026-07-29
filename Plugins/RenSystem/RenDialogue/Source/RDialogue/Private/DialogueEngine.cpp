@@ -7,8 +7,8 @@
 #include "DialogueNodeData.h"
 #include "DialogueWidget.h"
 #include "DialogueAsset.h"
-#include "Definition/EventflowGraphData.h"
-#include "Definition/EventflowTransition.h"
+#include "Type/EventflowGraphData.h"
+#include "Type/EventflowTransition.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 

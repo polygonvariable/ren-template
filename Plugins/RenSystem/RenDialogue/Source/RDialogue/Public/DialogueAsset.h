@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 
 // Generated Headers
 #include "DialogueAsset.generated.h"

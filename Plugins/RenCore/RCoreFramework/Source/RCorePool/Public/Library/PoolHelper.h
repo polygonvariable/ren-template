@@ -33,6 +33,23 @@ namespace FPoolHelper
 		}
 	}
 
+	void Clear(TMap<UClass*, FPoolCollection>& PoolContainer)
+	{
+		for (const TPair<UClass*, FPoolCollection>& Kv : PoolContainer)
+		{
+			const TArray<TObjectPtr<UObject>>& List = Kv.Value.List;
+			for (UObject* Item : List)
+			{
+				if (IsValid(Item))
+				{
+					Item->MarkAsGarbage();
+				}
+			}
+		}
+
+		PoolContainer.Empty();
+	}
+
 	template<typename T>
 	T* AcquireFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UObject* Outer)
 	{

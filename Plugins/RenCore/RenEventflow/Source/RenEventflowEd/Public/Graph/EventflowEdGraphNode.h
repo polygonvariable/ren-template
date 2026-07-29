@@ -6,7 +6,8 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
-#include "Definition/EventflowTransition.h"
+#include "Type/EventflowCondition.h"
+#include "Type/EventflowTransition.h"
 
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"
@@ -34,7 +35,7 @@ public:
 	TArray<FEventflowTransition> TaskTransitions;
 
 	UPROPERTY(EditAnywhere, Category = "Sub Task Condition")
-	TMap<EFSMResult, FEventflowCondition_TaskState> SubTaskConditions;
+	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
 
 
 	virtual UEventflowPrimaryTask* GetTask() const;

@@ -6,7 +6,7 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Definition/EventflowGraphData.h"
+#include "Type/EventflowGraphData.h"
 
 // Generated Headers
 #include "EventflowAsset.generated.h"

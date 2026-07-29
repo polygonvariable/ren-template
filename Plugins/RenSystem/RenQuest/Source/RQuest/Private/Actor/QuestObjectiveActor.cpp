@@ -4,7 +4,7 @@
 #include "Actor/QuestObjectiveActor.h"
 
 // Project Headers
-#include "Task/EventflowTask.h"
+#include "EventflowTask.h"
 
 
 void AQuestObjectiveActor::SetOwningTask(UEventflowTask* Task)

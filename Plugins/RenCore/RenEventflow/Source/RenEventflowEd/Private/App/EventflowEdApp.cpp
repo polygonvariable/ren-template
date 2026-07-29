@@ -9,11 +9,11 @@
 
 // Project Headers
 #include "App/EventflowEdAppMode.h"
-#include "Asset/EventflowAsset.h"
+#include "EventflowAsset.h"
 #include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "Task/EventflowTask.h"
+#include "EventflowTask.h"
 
 
 void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit)
