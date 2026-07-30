@@ -4,7 +4,7 @@
 #include "Subsystem/ShopSubsystem.h"
 
 // Engine Headers
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Asset/TradeAsset.h"

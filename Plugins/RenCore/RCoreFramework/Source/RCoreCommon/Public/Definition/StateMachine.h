@@ -2,11 +2,14 @@
 
 #pragma once
 
+// Generated Headers
+#include "StateMachine.generated.h"
+
 
 /**
  *
  */
-UENUM()
+UENUM(BlueprintType)
 enum class EFSMState : uint8
 {
 	Uninitialized UMETA(DisplayName = "Uninitialized"),
@@ -20,7 +23,7 @@ enum class EFSMState : uint8
 /**
  *
  */
-UENUM()
+UENUM(BlueprintType)
 enum class EFSMResult : uint8
 {
 	None UMETA(DisplayName = "None"),

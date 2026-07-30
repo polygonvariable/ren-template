@@ -119,7 +119,7 @@ int FEventflowEdGraphPropertyTab::GetNumberOfObjects() const
 FEventflowEdNodePropertyTab::FEventflowEdNodePropertyTab(TSharedPtr<FEventflowEdApp> App) : FWorkflowTabFactory(FName("EventflowEdNodePropertyTab"), App)
 {
 	HostingApp = App;
-
+	
 	TabLabel = FText::FromString(TEXT("Node Property"));
 	ViewMenuDescription = FText::FromString(TEXT("Node Property"));
 	ViewMenuTooltip = FText::FromString(TEXT("Node Property"));

@@ -4,7 +4,7 @@
 
 // Engine Headers
 #include "GameplayTagContainer.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Generated Headers

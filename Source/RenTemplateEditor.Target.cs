@@ -8,15 +8,8 @@ public class RenTemplateEditorTarget : TargetRules
 	public RenTemplateEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.V7;
 
-        ExtraModuleNames.AddRange(new string[] { "RenTemplate" });
-        ExtraModuleNames.AddRange(
-            new string[]
-            {
-                
-            }
-        );
-
-    }
+		ExtraModuleNames.AddRange( new string[] { "RenTemplate" } );
+	}
 }

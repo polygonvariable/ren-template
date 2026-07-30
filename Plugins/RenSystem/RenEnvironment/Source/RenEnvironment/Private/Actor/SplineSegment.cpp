@@ -9,6 +9,7 @@
 
 #if WITH_EDITOR
 
+#include "MeshMerge/MeshMergingSettings.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 

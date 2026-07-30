@@ -4,7 +4,7 @@
 
 // Engine Headers
 #include "GameplayTagAssetInterface.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Generated Headers
 #include "CharacterInitializationData.generated.h"

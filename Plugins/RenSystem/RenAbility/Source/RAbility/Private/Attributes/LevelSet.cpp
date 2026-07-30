@@ -8,7 +8,7 @@
 #include "GameplayEffect.h"
 #include "NativeGameplayTags.h"
 #include "Kismet/GameplayStatics.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Log/LogMacro.h"

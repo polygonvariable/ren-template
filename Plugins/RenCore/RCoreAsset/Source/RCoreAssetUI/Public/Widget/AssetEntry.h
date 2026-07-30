@@ -3,7 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Generated Headers
 #include "AssetEntry.generated.h"

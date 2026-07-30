@@ -3,7 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "PropertyBag.h"
+#include "StructUtils/PropertyBag.h"
 
 // Generated Headers
 #include "ActorSpawnData.generated.h"

@@ -4,7 +4,7 @@
 #include "Task/Task_CraftItem.h"
 
 // Engine Headers
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"

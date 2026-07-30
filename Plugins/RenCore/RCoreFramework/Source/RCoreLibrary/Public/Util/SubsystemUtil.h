@@ -26,7 +26,7 @@ public:
 	{
 		if (!IsValid(Context)) return nullptr;
 
-		const TArray<TSubsystem*>& Subsystems = Context->GetSubsystemArray<TSubsystem>();
+		const TArray<TSubsystem*>& Subsystems = Context->GetSubsystemArrayCopy<TSubsystem>();
 		UClass* SubsystemClass = TInterface::UClassType::StaticClass();
 
 		for (TSubsystem* Subsystem : Subsystems)

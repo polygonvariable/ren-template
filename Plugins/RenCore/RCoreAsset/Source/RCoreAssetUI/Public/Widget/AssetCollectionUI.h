@@ -4,7 +4,7 @@
 
 // Engine Headers
 #include "Blueprint/UserWidget.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Generated Headers
 #include "AssetCollectionUI.generated.h"

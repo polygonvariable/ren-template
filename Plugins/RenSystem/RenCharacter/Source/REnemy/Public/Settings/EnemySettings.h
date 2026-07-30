@@ -5,7 +5,7 @@
 // Engine Headers
 #include "Engine/DeveloperSettings.h"
 #include "GameplayTagContainer.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Generated Headers
 #include "EnemySettings.generated.h"

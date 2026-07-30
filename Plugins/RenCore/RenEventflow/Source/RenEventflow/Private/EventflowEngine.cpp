@@ -17,7 +17,7 @@
 
 void UEventflowEngine::InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition)
 {
-	_AssetId = AssetId; AActor;
+	_AssetId = AssetId;
 	_Entry = EntryDefinition;
 }
 

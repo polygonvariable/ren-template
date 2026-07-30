@@ -4,7 +4,7 @@
 #include "Asset/Category/PurchasableAsset.h"
 
 // Engine Headers
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Management/AssetCollection.h"

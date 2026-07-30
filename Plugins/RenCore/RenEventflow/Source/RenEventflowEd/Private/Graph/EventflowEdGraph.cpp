@@ -38,7 +38,6 @@ void UEventflowEdGraph::SerializeGraph(UEventflowAsset* GraphAsset)
 	}
 }
 
-
 void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode* Node, FGuid& EntryId, TMap<FGuid, FEventflowNode>& NodeCollection, TMap<FGuid, FEventflowPinRelation>& PinRelation)
 {
 	UEventflowEdGraphNode* EdNode = Cast<UEventflowEdGraphNode>(Node);
@@ -129,7 +128,6 @@ void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNode& NodeDefin
 		}
 	}
 }
-
 
 void UEventflowEdGraph::RenderGraph(UEventflowAsset* GraphAsset)
 {

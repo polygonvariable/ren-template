@@ -47,6 +47,6 @@ void FEventflowEdAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabMana
 	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
 	App->PushTabFactories(EventflowEdTabSet);
 	
-	FApplicationMode::RegisterTabFactories(InTabManager);
+	FApplicationMode::RegisterTabFactoriesWithManager(InTabManager);
 }
 

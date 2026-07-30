@@ -51,7 +51,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Owned Gameplay Tags"))
-	const FGameplayTagContainer& BP_GetOwnedGameplayTags() const { return GetOwnedGameplayTags(); }
+	const FGameplayTagContainer& BP_GetOwnedGameplayTags2() const { return GetOwnedGameplayTags(); }
 
 
 	// ~ UAbilitySystemComponent

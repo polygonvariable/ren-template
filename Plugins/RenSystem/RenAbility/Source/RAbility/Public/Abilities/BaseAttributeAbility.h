@@ -5,7 +5,7 @@
 // Engine Headers
 #include "CoreMinimal.h"
 #include "NativeGameplayTags.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Abilities/GameplayAbility.h"
 #include "AttributeSet.h"
 #include "Components/ActorComponent.h"

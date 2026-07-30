@@ -69,7 +69,7 @@ void UEntitySprintAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
         return;
     }
 
-    ASC->AddReplicatedLooseGameplayTag(SprintTag);
+    ASC->AddLooseGameplayTag(SprintTag);
 
     PreviousSpeed = CharacterMovement->MaxWalkSpeed;
 
@@ -91,7 +91,7 @@ void UEntitySprintAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, c
 
         if (IsValid(CharacterMovement) && IsValid(ASC))
         {
-            ASC->RemoveReplicatedLooseGameplayTag(SprintTag);
+            ASC->RemoveLooseGameplayTag(SprintTag);
 
             FOnGameplayAttributeValueChange& StaminaDelegate = ASC->GetGameplayAttributeValueChangeDelegate(StaminaAttribute);
             StaminaDelegate.RemoveAll(this);

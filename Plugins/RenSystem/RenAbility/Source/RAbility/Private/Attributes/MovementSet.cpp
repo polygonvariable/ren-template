@@ -8,7 +8,7 @@
 #include "GameplayEffect.h"
 #include "NativeGameplayTags.h"
 #include "Kismet/GameplayStatics.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 #include "Net/UnrealNetwork.h"
 
 // Project Headers

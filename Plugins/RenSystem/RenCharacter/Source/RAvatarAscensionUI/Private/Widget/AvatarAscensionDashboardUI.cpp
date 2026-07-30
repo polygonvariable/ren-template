@@ -5,7 +5,7 @@
 
 // Engine Headers
 #include "Components/Button.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"

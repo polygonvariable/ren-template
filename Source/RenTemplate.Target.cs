@@ -8,20 +8,8 @@ public class RenTemplateTarget : TargetRules
 	public RenTemplateTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
-		DefaultBuildSettings = BuildSettingsVersion.V5;
+		DefaultBuildSettings = BuildSettingsVersion.V7;
 
-		/**
-		 * After adding new modules make sure to add them here,
-		 * and regenerate the project.
-		*/
-
-		ExtraModuleNames.AddRange(new string[] { "RenTemplate" });
-		ExtraModuleNames.AddRange(
-			new string[]
-			{
-				
-			}
-		);
-
+		ExtraModuleNames.AddRange( new string[] { "RenTemplate" } );
 	}
 }

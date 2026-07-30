@@ -53,7 +53,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     bool bWeatherEnabled = true;
 
-    UPROPERTY(EditDefaultsOnly, meta = (MetaClass = "WeatherManagerActor"), Category = "Weather")
+    UPROPERTY(EditDefaultsOnly, Category = "Weather")
     FSoftClassPath WeatherManager;
 
     UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Weather"), Category = "Weather")

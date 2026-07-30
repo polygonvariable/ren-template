@@ -4,7 +4,7 @@
 #include "Util/ObjectUtil.h"
 
 // Engine Headers
-#include "PropertyBag.h"
+#include "StructUtils/PropertyBag.h"
 #include "UObject/UnrealType.h"
 
 

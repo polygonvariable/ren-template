@@ -15,7 +15,7 @@ USubsystem* SubsystemUtil::GetSubsystemByInterface(UWorld* Context, UClass* Inte
 	{
 		return nullptr;
 	}
-	const TArray<UWorldSubsystem*>& Subsystems = Context->GetSubsystemArray<UWorldSubsystem>();
+	const TArray<UWorldSubsystem*>& Subsystems = Context->GetSubsystemArrayCopy<UWorldSubsystem>();
 	for (UWorldSubsystem* Subsystem : Subsystems)
 	{
 		if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(InterfaceClass))
@@ -32,7 +32,7 @@ USubsystem* SubsystemUtil::GetSubsystemByInterface(UGameInstance* Context, UClas
 	{
 		return nullptr;
 	}
-	const TArray<UGameInstanceSubsystem*>& Subsystems = Context->GetSubsystemArray<UGameInstanceSubsystem>();
+	const TArray<UGameInstanceSubsystem*>& Subsystems = Context->GetSubsystemArrayCopy<UGameInstanceSubsystem>();
 	for (UGameInstanceSubsystem* Subsystem : Subsystems)
 	{
 		if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(InterfaceClass))

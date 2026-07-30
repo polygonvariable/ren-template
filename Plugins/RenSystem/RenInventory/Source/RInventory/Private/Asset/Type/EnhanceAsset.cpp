@@ -5,7 +5,7 @@
 
 // Engine Headers
 
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Definition/AssetRuleDefinition.h"

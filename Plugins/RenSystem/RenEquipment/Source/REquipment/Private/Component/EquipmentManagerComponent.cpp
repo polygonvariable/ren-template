@@ -4,7 +4,7 @@
 #include "Component/EquipmentManagerComponent.h"
 
 // Engine Headers
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 #include "UObject/ObjectSaveContext.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Engine/AssetManager.h"

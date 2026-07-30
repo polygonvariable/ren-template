@@ -5,7 +5,7 @@
 
 // Engine Headers
 #include "Engine/AssetManager.h"
-#include "InstancedStruct.h"
+#include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Asset/TradeAsset.h"
