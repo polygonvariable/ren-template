@@ -21,10 +21,7 @@ void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr
 	WorkingAsset = Cast<UEventflowAsset>(ObjectToEdit);
 	WorkingGraph = Cast<UEventflowEdGraph>(FBlueprintEditorUtils::CreateNewGraph(WorkingAsset, NAME_None, GetGraphClass(), GetGraphSchemaClass()));
 	
-	TArray<UObject*> ObjectsToEdit;
-	ObjectsToEdit.Add(ObjectToEdit);
-
-	InitAssetEditor(Mode, InitToolkitHost, TEXT("GraphEditor"), FTabManager::FLayout::NullLayout, true, true, ObjectsToEdit);
+	InitAssetEditor(Mode, InitToolkitHost, TEXT("GraphEditor"), FTabManager::FLayout::NullLayout, true, true, ObjectToEdit);
 	AddApplicationMode(TEXT("RGraphEditorAppMode"), MakeShareable(new FEventflowEdAppMode(SharedThis(this))));
 	SetCurrentMode(TEXT("RGraphEditorAppMode"));
 

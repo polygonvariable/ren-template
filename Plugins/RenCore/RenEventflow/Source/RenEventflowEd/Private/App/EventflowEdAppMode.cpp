@@ -10,11 +10,11 @@
 
 FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflowEdApp) : FApplicationMode(TEXT("RGraphEditorAppMode"))
 {
-	EventflowEdApp = InEventflowEdApp;
+	FWorkflowAllowedTabSet& TabSet = ApplicationModeTabFactories;
 
-	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTab(InEventflowEdApp)));
-	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdNodePropertyTab(InEventflowEdApp)));
-	EventflowEdTabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphPropertyTab(InEventflowEdApp)));
+	TabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphTab(InEventflowEdApp)));
+	TabSet.RegisterFactory(MakeShareable(new FEventflowEdNodePropertyTab(InEventflowEdApp)));
+	TabSet.RegisterFactory(MakeShareable(new FEventflowEdGraphPropertyTab(InEventflowEdApp)));
 
 	TabLayout = FTabManager::NewLayout("RGraphEditorAppLayout_v1")
 		->AddArea(
@@ -44,9 +44,10 @@ FEventflowEdAppMode::FEventflowEdAppMode(TSharedPtr<FEventflowEdApp> InEventflow
 
 void FEventflowEdAppMode::RegisterTabFactories(TSharedPtr<FTabManager> InTabManager)
 {
-	TSharedPtr<FEventflowEdApp> App = EventflowEdApp.Pin();
-	App->PushTabFactories(EventflowEdTabSet);
-	
-	FApplicationMode::RegisterTabFactoriesWithManager(InTabManager);
+	TSharedPtr<FWorkflowCentricApplication> App = GetHost();
+	if (App.IsValid())
+	{
+		App->PushTabFactories(ApplicationModeTabFactories);
+	}
 }
 

@@ -24,10 +24,5 @@ public:
 	virtual void RegisterTabFactories(TSharedPtr<FTabManager> InTabManager) override;
 	// ~ End of FApplicationMode
 
-private:
-
-	TWeakPtr<FEventflowEdApp> EventflowEdApp;
-	FWorkflowAllowedTabSet EventflowEdTabSet;
-
 };
 
