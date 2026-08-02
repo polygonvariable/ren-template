@@ -11,7 +11,7 @@
 
 FPrimaryAssetId UEnvironmentProfileAsset::GetPrimaryAssetId() const
 {
-    return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
+    return FPrimaryAssetId(UEnvironmentProfileAsset::GetPrimaryAssetType(), GetFName());
 }
 
 FPrimaryAssetType UEnvironmentProfileAsset::GetPrimaryAssetType()
@@ -21,13 +21,13 @@ FPrimaryAssetType UEnvironmentProfileAsset::GetPrimaryAssetType()
 
 FPrimaryAssetId UEnvironmentProfileAsset::MakePrimaryAssetId(const FName& AssetName)
 {
-    return FPrimaryAssetId(GetPrimaryAssetType(), AssetName);
+    return FPrimaryAssetId(UEnvironmentProfileAsset::GetPrimaryAssetType(), AssetName);
 }
 
 bool UEnvironmentProfileAsset::IsValid(const FPrimaryAssetId& AssetId)
 {
     bool bAssetValid = AssetId.IsValid();
-    bool bTypeValid = AssetId.PrimaryAssetType == GetPrimaryAssetType();
+    bool bTypeValid = AssetId.PrimaryAssetType == UEnvironmentProfileAsset::GetPrimaryAssetType();
 
     return bAssetValid && bTypeValid;
 }

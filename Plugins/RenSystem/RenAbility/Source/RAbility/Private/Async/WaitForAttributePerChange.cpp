@@ -103,6 +103,8 @@ void USendEventGameplayEffectComponent::OnGameplayEffectApplied(FActiveGameplayE
 	}
 }
 
+#if WITH_EDITOR
+
 EDataValidationResult USendEventGameplayEffectComponent::IsDataValid(FDataValidationContext& Context) const
 {
 	EDataValidationResult Result = Super::IsDataValid(Context);
@@ -115,3 +117,5 @@ EDataValidationResult USendEventGameplayEffectComponent::IsDataValid(FDataValida
 
 	return Result;
 }
+
+#endif

@@ -21,6 +21,6 @@ FGameplayTagContainer URGameplayAbility::GetDynamicTags(bool& bSuccess) const
 	}
 	
 	bSuccess = true;
-	return Spec->DynamicAbilityTags;
+	return Spec->GetDynamicSpecSourceTags();
 }
 

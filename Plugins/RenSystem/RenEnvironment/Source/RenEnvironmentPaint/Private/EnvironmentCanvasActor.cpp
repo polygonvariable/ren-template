@@ -27,7 +27,9 @@ AEnvironmentCanvasActor::AEnvironmentCanvasActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+#if WITH_EDITOR
 	bIsSpatiallyLoaded = false;
+#endif
 }
 
 

@@ -91,7 +91,7 @@ FGameplayTagContainer UAbilitySystemLibrary::GetDynamicGameplayTags(AActor* Targ
 		return FGameplayTagContainer();
 	}
 
-	return Spec->DynamicAbilityTags;
+	return Spec->GetDynamicSpecSourceTags();
 }
 
 FGameplayTagContainer UAbilitySystemLibrary::GetDynamicGameplayTagsFromAbility(UGameplayAbility* Ability)
@@ -107,7 +107,7 @@ FGameplayTagContainer UAbilitySystemLibrary::GetDynamicGameplayTagsFromAbility(U
 		return FGameplayTagContainer();
 	}
 
-	return Spec->DynamicAbilityTags;
+	return Spec->GetDynamicSpecSourceTags();
 }
 
 FGameplayTag UAbilitySystemLibrary::GetFirstGameplayTag(const FGameplayTagContainer& Container)

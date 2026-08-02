@@ -80,7 +80,10 @@ public:
 
 	// ~ UObject
 	virtual class UWorld* GetWorld() const override;
+
+#if WITH_EDITOR
 	virtual bool ImplementsGetWorld() const override;
+#endif
 	// ~ End of UObject
 
 protected:

@@ -36,12 +36,12 @@ AEnvironmentActor::AEnvironmentActor()
 
 			SkyLight->CubemapResolution = 16;
 			SkyLight->bLowerHemisphereIsBlack = false;
-			SkyLight->OcclusionMaxDistance = 1500.0f;
+			SkyLight->OcclusionMaxDistance = 200.0f;
 			SkyLight->OcclusionCombineMode = EOcclusionCombineMode::OCM_Multiply;
-
+			
 			SkyLight->SetRealTimeCaptureEnabled(true);
-			SkyLight->SetOcclusionContrast(0.5f);
-			SkyLight->SetOcclusionExponent(1.6f);
+			SkyLight->SetOcclusionContrast(0.0f);
+			SkyLight->SetOcclusionExponent(0.6f);
 			SkyLight->SetMinOcclusion(0.4f);
 		}
 
@@ -51,15 +51,6 @@ AEnvironmentActor::AEnvironmentActor()
 			SkyAtmosphere->SetupAttachment(SceneComponent);
 		}
 		
-		/*
-		VolumetricCloud = CreateDefaultSubobject<UVolumetricCloudComponent>(TEXT("VolumetricCloud"));
-		if (IsValid(SkyLight))
-		{
-			VolumetricCloud->SetupAttachment(SceneComponent);
-			VolumetricCloud->SetVisibility(false);
-		}
-		*/
-
 		ExponentialHeightFog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("ExponentialHeightFog"));
 		if (IsValid(ExponentialHeightFog))
 		{
@@ -76,7 +67,7 @@ AEnvironmentActor::AEnvironmentActor()
 			Settings.Sharpen = 1.25f;
 
 			Settings.bOverride_DynamicGlobalIlluminationMethod = 1;
-			Settings.DynamicGlobalIlluminationMethod = EDynamicGlobalIlluminationMethod::None;
+			Settings.DynamicGlobalIlluminationMethod = EDynamicGlobalIlluminationMethod::Lumen;
 
 			Settings.bOverride_LumenSceneLightingQuality = 1;
 			Settings.LumenSceneLightingQuality = 0.25f;
@@ -109,7 +100,7 @@ AEnvironmentActor::AEnvironmentActor()
 			Settings.LumenDiffuseColorBoost = 1.5f;
 
 			Settings.bOverride_ReflectionMethod = 1;
-			Settings.ReflectionMethod = EReflectionMethod::ScreenSpace;
+			Settings.ReflectionMethod = EReflectionMethod::Lumen;
 			
 			Settings.bOverride_LumenReflectionQuality = 1;
 			Settings.LumenReflectionQuality = 0.25f;

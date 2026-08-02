@@ -62,7 +62,7 @@ void UInventoryDashboardUI::NativeConstruct()
 	InventoryCollection->OnSelectionChanged.BindUObject(this, &UAssetDashboardUI::InitializeAssetByEntry);
 	InventoryCollection->OnSelectionCleared.BindUObject(this, &UAssetDashboardUI::ResetDetail);
 
-	InventoryFilter->SetTargetCollectionUI(InventoryCollection);
+	//InventoryFilter->SetTargetCollectionUI(InventoryCollection);
 	
 	Super::NativeConstruct();
 }

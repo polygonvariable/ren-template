@@ -44,7 +44,7 @@ public class RDialogue : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreLibrary",
-				"RCorePool",
+				//"RCorePool",
             }
 			);
 		

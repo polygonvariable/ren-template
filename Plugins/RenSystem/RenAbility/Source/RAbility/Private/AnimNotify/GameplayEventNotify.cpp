@@ -9,8 +9,10 @@
 
 UGameplayEventNotify::UGameplayEventNotify()
 {
+#if WITH_EDITOR
 	bShouldFireInEditor = false;
 	NotifyColor = FColor::FromHex("#00D5FFFF");
+#endif
 }
 
 void UGameplayEventNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, const FAnimNotifyEventReference& EventReference)

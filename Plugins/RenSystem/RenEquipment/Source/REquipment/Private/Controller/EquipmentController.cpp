@@ -145,10 +145,12 @@ UWorld* UEquipmentController::GetWorld() const
 	return Outer->GetWorld();
 }
 
+#if WITH_EDITOR
 bool UEquipmentController::ImplementsGetWorld() const
 {
 	return true;
 }
+#endif
 
 
 UAnimInstance* UEquipmentController::GetOwnerAnimInstance() const

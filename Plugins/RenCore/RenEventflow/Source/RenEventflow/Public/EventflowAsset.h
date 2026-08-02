@@ -17,7 +17,6 @@
 
 /**
  *
- *
  */
 UCLASS(MinimalAPI, BlueprintType)
 class UEventflowAsset : public UPrimaryDataAsset
@@ -27,11 +26,11 @@ class UEventflowAsset : public UPrimaryDataAsset
 
 public:
 
-	/* TMap<NodeId, NodeDefinition> */
+	/** TMap<NodeId, NodeDefinition> */
 	UPROPERTY(VisibleAnywhere)
 	TMap<FGuid, FEventflowNode> NodeCollection;
 
-	/* TMap<PinId(OutputPin), PinRelation(InputPin, NodeId)> */
+	/** TMap<PinId(OutputPin), PinRelation(InputPin, NodeId)> */
 	UPROPERTY(VisibleAnywhere)
 	TMap<FGuid, FEventflowPinRelation> PinRelation;
 

@@ -18,7 +18,7 @@ FGameplayAbilitySpecHandle URAbilitySystemComponent::BP_TryGiveAbilityWithSource
 	}
 
 	FGameplayAbilitySpec Spec(AbilityClass, Level, InputID, SourceObject);
-	Spec.DynamicAbilityTags.AppendTags(Tags);
+	Spec.GetDynamicSpecSourceTags().AppendTags(Tags);
 
 	return GiveAbility(Spec);
 }
@@ -41,7 +41,7 @@ void URAbilitySystemComponent::BP_CancelAbilitiesWithDynamicTags(const FGameplay
 
 	for (const FGameplayAbilitySpec& Spec : AbilitiesSpecs)
 	{
-		if (Spec.DynamicAbilityTags.HasAnyExact(Tags))
+		if (Spec.GetDynamicSpecSourceTags().HasAnyExact(Tags))
 		{
 			ToRemove.Add(Spec.Handle);
 		}

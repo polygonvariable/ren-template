@@ -109,7 +109,7 @@ int FEventflowEdGraphPropertyTab::GetNumberOfObjects() const
 		{
 			++ObjectCount;
 		},
-		true
+		EGetObjectsFlags::IncludeNestedObjects
 	);
 
 	return ObjectCount;

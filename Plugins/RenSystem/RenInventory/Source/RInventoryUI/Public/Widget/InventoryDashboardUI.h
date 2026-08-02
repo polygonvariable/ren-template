@@ -35,13 +35,13 @@ public:
 protected:
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAssetCollectionUI> InventoryCollection = nullptr;
+	TObjectPtr<UAssetCollectionUI> InventoryCollection;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAssetDetailUI> InventoryDetail = nullptr;
+	TObjectPtr<UAssetDetailUI> InventoryDetail;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAssetFilterCollectionUI> InventoryFilter = nullptr;
+	//UPROPERTY(meta = (BindWidget))
+	//TObjectPtr<UAssetFilterCollectionUI> InventoryFilter = nullptr;
 
 
 	// ~ UAssetDashboardUI

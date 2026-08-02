@@ -9,11 +9,13 @@
 /**
  *
  */
-namespace FPoolHelper
+class FPoolHelper
 {
 
+public:
+
 	template<typename T>
-	T* AcquireFromContainer(TMap<UClass*, FPoolCollection>& PoolContainer, UClass* Class, UObject* Outer)
+	static T* AcquireFromContainer(TMap<UClass*, FPoolCollection>& PoolContainer, UClass* Class, UObject* Outer)
 	{
 		FPoolCollection& Pool = PoolContainer.FindOrAdd(Class);
 		if (Pool.List.Num() > 0)
@@ -23,7 +25,7 @@ namespace FPoolHelper
 		return NewObject<T>(Outer, Class);
 	}
 
-	void ReturnToContainer(TMap<UClass*, FPoolCollection>& PoolContainer, UObject* Item)
+	static void ReturnToContainer(TMap<UClass*, FPoolCollection>& PoolContainer, UObject* Item)
 	{
 		if (IsValid(Item))
 		{
@@ -33,7 +35,7 @@ namespace FPoolHelper
 		}
 	}
 
-	void Clear(TMap<UClass*, FPoolCollection>& PoolContainer)
+	static void Clear(TMap<UClass*, FPoolCollection>& PoolContainer)
 	{
 		for (const TPair<UClass*, FPoolCollection>& Kv : PoolContainer)
 		{
@@ -51,7 +53,7 @@ namespace FPoolHelper
 	}
 
 	template<typename T>
-	T* AcquireFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UObject* Outer)
+	static T* AcquireFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UObject* Outer)
 	{
 		if (PoolContainer.Num() > 0)
 		{
@@ -61,7 +63,7 @@ namespace FPoolHelper
 	}
 
 	template<typename T>
-	T* AcquireWidgetFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UUserWidget* Outer)
+	static T* AcquireWidgetFromArray(TArray<TObjectPtr<T>>& PoolContainer, UClass* Class, UUserWidget* Outer)
 	{
 		if (PoolContainer.Num() > 0)
 		{
@@ -71,7 +73,7 @@ namespace FPoolHelper
 	}
 
 	template<typename T>
-	void ReturnToArray(TArray<TObjectPtr<T>>& PoolContainer, T* Item)
+	static void ReturnToArray(TArray<TObjectPtr<T>>& PoolContainer, T* Item)
 	{
 		if (IsValid(Item))
 		{
@@ -80,3 +82,4 @@ namespace FPoolHelper
 	}
 
 };
+
