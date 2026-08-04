@@ -32,7 +32,6 @@ void USettingOptionUI::NativeDestruct()
 	Super::NativeDestruct();
 }
 
-
 int USettingOptionUI::GetSettingOptionValue() const
 {
 	return 0;
@@ -41,7 +40,6 @@ int USettingOptionUI::GetSettingOptionValue() const
 void USettingOptionUI::SetSettingOptionValue(int Value)
 {
 }
-
 
 void USettingOptionUI::LoadCVar()
 {
@@ -71,8 +69,6 @@ void USettingOptionUI::SaveCVar()
 }
 
 
-
-
 void USettingOption_DropdownUI::HandleOnSelectionChanged(FString SelectedItem, ESelectInfo::Type SelectionType)
 {
 	if (bAutoSave)
@@ -83,7 +79,18 @@ void USettingOption_DropdownUI::HandleOnSelectionChanged(FString SelectedItem, E
 
 int USettingOption_DropdownUI::GetSettingOptionValue() const
 {
-	return SettingDropdown->GetSelectedIndex();
+	int Index = SettingDropdown->GetSelectedIndex();
+	if (!bUseValueOption)
+	{
+		return Index;
+	}
+
+	if (ValueOptions.IsValidIndex(Index))
+	{
+		return ValueOptions[Index];
+	}
+
+	return 0;
 }
 
 void USettingOption_DropdownUI::SetSettingOptionValue(int Value)
@@ -112,7 +119,6 @@ void USettingOption_DropdownUI::NativeDestruct()
 	SettingDropdown->OnSelectionChanged.Clear();
 	Super::NativeDestruct();
 }
-
 
 
 void USettingOption_SliderUI::HandleOnValueChanged(float Value)
@@ -168,62 +174,4 @@ void USettingOption_SliderUI::NativeDestruct()
 	SettingSlider->OnValueChanged.Clear();
 	Super::NativeDestruct();
 }
-
-
-
-
-void USettingOption_ToggleUI::HandleOnButtonClicked()
-{
-	_bCurrentState = !_bCurrentState;
-
-	HandleValueText(_bCurrentState);
-}
-
-void USettingOption_ToggleUI::HandleValueText(bool bState)
-{
-	if (bState)
-	{
-		ValueText->SetText(FText::FromString(TEXT("On")));
-	}
-	else
-	{
-		ValueText->SetText(FText::FromString(TEXT("Off")));
-	}
-}
-
-int USettingOption_ToggleUI::GetSettingOptionValue() const
-{
-	return _bCurrentState ? 1 : 0;
-}
-
-void USettingOption_ToggleUI::SetSettingOptionValue(int Value)
-{
-	_bCurrentState = (Value > 0) ? true : false;
-	HandleValueText(_bCurrentState);
-}
-
-void USettingOption_ToggleUI::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-	HandleValueText(bDefaultValue);
-}
-
-void USettingOption_ToggleUI::NativeConstruct()
-{
-	SettingToggle->OnClicked.AddDynamic(this, &USettingOption_ToggleUI::HandleOnButtonClicked);
-	Super::NativeConstruct();
-}
-
-void USettingOption_ToggleUI::NativeDestruct()
-{
-	SettingToggle->OnClicked.Clear();
-	Super::NativeDestruct();
-}
-
-
-
-
-
-
-
 

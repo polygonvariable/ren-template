@@ -5,8 +5,6 @@
 
 #define LOCTEXT_NAMESPACE "FRSettingsModule"
 
-static TAutoConsoleVariable<float> CVarSFXVolume(TEXT("ren.audio.SFXVolume"), 1.0f, TEXT("Controls the SFX Volume for the RPG Audio Plugin.\n") TEXT("0.0 = silent, 1.0 = full volume"), ECVF_SetByGameSetting);
-
 void FRSettingsModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module

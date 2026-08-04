@@ -51,7 +51,7 @@ bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector& Vel
 {
 	const FTransform& Transform = GetComponentToWorld();
 	Location = Transform.GetLocation();
-	Velocity = GetComponentVelocity();
+	Velocity = GetOwner()->GetVelocity();
 	Density = BrushDensity;
 	Size = BrushSize;
 

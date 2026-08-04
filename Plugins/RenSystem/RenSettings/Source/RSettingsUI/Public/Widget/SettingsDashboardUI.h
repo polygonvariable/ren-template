@@ -83,6 +83,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TArray<FString> DefaultOptions;
 
+	UPROPERTY(EditAnywhere)
+	TArray<int> ValueOptions;
+
+	UPROPERTY(EditAnywhere)
+	bool bUseValueOption = false;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UComboBoxString> SettingDropdown = nullptr;
 
@@ -151,51 +157,6 @@ protected:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
-
-};
-
-
-/**
- *
- */
-UCLASS(Abstract)
-class USettingOption_ToggleUI : public USettingOptionUI
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(EditAnywhere)
-	bool bDefaultValue = false;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> SettingToggle = nullptr;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> ValueText = nullptr;
-
-
-	// ~ Binding
-	UFUNCTION()
-	void HandleOnButtonClicked();
-	void HandleValueText(bool bState);
-	// ~ End of Binding
-
-	// ~ USettingOptionUI
-	virtual int GetSettingOptionValue() const override;
-	virtual void SetSettingOptionValue(int Value) override;
-	// ~ End of USettingOptionUI
-	
-	// ~ UUserWidget
-	virtual void NativePreConstruct() override;
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
-	// ~ End of UUserWidget
-
-private:
-
-	bool _bCurrentState = false;
 
 };
 
