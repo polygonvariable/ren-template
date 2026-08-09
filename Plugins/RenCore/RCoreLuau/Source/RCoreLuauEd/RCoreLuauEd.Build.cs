@@ -1,21 +1,23 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
+using System.Diagnostics;
+using System.IO;
 using UnrealBuildTool;
+using UnrealBuildTool.Rules;
 
-public class RenEventflow : ModuleRules
+public class RCoreLuauEd : ModuleRules
 {
-	public RenEventflow(ReadOnlyTargetRules Target) : base(Target)
+	public RCoreLuauEd(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
-		
-		PublicIncludePaths.AddRange(
-			new string[] {
-				// ... add public include paths required here ...
+
+        PublicIncludePaths.AddRange(
+            new string[] {
+				// ... add other private include paths required here ...
 			}
-			);
-				
-		
-		PrivateIncludePaths.AddRange(
+            );
+
+        PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
 			}
@@ -27,11 +29,7 @@ public class RenEventflow : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "StructUtils",
-				"RCoreCommon",
-                "RCoreAsset",
-                "RCorePool",
-                "RCoreLuau"
+				"RCoreLuau"
             }
 			);
 			
@@ -44,10 +42,8 @@ public class RenEventflow : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreLibrary",
-                "RCoreAssetManager",
             }
-			);
+            );
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

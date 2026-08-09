@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "RenEventflow",
+	"FriendlyName": "RCoreLuau",
 	"Description": "",
 	"Category": "Ren Core",
 	"CreatedBy": "polygonvariable",
@@ -16,32 +16,16 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenEventflowEd",
-			"Type": "Editor",
+			"Name": "RCoreLuau",
+			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEventflow",
-			"Type": "Runtime",
+			"Name": "RCoreLuauEd",
+			"Type": "Editor",
 			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "RCoreFramework",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreAsset",
-			"Enabled": true
-		},
-		{
-			"Name": "RCoreLuau",
-			"Enabled": true
-		},
-		{
-			"Name": "EditorScriptingUtilities",
-			"Enabled": true
-		}
 	]
 }

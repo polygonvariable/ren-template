@@ -4,6 +4,7 @@
 
 // Project Headers
 #include "StateMachine/FiniteStateMachine.h"
+#include "LuauFragment.h"
 
 // Generated Headers
 #include "EventflowTask.generated.h"

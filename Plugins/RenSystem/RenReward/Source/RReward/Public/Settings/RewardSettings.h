@@ -45,7 +45,7 @@ public:
 	TSubclassOf<URewardSubsystem> SubsystemClass;
 
 
-	UPROPERTY(Config, EditDefaultsOnly)
+	UPROPERTY(Config, EditDefaultsOnly, meta = (Categories = "Event"))
 	FGameplayTag TagEvent_RewardInvoke;
 	
 

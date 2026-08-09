@@ -48,7 +48,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Engine")
 	TSubclassOf<UQuestEngine> QuestEngineClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Broadcast")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Broadcast", meta = (Categories = "Event"))
 	FGameplayTag EventTag_QuestBroadcast;
 
 public:

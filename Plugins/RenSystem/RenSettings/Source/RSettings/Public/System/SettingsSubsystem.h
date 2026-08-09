@@ -28,7 +28,3 @@ public:
 
 };
 
-
-// Module Macros
-#undef REN_API
-

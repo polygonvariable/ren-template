@@ -6,6 +6,8 @@
 // Project Headers
 #include "GameFramework/GameUserSettings.h"
 #include "Core/RGameUserSettings.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 
 bool USettingsSubsystem::ShouldCreateSubsystem(UObject* Outer) const
@@ -16,24 +18,32 @@ bool USettingsSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 void USettingsSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	
-	URGameUserSettings* Settings = Cast<URGameUserSettings>(GEngine->GetGameUserSettings());
-	if (IsValid(Settings))
+	LOG_WARNING(LogTemp, TEXT("SettingsSubsystem initialized"));
+
+	if (IsValid(GEngine))
 	{
-		Settings->ApplySettings(true);
-		Settings->RegisterCVar();
+		URGameUserSettings* Settings = Cast<URGameUserSettings>(GEngine->GetGameUserSettings());
+		if (IsValid(Settings))
+		{
+			Settings->ApplySettings(true);
+			Settings->RegisterCVar();
+		}
 	}
 }
 
 void USettingsSubsystem::Deinitialize()
 {
-	URGameUserSettings* Settings = Cast<URGameUserSettings>(GEngine->GetGameUserSettings());
-	if (IsValid(Settings))
+	if (IsValid(GEngine))
 	{
-		Settings->UnregisterCVar();
-		Settings->SaveSettings();
+		URGameUserSettings* Settings = Cast<URGameUserSettings>(GEngine->GetGameUserSettings());
+		if (IsValid(Settings))
+		{
+			Settings->UnregisterCVar();
+			Settings->SaveSettings();
+		}
 	}
 
+	LOG_WARNING(LogTemp, TEXT("SettingsSubsystem deinitialized"));
 	Super::Deinitialize();
 }
 
