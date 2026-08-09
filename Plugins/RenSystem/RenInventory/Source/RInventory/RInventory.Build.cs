@@ -53,7 +53,6 @@ public class RInventory : ModuleRules
                 "RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
-                "StructUtils",
             }
             );
 		

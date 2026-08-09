@@ -29,7 +29,6 @@ public class RAbilityUI : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"CoreUObject",
 				"Engine",
-				"StructUtils",
                 "UMG",
                 "RCoreCommon",
                 "RCoreTag",

@@ -38,10 +38,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "StructUtils",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreFramework",
 			"Enabled": true
 		}

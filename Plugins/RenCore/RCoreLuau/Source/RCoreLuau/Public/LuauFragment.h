@@ -15,7 +15,9 @@
 struct lua_State;
 
 
-
+/*
+ *
+ */
 class REN_API FLuauHelper
 {
 
@@ -26,6 +28,9 @@ public:
 };
 
 
+/*
+ *
+ */
 UENUM(BlueprintType)
 enum class ELuauType : uint8
 {
@@ -39,23 +44,9 @@ enum class ELuauType : uint8
 };
 
 
-template<typename T>
-struct H
-{
-	T SomeData;
-
-	T GetData() const
-	{
-		return SomeData;
-	}
-
-	void SetData(T InData)
-	{
-		T = InData;
-	}
-};
-
-
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauProperty
 {
@@ -64,6 +55,10 @@ struct FLuauProperty
 
 };
 
+
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauProperty_String : public FLuauProperty
 {
@@ -77,6 +72,10 @@ public:
 
 };
 
+
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauProperty_Number : public FLuauProperty
 {
@@ -90,6 +89,10 @@ public:
 
 };
 
+
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauProperty_Boolean : public FLuauProperty
 {
@@ -104,9 +107,9 @@ public:
 };
 
 
-
-
-
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauParameters
 {
@@ -121,26 +124,9 @@ public:
 };
 
 
-
-
-
-
-
-
-USTRUCT(BlueprintType)
-struct FLuauBytecode
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY()
-	TArray<uint8> Bytecode;
-
-};
-
-
+/*
+ *
+ */
 USTRUCT(BlueprintType)
 struct FLuauSourceCode
 {
@@ -168,10 +154,9 @@ public:
 };
 
 
-
-
-
-
+/*
+ * 
+ */
 UCLASS(MinimalAPI)
 class ULuauAsset : public UPrimaryDataAsset
 {
@@ -184,11 +169,6 @@ public:
 	FLuauSourceCode SourceCode;
 
 };
-
-
-
-
-
 
 
 // Module Macros

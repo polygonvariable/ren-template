@@ -41,7 +41,6 @@ public class RAvatarAscensionUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"StructUtils",
                 "RCoreAsset",
                 "RCoreAscension",
                 "RCoreFilter",

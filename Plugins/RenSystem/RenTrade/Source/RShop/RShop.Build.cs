@@ -43,7 +43,6 @@ public class RShop : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "StructUtils",
                 "RCoreDelegate",
                 "RCoreAsset",
 				"RCoreAssetManager",

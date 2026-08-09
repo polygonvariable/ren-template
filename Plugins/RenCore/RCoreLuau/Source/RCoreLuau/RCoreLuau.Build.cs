@@ -17,7 +17,6 @@ public class RCoreLuau : ModuleRules
 			new string[] {
                 Path.Combine(LuauPath, "Ast/include"),
                 Path.Combine(LuauPath, "Bytecode/include"),
-                Path.Combine(LuauPath, "CodeGen/include"),
                 Path.Combine(LuauPath, "Common/include"),
                 Path.Combine(LuauPath, "Compiler/include"),
                 Path.Combine(LuauPath, "VM/include"),
@@ -26,7 +25,6 @@ public class RCoreLuau : ModuleRules
 
 		PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.Ast.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.Bytecode.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.CodeGen.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.Common.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.Compiler.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(LuauPath, "cmake/Release/Luau.VM.lib"));

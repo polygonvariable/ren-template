@@ -81,10 +81,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "StructUtils",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreAsset",
 			"Enabled": true
 		},

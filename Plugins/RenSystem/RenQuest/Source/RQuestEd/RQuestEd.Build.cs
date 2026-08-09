@@ -40,7 +40,6 @@ public class RQuestEd : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"StructUtils",
                 "AssetTools",
                 "UnrealEd",
                 "PropertyEditor",

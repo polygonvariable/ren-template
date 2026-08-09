@@ -72,9 +72,5 @@
 		}
 	],
 	"Plugins": [
-		{
-			"Name": "StructUtils",
-			"Enabled": true
-		}
 	]
 }

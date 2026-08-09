@@ -3,13 +3,7 @@
 // Parent Header
 #include "LuauFragment.h"
 
-// Engine Headers
-#include "Misc/FileHelper.h"
-#include "Misc/Paths.h"
-
 // Project Headers
-#include "lua.h"
-#include "lualib.h"
 #include "luacode.h"
 
 

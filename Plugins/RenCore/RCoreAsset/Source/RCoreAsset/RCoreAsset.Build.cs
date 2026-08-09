@@ -40,7 +40,6 @@ public class RCoreAsset : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "StructUtils",
                 "RCoreLibrary",
             }
 			);

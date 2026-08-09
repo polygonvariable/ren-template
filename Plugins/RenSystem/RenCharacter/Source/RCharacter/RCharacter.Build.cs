@@ -29,7 +29,6 @@ public class RCharacter : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
                 "GameplayAbilities",
-				"StructUtils",
                 "GameplayTags",
 				"RCoreCommon",
                 "RCoreAscension",
@@ -49,7 +48,6 @@ public class RCharacter : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"MotionTrajectory",
                 "RCoreLibrary",
-                "StructUtils",
             }
 			);
 		

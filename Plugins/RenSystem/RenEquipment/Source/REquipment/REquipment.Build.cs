@@ -29,7 +29,6 @@ public class REquipment : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "GameplayAbilities",
                 "DeveloperSettings",
-				"StructUtils",
                 "GameplayTags",
                 "RCoreCommon",
 				"RCorePool",

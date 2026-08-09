@@ -32,7 +32,6 @@ public class REnemyPartyEd : ModuleRules
                 "SlateCore",
                 "EditorFramework",
                 "DeveloperSettings",
-                "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
 				"RCoreCommon",
@@ -60,7 +59,6 @@ public class REnemyPartyEd : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "RCoreLibrary",
-                "StructUtils",
             }
 			);
 		

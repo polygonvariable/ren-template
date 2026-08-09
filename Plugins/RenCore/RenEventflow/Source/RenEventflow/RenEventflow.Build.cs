@@ -27,7 +27,6 @@ public class RenEventflow : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "StructUtils",
 				"RCoreCommon",
                 "RCoreAsset",
                 "RCorePool",

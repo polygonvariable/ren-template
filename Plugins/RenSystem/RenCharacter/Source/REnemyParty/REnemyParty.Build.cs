@@ -28,7 +28,6 @@ public class REnemyParty : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
                 "RCoreCommon",
@@ -56,7 +55,6 @@ public class REnemyParty : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "RCoreLibrary",
-                "StructUtils",
             }
 			);
 		

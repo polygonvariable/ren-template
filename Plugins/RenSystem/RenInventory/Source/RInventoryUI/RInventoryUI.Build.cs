@@ -33,7 +33,6 @@ public class RInventoryUI : ModuleRules
 				"RCoreAssetManager",
                 "RInventory",
                 "RCoreCommon",
-				"StructUtils",
             }
 			);
 			

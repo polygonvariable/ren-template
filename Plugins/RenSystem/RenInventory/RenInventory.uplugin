@@ -43,10 +43,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "StructUtils",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreTrade",
 			"Enabled": true
 		},
@@ -68,10 +64,6 @@
 		},
 		{
 			"Name": "RCoreEquipment",
-			"Enabled": true
-		},
-		{
-			"Name": "StructUtils",
 			"Enabled": true
 		}
 	]

@@ -28,7 +28,6 @@ public class RCharacterParty : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "StructUtils",
                 "GameplayAbilities",
                 "GameplayTags",
 				"RCoreCommon",
@@ -54,7 +53,6 @@ public class RCharacterParty : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "RCoreLibrary",
-                "StructUtils",
             }
 			);
 		
