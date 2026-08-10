@@ -6,12 +6,13 @@
 #include "Auth/AuthAction.h"
 
 // Generated Headers
-#include "AAClaimCraftItem.generated.h"
+#include "AAPurchaseItem.generated.h"
 
 // Forward Declarations
 class UAssetManager;
-class UTradeAsset;
+class UShopAsset;
 class UCoreDataAsset;
+class IAssetInstanceCollection;
 struct FStreamableHandle;
 
 
@@ -19,34 +20,41 @@ struct FStreamableHandle;
  *
  */
 UCLASS(NotBlueprintType)
-class UAAClaimCraftItem : public UAuthAction
+class UAAPurchaseItem : public UAuthAction
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FPrimaryAssetId CraftAssetId;
+	FPrimaryAssetId ShopAssetId;
 	FPrimaryAssetId TargetAssetId;
 	FGuid TradeCollectionId;
 
 protected:
 
+	int TargetQuota = 1;
 	int TargetQuantity = 1;
-	int ClaimQuantity = 0;
 
 	UPROPERTY()
 	TObjectPtr<UAssetManager> AssetManager = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
+	TObjectPtr<const UShopAsset> ShopAsset = nullptr;
 
+	UPROPERTY()
+	TObjectPtr<const UCoreDataAsset> TargetAsset = nullptr;
 
+	IAssetInstanceCollection* MaterialInstance = nullptr;
+
+	
 	void Step_LoadAsset();
 	void Step_HandleOnAssetsLoaded();
 	void Step_CheckTarget();
-	void Step_CheckClaimable();
-	void Step_PerformTransaction();
+	void Step_CheckMaterial();
+	void Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
+	void Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
 
 	// ~ UAuthAction
 	void OnStarted() override;

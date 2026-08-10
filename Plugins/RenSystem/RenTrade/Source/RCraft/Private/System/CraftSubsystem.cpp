@@ -7,23 +7,24 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Asset/TradeAsset.h"
-#include "Definition/AssetDetail_Trade.h"
+#include "Auth/AAClaimCraftItem.h"
+#include "Auth/AACraftItem.h"
+#include "Core/CraftSettings.h"
+#include "Core/Type/Runtime/TradeKey.h"
+#include "Core/Type/TradeAssetDetail.h"
+#include "Data/CraftFragment.h"
+#include "Data/CraftStorage.h"
+#include "Data/TradeAsset.h"
+#include "Data/TradeAssetCollection.h"
 #include "Definition/AssetRuleDefinition.h"
-#include "Definition/Runtime/TradeKey.h"
 #include "Delegate/GameLifecycleDelegate.h"
 #include "Interface/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollection_Trade.h"
-#include "Core/CraftSettings.h"
-#include "Data/CraftStorage.h"
-#include "System/CraftStorageManager.h"
 #include "Subsystem/AuthActionSubsystem.h"
-#include "Auth/AAClaimCraftItem.h"
-#include "Auth/AACraftItem.h"
-#include "Data/CraftFragment.h"
+#include "System/CraftStorageManager.h"
+
 
 UCraftStorageManager* UCraftSubsystem::GetStorageManager()
 {
@@ -34,7 +35,6 @@ UCraftStorageManager* UCraftSubsystem::GetStorageManager()
 	FName StorageId = UCraftSettings::Get()->StorageId;
 	return StorageProvider->GetStorageManager<UCraftStorageManager>(StorageId);
 }
-
 
 bool UCraftSubsystem::TryClaimCraftItem(const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId)
 {
@@ -99,7 +99,7 @@ const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAs
 }
 
 
-void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)> Callback)
+void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)> Callback)
 {
 	UCraftStorageManager* StorageManager = GetStorageManager();
 	if (!IsValid(Asset) || !IsValid(StorageManager))
@@ -114,14 +114,14 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 	}
 
 	FInstancedStruct Context = FInstancedStruct::Make(FAssetRuleContext(CollectionId));
-	const UAssetCollection_Trade* AssetCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(Context);
+	const UTradeAssetCollection* AssetCollection = TradeGroup->GetCollectionRule<UTradeAssetCollection>(Context);
 	if (!IsValid(AssetCollection))
 	{
 		return;
 	}
 
 	FPrimaryAssetId CraftAssetId = Asset->GetPrimaryAssetId();
-	const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList = AssetCollection->GetAssetList();
+	const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList = AssetCollection->GetAssetList();
 
 	if (QuerySource == ECraftQuerySource::Glossary)
 	{
@@ -133,12 +133,12 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 	}
 }
 
-void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)>&& Callback)
+void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
 {
-	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
+	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
 	{
 		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
-		FAssetDetail_Trade ItemDetail = AssetKv.Value;
+		FTradeAssetDetail ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);
 		if (!IsValid(MaterialCollection))
@@ -159,12 +159,12 @@ void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_T
 	}
 }
 
-void UCraftSubsystem::QueryStorageItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)>&& Callback)
+void UCraftSubsystem::QueryStorageItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
 {
-	for (const TPair<UCoreDataAsset*, FAssetDetail_Trade>& AssetKv : AssetList)
+	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
 	{
 		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
-		FAssetDetail_Trade ItemDetail = AssetKv.Value;
+		FTradeAssetDetail ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);
 		if (!IsValid(MaterialCollection))

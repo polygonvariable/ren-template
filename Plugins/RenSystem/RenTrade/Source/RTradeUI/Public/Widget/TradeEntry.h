@@ -5,7 +5,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Definition/AssetDetail_Trade.h"
+#include "Core/Type/TradeAssetDetail.h"
 #include "Widget/AssetEntry.h"
 
 // Generated Headers
@@ -29,7 +29,7 @@ class UTradeEntry : public UAssetEntry
 
 public:
 
-	FAssetDetail_Trade TradeDetail;
+	FTradeAssetDetail TradeDetail;
 
 	// ~ UAssetEntry
 	REN_API virtual void ResetData() override

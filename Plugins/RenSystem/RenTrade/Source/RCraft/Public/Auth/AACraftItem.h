@@ -9,10 +9,11 @@
 #include "AACraftItem.generated.h"
 
 // Forward Declarations
-class URAssetManager;
+class UAssetManager;
 class UTradeAsset;
 class UCoreDataAsset;
 class IAssetInstanceCollection;
+struct FStreamableHandle;
 
 
 /**
@@ -37,7 +38,7 @@ protected:
 	FTimespan CraftingTime;
 
 	UPROPERTY()
-	TObjectPtr<URAssetManager> AssetManager = nullptr;
+	TObjectPtr<UAssetManager> AssetManager = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
@@ -50,6 +51,7 @@ protected:
 
 
 	void Step_LoadAsset();
+	void Step_HandleOnAssetsLoaded();
 	void Step_CheckTargetAsset();
 	void Step_CheckMaterialAsset();
 	void Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType);
@@ -61,6 +63,10 @@ protected:
 	void OnCompleted(bool bSuccess) override;
 	void OnCleanup() override;
 	// ~ End of UAuthAction
+
+private:
+
+	TSharedPtr<FStreamableHandle> _LoadHandle;
 
 };
 

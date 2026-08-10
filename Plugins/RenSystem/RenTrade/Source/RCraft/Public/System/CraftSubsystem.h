@@ -7,7 +7,6 @@
 
 // Project Headers
 #include "Core/Type/CraftQuery.h"
-#include "Definition/TaskType.h"
 
 // Generated Headers
 #include "CraftSubsystem.generated.h"
@@ -22,10 +21,9 @@ class UCraftStorageManager;
 class UTradeAsset;
 class UCoreDataAsset;
 
-struct FAssetDetail_Trade;
+struct FTradeAssetDetail;
 struct FInstancedStruct;
 struct FCraftInstance;
-
 
 
 /**
@@ -47,15 +45,15 @@ public:
 	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
 	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
 
-	REN_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)> Callback);
+	REN_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)> Callback);
 
 protected:
 
 	IStorageProvider* StorageProvider;
 
 
-	void QueryAssetItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)>&& Callback);
-	void QueryStorageItems(const TMap<UCoreDataAsset*, FAssetDetail_Trade>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FAssetDetail_Trade&, const FCraftInstance*)>&& Callback);
+	void QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
+	void QueryStorageItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
 
 	void OnPreGameInitialized();
 

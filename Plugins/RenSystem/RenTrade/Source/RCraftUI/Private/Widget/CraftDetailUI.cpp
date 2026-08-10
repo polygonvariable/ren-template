@@ -7,7 +7,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Definition/Runtime/TradeKey.h"
+#include "Core/Type/Runtime/TradeKey.h"
 #include "System/CraftStorageManager.h"
 #include "System/CraftSubsystem.h"
 #include "Widget/CraftEntry.h"

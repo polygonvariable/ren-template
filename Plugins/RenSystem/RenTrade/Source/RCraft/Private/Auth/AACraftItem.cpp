@@ -4,37 +4,37 @@
 #include "Auth/AACraftItem.h"
 
 // Engine Headers
+#include "Engine/AssetManager.h"
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Asset/TradeAsset.h"
+#include "Core/Type/Runtime/CraftInstance.h"
+#include "Core/Type/Runtime/TradeKey.h"
+#include "Data/CraftFragment.h"
+#include "Data/TradeAsset.h"
+#include "Data/TradeAssetCollection.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
-#include "Core/Type/Runtime/CraftInstance.h"
-#include "Definition/Runtime/TradeKey.h"
 #include "Interface/AssetInstanceCollection.h"
 #include "Interface/AssetInstanceCollectionProvider.h"
 #include "Library/AssetInstanceUtil.h"
+#include "Library/AssetManagerUtil.h"
 #include "Management/AssetCollection.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollection_Trade.h"
-#include "Manager/RAssetManager.inl"
-#include "Core/CraftSettings.h"
 #include "System/CraftStorageManager.h"
 #include "System/CraftSubsystem.h"
-#include "Data/CraftFragment.h"
 
 
 void UAACraftItem::OnStarted()
 {
-	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
+	AssetManager = UAssetManager::GetIfInitialized();
 	Step_LoadAsset();
 }
 
 void UAACraftItem::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(ActionId);
+	FAssetManagerUtil::CancelHandle(_LoadHandle);
 }
 
 void UAACraftItem::OnCleanup()
@@ -58,35 +58,21 @@ void UAACraftItem::Step_LoadAsset()
 		return;
 	}
 
+	FAssetManagerUtil::CancelHandle(_LoadHandle);
+
 	TArray<FPrimaryAssetId> Assets;
 	Assets.Add(CraftAssetId);
 	Assets.Add(TargetAssetId);
 
-	TFuture<FLatentLoadedAssets<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAssets<UCoreDataAsset>(ActionId, Assets);
-	if (!Future.IsValid())
-	{
-		Fail(TEXT("Failed to create Future"));
-		return;
-	}
+	_LoadHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAACraftItem::Step_HandleOnAssetsLoaded));
+}
 
-	TWeakObjectPtr<UAACraftItem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAssets<UCoreDataAsset>& Result)
-		{
-			UAACraftItem* This = WeakThis.Get();
-			if (!IsValid(This) || !Result.IsValid())
-			{
-				This->Fail(TEXT("Failed to fetch assets"));
-				return;
-			}
+void UAACraftItem::Step_HandleOnAssetsLoaded()
+{
+	TradeAsset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(CraftAssetId);
+	TargetAsset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(TargetAssetId);
 
-			const TArray<UCoreDataAsset*>& Assets = Result.Get();
-
-			This->TradeAsset = Cast<UTradeAsset>(Assets[0]);
-			This->TargetAsset = Assets[1];
-
-			This->Step_CheckTargetAsset();
-		}
-	);
+	Step_CheckTargetAsset();
 }
 
 void UAACraftItem::Step_CheckTargetAsset()
@@ -105,14 +91,14 @@ void UAACraftItem::Step_CheckTargetAsset()
 	}
 
 	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
-	const UAssetCollection_Trade* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
+	const UTradeAssetCollection* TradeCollection = TradeGroup->GetCollectionRule<UTradeAssetCollection>(TradeContext);
 	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
 		return;
 	}
 
-	FAssetDetail_Trade TargetDetail;
+	FTradeAssetDetail TargetDetail;
 	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
 	{
 		Fail(TEXT("Item asset not found"));

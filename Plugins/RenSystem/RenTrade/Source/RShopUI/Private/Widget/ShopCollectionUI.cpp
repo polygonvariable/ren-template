@@ -4,8 +4,8 @@
 #include "Widget/ShopCollectionUI.h"
 
 // Project Headers
-#include "Storage/ShopStorageManager.h"
-#include "Subsystem/ShopSubsystem.h"
+#include "System/ShopStorageManager.h"
+#include "System/ShopSubsystem.h"
 #include "Widget/TradeEntry.h"
 
 
@@ -17,7 +17,7 @@ void UShopCollectionUI::DisplayEntries()
 	}
 
 	ShopSubsystem->QueryItems(TradeAsset, TradeCollectionId,
-		[this](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail)
+		[this](const FPrimaryAssetId& ItemAssetId, const FTradeAssetDetail& ItemDetail)
 		{
 			UTradeEntry* Entry = GetEntryFromPool<UTradeEntry>();
 			if (IsValid(Entry))

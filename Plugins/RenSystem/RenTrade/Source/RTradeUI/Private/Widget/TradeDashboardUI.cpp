@@ -8,7 +8,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Asset/TradeAsset.h"
+#include "Data/TradeAsset.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"

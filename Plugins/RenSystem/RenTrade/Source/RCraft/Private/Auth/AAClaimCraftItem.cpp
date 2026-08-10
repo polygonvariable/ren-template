@@ -4,34 +4,33 @@
 #include "Auth/AAClaimCraftItem.h"
 
 // Engine Headers
+#include "Engine/AssetManager.h"
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
-#include "Asset/TradeAsset.h"
+#include "Core/Type/Runtime/TradeKey.h"
+#include "Data/TradeAsset.h"
+#include "Data/TradeAssetCollection.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetRuleDefinition.h"
-#include "Definition/Runtime/TradeKey.h"
 #include "Interface/AssetInstanceCollection.h"
 #include "Interface/AssetInstanceCollectionProvider.h"
 #include "Library/AssetInstanceUtil.h"
+#include "Library/AssetManagerUtil.h"
 #include "Management/AssetGroup.h"
-#include "Management/Collection/AssetCollection_Trade.h"
-#include "Manager/RAssetManager.inl"
-#include "Core/CraftSettings.h"
 #include "System/CraftStorageManager.h"
 #include "System/CraftSubsystem.h"
 
 
 void UAAClaimCraftItem::OnStarted()
 {
-	AssetManager = Cast<URAssetManager>(UAssetManager::GetIfInitialized());
+	AssetManager = UAssetManager::GetIfInitialized();
 	Step_LoadAsset();
 }
 
 void UAAClaimCraftItem::OnCompleted(bool bSuccess)
 {
-	AssetManager->CancelFetch(ActionId);
+	FAssetManagerUtil::CancelHandle(_LoadHandle);
 }
 
 void UAAClaimCraftItem::OnCleanup()
@@ -54,21 +53,18 @@ void UAAClaimCraftItem::Step_LoadAsset()
 		return;
 	}
 
-	TFuture<FLatentLoadedAsset<UCoreDataAsset>> Future = AssetManager->FetchPrimaryAsset<UCoreDataAsset>(ActionId, CraftAssetId);
-	TWeakObjectPtr<UAAClaimCraftItem> WeakThis(this);
-	Future.Next([WeakThis](const FLatentLoadedAsset<UCoreDataAsset>& Result)
-		{
-			UAAClaimCraftItem* This = WeakThis.Get();
-			if (!IsValid(This) || !Result.IsValid())
-			{
-				This->Fail(TEXT("Failed to fetch assets"));
-				return;
-			}
+	FAssetManagerUtil::CancelHandle(_LoadHandle);
 
-			This->TradeAsset = Cast<UTradeAsset>(Result.Get());
-			This->Step_CheckTarget();
-		}
-	);
+	_LoadHandle = AssetManager->LoadPrimaryAsset(CraftAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAClaimCraftItem::Step_HandleOnAssetsLoaded));
+}
+
+void UAAClaimCraftItem::Step_HandleOnAssetsLoaded()
+{
+	FAssetManagerUtil::ReleaseHandle(_LoadHandle);
+
+	TradeAsset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(CraftAssetId);
+
+	Step_CheckTarget();
 }
 
 void UAAClaimCraftItem::Step_CheckTarget()
@@ -87,14 +83,14 @@ void UAAClaimCraftItem::Step_CheckTarget()
 	}
 
 	FInstancedStruct TradeContext = FInstancedStruct::Make(FAssetRuleContext(TradeCollectionId));
-	const UAssetCollection_Trade* TradeCollection = TradeGroup->GetCollectionRule<UAssetCollection_Trade>(TradeContext);
+	const UTradeAssetCollection* TradeCollection = TradeGroup->GetCollectionRule<UTradeAssetCollection>(TradeContext);
 	if (!IsValid(TradeCollection))
 	{
 		Fail(TEXT("Item collection is invalid"));
 		return;
 	}
 
-	FAssetDetail_Trade TargetDetail;
+	FTradeAssetDetail TargetDetail;
 	if (!TradeCollection->GetAssetDetail(TargetAssetId, TargetDetail))
 	{
 		Fail(TEXT("Item asset not found"));

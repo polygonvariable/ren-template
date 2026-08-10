@@ -6,18 +6,18 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "Core/Type/Runtime/CraftInstance.h"
+#include "Core/Type/Runtime/ShopInstance.h"
 #include "Core/Type/Runtime/TradeKey.h"
 
 // Generated Headers
-#include "CraftStorage.generated.h"
+#include "ShopStorage.generated.h"
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UCraftStorage : public USaveGame
+class UShopStorage : public USaveGame
 {
 
 	GENERATED_BODY()
@@ -25,7 +25,7 @@ class UCraftStorage : public USaveGame
 public:
 
 	UPROPERTY(SaveGame)
-	TMap<FTradeKey, FCraftInstance> CraftItems;
+	TMap<FTradeKey, FShopInstance> ShopItems;
 
 };
 
