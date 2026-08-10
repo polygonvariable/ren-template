@@ -6,7 +6,6 @@
 
 // Project Headers
 #include "Asset/InventoryAsset.h"
-#include "Interface/IShopProvider.h"
 
 // Generated Headers
 #include "PurchasableAsset.generated.h"
@@ -17,7 +16,6 @@
 // Forward Declarations
 class UAssetGroup;
 class UAssetCollection;
-
 struct FInstancedStruct;
 
 
@@ -26,17 +24,10 @@ struct FInstancedStruct;
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UPurchasableAsset : public UInventoryAsset, public IShopProvider
+class UPurchasableAsset : public UInventoryAsset
 {
 
 	GENERATED_BODY()
-
-public:
-
-	// ~ IShopProvider
-	REN_API virtual const UAssetCollection* GetPurchaseCost() const override;
-	REN_API virtual const UAssetCollection* GetPurchaseCost(const FInstancedStruct& Context) const override;
-	// ~ End of IShopProvider
 
 protected:
 

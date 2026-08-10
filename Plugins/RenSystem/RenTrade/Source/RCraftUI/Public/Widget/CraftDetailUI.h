@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/Runtime/CraftData.h"
+#include "Core/Type/Runtime/CraftInstance.h"
 #include "Widget/TradeDetailUI.h"
 
 // Generated Headers
@@ -42,7 +42,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UCraftStorageManager> StorageManager = nullptr;
 
-	FCraftData CraftData;
+	FCraftInstance CraftData;
 
 
 	UFUNCTION(BlueprintCallable)

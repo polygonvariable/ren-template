@@ -17,14 +17,12 @@ class UGameplayAbility;
 class UAssetGroup;
 class UAssetCollection;
 class ACharacterBase;
-
 struct FAscensionData;
 
 
 
+
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)

@@ -12,7 +12,6 @@
 #include "Definition/AssetRuleDefinition.h"
 #include "Definition/Runtime/TradeKey.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/IShopProvider.h"
 #include "Interface/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -22,7 +21,8 @@
 #include "Storage/ShopStorage.h"
 #include "Storage/ShopStorageManager.h"
 #include "Subsystem/AuthActionSubsystem.h"
-#include "Task/Task_PurchaseItem.h"
+#include "Task/AAPurchaseItem.h"
+#include "Definition/ShopMetadata.h"
 
 
 UShopStorageManager* UShopSubsystem::GetStorageManager()
@@ -45,7 +45,7 @@ bool UShopSubsystem::TryPurchaseItem(const FPrimaryAssetId& ShopAssetId, const F
 	}
 
 	FGuid ActionId = FGuid::NewGuid();
-	UTask_PurchaseItem* Action = AuthActionSubsystem->CreateAction<UTask_PurchaseItem>(ActionId);
+	UAAPurchaseItem* Action = AuthActionSubsystem->CreateAction<UAAPurchaseItem>(ActionId);
 	if (!IsValid(Action))
 	{
 		LOG_ERROR(LogShop, TEXT("Failed to create task"));
@@ -61,12 +61,12 @@ bool UShopSubsystem::TryPurchaseItem(const FPrimaryAssetId& ShopAssetId, const F
 
 const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const
 {
-	const IShopProvider* ShopProvider = Cast<IShopProvider>(Asset);
-	if (!ShopProvider)
+	const UShopFragment* ShopFragment = Asset->FindFragmentByClass<UShopFragment>();
+	if (!IsValid(ShopFragment))
 	{
 		return nullptr;
 	}
-	return ShopProvider->GetPurchaseCost(Context);
+	return ShopFragment->GetPurchaseCost(Context);
 }
 
 const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const

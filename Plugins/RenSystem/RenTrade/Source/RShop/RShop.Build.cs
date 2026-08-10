@@ -47,7 +47,6 @@ public class RShop : ModuleRules
                 "RCoreAsset",
 				"RCoreAssetManager",
                 "RCoreAssetInstance",
-                "RCoreShop",
                 "RCoreLibrary",
             }
 			);

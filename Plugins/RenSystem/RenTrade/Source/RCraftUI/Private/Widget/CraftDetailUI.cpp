@@ -8,8 +8,8 @@
 
 // Project Headers
 #include "Definition/Runtime/TradeKey.h"
-#include "Storage/CraftStorageManager.h"
-#include "Subsystem/CraftSubsystem.h"
+#include "System/CraftStorageManager.h"
+#include "System/CraftSubsystem.h"
 #include "Widget/CraftEntry.h"
 
 
@@ -22,7 +22,7 @@ void UCraftDetailUI::RefreshDetail()
 	}
 
 	FTradeKey TradeKey(TradeAssetId, TradeCollectionId, GetActiveAssetId());
-	const FCraftData* NewCraftData = StorageManager->GetItem(TradeKey);
+	const FCraftInstance* NewCraftData = StorageManager->GetItem(TradeKey);
 	if (!NewCraftData)
 	{
 		SwitchDetail(false);

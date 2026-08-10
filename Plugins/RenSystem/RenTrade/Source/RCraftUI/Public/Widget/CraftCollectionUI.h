@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/CraftQuery.h"
+#include "Core/Type/CraftQuery.h"
 #include "Widget/TradeCollectionUI.h"
 
 // Generated Headers

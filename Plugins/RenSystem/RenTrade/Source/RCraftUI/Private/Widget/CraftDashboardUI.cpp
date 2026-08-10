@@ -9,7 +9,7 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/CraftSubsystem.h"
+#include "System/CraftSubsystem.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeEntry.h"
 

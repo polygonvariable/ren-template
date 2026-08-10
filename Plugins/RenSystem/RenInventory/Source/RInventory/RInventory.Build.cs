@@ -36,8 +36,6 @@ public class RInventory : ModuleRules
                 "RCoreEquipment",
                 "RCoreStorage",
                 "RCoreCommon",
-                "RCoreShop",
-                "RCoreCraft",
             }
 			);
 			

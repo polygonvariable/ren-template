@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/Runtime/CraftData.h"
+#include "Core/Type/Runtime/CraftInstance.h"
 #include "Widget/TradeEntry.h"
 
 // Generated Headers
@@ -21,7 +21,7 @@ class UCraftEntry : public UTradeEntry
 
 public:
 
-	FCraftData CraftData;
+	FCraftInstance CraftData;
 
 	// ~ UAssetEntry
 	virtual void ResetData() override

@@ -5,8 +5,8 @@
 
 // Project Headers
 #include "Asset/TradeAsset.h"
-#include "Storage/CraftStorageManager.h"
-#include "Subsystem/CraftSubsystem.h"
+#include "System/CraftStorageManager.h"
+#include "System/CraftSubsystem.h"
 #include "Widget/CraftEntry.h"
 
 
@@ -20,12 +20,12 @@ void UCraftCollectionUI::DisplayEntries()
 	FPrimaryAssetId TradeAssetId = TradeAsset->GetPrimaryAssetId();
 
 	CraftSubsystem->QueryItems(TradeAsset, TradeCollectionId, QuerySource,
-		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftData* CraftData) {
+		[this, TradeAssetId](const FPrimaryAssetId& ItemAssetId, const FAssetDetail_Trade& ItemDetail, const FCraftInstance* CraftData) {
 
 			UCraftEntry* Entry = GetEntryFromPool<UCraftEntry>();
 			if (IsValid(Entry))
 			{
-				Entry->CraftData = (CraftData) ? *CraftData : FCraftData();
+				Entry->CraftData = (CraftData) ? *CraftData : FCraftInstance();
 				Entry->TradeDetail = ItemDetail;
 				AddEntry(ItemAssetId, Entry);
 			}

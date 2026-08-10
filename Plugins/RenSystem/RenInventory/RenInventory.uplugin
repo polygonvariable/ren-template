@@ -43,10 +43,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RCoreTrade",
-			"Enabled": true
-		},
-		{
 			"Name": "RCoreAsset",
 			"Enabled": true
 		},

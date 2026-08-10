@@ -11,26 +11,3 @@
 
 
 
-FTimespan UCraftableAsset::GetCraftingTime() const
-{
-	return CraftingTime;
-}
-
-const UAssetCollection* UCraftableAsset::GetCraftingMaterial() const
-{
-	if (!IsValid(CraftingItems))
-	{
-		return nullptr;
-	}
-	return CraftingItems->GetCollectionRule<UAssetCollection>();
-}
-
-const UAssetCollection* UCraftableAsset::GetCraftingMaterial(const FInstancedStruct& Context) const
-{
-	if (!IsValid(CraftingItems))
-	{
-		return nullptr;
-	}
-	return CraftingItems->GetCollectionRule<UAssetCollection>(Context);
-}
-

@@ -48,7 +48,7 @@ public:
  *
  *
  */
-UCLASS(MinimalAPI, DisplayName = "Group (Single)")
+UCLASS(MinimalAPI, DisplayName = "Asset Group (Single)")
 class UAssetGroup_Single : public UAssetGroup
 {
 
@@ -74,7 +74,7 @@ protected:
  *
  *
  */
-UCLASS(MinimalAPI, DisplayName = "Group (List)")
+UCLASS(MinimalAPI, DisplayName = "Asset Group (List)")
 class UAssetGroup_List : public UAssetGroup
 {
 

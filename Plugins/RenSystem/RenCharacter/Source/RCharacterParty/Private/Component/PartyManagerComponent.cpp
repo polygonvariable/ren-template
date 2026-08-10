@@ -21,7 +21,7 @@
 
 UPartyManagerComponent::UPartyManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 	bAutoActivate = false;
 	SetIsReplicatedByDefault(true);
 }
@@ -116,6 +116,10 @@ void UPartyManagerComponent::SpawnPartyCharacters()
 
 void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, const FCharacterInitializationData& Data)
 {
+#if WITH_EDITOR
+	const uint64 StartCycles = FPlatformTime::Cycles64();
+#endif
+
 	const UCharacterAsset* Asset = AssetManager->GetPrimaryAssetObject<UCharacterAsset>(AssetId);
 	if (!IsValid(Asset) || PartyCharacters.Contains(AssetId))
 	{
@@ -145,6 +149,12 @@ void UPartyManagerComponent::SpawnCharacter(const FPrimaryAssetId& AssetId, cons
 	Character->FinishSpawning(SpawnTransform);
 
 	RegisterCharacter(AssetId, Character);
+
+#if WITH_EDITOR
+	const uint64 EndCycles = FPlatformTime::Cycles64();
+	const double TimeElapsed = FPlatformTime::ToMilliseconds64(EndCycles - StartCycles);
+	UE_LOG(LogTemp, Log, TEXT("Party creation took: %.4f ms"), TimeElapsed);
+#endif
 }
 
 void UPartyManagerComponent::RegisterCharacter(const FPrimaryAssetId& AssetId, AAvatarCharacter* Character)

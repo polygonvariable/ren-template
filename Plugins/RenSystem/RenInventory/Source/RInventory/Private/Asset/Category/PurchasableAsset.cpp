@@ -12,21 +12,5 @@
 
 
 
-const UAssetCollection* UPurchasableAsset::GetPurchaseCost() const
-{
-	if (!IsValid(PurchaseCost))
-	{
-		return nullptr;
-	}
-	return PurchaseCost->GetCollectionRule<UAssetCollection>();
-}
 
-const UAssetCollection* UPurchasableAsset::GetPurchaseCost(const FInstancedStruct& Context) const
-{
-	if (!IsValid(PurchaseCost))
-	{
-		return nullptr;
-	}
-	return PurchaseCost->GetCollectionRule<UAssetCollection>(Context);
-}
 

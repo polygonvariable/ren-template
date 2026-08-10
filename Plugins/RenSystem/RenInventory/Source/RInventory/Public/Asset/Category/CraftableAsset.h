@@ -6,7 +6,6 @@
 
 // Project Headers
 #include "Asset/Category/PurchasableAsset.h"
-#include "Interface/ICraftProvider.h"
 
 // Generated Headers
 #include "CraftableAsset.generated.h"
@@ -25,18 +24,10 @@ struct FInstancedStruct;
  * 
  */
 UCLASS(MinimalAPI, Abstract)
-class UCraftableAsset : public UPurchasableAsset, public ICraftProvider
+class UCraftableAsset : public UPurchasableAsset
 {
 
 	GENERATED_BODY()
-
-public:
-
-	// ~ ICraftProvider
-	REN_API virtual FTimespan GetCraftingTime() const override;
-	REN_API virtual const UAssetCollection* GetCraftingMaterial() const override;
-	REN_API virtual const UAssetCollection* GetCraftingMaterial(const FInstancedStruct& Context) const override;
-	// ~ End of ICraftProvider
 
 protected:
 

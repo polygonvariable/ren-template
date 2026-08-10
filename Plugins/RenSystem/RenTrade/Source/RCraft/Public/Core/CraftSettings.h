@@ -6,42 +6,42 @@
 #include "Engine/DeveloperSettings.h"
 
 // Generated Headers
-#include "ShopSettings.generated.h"
+#include "CraftSettings.generated.h"
 
 // Forward Declarations
-class UShopStorage;
-class UShopStorageManager;
-class UShopSubsystem;
+class UCraftStorage;
+class UCraftStorageManager;
+class UCraftSubsystem;
 
 
 /**
  *
  */
-UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Trade Shop"))
-class UShopSettings : public UDeveloperSettings
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Trade Craft"))
+class UCraftSettings : public UDeveloperSettings
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UShopSettings(const FObjectInitializer& ObjectInitializer);
+	UCraftSettings(const FObjectInitializer& ObjectInitializer);
 
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	FName StorageId;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
-	TSubclassOf<UShopStorage> StorageClass;
+	TSubclassOf<UCraftStorage> StorageClass;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
-	TSubclassOf<UShopStorageManager> StorageManagerClass;
+	TSubclassOf<UCraftStorageManager> StorageManagerClass;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
-	TSubclassOf<UShopSubsystem> SubsystemClass;
+	TSubclassOf<UCraftSubsystem> SubsystemClass;
 
 
-	static const UShopSettings* Get();
+	static const UCraftSettings* Get();
 
 };
 
