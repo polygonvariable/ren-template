@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AvatarQueryType.h"
+#include "Core/Type/AvatarQueryType.h"
 #include "Widget/AssetCollectionUI.h"
 
 // Generated Headers

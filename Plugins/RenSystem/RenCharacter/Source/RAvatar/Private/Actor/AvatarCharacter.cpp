@@ -9,13 +9,13 @@
 #include "GameFramework/SpringArmComponent.h"
 
 // Project Headers
-#include "Asset/CharacterAsset.h"
+#include "Core/AvatarSettings.h"
+#include "Core/CharacterSettings.h"
+#include "Data/CharacterAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Settings/AvatarSettings.h"
-#include "Settings/CharacterSettings.h"
-#include "Storage/AvatarStorageManager.h"
-#include "Subsystem/AvatarSubsystem.h"
+#include "System/AvatarStorageManager.h"
+#include "System/AvatarSubsystem.h"
 
 
 AAvatarCharacter::AAvatarCharacter() : Super()

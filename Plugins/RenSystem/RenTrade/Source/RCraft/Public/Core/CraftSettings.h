@@ -12,6 +12,8 @@
 class UCraftStorage;
 class UCraftStorageManager;
 class UCraftSubsystem;
+class UAACraftItem;
+class UAACraftClaimItem;
 
 
 /**
@@ -39,6 +41,13 @@ public:
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UCraftSubsystem> SubsystemClass;
+
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Auth Action")
+	TSubclassOf<UAACraftItem> AACraftItemClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Auth Action")
+	TSubclassOf<UAACraftClaimItem> AAClaimItemClass;
 
 
 	static const UCraftSettings* Get();

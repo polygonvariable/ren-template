@@ -4,19 +4,19 @@
 #include "Component/PartyManagerComponent.h"
 
 // Engine Headers
+#include "Engine/AssetManager.h"
 #include "GameFramework/Character.h"
 #include "UObject/ObjectSaveContext.h"
-#include "Engine/AssetManager.h"
 
 // Project Headers
 #include "Actor/AvatarCharacter.h"
-#include "Asset/CharacterAsset.h"
+#include "Core/PartySettings.h"
+#include "Data/CharacterAsset.h"
 #include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Settings/PartySettings.h"
-#include "Storage/PartyStorageManager.h"
-#include "Subsystem/PartySubsystem.h"
+#include "System/PartyStorageManager.h"
+#include "System/PartySubsystem.h"
 
 
 UPartyManagerComponent::UPartyManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

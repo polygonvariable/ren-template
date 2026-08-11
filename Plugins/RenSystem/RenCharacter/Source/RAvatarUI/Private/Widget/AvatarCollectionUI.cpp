@@ -6,8 +6,8 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/AvatarStorageManager.h"
-#include "Subsystem/AvatarSubsystem.h"
+#include "System/AvatarStorageManager.h"
+#include "System/AvatarSubsystem.h"
 #include "Widget/AvatarEntry.h"
 
 

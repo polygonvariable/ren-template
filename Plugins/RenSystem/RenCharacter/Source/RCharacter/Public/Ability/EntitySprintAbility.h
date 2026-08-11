@@ -15,10 +15,7 @@
 class UCharacterMovementComponent;
 
 
-
 /**
- * 
- * 
  * 
  */
 UCLASS(Abstract)

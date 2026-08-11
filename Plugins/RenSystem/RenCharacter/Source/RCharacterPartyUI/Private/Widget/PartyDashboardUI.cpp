@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Subsystem/PartySubsystem.h"
+#include "System/PartySubsystem.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Delegate/GameUIDelegate.h"
 

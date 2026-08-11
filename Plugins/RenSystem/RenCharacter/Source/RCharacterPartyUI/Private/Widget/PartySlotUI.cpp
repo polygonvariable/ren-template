@@ -10,8 +10,8 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Storage/PartyStorageManager.h"
-#include "Subsystem/PartySubsystem.h"
+#include "System/PartyStorageManager.h"
+#include "System/PartySubsystem.h"
 #include "Widget/Drag/AssetDragOperation.h"
 
 

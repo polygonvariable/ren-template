@@ -34,7 +34,7 @@ void UAACraftItem::OnStarted()
 
 void UAACraftItem::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_LoadHandle);
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 }
 
 void UAACraftItem::OnCleanup()
@@ -58,13 +58,13 @@ void UAACraftItem::Step_LoadAsset()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_LoadHandle);
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 
 	TArray<FPrimaryAssetId> Assets;
 	Assets.Add(CraftAssetId);
 	Assets.Add(TargetAssetId);
 
-	_LoadHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAACraftItem::Step_HandleOnAssetsLoaded));
+	_AssetHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAACraftItem::Step_HandleOnAssetsLoaded));
 }
 
 void UAACraftItem::Step_HandleOnAssetsLoaded()

@@ -8,12 +8,12 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/AvatarAsset.h"
-#include "Definition/Runtime/AvatarInstance.h"
+#include "Data/AvatarAsset.h"
+#include "Core/Type/Runtime/AvatarInstance.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/AvatarStorageManager.h"
-#include "Subsystem/AvatarSubsystem.h"
+#include "System/AvatarStorageManager.h"
+#include "System/AvatarSubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 #include "Widget/AvatarEntry.h"
 

@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Definition/EnemyData.h"
+#include "Core/Type/EnemyData.h"
 
 // Generated Headers
 #include "EnemyCharacter.generated.h"

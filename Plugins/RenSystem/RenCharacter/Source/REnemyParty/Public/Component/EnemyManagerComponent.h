@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/EnemyData.h"
+#include "Core/Type/EnemyData.h"
 
 // Generated Headers
 #include "EnemyManagerComponent.generated.h"
@@ -17,7 +17,6 @@ struct FStreamableHandle;
 
 
 /**
- *
  *
  */
 UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))

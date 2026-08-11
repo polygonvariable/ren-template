@@ -34,7 +34,7 @@ void UAAPurchaseItem::OnStarted()
 
 void UAAPurchaseItem::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_LoadHandle);
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 }
 
 void UAAPurchaseItem::OnCleanup()
@@ -64,14 +64,14 @@ void UAAPurchaseItem::Step_LoadAsset()
 	Assets.Add(ShopAssetId);
 	Assets.Add(TargetAssetId);
 
-	FAssetManagerUtil::CancelHandle(_LoadHandle);
+	FAssetManagerUtil::CancelHandle(_AssetHandle);
 
-	_LoadHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAPurchaseItem::Step_HandleOnAssetsLoaded));
+	_AssetHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAPurchaseItem::Step_HandleOnAssetsLoaded));
 }
 
 void UAAPurchaseItem::Step_HandleOnAssetsLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_LoadHandle);
+	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
 
 	ShopAsset = AssetManager->GetPrimaryAssetObject<UShopAsset>(ShopAssetId);
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UShopAsset>(TargetAssetId);

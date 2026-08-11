@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/CharacterInitializationData.h"
+#include "Core/Type/CharacterInitializationData.h"
 #include "Definition/QueryType.h"
 
 // Generated Headers

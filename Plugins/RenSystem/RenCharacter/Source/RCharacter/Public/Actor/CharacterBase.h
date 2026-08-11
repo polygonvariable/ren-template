@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Definition/AssetQuerySource.h"
-#include "Definition/CharacterInitializationData.h"
+#include "Core/Type/CharacterInitializationData.h"
 #include "Interface/SpawnContextProvider.h"
 
 // Generated Headers
@@ -22,7 +22,6 @@ class UCharacterTrajectoryComponent;
 class UAbilitySystemComponent;
 class UCharacterAsset;
 class UGameplayEffect;
-
 
 
 /**

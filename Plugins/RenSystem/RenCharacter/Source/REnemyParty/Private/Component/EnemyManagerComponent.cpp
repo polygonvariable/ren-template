@@ -9,15 +9,15 @@
 
 // Project Headers
 #include "Actor/EnemyCharacter.h"
-#include "Asset/CharacterAsset.h"
+#include "Data/CharacterAsset.h"
 #include "Library/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Settings/CharacterSettings.h"
-#include "Settings/EnemySettings.h"
-#include "Storage/EnemyStorageManager.h"
+#include "Core/CharacterSettings.h"
+#include "Core/EnemySettings.h"
+#include "System/EnemyStorageManager.h"
 #include "Subsystem/BroadcastSubsystem.h"
-#include "Subsystem/EnemySubsystem.h"
+#include "System/EnemySubsystem.h"
 
 
 UEnemyManagerComponent::UEnemyManagerComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

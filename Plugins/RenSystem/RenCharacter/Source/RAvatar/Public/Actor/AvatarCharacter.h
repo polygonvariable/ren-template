@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Definition/Runtime/AvatarInstance.h"
+#include "Core/Type/Runtime/AvatarInstance.h"
 #include "Interface/Actor/AssetInstanceContextProvider.h"
 
 // Generated Headers

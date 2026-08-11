@@ -20,7 +20,6 @@ class IStorageProvider;
 class UCraftStorageManager;
 class UTradeAsset;
 class UCoreDataAsset;
-
 struct FTradeAssetDetail;
 struct FInstancedStruct;
 struct FCraftInstance;
@@ -49,7 +48,7 @@ public:
 
 protected:
 
-	IStorageProvider* StorageProvider;
+	IStorageProvider* StorageProvider = nullptr;
 
 
 	void QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
@@ -65,8 +64,8 @@ protected:
 
 public:
 
-	REN_API static UCraftSubsystem* Get(UWorld* World);
-	REN_API static UCraftSubsystem* Get(UGameInstance* GameInstance);
+	static REN_API UCraftSubsystem* Get(UWorld* World);
+	static REN_API UCraftSubsystem* Get(UGameInstance* GameInstance);
 
 };
 

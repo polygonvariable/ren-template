@@ -9,9 +9,9 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
+#include "Core/Type/Runtime/AvatarInstance.h"
 #include "Definition/AssetDetail.h"
 #include "Definition/AssetFilterProperty.h"
-#include "Definition/Runtime/AvatarInstance.h"
 #include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
 #include "Interface/AscensionProvider.h"
@@ -19,9 +19,9 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Management/AssetCollection.h"
-#include "Storage/AvatarStorageManager.h"
-#include "Subsystem/AvatarAscensionSubsystem.h"
-#include "Subsystem/AvatarSubsystem.h"
+#include "System/AvatarAscensionSubsystem.h"
+#include "System/AvatarStorageManager.h"
+#include "System/AvatarSubsystem.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"

@@ -11,7 +11,7 @@
 
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Settings/CharacterSettings.h"
+#include "Core/CharacterSettings.h"
 
 
 UCharacterDeadAbility::UCharacterDeadAbility() 

@@ -7,7 +7,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Auth/AAClaimCraftItem.h"
+#include "Auth/AACraftClaimItem.h"
 #include "Auth/AACraftItem.h"
 #include "Core/CraftSettings.h"
 #include "Core/Type/Runtime/TradeKey.h"
@@ -46,7 +46,7 @@ bool UCraftSubsystem::TryClaimCraftItem(const FPrimaryAssetId& CraftAssetId, con
 	}
 
 	FGuid ActionId = FGuid::NewGuid();
-	UAAClaimCraftItem* Action = AuthActionSubsystem->CreateAction<UAAClaimCraftItem>(ActionId);
+	UAACraftClaimItem* Action = AuthActionSubsystem->CreateAction<UAACraftClaimItem>(ActionId);
 	if (!IsValid(Action))
 	{
 		LOG_ERROR(LogCraft, TEXT("Failed to create task"));

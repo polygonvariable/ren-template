@@ -7,10 +7,10 @@
 #include "HAL/IConsoleManager.h"
 
 // Project Headers
-#include "Library/CharacterPrimaryAsset.h"
-#include "Subsystem/AvatarSubsystem.h"
-#include "Storage/AvatarStorageManager.h"
-#include "Settings/AvatarSettings.h"
+#include "Core/CharacterPrimaryAsset.h"
+#include "System/AvatarSubsystem.h"
+#include "System/AvatarStorageManager.h"
+#include "Core/AvatarSettings.h"
 
 #define LOCTEXT_NAMESPACE "FRAvatarEdModule"
 

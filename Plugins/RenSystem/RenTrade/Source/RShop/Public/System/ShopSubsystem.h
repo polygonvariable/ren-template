@@ -5,9 +5,6 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
-// Project Headers
-#include "Definition/TaskType.h"
-
 // Generated Headers
 #include "ShopSubsystem.generated.h"
 
@@ -46,7 +43,7 @@ public:
 
 protected:
 
-	IStorageProvider* StorageProvider;
+	IStorageProvider* StorageProvider = nullptr;
 
 
 	void OnPreGameInitialized();
@@ -59,8 +56,8 @@ protected:
 
 public:
 
-	REN_API static UShopSubsystem* Get(UWorld* World);
-	REN_API static UShopSubsystem* Get(UGameInstance* GameInstance);
+	static REN_API UShopSubsystem* Get(UWorld* World);
+	static REN_API UShopSubsystem* Get(UGameInstance* GameInstance);
 
 };
 

@@ -11,13 +11,8 @@
 // Generated Headers
 #include "EntityJumpAbility.generated.h"
 
-// Forward Declarations
-
-
 
 /**
- * 
- * 
  * 
  */
 UCLASS(Abstract)

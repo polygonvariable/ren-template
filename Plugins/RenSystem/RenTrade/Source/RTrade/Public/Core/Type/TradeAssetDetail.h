@@ -8,9 +8,6 @@
 // Generated Headers
 #include "TradeAssetDetail.generated.h"
 
-// Forward Declarations
-class UCoreDataAsset;
-
 
 /**
  *

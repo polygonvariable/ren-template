@@ -66,7 +66,7 @@ protected:
 
 private:
 
-	TSharedPtr<FStreamableHandle> _LoadHandle;
+	TSharedPtr<FStreamableHandle> _AssetHandle;
 
 };
 

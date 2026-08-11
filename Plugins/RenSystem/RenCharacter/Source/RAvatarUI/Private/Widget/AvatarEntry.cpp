@@ -4,7 +4,7 @@
 #include "Widget/AvatarEntry.h"
 
 // Project Headers
-#include "Definition/Runtime/AvatarInstance.h"
+#include "Core/Type/Runtime/AvatarInstance.h"
 
 
 FGuid UAvatarEntry::GetAssetInstanceId() const

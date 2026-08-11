@@ -5,10 +5,8 @@
 
 // Project Headers
 #include "Delegate/GameUIDelegate.h"
-#include "Library/CharacterPrimaryAsset.h"
-#include "Settings/PartySettings.h"
-#include "Storage/PartyStorageManager.h"
-#include "Subsystem/PartySubsystem.h"
+#include "System/PartyStorageManager.h"
+#include "System/PartySubsystem.h"
 
 
 void UAARemovePartyCharacter::OnStarted()
