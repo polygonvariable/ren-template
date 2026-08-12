@@ -1,15 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Settings/EquipmentSettings.h"
+#include "Core/EquipmentSettings.h"
 
 // Project Headers
-#include "Storage/EquipmentStorageManager.h"
+#include "Data/EquipmentStorage.h"
+#include "System/EquipmentStorageManager.h"
+#include "System/EquipmentSubsystem.h"
 
 
 UEquipmentSettings::UEquipmentSettings(const FObjectInitializer& ObjectInitializer)
 {
 	CategoryName = TEXT("Ren Project");
+
+	StorageId = TEXT("equipment001");
+	StorageClass = UEquipmentStorage::StaticClass();
+	StorageManagerClass = UEquipmentStorageManager::StaticClass();
+
+	SubsystemClass = UEquipmentSubsystem::StaticClass();
 }
 
 const UEquipmentSettings* UEquipmentSettings::Get()

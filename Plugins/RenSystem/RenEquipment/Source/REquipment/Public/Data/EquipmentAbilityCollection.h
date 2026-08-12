@@ -7,7 +7,7 @@
 #include "GameplayTagContainer.h"
 
 // Generated Headers
-#include "EquipmentDataAsset.generated.h"
+#include "EquipmentAbilityCollection.generated.h"
 
 // Module Macros
 #define REN_API REQUIPMENT_API

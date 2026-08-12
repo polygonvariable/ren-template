@@ -18,6 +18,9 @@ UPartySettings::UPartySettings(const FObjectInitializer& ObjectInitializer)
 	StorageManagerClass = UPartyStorageManager::StaticClass();
 
 	SubsystemClass = UPartySubsystem::StaticClass();
+
+	CharacterBundles.Add(TEXT("Character"));
+	CharacterBundles.Add(TEXT("Ability"));
 }
 
 const UPartySettings* UPartySettings::Get()

@@ -1,22 +1,23 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Subsystem/EquipmentSubsystem.h"
+#include "System/EquipmentSubsystem.h"
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/AssetInstanceRelation.h"
-#include "Interface/StorageProvider.h"
-#include "Interface/StorageManager.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
-#include "Settings/EquipmentSettings.h"
-#include "Storage/EquipmentStorage.h"
-#include "Storage/EquipmentStorageManager.h"
-#include "Subsystem/AssetInstanceRelationSubsystem.h"
-#include "Subsystem/AuthActionSubsystem.h"
 #include "Auth/AARemoveEquipmentSlot.h"
 #include "Auth/AASetEquipmentSlot.h"
+#include "Core/EquipmentSettings.h"
+#include "Data/EquipmentStorage.h"
+#include "Delegate/GameLifecycleDelegate.h"
+#include "Interface/AssetInstanceRelation.h"
+#include "Interface/StorageManager.h"
+#include "Interface/StorageProvider.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
+#include "Subsystem/AssetInstanceRelationSubsystem.h"
+#include "Subsystem/AuthActionSubsystem.h"
+#include "System/EquipmentStorageManager.h"
+
 
 void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerInstanceId) const
 {
@@ -101,7 +102,7 @@ void UEquipmentSubsystem::HandleStorageLoaded(const FTaskResult& Result)
 	}
 }
 
-void UEquipmentSubsystem::HandlePreGameInitialized()
+void UEquipmentSubsystem::HandleOnPreGameInitialized()
 {
 	StorageProvider = IStorageProvider::Get(GetGameInstance());
 	if (StorageProvider)
@@ -127,7 +128,7 @@ void UEquipmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogEquipment, TEXT("EquipmentSubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::HandlePreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UEquipmentSubsystem::HandleOnPreGameInitialized);
 }
 
 void UEquipmentSubsystem::Deinitialize()

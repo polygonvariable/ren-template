@@ -26,7 +26,9 @@ UPartyStorageManager* UPartySubsystem::GetStorageManager()
 			return nullptr;
 		}
 
-		FName StorageId = UPartySettings::Get()->StorageId;
+		const UPartySettings* Settings = UPartySettings::Get();
+		FName StorageId = Settings->StorageId;
+
 		StorageManager = StorageProvider->GetStorageManager<UPartyStorageManager>(StorageId);
 	}
 	return StorageManager;
@@ -82,7 +84,7 @@ bool UPartySubsystem::TryRemovePartyCharacter(int Slot)
 }
 
 
-void UPartySubsystem::HandlePreGameInitialized()
+void UPartySubsystem::HandleOnPreGameInitialized()
 {
 	StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
@@ -108,7 +110,7 @@ void UPartySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogCharacterParty, TEXT("PartySubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::HandlePreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UPartySubsystem::HandleOnPreGameInitialized);
 }
 
 void UPartySubsystem::Deinitialize()

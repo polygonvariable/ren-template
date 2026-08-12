@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/EquipmentData.h"
+#include "Core/Type/EquipmentData.h"
 #include "Definition/PoolCollection.h"
 #include "Definition/QueryType.h"
 
@@ -24,7 +24,6 @@ struct FStreamableHandle;
 
 
 /**
- *
  *
  */
 UCLASS(MinimalAPI, meta = (BlueprintSpawnableComponent))

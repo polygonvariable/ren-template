@@ -6,7 +6,7 @@
 #include "GameFramework/SaveGame.h"
 
 // Project Headers
-#include "Definition/Runtime/EquipmentInstance.h"
+#include "Core/Type/Runtime/EquipmentInstance.h"
 
 // Generated Headers
 #include "EquipmentStorage.generated.h"

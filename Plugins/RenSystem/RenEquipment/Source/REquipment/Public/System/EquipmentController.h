@@ -3,18 +3,18 @@
 #pragma once
 
 // Engine Headers
-#include "GameplayTagContainer.h"
 #include "ActiveGameplayEffectHandle.h"
 #include "GameplayAbilitySpecHandle.h"
+#include "GameplayTagContainer.h"
 
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
 #endif
 
 // Project Headers
-#include "Object/AssetFragment.h"
+#include "Core/Type/EquipmentData.h"
 #include "Object/AssetDataDefinition.h"
-#include "Definition/EquipmentData.h"
+#include "Object/AssetFragment.h"
 
 // Generated Headers
 #include "EquipmentController.generated.h"
@@ -37,9 +37,6 @@ class UEquipmentDataDefinition;
 class UEquipmentFragment;
 struct FGameplayEventData;
 struct FEquipmentTagData;
-
-
-
 
 
 /**

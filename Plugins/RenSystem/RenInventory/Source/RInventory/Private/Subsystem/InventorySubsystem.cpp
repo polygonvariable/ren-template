@@ -38,7 +38,7 @@ FName UInventorySubsystem::GetPrimaryCollectionId() const
 	return UInventorySettings::Get()->StorageId;
 }
 
-void UInventorySubsystem::HandlePreGameInitialized()
+void UInventorySubsystem::HandleOnPreGameInitialized()
 {
 	StorageProvider = IStorageProvider::Get(GetGameInstance());
 	if (StorageProvider)
@@ -64,7 +64,7 @@ void UInventorySubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogInventory, TEXT("InventorySubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::HandlePreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UInventorySubsystem::HandleOnPreGameInitialized);
 }
 
 void UInventorySubsystem::Deinitialize()

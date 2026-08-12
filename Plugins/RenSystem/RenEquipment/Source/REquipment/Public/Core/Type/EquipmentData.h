@@ -13,6 +13,9 @@
 #include "EquipmentData.generated.h"
 
 
+/**
+ *
+ */
 USTRUCT()
 struct FEquipmentData
 {

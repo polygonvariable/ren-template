@@ -13,12 +13,12 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Asset/EquipmentDataAsset.h"
+#include "Data/EquipmentAbilityCollection.h"
 #include "Component/EquipmentManagerComponent.h"
-#include "Controller/EquipmentController.h"
+#include "System/EquipmentController.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Settings/EquipmentSettings.h"
+#include "Core/EquipmentSettings.h"
 
 
 UEquipmentManagerComponent* UEquipmentItemUI::GetEquipmentComponent() const

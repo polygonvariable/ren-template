@@ -43,7 +43,7 @@ protected:
 	IStorageProvider* StorageProvider;
 
 	void HandleStorageLoaded(const FTaskResult& Result);
-	void HandlePreGameInitialized();
+	void HandleOnPreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

@@ -7,10 +7,9 @@
 #include "AbilitySystemComponent.h"
 
 // Project Headers
-#include "Settings/EquipmentSettings.h"
-#include "Controller/EquipmentController.h"
 #include "Actor/EquipmentActor.h"
-
+#include "Core/EquipmentSettings.h"
+#include "System/EquipmentController.h"
 
 
 bool UEquipmentStateAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const

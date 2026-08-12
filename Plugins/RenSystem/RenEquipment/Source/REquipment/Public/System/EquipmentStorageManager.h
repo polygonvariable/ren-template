@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/Runtime/EquipmentInstance.h"
+#include "Core/Type/Runtime/EquipmentInstance.h"
 #include "Delegate/GameEventDelegate.h"
 #include "Interface/AssetInstanceRelation.h"
 #include "Interface/StorageManager.h"

@@ -7,8 +7,8 @@
 #include "GameplayTagContainer.h"
 
 // Project Headers
-#include "Definition/Runtime/EquipmentInstance.h"
-#include "Definition/EquipmentTagData.h"
+#include "Core/Type/Runtime/EquipmentInstance.h"
+#include "Core/Type/EquipmentTagData.h"
 
 // Generated Headers
 #include "EquipmentSettings.generated.h"
@@ -20,7 +20,6 @@
 class UEquipmentStorage;
 class UEquipmentStorageManager;
 class UEquipmentSubsystem;
-
 
 
 /**

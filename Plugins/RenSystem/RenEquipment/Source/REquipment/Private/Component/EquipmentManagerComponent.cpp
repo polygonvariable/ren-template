@@ -4,27 +4,28 @@
 #include "Component/EquipmentManagerComponent.h"
 
 // Engine Headers
-#include "StructUtils/InstancedStruct.h"
-#include "UObject/ObjectSaveContext.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Engine/AssetManager.h"
+#include "StructUtils/InstancedStruct.h"
+#include "UObject/ObjectSaveContext.h"
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
 #include "Asset/CoreDataAsset.h"
-#include "Controller/EquipmentController.h"
-#include "Definition/EquipmentData.h"
+#include "Core/EquipmentSettings.h"
+#include "Core/Type/EquipmentData.h"
+#include "Data/EquipmentDataDefinition.h"
+#include "Data/EquipmentFragment.h"
 #include "Interface/Actor/AssetInstanceContextProvider.h"
 #include "Interface/SpawnContextProvider.h"
 #include "Library/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Object/EquipmentMetadata.h"
-#include "Settings/EquipmentSettings.h"
-#include "Storage/EquipmentStorageManager.h"
 #include "Subsystem/ActorFreelistSubsystem.h"
-#include "Subsystem/EquipmentSubsystem.h"
+#include "System/EquipmentController.h"
+#include "System/EquipmentStorageManager.h"
+#include "System/EquipmentSubsystem.h"
 
 
 UEquipmentManagerComponent::UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer)

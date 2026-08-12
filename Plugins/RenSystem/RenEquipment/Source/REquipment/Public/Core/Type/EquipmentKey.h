@@ -2,16 +2,11 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Generated Headers
-#include "EquipmentInstance.generated.h"
+#include "EquipmentKey.generated.h"
 
 
 /**
- *
- *
  *
  */
 USTRUCT(BlueprintType)
@@ -42,28 +37,6 @@ public:
 	{
 		return HashCombine(GetTypeHash(A.AssetId), GetTypeHash(A.AssetInstanceId));
 	}
-
-};
-
-
-/**
- * 
- * 
- * 
- */
-USTRUCT(BlueprintType)
-struct FEquipmentInstance
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, SaveGame)
-	FPrimaryAssetId OwnerAssetId;
-
-	UPROPERTY(EditAnywhere, SaveGame)
-	TMap<FGameplayTag, FEquipmentKey> EquipmentSlot;
 
 };
 

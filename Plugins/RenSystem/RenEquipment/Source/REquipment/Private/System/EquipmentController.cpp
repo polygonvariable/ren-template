@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Controller/EquipmentController.h"
+#include "System/EquipmentController.h"
 
 // Engine Headers
 #include "AbilitySystemComponent.h"
@@ -12,7 +12,10 @@
 // Project Headers
 #include "Actor/EquipmentActor.h"
 #include "Asset/CoreDataAsset.h"
-#include "Asset/EquipmentDataAsset.h"
+#include "Core/EquipmentSettings.h"
+#include "Data/EquipmentAbilityCollection.h"
+#include "Data/EquipmentDataDefinition.h"
+#include "Data/EquipmentFragment.h"
 #include "Definition/AscensionData.h"
 #include "Interface/AscensionInstanceProvider.h"
 #include "Interface/AssetInstanceCollection.h"
@@ -20,8 +23,6 @@
 #include "Library/AssetInstanceUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Object/EquipmentMetadata.h"
-#include "Settings/EquipmentSettings.h"
 
 
 void UEquipmentController::ActivateEquipment()

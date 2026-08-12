@@ -5,8 +5,8 @@
 
 // Project Headers
 #include "Delegate/GameUIDelegate.h"
-#include "Storage/EquipmentStorageManager.h"
-#include "Subsystem/EquipmentSubsystem.h"
+#include "System/EquipmentStorageManager.h"
+#include "System/EquipmentSubsystem.h"
 
 
 void UAARemoveEquipmentSlot::OnStarted()

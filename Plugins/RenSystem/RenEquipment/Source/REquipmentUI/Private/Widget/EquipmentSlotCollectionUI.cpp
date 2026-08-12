@@ -7,7 +7,7 @@
 #include "Components/PanelWidget.h"
 
 // Project Headers
-#include "Settings/EquipmentSettings.h"
+#include "Core/EquipmentSettings.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/EquipmentSlotUI.h"
 

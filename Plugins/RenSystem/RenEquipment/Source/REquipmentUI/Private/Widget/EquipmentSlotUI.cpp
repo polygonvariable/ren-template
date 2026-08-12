@@ -10,8 +10,8 @@
 
 // Project Headers
 #include "Asset/CoreDataAsset.h"
-#include "Storage/EquipmentStorageManager.h"
-#include "Subsystem/EquipmentSubsystem.h"
+#include "System/EquipmentStorageManager.h"
+#include "System/EquipmentSubsystem.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/Drag/AssetDragOperation.h"
 

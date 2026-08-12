@@ -40,7 +40,7 @@ FName UAvatarSubsystem::GetPrimaryCollectionId() const
 	return UAvatarSettings::Get()->StorageId;
 }
 
-void UAvatarSubsystem::HandlePreGameInitialized()
+void UAvatarSubsystem::HandleOnPreGameInitialized()
 {
 	StorageProvider = IStorageProvider::Get(GetGameInstance());
 	if (StorageProvider)
@@ -66,7 +66,7 @@ void UAvatarSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogAvatar, TEXT("AvatarSubsystem initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::HandlePreGameInitialized);
+	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UAvatarSubsystem::HandleOnPreGameInitialized);
 }
 
 void UAvatarSubsystem::Deinitialize()

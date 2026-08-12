@@ -5,9 +5,6 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
-// Project Headers
-#include "Definition/TaskType.h"
-
 // Generated Headers
 #include "PartySubsystem.generated.h"
 
@@ -43,12 +40,12 @@ public:
 protected:
 
 	UPROPERTY()
-	TObjectPtr<UPartyStorageManager> StorageManager;
+	TObjectPtr<UPartyStorageManager> StorageManager = nullptr;
 
-	IStorageProvider* StorageProvider;
+	IStorageProvider* StorageProvider = nullptr;
 
 
-	void HandlePreGameInitialized();
+	void HandleOnPreGameInitialized();
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;

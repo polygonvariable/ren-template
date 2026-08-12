@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Storage/EquipmentStorageManager.h"
+#include "System/EquipmentStorageManager.h"
 
 // Project Headers
+#include "Core/EquipmentSettings.h"
+#include "Data/EquipmentStorage.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Settings/EquipmentSettings.h"
-#include "Storage/EquipmentStorage.h"
 
 
 const TMap<FGameplayTag, FEquipmentKey>* UEquipmentStorageManager::GetOwnedEquipment(const FGuid& OwnerId) const

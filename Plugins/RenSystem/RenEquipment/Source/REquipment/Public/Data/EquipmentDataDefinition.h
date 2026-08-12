@@ -4,41 +4,14 @@
 
 // Project Headers
 #include "Object/AssetDataDefinition.h"
-#include "Object/AssetFragment.h"
 
 // Generated Headers
-#include "EquipmentMetadata.generated.h"
+#include "EquipmentDataDefinition.generated.h"
 
 // Forward Declarations
 class AEquipmentActor;
 class UEquipmentAbilityCollection;
 class UEquipmentController;
-
-
-/**
- *
- */
-UCLASS()
-class UEquipmentFragment : public UAssetFragment
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UEquipmentDataDefinition> EquipmentDefinition = nullptr;
-
-
-	const UEquipmentDataDefinition* GetEquipmentDefinition() const;
-
-#if WITH_EDITORONLY_DATA
-	// ~ UAssetFragment
-	virtual void AppendAssetBundleData(FAssetBundleData& Data) override;
-	// ~ End of UAssetFragment
-#endif
-
-};
 
 
 /**
@@ -70,6 +43,10 @@ public:
 
 };
 
+
+/**
+ *
+ */
 USTRUCT()
 struct FEquipmentSocket
 {
@@ -85,6 +62,7 @@ public:
 	FTransform SocketTransform = FTransform::Identity;
 
 };
+
 
 /**
  *
@@ -104,6 +82,4 @@ public:
 	FEquipmentSocket UnequipSocket;
 
 };
-
-
 
