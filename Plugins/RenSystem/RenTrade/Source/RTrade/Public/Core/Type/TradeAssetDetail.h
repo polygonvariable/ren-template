@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AssetDetail.h"
+#include "Core/Type/AssetDetail.h"
 
 // Generated Headers
 #include "TradeAssetDetail.generated.h"

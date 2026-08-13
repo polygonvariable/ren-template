@@ -8,10 +8,10 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
-#include "Definition/Runtime/InventoryInstance.h"
-#include "Storage/InventoryStorageManager.h"
-#include "Subsystem/InventorySubsystem.h"
+#include "Data/CoreDataAsset.h"
+#include "Core/Type/Runtime/InventoryInstance.h"
+#include "System/InventoryStorageManager.h"
+#include "System/InventorySubsystem.h"
 #include "Widget/AscensionDetailUI.h"
 #include "Widget/InventoryEntry.h"
 

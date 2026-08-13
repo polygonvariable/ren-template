@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Definition/AssetFilterProperty.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
 #include "System/EquipmentStorageManager.h"

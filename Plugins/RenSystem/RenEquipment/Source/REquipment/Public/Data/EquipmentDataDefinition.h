@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Object/AssetDataDefinition.h"
+#include "Data/AssetDataDefinition.h"
 
 // Generated Headers
 #include "EquipmentDataDefinition.generated.h"

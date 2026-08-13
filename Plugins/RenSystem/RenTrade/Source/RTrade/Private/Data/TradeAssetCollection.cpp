@@ -7,7 +7,7 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 

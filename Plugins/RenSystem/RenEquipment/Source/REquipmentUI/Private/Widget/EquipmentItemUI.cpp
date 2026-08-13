@@ -12,7 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "Data/EquipmentAbilityCollection.h"
 #include "Component/EquipmentManagerComponent.h"
 #include "System/EquipmentController.h"

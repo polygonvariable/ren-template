@@ -9,7 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "System/EquipmentStorageManager.h"
 #include "System/EquipmentSubsystem.h"
 #include "Widget/AssetEntry.h"

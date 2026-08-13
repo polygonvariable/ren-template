@@ -13,8 +13,8 @@
 
 // Project Headers
 #include "Core/Type/EquipmentData.h"
-#include "Object/AssetDataDefinition.h"
-#include "Object/AssetFragment.h"
+#include "Data/AssetDataDefinition.h"
+#include "Data/AssetFragment.h"
 
 // Generated Headers
 #include "EquipmentController.generated.h"

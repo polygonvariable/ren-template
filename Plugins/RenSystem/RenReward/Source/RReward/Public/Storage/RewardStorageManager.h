@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Interface/AssetInstanceCollection.h"
+#include "Core/Interface/AssetInstanceCollection.h"
 #include "Interface/StorageManager.h"
 
 // Generated Headers

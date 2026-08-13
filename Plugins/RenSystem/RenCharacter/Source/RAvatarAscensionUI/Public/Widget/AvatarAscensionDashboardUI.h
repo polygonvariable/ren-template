@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AscensionData.h"
+#include "Core/Type/AscensionData.h"
 #include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
@@ -16,7 +16,7 @@ class UAssetDetailUI;
 class UAvatarStorageManager;
 class UAvatarAscensionSubsystem;
 class UCoreDataAsset;
-class IAscensionProvider;
+class UAscensionFragment;
 struct FAvatarInstance;
 struct FTaskResult;
 
@@ -64,7 +64,7 @@ protected:
 	TObjectPtr<UButton> RankUpButton = nullptr;
 
 	FAscensionData AscensionInstance;
-	const IAscensionProvider* AscensionProvider = nullptr;
+	TObjectPtr<const UAscensionFragment> AscensionFragment = nullptr;
 
 
 	void ToggleAscension(const FAvatarInstance* Instance);

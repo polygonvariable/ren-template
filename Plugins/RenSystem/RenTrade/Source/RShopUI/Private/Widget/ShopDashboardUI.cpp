@@ -7,10 +7,10 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Management/AssetCollection.h"
+#include "Data/AssetCollection.h"
 #include "System/ShopSubsystem.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeEntry.h"

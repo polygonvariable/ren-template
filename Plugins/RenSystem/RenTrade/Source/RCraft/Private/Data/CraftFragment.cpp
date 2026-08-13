@@ -4,8 +4,8 @@
 #include "Data/CraftFragment.h"
 
 // Project Headers
-#include "Management/AssetCollection.h"
-#include "Management/AssetGroup.h"
+#include "Data/AssetCollection.h"
+#include "Data/AssetGroup.h"
 
 
 FTimespan UCraftFragment::GetCraftingTime() const

@@ -7,16 +7,16 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Asset/AscensionAsset.h"
-#include "Asset/CoreDataAsset.h"
+#include "Core/AscensionLibrary.h"
+#include "Core/AssetInstanceUtil.h"
+#include "Core/AssetManagerUtil.h"
+#include "Core/Type/AssetDetail.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
+#include "Data/AscensionAsset.h"
+#include "Data/AscensionFragment.h"
+#include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
-#include "Interface/AscensionProvider.h"
-#include "Interface/AssetComposition.h"
-#include "Library/AscensionLibrary.h"
-#include "Library/AssetInstanceUtil.h"
-#include "Library/AssetManagerUtil.h"
-#include "Management/Collection/AssetCollection_Simple.h"
+#include "Data/CoreDataAsset.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
 
@@ -94,28 +94,22 @@ void UAAGrantAvatarExperience::Step_HandleOnAssetLoaded()
 
 void UAAGrantAvatarExperience::Step_CheckItemAsset()
 {
-	const FAvatarInstance* Instance = StorageManager->GetInstance(TargetAssetId);
-	if (!Instance)
+	const FAvatarInstance* AvatarInstance = StorageManager->GetInstance(TargetAssetId);
+	const UAscensionFragment* AscensionFragment = TargetAsset->FindFragmentByClass<UAscensionFragment>();
+	if (!AvatarInstance || !IsValid(AscensionFragment))
 	{
-		Fail(TEXT("Instance not found"));
+		Fail(TEXT("Invalid avatar instance or asset doesn't support ascension (AscensionFragment is not added)"));
 		return;
 	}
 
-	const IAscensionProvider* AscensionProvider = Cast<IAscensionProvider>(TargetAsset);
-	if (!AscensionProvider)
-	{
-		Fail(TEXT("The asset doesn't support ascension (IAscensionProvider is not implemented)"));
-		return;
-	}
+	AscensionData = AvatarInstance->Ascension;
 
-	AscensionData = Instance->Ascension;
+	ExperiencePerLevel = AscensionFragment->GetExperienceInterval(AscensionData.Level);
+	LevelPerRank = AscensionFragment->GetLevelInterval(AscensionData.Rank);
+	MaxLevel = AscensionFragment->GetMaxLevel();
+	MaxRank = AscensionFragment->GetMaxRank();
 
-	ExperiencePerLevel = AscensionProvider->GetExperienceInterval(AscensionData.Level);
-	LevelPerRank = AscensionProvider->GetLevelInterval(AscensionData.Rank);
-	MaxLevel = AscensionProvider->GetMaxLevel();
-	MaxRank = AscensionProvider->GetMaxRank();
-
-	const UAssetCollection* ExperienceCollection = AscensionProvider->GetExperienceAssets(AscensionData);
+	const UAssetCollection* ExperienceCollection = AscensionFragment->GetExperienceAssets(AscensionData);
 	if (!IsValid(ExperienceCollection))
 	{
 		Fail(TEXT("Failed to get level up collection"));
@@ -144,33 +138,33 @@ void UAAGrantAvatarExperience::Step_CheckMaterialAsset(const FGuid& ExperienceCo
 		return;
 	}
 
-	const IAssetCompositionInterface* MaterialComposition = Cast<IAssetCompositionInterface>(MaterialAsset);
-	if (!MaterialComposition)
-	{
-		Fail(TEXT("Material asset doesn't have asset structure"));
-		return;
-	}
+	// const IAssetCompositionInterface* MaterialComposition = Cast<IAssetCompositionInterface>(MaterialAsset);
+	// if (!MaterialComposition)
+	// {
+	// 	Fail(TEXT("Material asset doesn't have asset structure"));
+	// 	return;
+	// }
 
-	// Possible items that material can break into
-	// in this case the Material item will break into Exp item
-	const UAssetCollection* BreakdownCollection = MaterialComposition->GetBreakdownAssets(ExperienceCollectionId);
-	if (!IsValid(BreakdownCollection))
-	{
-		Fail(TEXT("Invalid BreakdownAssets"));
-		return;
-	}
+	// // Possible items that material can break into
+	// // in this case the Material item will break into Exp item
+	// const UAssetCollection* BreakdownCollection = MaterialComposition->GetBreakdownAssets(ExperienceCollectionId);
+	// if (!IsValid(BreakdownCollection))
+	// {
+	// 	Fail(TEXT("Invalid BreakdownAssets"));
+	// 	return;
+	// }
 
-	TPair<FPrimaryAssetId, FAssetDetail> Collection;
-	if (!BreakdownCollection->GetRandomAsset(Collection))
-	{
-		Fail(TEXT("Failed to get asset pair"));
-		return;
-	}
+	// TPair<FPrimaryAssetId, FAssetDetail> Collection;
+	// if (!BreakdownCollection->GetRandomAsset(Collection))
+	// {
+	// 	Fail(TEXT("Failed to get asset pair"));
+	// 	return;
+	// }
 
-	const FPrimaryAssetId& BreakdownAssetId = Collection.Key;
-	int BreakdownQuantity = Collection.Value.Quantity;
+	// const FPrimaryAssetId& BreakdownAssetId = Collection.Key;
+	// int BreakdownQuantity = Collection.Value.Quantity;
 
-	Step_LoadBreakdownAsset(BreakdownAssetId, BreakdownQuantity);
+	// Step_LoadBreakdownAsset(BreakdownAssetId, BreakdownQuantity);
 }
 
 void UAAGrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)

@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Project Headers
-#include "Interface/AssetInstanceCollectionProvider.h"
+#include "Core/Interface/AssetInstanceCollectionProvider.h"
 
 // Generated Headers
 #include "AvatarSubsystem.generated.h"

@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "EventflowAsset.h"
-#include "Library/AssetManagerUtil.h"
+#include "Core/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

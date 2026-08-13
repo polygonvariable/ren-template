@@ -5,7 +5,7 @@
 // Project Headers
 #include "Core/Type/Runtime/EquipmentInstance.h"
 #include "Delegate/GameEventDelegate.h"
-#include "Interface/AssetInstanceRelation.h"
+#include "Core/Interface/AssetInstanceRelation.h"
 #include "Interface/StorageManager.h"
 
 // Generated Headers

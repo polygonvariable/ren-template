@@ -4,8 +4,8 @@
 
 // Project Headers
 #include "Delegate/GameEventDelegate.h"
-#include "Interface/AscensionInstanceProvider.h"
-#include "Interface/AssetInstanceCollection.h"
+#include "Core/Interface/AscensionInstanceProvider.h"
+#include "Core/Interface/AssetInstanceCollection.h"
 #include "Interface/StorageManager.h"
 
 // Generated Headers

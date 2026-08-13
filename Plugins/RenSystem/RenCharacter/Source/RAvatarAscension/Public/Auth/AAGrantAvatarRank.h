@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Auth/AuthAction.h"
-#include "Definition/AscensionData.h"
+#include "Core/Type/AscensionData.h"
 
 // Generated Headers
 #include "AAGrantAvatarRank.generated.h"

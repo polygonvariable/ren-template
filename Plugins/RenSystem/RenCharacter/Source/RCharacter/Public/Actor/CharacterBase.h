@@ -7,7 +7,7 @@
 #include "GameFramework/Character.h"
 
 // Project Headers
-#include "Definition/AssetQuerySource.h"
+#include "Core/Type/AssetQuerySource.h"
 #include "Core/Type/CharacterInitializationData.h"
 #include "Interface/SpawnContextProvider.h"
 

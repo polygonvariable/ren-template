@@ -82,6 +82,10 @@
 		{
 			"Name": "Paper2D",
 			"Enabled": false
+		},
+		{
+			"Name": "SlateIM",
+			"Enabled": true
 		}
 	]
 }

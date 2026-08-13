@@ -11,11 +11,12 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Project Headers
+#include "Core/AscensionLibrary.h"
+#include "Core/CharacterSettings.h"
+#include "Data/AscensionFragment.h"
 #include "Data/CharacterAsset.h"
-#include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Core/CharacterSettings.h"
 
 
 ACharacterBase::ACharacterBase() : Super()
@@ -166,14 +167,21 @@ void ACharacterBase::OnCharacterInitialized_Implementation()
 
 int ACharacterBase::GetCharacterLevel() const
 {
-	const FGameplayTag& LevelTag = UCharacterSettings::Get()->DataLevelTag;
+	const UCharacterSettings* Settings = UCharacterSettings::Get();
+	const FGameplayTag& LevelTag = Settings->DataLevelTag;
 	const float* Level = _CharacterAttributes.Find(LevelTag);
 	if (!Level || !IsValid(CharacterAsset))
 	{
 		return _CharacterLevel;
 	}
 
-	return FMath::Clamp(*Level, 1.0f, CharacterAsset->GetMaxLevel());
+	const UAscensionFragment* _AscensionFragment = CharacterAsset->FindFragmentByClass<UAscensionFragment>();
+	if (!IsValid(_AscensionFragment))
+	{
+		return _CharacterLevel;
+	}
+
+	return FMath::Clamp(*Level, 1.0f, _AscensionFragment->GetMaxLevel());
 }
 
 void ACharacterBase::SetCharacterLevel(int Level)
@@ -192,39 +200,18 @@ TMap<FGameplayTag, float>& ACharacterBase::GetCharacterAttributes()
 
 void ACharacterBase::InitializeTags()
 {
-	//UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	//if (!IsValid(ASC))
-	//{
-	//	return;
-	//}
 
-	//const UCharacterSettings* Settings = UCharacterSettings::Get();
-
-	//FGameplayEffectSpecHandle Spec;
-	//if (_CharacterAttributes.FindRef(Settings->DataHealthTag) > 0)
-	//{
-	//	Spec = ASC->MakeOutgoingSpec(Settings->AliveEffectClass, GetCharacterLevel(), ASC->MakeEffectContext());
-	//}
-	//else
-	//{
-	//	Spec = ASC->MakeOutgoingSpec(Settings->DeadEffectClass, GetCharacterLevel(), ASC->MakeEffectContext());
-	//}
-
-	//if (Spec.IsValid())
-	//{
-	//	ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
-	//}
 }
 
 
 void ACharacterBase::RegisterLifeStateEvent()
 {
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+
 }
 
 void ACharacterBase::UnregisterLifeStateEvent()
 {
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+
 }
 
 

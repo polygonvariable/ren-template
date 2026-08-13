@@ -7,10 +7,10 @@
 #include "HAL/IConsoleManager.h"
 
 // Project Headers
-#include "Definition/Runtime/InventoryInstance.h"
-#include "Library/InventoryPrimaryAsset.h"
-#include "Storage/InventoryStorageManager.h"
-#include "Subsystem/InventorySubsystem.h"
+#include "Core/Type/Runtime/InventoryInstance.h"
+#include "Core/InventoryPrimaryAsset.h"
+#include "System/InventoryStorageManager.h"
+#include "System/InventorySubsystem.h"
 
 #define LOCTEXT_NAMESPACE "FRInventoryEdModule"
 

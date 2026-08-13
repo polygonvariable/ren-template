@@ -8,17 +8,17 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Core/AscensionLibrary.h"
+#include "Core/Type/AssetDetail.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
-#include "Definition/AssetDetail.h"
-#include "Definition/AssetFilterProperty.h"
+#include "Data/AscensionFragment.h"
+#include "Data/AssetCollection.h"
+#include "Data/CoreDataAsset.h"
 #include "Delegate/GameUIDelegate.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
-#include "Interface/AscensionProvider.h"
-#include "Library/AscensionLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Management/AssetCollection.h"
 #include "System/AvatarAscensionSubsystem.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
@@ -63,14 +63,14 @@ void UAvatarAscensionDashboardUI::RefreshDetail()
 
 void UAvatarAscensionDashboardUI::ToggleAscension(const FAvatarInstance* Instance)
 {
-	if (!AscensionProvider || !Instance)
+	if (!IsValid(AscensionFragment) || !Instance)
 	{
 		return;
 	}
 
-	int LevelInterval = AscensionProvider->GetLevelInterval(Instance->Ascension.Rank);
-	int MaxLevel = AscensionProvider->GetMaxLevel();
-	int MaxRank = AscensionProvider->GetMaxRank();
+	int LevelInterval = AscensionFragment->GetLevelInterval(Instance->Ascension.Rank);
+	int MaxLevel = AscensionFragment->GetMaxLevel();
+	int MaxRank = AscensionFragment->GetMaxRank();
 
 	if (FAscensionLibrary::IsRankUpRequired(Instance->Ascension, LevelInterval, MaxLevel, MaxRank))
 	{
@@ -93,7 +93,7 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 	LevelUpButton->SetVisibility(ESlateVisibility::Collapsed);
 	RankUpButton->SetVisibility(ESlateVisibility::Visible);
 
-	if (!AscensionProvider || !Instance)
+	if (!IsValid(AscensionFragment) || !Instance)
 	{
 		return;
 	}
@@ -105,7 +105,7 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 	{
 		AssetFilter->Included.Empty();
 
-		const UAssetCollection* ItemCollection = AscensionProvider->GetRankAssets(Instance->Ascension);
+		const UAssetCollection* ItemCollection = AscensionFragment->GetRankAssets(Instance->Ascension);
 		if (IsValid(ItemCollection))
 		{
 			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
@@ -166,15 +166,15 @@ void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 {
 	AvatarDetail->InitializeAssetDetail(Asset);
 
-	AscensionProvider = Cast<IAscensionProvider>(Asset);
-	if (AscensionProvider)
+	AscensionFragment = Asset->FindFragmentByClass<UAscensionFragment>();
+	if (IsValid(AscensionFragment))
 	{
 		UFilterCriterion_Asset* AssetFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
 		if (IsValid(AssetFilter))
 		{
 			AssetFilter->Included.Empty();
 
-			const UAssetCollection* ItemCollection = AscensionProvider->GetExperienceAssets(AscensionInstance);
+			const UAssetCollection* ItemCollection = AscensionFragment->GetExperienceAssets(AscensionInstance);
 			if (IsValid(ItemCollection))
 			{
 				TArray<FPrimaryAssetId> AssetList;
@@ -237,7 +237,7 @@ void UAvatarAscensionDashboardUI::NativeDestruct()
 	StorageManager = nullptr;
 
 	AscensionSubsystem = nullptr;
-	AscensionProvider = nullptr;
+	AscensionFragment = nullptr;
 
 	Super::NativeDestruct();
 }

@@ -38,6 +38,9 @@ public:
 };
 
 
+/**
+ *
+ */
 USTRUCT()
 struct FAttributeInitializationData
 {
@@ -46,7 +49,7 @@ struct FAttributeInitializationData
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (Categories = "Data.Attribute"))
 	FGameplayTag Tag;
 
 	UPROPERTY(EditAnywhere)
@@ -80,6 +83,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	TArray<FAttributeInitializationData> InitializationData;
+
+
+	int GetLevel(const FGameplayEffectSpec& Spec) const;
 
 };
 

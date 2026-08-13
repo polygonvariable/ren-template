@@ -7,14 +7,14 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
+#include "Core/AscensionLibrary.h"
+#include "Core/AssetInstanceUtil.h"
+#include "Core/AssetManagerUtil.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
+#include "Data/AscensionFragment.h"
+#include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
-#include "Interface/AscensionProvider.h"
-#include "Library/AscensionLibrary.h"
-#include "Library/AssetInstanceUtil.h"
-#include "Library/AssetManagerUtil.h"
-#include "Management/Collection/AssetCollection_Simple.h"
+#include "Data/CoreDataAsset.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
 
@@ -71,32 +71,31 @@ void UAAGrantAvatarRank::Step_HandleOnAssetLoaded()
 	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
 
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UAvatarAsset>(TargetAssetId);
+	if (!IsValid(TargetAsset))
+	{
+		Fail(TEXT("Invalid target asset"));
+		return;
+	}
 
 	Step_CheckTarget();
 }
 
 void UAAGrantAvatarRank::Step_CheckTarget()
 {
-	const IAscensionProvider* AscensionProvider = Cast<IAscensionProvider>(TargetAsset);
-	if (!AscensionProvider)
+	const FAvatarInstance* AvatarInstance = StorageManager->GetInstance(TargetAssetId);
+	const UAscensionFragment* AscensionFragment = TargetAsset->FindFragmentByClass<UAscensionFragment>();
+	if (!AvatarInstance || !IsValid(AscensionFragment))
 	{
-		Fail(TEXT("The asset doesn't support ascension (IAscensionProvider is not implemented)"));
+		Fail(TEXT("Invalid avatar instance or asset doesn't support ascension (AscensionFragment is not added)"));
 		return;
 	}
 
-	const FAvatarInstance* Instance = StorageManager->GetInstance(TargetAssetId);
-	if (!IsValid(TargetAsset) || !Instance)
-	{
-		Fail(TEXT("Instance not found, TargetAsset is invalid"));
-		return;
-	}
+	AscensionData = AvatarInstance->Ascension;
 
-	AscensionData = Instance->Ascension;
-
-	ExperiencePerLevel = AscensionProvider->GetExperienceInterval(AscensionData.Level);
-	LevelPerRank = AscensionProvider->GetLevelInterval(AscensionData.Rank);
-	MaxLevel = AscensionProvider->GetMaxLevel();
-	MaxRank = AscensionProvider->GetMaxRank();
+	ExperiencePerLevel = AscensionFragment->GetExperienceInterval(AscensionData.Level);
+	LevelPerRank = AscensionFragment->GetLevelInterval(AscensionData.Rank);
+	MaxLevel = AscensionFragment->GetMaxLevel();
+	MaxRank = AscensionFragment->GetMaxRank();
 
 	if (!FAscensionLibrary::IsRankUpRequired(AscensionData, LevelPerRank, MaxLevel, MaxRank))
 	{
@@ -104,7 +103,7 @@ void UAAGrantAvatarRank::Step_CheckTarget()
 		return;
 	}
 
-	const UAssetCollection* RankCollection = AscensionProvider->GetRankAssets(AscensionData);
+	const UAssetCollection* RankCollection = AscensionFragment->GetRankAssets(AscensionData);
 	if (!IsValid(RankCollection))
 	{
 		Fail(TEXT("Failed to get rank up collection"));

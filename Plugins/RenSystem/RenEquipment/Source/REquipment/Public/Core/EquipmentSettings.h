@@ -48,7 +48,7 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
 	TMap<FGuid, FEquipmentInstance> DefaultEquipment;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
 	TMap<FGuid, FGuid> DefaultEquipmentRelations;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")

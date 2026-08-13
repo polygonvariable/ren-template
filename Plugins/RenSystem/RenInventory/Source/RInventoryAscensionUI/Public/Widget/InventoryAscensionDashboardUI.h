@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AscensionData.h"
+#include "Core/Type/AscensionData.h"
 #include "Widget/AssetDashboardUI.h"
 
 // Generated Headers
@@ -17,6 +17,7 @@ class UInventoryStorageManager;
 class UInventoryAscensionSubsystem;
 class UCoreDataAsset;
 class IAscensionProvider;
+class UAscensionFragment;
 struct FInventoryInstance;
 struct FTaskResult;
 
@@ -63,14 +64,14 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UButton> RankUpButton = nullptr;
 
-	FGuid ActiveItemId;
+	FGuid ActiveInstanceId;
 	FAscensionData AscensionInstance;
-	const IAscensionProvider* AscensionProvider = nullptr;
+	TObjectPtr<const UAscensionFragment> AscensionFragment = nullptr;
 
 
-	void ToggleAscension(const FInventoryInstance* Item);
-	void ToggleLevelUp(const FInventoryInstance* Item);
-	void ToggleRankUp(const FInventoryInstance* Item);
+	void ToggleAscension(const FInventoryInstance* InventoryInstance);
+	void ToggleLevelUp(const FInventoryInstance* InventoryInstance);
+	void ToggleRankUp(const FInventoryInstance* InventoryInstance);
 
 	UFUNCTION()
 	void HandleLevelUp();

@@ -8,11 +8,11 @@
 
 // Project Headers
 #include "Asset/RewardAsset.h"
-#include "Interface/AssetInstanceCollection.h"
-#include "Interface/AssetInstanceCollectionProvider.h"
-#include "Library/AssetInstanceUtil.h"
-#include "Library/AssetManagerUtil.h"
-#include "Management/AssetCollection.h"
+#include "Core/Interface/AssetInstanceCollection.h"
+#include "Core/Interface/AssetInstanceCollectionProvider.h"
+#include "Core/AssetInstanceUtil.h"
+#include "Core/AssetManagerUtil.h"
+#include "Data/AssetCollection.h"
 #include "Settings/RewardSettings.h"
 #include "Storage/RewardStorageManager.h"
 #include "Subsystem/RewardSubsystem.h"

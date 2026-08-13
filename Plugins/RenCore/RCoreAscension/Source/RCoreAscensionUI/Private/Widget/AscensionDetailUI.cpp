@@ -7,7 +7,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Definition/AscensionData.h"
+#include "Core/Type/AscensionData.h"
 
 
 void UAscensionDetailUI::InitializeDetail(const FAscensionData& Data)

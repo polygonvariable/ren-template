@@ -11,14 +11,14 @@
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Type/EquipmentData.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
-#include "Interface/Actor/AssetInstanceContextProvider.h"
+#include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Interface/SpawnContextProvider.h"
-#include "Library/AssetManagerUtil.h"
+#include "Core/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

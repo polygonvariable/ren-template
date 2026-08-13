@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Type/AvatarSortType.h"
-#include "Definition/AssetQuerySource.h"
+#include "Core/Type/AssetQuerySource.h"
 #include "Definition/QueryType.h"
 
 // Generated Headers

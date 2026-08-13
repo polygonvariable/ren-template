@@ -12,7 +12,7 @@
 #include "Actor/AvatarCharacter.h"
 #include "Core/PartySettings.h"
 #include "Data/CharacterAsset.h"
-#include "Library/AssetManagerUtil.h"
+#include "Core/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/PartyStorageManager.h"

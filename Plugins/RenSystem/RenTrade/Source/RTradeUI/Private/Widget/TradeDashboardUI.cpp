@@ -9,13 +9,13 @@
 
 // Project Headers
 #include "Data/TradeAsset.h"
-#include "Definition/AssetDetail.h"
-#include "Definition/AssetFilterProperty.h"
+#include "Core/Type/AssetDetail.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Filter/Criterion/FilterCriterion_Leaf.h"
-#include "Library/AssetManagerUtil.h"
+#include "Core/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Management/AssetCollection.h"
+#include "Data/AssetCollection.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/TradeCollectionUI.h"
 #include "Widget/TradeDetailUI.h"

@@ -107,8 +107,7 @@ protected:
 
 private:
 
-	TSharedPtr<FStreamableHandle> _SpawnHandle;
-	FGuid _SpawnId;
+	TSharedPtr<FStreamableHandle> _SpawnHandle = nullptr;
 	bool _bIsSpawning = false;
 	bool _bIsDefaultHandled = false;
 

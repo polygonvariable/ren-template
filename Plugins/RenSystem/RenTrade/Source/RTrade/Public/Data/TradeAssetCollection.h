@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Type/TradeAssetDetail.h"
-#include "Management/AssetCollection.h"
+#include "Data/AssetCollection.h"
 
 // Generated Headers
 #include "TradeAssetCollection.generated.h"

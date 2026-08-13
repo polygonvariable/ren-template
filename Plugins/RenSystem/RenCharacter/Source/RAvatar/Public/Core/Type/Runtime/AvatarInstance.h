@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/AscensionData.h"
+#include "Core/Type/AscensionData.h"
 
 // Generated Headers
 #include "AvatarInstance.generated.h"

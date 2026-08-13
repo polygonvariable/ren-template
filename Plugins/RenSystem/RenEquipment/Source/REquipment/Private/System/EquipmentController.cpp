@@ -11,16 +11,16 @@
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
-#include "Asset/CoreDataAsset.h"
+#include "Data/CoreDataAsset.h"
 #include "Core/EquipmentSettings.h"
 #include "Data/EquipmentAbilityCollection.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
-#include "Definition/AscensionData.h"
-#include "Interface/AscensionInstanceProvider.h"
-#include "Interface/AssetInstanceCollection.h"
-#include "Interface/AssetInstanceCollectionProvider.h"
-#include "Library/AssetInstanceUtil.h"
+#include "Core/Type/AscensionData.h"
+#include "Core/Interface/AscensionInstanceProvider.h"
+#include "Core/Interface/AssetInstanceCollection.h"
+#include "Core/Interface/AssetInstanceCollectionProvider.h"
+#include "Core/AssetInstanceUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 

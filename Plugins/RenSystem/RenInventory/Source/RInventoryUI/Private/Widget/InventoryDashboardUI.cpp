@@ -4,7 +4,7 @@
 #include "Widget/InventoryDashboardUI.h"
 
 // Project Headers
-#include "Asset/InventoryAsset.h"
+#include "Data/InventoryAsset.h"
 #include "Widget/AssetCollectionUI.h"
 #include "Widget/AssetDetailUI.h"
 #include "Widget/AssetEntry.h"

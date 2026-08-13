@@ -7,8 +7,8 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Asset/CoreDataAsset.h"
-#include "Library/AssetManagerUtil.h"
+#include "Data/CoreDataAsset.h"
+#include "Core/AssetManagerUtil.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Widget/AssetEntry.h"

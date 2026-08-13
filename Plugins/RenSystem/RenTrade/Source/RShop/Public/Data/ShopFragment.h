@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Object/AssetFragment.h"
+#include "Data/AssetFragment.h"
 
 // Generated Headers
 #include "ShopFragment.generated.h"

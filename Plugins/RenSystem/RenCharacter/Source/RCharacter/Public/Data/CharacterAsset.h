@@ -3,8 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Asset/InstancedDataAsset.h"
-#include "Interface/AscensionProvider.h"
+#include "Data/Asset/InstanceableDataAsset.h"
 
 // Generated Headers
 #include "CharacterAsset.generated.h"
@@ -14,17 +13,14 @@
 
 // Forward Declarations
 class UGameplayAbility;
-class UAssetGroup;
-class UAssetCollection;
 class ACharacterBase;
-struct FAscensionData;
 
 
 /**
  * 
  */
 UCLASS(MinimalAPI)
-class UCharacterAsset : public UInstancedDataAsset, public IAscensionProvider
+class UCharacterAsset : public UInstanceableDataAsset
 {
 
 	GENERATED_BODY()
@@ -56,38 +52,9 @@ public:
 	TArray<TSoftClassPtr<UGameplayAbility>> CharacterAbilities;
 
 
-	// ~ IAscensionProviderInterface
-	REN_API virtual int GetExperienceInterval(int Level) const override;
-	REN_API virtual int GetLevelInterval(int Rank) const override;
-	REN_API virtual int GetMaxLevel() const override;
-	REN_API virtual int GetMaxRank() const override;
-	REN_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const override;
-	REN_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const override;
-	// ~ End of IAscensionProviderInterface
-
 	// ~ UPrimaryDataAsset
 	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
-
-protected:
-
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
-	int ExperienceInterval = 5000;
-
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
-	int LevelInterval = 10;
-
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
-	int MaxLevel = 100;
-
-	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = 1))
-	int MaxRank = 100;
-
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetGroup> LevelUpAssets = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TObjectPtr<UAssetGroup> RankUpAssets = nullptr;
 
 public:
 

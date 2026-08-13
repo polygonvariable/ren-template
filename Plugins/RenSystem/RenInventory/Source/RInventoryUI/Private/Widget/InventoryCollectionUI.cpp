@@ -6,8 +6,8 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Storage/InventoryStorageManager.h"
-#include "Subsystem/InventorySubsystem.h"
+#include "System/InventoryStorageManager.h"
+#include "System/InventorySubsystem.h"
 #include "Widget/InventoryEntry.h"
 
 

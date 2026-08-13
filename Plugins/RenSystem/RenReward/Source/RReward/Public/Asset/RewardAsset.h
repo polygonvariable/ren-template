@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Asset/InstancedDataAsset.h"
+#include "Data/Asset/InstanceableDataAsset.h"
 
 // Generated Headers
 #include "RewardAsset.generated.h"
@@ -19,7 +19,7 @@ class UAssetCollection;
  *
  */
 UCLASS(MinimalAPI)
-class URewardAsset : public UInstancedDataAsset
+class URewardAsset : public UInstanceableDataAsset
 {
 
 	GENERATED_BODY()

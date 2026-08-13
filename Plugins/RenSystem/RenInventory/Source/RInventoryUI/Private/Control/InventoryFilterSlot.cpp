@@ -4,10 +4,10 @@
 #include "Control/InventoryFilterSlot.h"
 
 // Project Headers
-#include "Asset/InventoryAsset.h"
-#include "Definition/AssetFilterProperty.h"
+#include "Data/InventoryAsset.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Definition/FilterContext.h"
-#include "Definition/InventoryFilterProperty.h"
+#include "Core/Type/InventoryFilterProperty.h"
 #include "Widget/InventoryEntry.h"
 
 

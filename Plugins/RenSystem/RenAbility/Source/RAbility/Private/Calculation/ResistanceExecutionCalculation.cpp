@@ -62,7 +62,7 @@ void UAttributeInitializationExecutionCalculation::Execute_Implementation(const 
 #if WITH_SERVER_CODE
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
-	int Level = FMath::Clamp(Spec.GetLevel(), 1, MaxLevel);
+	int Level = GetLevel(Spec);
 
 	for (const FAttributeInitializationData& Item : InitializationData)
 	{
@@ -75,7 +75,7 @@ void UAttributeInitializationExecutionCalculation::Execute_Implementation(const 
 		}
 
 		float Value = Spec.GetSetByCallerMagnitude(Tag, false, 0.0f);
-		float ScaledValue = Value * ((bApplyLevel) ? Level : 1.0f);
+		float ScaledValue = Value * Level;
 
 		if (ScaledValue > 0.0f)
 		{
@@ -84,5 +84,14 @@ void UAttributeInitializationExecutionCalculation::Execute_Implementation(const 
 	}
 
 #endif
+}
+
+int UAttributeInitializationExecutionCalculation::GetLevel(const FGameplayEffectSpec& Spec) const
+{
+	if (!bApplyLevel)
+	{
+		return 1;
+	}
+	return FMath::Clamp(Spec.GetLevel(), 1, MaxLevel);
 }
 

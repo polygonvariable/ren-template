@@ -13,7 +13,7 @@
 #include "Core/Type/AvatarSortType.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AvatarStorage.h"
-#include "Definition/AssetFilterProperty.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Definition/FilterContext.h"
 #include "Filter/FilterCriterion.h"
 #include "Log/LogCategory.h"

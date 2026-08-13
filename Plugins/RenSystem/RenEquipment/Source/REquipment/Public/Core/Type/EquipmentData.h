@@ -6,7 +6,6 @@
 #include "GameplayTagContainer.h"
 
 // Project Headers
-#include "Definition/AssetQuerySource.h"
 #include "Definition/QueryType.h"
 
 // Generated Headers
