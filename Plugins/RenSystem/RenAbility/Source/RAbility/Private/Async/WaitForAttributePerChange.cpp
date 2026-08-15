@@ -12,7 +12,6 @@
 #include "Log/LogMacro.h"
 
 
-
 UWaitForAttributePerChange* UWaitForAttributePerChange::WaitForAttributePerChange(AActor* InActor, FGameplayAttribute InAttribute, EChangeType InChangeType, bool bInNegate)
 {
 	UWaitForAttributePerChange* NewTask = NewObject<UWaitForAttributePerChange>();

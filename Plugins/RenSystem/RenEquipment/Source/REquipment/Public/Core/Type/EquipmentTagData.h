@@ -17,6 +17,25 @@ struct FEquipmentTagData
 
 public:
 
+	FEquipmentTagData() {};
+
+	FEquipmentTagData(FGameplayTag InAbilityTag, FGameplayTag InEventTag, FGameplayTag InStateTag, FName InComponentName)
+	{
+		AbilityTag = InAbilityTag;
+		EventTag = InEventTag;
+		StateTag = InStateTag;
+		ComponentName = InComponentName;
+	};
+
+	FEquipmentTagData(FGameplayTag InAbilityTag, FGameplayTag InEventTag, FGameplayTag InStateTag, FGameplayTag InCooldownTag, FName InComponentName)
+	{
+		AbilityTag = InAbilityTag;
+		EventTag = InEventTag;
+		StateTag = InStateTag;
+		CooldownTag = InCooldownTag;
+		ComponentName = InComponentName;
+	};
+
 	/*
 	 * Dynamic tag granted to ability, used to identify ability for activation.
 	 */

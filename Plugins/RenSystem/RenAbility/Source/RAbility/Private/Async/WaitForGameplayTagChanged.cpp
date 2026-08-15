@@ -10,7 +10,6 @@
 #include "Log/LogMacro.h"
 
 
-
 UWaitForGameplayTagChanged* UWaitForGameplayTagChanged::WaitForGameplayTagChanged(AActor* Actor, FGameplayTag Tag)
 {
 	UWaitForGameplayTagChanged* NewTask = NewObject<UWaitForGameplayTagChanged>();

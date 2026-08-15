@@ -11,10 +11,9 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Component/RAbilitySystemComponent.h"
+#include "Ability/RAbilitySystemComponent.h"
 #include "Widget/EffectCollectionEntryWidget.h"
 #include "Log/LogMacro.h"
-
 
 
 void UEffectCollectionWidget::RegisterASC(UAbilitySystemComponent* TargetASC)

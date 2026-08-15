@@ -3,17 +3,11 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
 #include "GameplayTagContainer.h"
 
-// Project Headers
-
 // Generated Headers
 #include "RGameplayAbility.generated.h"
-
-// Forward Declarations
-
 
 
 /**

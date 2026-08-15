@@ -13,9 +13,8 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Component/RAbilitySystemComponent.h"
+#include "Ability/RAbilitySystemComponent.h"
 #include "Log/LogMacro.h"
-
 
 
 void UAttributeScalarWidget::RegisterASC(URAbilitySystemComponent* TargetASC)

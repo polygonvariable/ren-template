@@ -12,9 +12,8 @@
 #include "Components/PanelWidget.h"
 
 // Project Headers
-#include "Component/RAbilitySystemComponent.h"
+#include "Ability/RAbilitySystemComponent.h"
 #include "Log/LogMacro.h"
-
 
 
 void UAttributeClampedWidget::RegisterASC(UAbilitySystemComponent* TargetASC)

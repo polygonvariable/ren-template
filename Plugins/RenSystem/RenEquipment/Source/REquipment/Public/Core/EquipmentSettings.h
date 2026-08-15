@@ -97,8 +97,6 @@ public:
 
 	static REN_API const FEquipmentTagData* GetTagData(const FGameplayTag& Tag);
 	static REN_API const FEquipmentTagData* GetTagDataByAbility(const FGameplayTag& Tag);
-
-
 	static REN_API const FGameplayTag& GetAttachmentNotifyTag(bool bEquip);
 
 };

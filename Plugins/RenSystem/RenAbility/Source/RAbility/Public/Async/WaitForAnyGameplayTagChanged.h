@@ -3,18 +3,14 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-
-// Project Headers
 
 // Generated Headers
 #include "WaitForAnyGameplayTagChanged.generated.h"
 
 // Forward Declarations
 class UAbilitySystemComponent;
-
 
 
 /**

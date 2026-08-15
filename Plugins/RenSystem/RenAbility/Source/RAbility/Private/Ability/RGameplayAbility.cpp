@@ -6,9 +6,6 @@
 // Engine Headers
 #include "AbilitySystemComponent.h"
 
-// Project Headers
-
-
 
 FGameplayTagContainer URGameplayAbility::GetDynamicTags(bool& bSuccess) const
 {

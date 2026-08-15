@@ -3,15 +3,12 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
+#include "Abilities/GameplayAbilityTypes.h"
+#include "AttributeSet.h"
+#include "GameplayEffectComponent.h"
+#include "GameplayEffectTypes.h"
 #include "GameplayTagContainer.h"
 #include "Kismet/BlueprintAsyncActionBase.h"
-#include "AttributeSet.h"
-#include "GameplayEffectTypes.h"
-#include "GameplayEffectComponent.h"
-#include "Abilities/GameplayAbilityTypes.h"
-
-// Project Headers
 
 // Generated Headers
 #include "WaitForAttributePerChange.generated.h"
@@ -20,9 +17,7 @@
 class UAbilitySystemComponent;
 
 
-
 /**
- * 
  * 
  */
 UENUM(BlueprintType)
@@ -35,9 +30,7 @@ enum class EChangeType : uint8
 };
 
 
-
 /**
- * 
  * 
  */
 UCLASS(BlueprintType, meta = (ExposedAsyncProxy = AsyncTask))
@@ -79,6 +72,9 @@ protected:
 };
 
 
+/**
+ *
+ */
 UCLASS(CollapseCategories, DisplayName = "Send Event", MinimalAPI)
 class USendEventGameplayEffectComponent : public UGameplayEffectComponent
 {
