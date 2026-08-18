@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Engine Headers
+#include "GameplayTagContainer.h"
+
 // Project Headers
 #include "Data/AssetDataDefinition.h"
 
@@ -34,32 +37,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UEquipmentAbilityCollection> AbilityCollection = nullptr;
 
+	/** Tag that can be used to activate this equipment */
+	UPROPERTY(EditAnywhere, Category = "Tags")
+	FGameplayTagContainer ActivationTag;
+
+	/** Tag that can be used to deactivate this equipment */
+	UPROPERTY(EditAnywhere, Category = "Tags")
+	FGameplayTagContainer DeactivationTag;
 
 #if WITH_EDITORONLY_DATA
 	// ~ UAssetDataDefinition
 	virtual void AppendAssetBundleData(FAssetBundleData& Data) override;
 	// ~ End of UAssetDataDefinition
 #endif
-
-};
-
-
-/**
- *
- */
-USTRUCT()
-struct FEquipmentSocket
-{
-	
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	FName SocketName = NAME_None;
-
-	UPROPERTY(EditAnywhere)
-	FTransform SocketTransform = FTransform::Identity;
 
 };
 
@@ -75,11 +65,8 @@ class UEquipmentDataDefinition_Weapon : public UEquipmentDataDefinition
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	FEquipmentSocket EquipSocket;
-
-	UPROPERTY(EditAnywhere)
-	FEquipmentSocket UnequipSocket;
+	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	FGameplayTag CategoryTag;
 
 };
 

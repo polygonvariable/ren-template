@@ -24,7 +24,8 @@ enum class ESortDirection : uint8
 };
 
 /**
- *
+ * TODO:
+ * Rename to Data Query Source
  */
 UENUM(BlueprintType)
 enum class EDataSource : uint8

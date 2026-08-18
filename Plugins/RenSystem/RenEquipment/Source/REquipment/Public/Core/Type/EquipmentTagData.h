@@ -39,25 +39,25 @@ public:
 	/*
 	 * Dynamic tag granted to ability, used to identify ability for activation.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Ability"))
 	FGameplayTag AbilityTag;
 
 	/*
 	 * Tag that responds to event, can be used to activate ability.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event"))
 	FGameplayTag EventTag;
 
 	/*
 	 * Tag granted to actor, can be used to identify state of ability or actor.
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "State"))
 	FGameplayTag StateTag;
 
 	/*
 	 * 
 	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Cooldown"))
 	FGameplayTag CooldownTag;
 
 	/*

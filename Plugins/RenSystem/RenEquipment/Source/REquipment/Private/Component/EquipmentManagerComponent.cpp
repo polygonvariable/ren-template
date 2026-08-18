@@ -11,18 +11,19 @@
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
-#include "Data/CoreDataAsset.h"
+#include "Core/AssetManagerUtil.h"
 #include "Core/EquipmentSettings.h"
+#include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Core/Type/EquipmentData.h"
+#include "Data/CoreDataAsset.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
-#include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Interface/SpawnContextProvider.h"
-#include "Core/AssetManagerUtil.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/ActorFreelistSubsystem.h"
+#include "System/Controller/EquipmentStateController.h"
 #include "System/EquipmentController.h"
 #include "System/EquipmentStorageManager.h"
 #include "System/EquipmentSubsystem.h"
@@ -34,6 +35,138 @@ UEquipmentManagerComponent::UEquipmentManagerComponent(const FObjectInitializer&
 	bAutoActivate = false;
 	SetIsReplicatedByDefault(true);
 }
+
+
+void UEquipmentManagerComponent::InitializeManager()
+{
+	AssetManager = UAssetManager::GetIfInitialized();
+	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
+
+	//ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
+	//if (SpawnContext)
+	//{
+	//	SourceType = SpawnContext->GetSpawnSource();
+	//}
+
+	//if (SourceType == EDataSource::Runtime)
+	//{
+	//	EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
+	//	if (IsValid(EquipmentSubsystem))
+	//	{
+	//		EquipmentSubsystem->OnSyncEquipment.AddUObject(this, &UEquipmentManagerComponent::UpdateEquipment);
+	//	}
+
+	//	IAssetInstanceContextProvider* InstanceContext = GetOwner<IAssetInstanceContextProvider>();
+	//	if (InstanceContext)
+	//	{
+	//		OwnerInstanceId = InstanceContext->GetAssetInstanceId();
+	//	}
+	//}
+
+	CreateEquipment();
+}
+
+void UEquipmentManagerComponent::DeinitializeManager()
+{
+	RemoveEquipment();
+
+	if (IsValid(EquipmentSubsystem))
+	{
+		EquipmentSubsystem->OnSyncEquipment.RemoveAll(this);
+	}
+	EquipmentSubsystem = nullptr;
+
+	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	AssetManager = nullptr;
+	ActorFreelist = nullptr;
+
+	SetInitialized(false);
+}
+
+
+void UEquipmentManagerComponent::ActivateEquipmentById(FGameplayTag CategoryTag, int SlotId)
+{
+	if (!IsInitialized())
+	{
+		return;
+	}
+
+	UEquipmentController* TargetController = nullptr;
+	for (TObjectPtr<UEquipmentController> Controller : EquipmentControllers)
+	{
+		const FEquipmentData& EquipmentData = Controller->EquipmentData;
+		if (EquipmentData.CategoryTag == CategoryTag && EquipmentData.SlotId == SlotId)
+		{
+			TargetController = Controller;
+			break;
+		}
+	}
+
+	if (!IsValid(TargetController))
+	{
+		return;
+	}
+
+	if (!TargetController->IsA(UEquipmentStateController::StaticClass()))
+	{
+		return;
+	}
+
+	UEquipmentStateController* StateController = Cast<UEquipmentStateController>(TargetController);
+	if (!CurrentController)
+	{
+		PendingController = Cast<UEquipmentStateController>(StateController);
+		ActivatePendingController();
+		return;
+	}
+
+	if (StateController == CurrentController)
+	{
+		switch (StateController->GetState())
+		{
+		case EEquipmentState::Inactive:
+		{
+			RemovePendingController();
+			ActivatePendingController();
+			return;
+		}
+		case EEquipmentState::Activating:
+		{
+			RemovePendingController();
+			return;
+		}
+		case EEquipmentState::Active:
+		{
+			RemovePendingController();
+			StateController->DeactivateEquipment();
+			return;
+		}
+		case EEquipmentState::Deactivating:
+		{
+			RemovePendingController();
+			return;
+		}
+		default:
+			break;
+		}
+	}
+
+	PendingController = StateController;
+	HandleControllerQueue();
+}
+
+UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(const FGameplayTag& Tag) const
+{
+	//for (const TPair<FEquipmentData, UEquipmentController*>& Kv : EquippedControllers)
+	//{
+	//	if (Kv.Key.EquipmentSlot.MatchesTag(Tag))
+	//	{
+	//		return Kv.Value;
+	//	}
+	//}
+	return nullptr;
+}
+
 
 void UEquipmentManagerComponent::BeginPlay()
 {
@@ -54,85 +187,32 @@ void UEquipmentManagerComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProp
 void UEquipmentManagerComponent::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 	Super::PreSave(ObjectSaveContext);
-
-#if WITH_EDITOR
-	//EquippedAssetIds.Empty();
-
-	//if (SourceType == EAssetQuerySource::Asset)
-	//{
-	//	for (const FEquipmentData& Data : EquipmentSpawnData)
-	//	{
-	//		EquippedAssetIds.Add(Data.AssetId);
-	//	}
-	//}
-	//else
-	//{
-	//	EquipmentSpawnData.Empty();
-	//}
-#endif
 }
 
-void UEquipmentManagerComponent::InitializeManager()
-{
-	AssetManager = UAssetManager::GetIfInitialized();
-	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
 
-	ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
-	if (SpawnContext)
-	{
-		SourceType = SpawnContext->GetSpawnSource();
-	}
-
-	if (SourceType == EDataSource::Runtime)
-	{
-		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
-		if (IsValid(EquipmentSubsystem))
-		{
-			EquipmentSubsystem->OnSyncEquipment.AddUObject(this, &UEquipmentManagerComponent::SyncEquipment);
-		}
-
-		IAssetInstanceContextProvider* InstanceContext = GetOwner<IAssetInstanceContextProvider>();
-		if (InstanceContext)
-		{
-			OwnerInstanceId = InstanceContext->GetAssetInstanceId();
-		}
-	}
-}
-
-void UEquipmentManagerComponent::DeinitializeManager()
-{
-	RemoveEquipment();
-
-	if (IsValid(EquipmentSubsystem))
-	{
-		EquipmentSubsystem->OnSyncEquipment.RemoveAll(this);
-	}
-	EquipmentSubsystem = nullptr;
-
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
-	AssetManager = nullptr;
-	ActorFreelist = nullptr;
-
-}
-
-void UEquipmentManagerComponent::SyncEquipment(const FGuid& InOwnerId)
+void UEquipmentManagerComponent::UpdateEquipment(const FGuid& InOwnerId)
 {
 	if (InOwnerId == OwnerInstanceId)
 	{
-		SpawnEquipment();
+		CreateEquipment();
 	}
 }
 
-
-void UEquipmentManagerComponent::SpawnEquipment()
+void UEquipmentManagerComponent::CreateEquipment()
 {
 	OnEquipmentSpawnBegin.Broadcast();
 
-	RefreshEquipmentData();
+	SetInitialized(false);
+	RemovePendingController();
+	RemoveCurrentController();
+
+	TArray<FPrimaryAssetId> AssetIds;
+	RefreshEquipmentData(AssetIds);
 	CleanupEquipmentData();
 
-	if (EquippedAssetIds.Num() == 0)
+	if (AssetIds.Num() == 0)
 	{
+		SetInitialized(true);
 		OnEquipmentSpawnEnd.Broadcast();
 		return;
 	}
@@ -142,32 +222,20 @@ void UEquipmentManagerComponent::SpawnEquipment()
 	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 	const TArray<FName>& AssetBundles = Settings->EquipmentBundles;
 
-	_SpawnHandle = AssetManager->LoadPrimaryAssets(EquippedAssetIds, AssetBundles, FStreamableDelegate::CreateUObject(this, &UEquipmentManagerComponent::SpawnEquipmentActors));
+	_SpawnHandle = AssetManager->LoadPrimaryAssets(AssetIds, AssetBundles, FStreamableDelegate::CreateUObject(this, &UEquipmentManagerComponent::SpawnEquipmentActors));
 }
 
 void UEquipmentManagerComponent::RemoveEquipment()
 {
-	TArray<FEquipmentData> CurrentData;
-	EquippedControllers.GetKeys(CurrentData);
+	RemovePendingController();
+	RemoveCurrentController();
 
-	for (const FEquipmentData& Data : CurrentData)
+	for (TObjectPtr<UEquipmentController> Controller : EquipmentControllers)
 	{
-		UnregisterEquipment(Data);
+		UnregisterEquipment(Controller);
 	}
 
-	EquippedControllers.Empty();
-}
-
-UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(const FGameplayTag& Tag) const
-{
-	for (const TPair<FEquipmentData, UEquipmentController*>& Kv : EquippedControllers)
-	{
-		if (Kv.Key.EquipmentSlot.MatchesTag(Tag))
-		{
-			return Kv.Value;
-		}
-	}
-	return nullptr;
+	EquipmentControllers.Empty();
 }
 
 void UEquipmentManagerComponent::SpawnEquipmentActors()
@@ -176,10 +244,10 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 
 	UWorld* World = GetWorld();
 
-	for (const FEquipmentData& Data : EquipmentSpawnData)
+	for (const FEquipmentData& SpawnData : EquipmentSpawnData)
 	{
-		const UCoreDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(Data.AssetId);
-		if (!IsValid(Asset) || EquippedControllers.Contains(Data))
+		const UCoreDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(SpawnData.AssetId);
+		if (!IsValid(Asset))
 		{
 			LOG_ERROR(LogEquipment, TEXT("Asset is invalid or already spawned"));
 			continue;
@@ -222,47 +290,24 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 
 		Controller->EquipmentActor = Actor;
 		Controller->EquipmentAsset = Asset;
-		Controller->EquipmentData = Data;
+		Controller->EquipmentData = SpawnData;
 
 		if (!Controller->InitializeController(Definition))
 		{
 			LOG_ERROR(LogEquipment, TEXT("Failed to initialize controller, de-initializing it"));
-
 			Controller->DeinitializeController();
 			continue;
 		}
 
-		RegisterEquipment(Data, Controller);
+		RegisterEquipment(Controller);
 	}
 
+	SetInitialized(true);
 	OnEquipmentSpawnEnd.Broadcast();
-	HandleDefaultEquipment();
 }
 
-void UEquipmentManagerComponent::HandleDefaultEquipment()
-{
-	if (_bIsDefaultHandled)
-	{
-		return;
-	}
 
-	if (DefaultEquippedTag.IsValid())
-	{
-		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-		const FEquipmentTagData* TagData = Settings->GetTagData(DefaultEquippedTag);
-		if (TagData)
-		{
-			FGameplayEventData EventData = FGameplayEventData();
-			EventData.EventTag = TagData->EventTag;
-
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(GetOwner(), TagData->EventTag, EventData);
-		}
-	}
-
-	_bIsDefaultHandled = true;
-}
-
-void UEquipmentManagerComponent::RefreshEquipmentData()
+void UEquipmentManagerComponent::RefreshEquipmentData(TArray<FPrimaryAssetId>& OutAssetIds)
 {
 	if (SourceType == EDataSource::Static)
 	{
@@ -279,18 +324,16 @@ void UEquipmentManagerComponent::RefreshEquipmentData()
 			{
 				EquipmentSpawnData = DataList->EquipmentList;
 			}
+		}
 
-			EquippedAssetIds.Empty();
-			for (const FEquipmentData& Data : EquipmentSpawnData)
-			{
-				EquippedAssetIds.Add(Data.AssetId);
-			}
+		for (const FEquipmentData& SpawnData : EquipmentSpawnData)
+		{
+			OutAssetIds.Add(SpawnData.AssetId);
 		}
 	}
 	else
 	{
 		EquipmentSpawnData.Empty();
-		EquippedAssetIds.Empty();
 
 		if (!IsValid(EquipmentSubsystem))
 		{
@@ -318,38 +361,37 @@ void UEquipmentManagerComponent::RefreshEquipmentData()
 
 			FEquipmentData Data;
 			Data.AssetId = EquipmentKey.AssetId;
-			Data.EquipmentId = EquipmentKey.AssetInstanceId;
-			Data.EquipmentSlot = Kv.Key;
+			Data.AssetInstanceId = EquipmentKey.AssetInstanceId;
+			Data.CategoryTag = Kv.Key;
 			Data.SourceType = SourceType;
 
 			EquipmentSpawnData.Add(Data);
-			EquippedAssetIds.Add(Data.AssetId);
+			OutAssetIds.Add(Data.AssetId);
 		}
 	}
 }
 
 void UEquipmentManagerComponent::CleanupEquipmentData()
 {
-	TArray<FEquipmentData> CurrentData;
-	EquippedControllers.GetKeys(CurrentData);
-	
-	for (const FEquipmentData& Data : CurrentData)
+	for (TObjectPtr<UEquipmentController> Controller : EquipmentControllers)
 	{
-		if (!EquipmentSpawnData.Contains(Data))
+		if (IsValid(Controller))
 		{
-			UnregisterEquipment(Data);
+			if (!EquipmentSpawnData.Contains(Controller->EquipmentData))
+			{
+				UnregisterEquipment(Controller);
+			}
 		}
 	}
 }
 
-void UEquipmentManagerComponent::RegisterEquipment(const FEquipmentData& Data, UEquipmentController* Controller)
+void UEquipmentManagerComponent::RegisterEquipment(UEquipmentController* Controller)
 {
-	EquippedControllers.Add(Data, Controller);
+	EquipmentControllers.Add(Controller);
 }
 
-void UEquipmentManagerComponent::UnregisterEquipment(const FEquipmentData& Data)
+void UEquipmentManagerComponent::UnregisterEquipment(UEquipmentController* Controller)
 {
-	UEquipmentController* Controller = EquippedControllers.FindAndRemoveChecked(Data);
 	if (!IsValid(Controller))
 	{
 		return;
@@ -361,19 +403,168 @@ void UEquipmentManagerComponent::UnregisterEquipment(const FEquipmentData& Data)
 		return;
 	}
 
+	UnbindController(Cast<UEquipmentStateController>(Controller));
 	Controller->DeinitializeController();
 
 	FPoolHelper::ReturnToContainer(_ControllerPool, Controller);
 	ActorFreelist->ReturnToList(Actor);
 }
 
-bool UEquipmentManagerComponent::GetIsSpawning() const
+
+void UEquipmentManagerComponent::HandleControllerQueue()
 {
-	return _bIsSpawning;
+	if (!IsInitialized())
+	{
+		return;
+	}
+
+	if (!PendingController)
+	{
+		return;
+	}
+
+	if (!CurrentController)
+	{
+		ActivatePendingController();
+		return;
+	}
+
+	if (CurrentController->IsActivating() || CurrentController->IsDeactivating())
+	{
+		return;
+	}
+
+	if (CurrentController->IsActive())
+	{
+		CurrentController->DeactivateEquipment();
+		return;
+	}
+
+	if (CurrentController->IsInactive())
+	{
+		UEquipmentStateController* PreviousEquipment = CurrentController;
+
+		CurrentController = nullptr;
+
+		UnbindController(PreviousEquipment);
+		ActivatePendingController();
+	}
 }
 
-void UEquipmentManagerComponent::SetIsSpawning(bool bIsSpawning)
+void UEquipmentManagerComponent::ActivatePendingController()
 {
-	_bIsSpawning = bIsSpawning;
+	if (!IsInitialized())
+	{
+		RemovePendingController();
+		RemoveCurrentController();
+		return;
+	}
+
+	if (!PendingController)
+	{
+		return;
+	}
+
+	UEquipmentStateController* Equipment = PendingController;
+	if (Equipment == CurrentController)
+	{
+		PendingController = nullptr;
+
+		if (Equipment->IsActive())
+		{
+			return;
+		}
+
+		if (Equipment->IsActivating() || Equipment->IsDeactivating())
+		{
+			return;
+		}
+	}
+
+	CurrentController = Equipment;
+	PendingController = nullptr;
+	BindController(Equipment);
+
+	const bool bActivated = Equipment->ActivateEquipment();
+	if (!bActivated)
+	{
+		if (CurrentController == Equipment)
+		{
+			CurrentController = nullptr;
+		}
+		UnbindController(Equipment);
+		return;
+	}
+
+}
+
+void UEquipmentManagerComponent::RemovePendingController()
+{
+	PendingController = nullptr;
+}
+
+void UEquipmentManagerComponent::RemoveCurrentController()
+{
+	CurrentController = nullptr;
+}
+
+
+void UEquipmentManagerComponent::BindController(UEquipmentStateController* Controller)
+{
+	UnbindController(Controller);
+
+	Controller->OnActivatedDelegate.BindUObject(this, &UEquipmentManagerComponent::HandleOnEquipmentActivated);
+	Controller->OnDeactivatedDelegate.BindUObject(this, &UEquipmentManagerComponent::HandleOnEquipmentDeactivated);
+}
+
+void UEquipmentManagerComponent::UnbindController(UEquipmentStateController* Controller)
+{
+	Controller->OnActivatedDelegate.Unbind();
+	Controller->OnDeactivatedDelegate.Unbind();
+}
+
+
+void UEquipmentManagerComponent::HandleOnEquipmentActivated(UEquipmentStateController* Controller)
+{
+	if (Controller != CurrentController)
+	{
+		return;
+	}
+
+	if (PendingController)
+	{
+		if (PendingController == CurrentController)
+		{
+			PendingController = nullptr;
+			return;
+		}
+
+		Controller->DeactivateEquipment();
+		return;
+	}
+}
+
+void UEquipmentManagerComponent::HandleOnEquipmentDeactivated(UEquipmentStateController* Controller)
+{
+	if (Controller != CurrentController)
+	{
+		return;
+	}
+
+	if (PendingController)
+	{
+		UEquipmentStateController* NextEquipment = PendingController;
+		PendingController = nullptr;
+
+		CurrentController = nullptr;
+		UnbindController(Controller);
+
+		PendingController = NextEquipment;
+		ActivatePendingController();
+		return;
+	}
+
+	CurrentController = nullptr;
+	UnbindController(Controller);
 }
 

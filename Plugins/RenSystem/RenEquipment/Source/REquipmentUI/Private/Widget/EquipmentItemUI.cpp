@@ -12,13 +12,15 @@
 #include "Kismet/GameplayStatics.h"
 
 // Project Headers
+#include "Component/EquipmentManagerComponent.h"
+#include "Core/EquipmentSettings.h"
 #include "Data/CoreDataAsset.h"
 #include "Data/EquipmentAbilityCollection.h"
-#include "Component/EquipmentManagerComponent.h"
-#include "System/EquipmentController.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Core/EquipmentSettings.h"
+#include "System/Controller/EquipmentStateController_Attachment.h"
+#include "System/Controller/EquipmentStateController_Weapon.h"
+#include "System/EquipmentController.h"
 
 
 UEquipmentManagerComponent* UEquipmentItemUI::GetEquipmentComponent() const

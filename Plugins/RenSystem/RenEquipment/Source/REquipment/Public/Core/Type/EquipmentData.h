@@ -25,47 +25,57 @@ public:
 
 	FEquipmentData() {};
 
+
 	UPROPERTY(EditAnywhere)
 	FPrimaryAssetId AssetId;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayTag EquipmentSlot;
-
 	UPROPERTY(VisibleAnywhere)
-	FGuid EquipmentId;
+	FGuid AssetInstanceId;
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	FGameplayTag CategoryTag;
+
+	UPROPERTY(EditAnywhere)
+	int SlotId = 10;
 
 	UPROPERTY(VisibleAnywhere)
 	EDataSource SourceType = EDataSource::Static;
 
 	bool IsValid() const
 	{
-		return AssetId.IsValid() && EquipmentSlot.IsValid();
+		return AssetId.IsValid() && CategoryTag.IsValid();
 	}
 
 	void Reset()
 	{
 		AssetId = FPrimaryAssetId();
-		EquipmentId.Invalidate();
-		EquipmentSlot = FGameplayTag();
+		AssetInstanceId.Invalidate();
+		SlotId = -1;
+		CategoryTag = FGameplayTag();
 		SourceType = EDataSource::Static;
 	}
 
 	friend inline bool operator == (const FEquipmentData& A, const FEquipmentData& B)
 	{
-		return A.AssetId == B.AssetId && A.EquipmentSlot == B.EquipmentSlot && A.EquipmentId == B.EquipmentId && A.SourceType == B.SourceType;
+		return A.AssetId == B.AssetId && A.AssetInstanceId == B.AssetInstanceId && A.CategoryTag == B.CategoryTag && A.SlotId == B.SlotId && A.SourceType == B.SourceType;
 	}
 
 	friend inline uint32 GetTypeHash(const FEquipmentData& A)
 	{
 		uint32 Hash = GetTypeHash(A.AssetId);
-		Hash = HashCombineFast(Hash, GetTypeHash(A.EquipmentSlot));
-		Hash = HashCombineFast(Hash, GetTypeHash(A.EquipmentId));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.CategoryTag));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.SlotId));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.AssetInstanceId));
 		Hash = HashCombineFast(Hash, GetTypeHash(A.SourceType));
 		return Hash;
 	}
 
 };
 
+
+/**
+ *
+ */
 USTRUCT()
 struct FEquipmentDataList
 {

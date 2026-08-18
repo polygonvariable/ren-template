@@ -21,7 +21,8 @@ class UEquipmentSubsystem;
 class UActorFreelistSubsystem;
 class UEquipmentController;
 struct FStreamableHandle;
-
+class UAnimInstance;
+class UEquipmentStateController;
 
 /**
  *
@@ -48,15 +49,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void InitializeManager();
 
+	UFUNCTION(BlueprintCallable)
 	virtual void DeinitializeManager();
 
-	UFUNCTION(BlueprintCallable)
-	void SpawnEquipment();
 
 	UFUNCTION(BlueprintCallable)
-	void RemoveEquipment();
+	REN_API void ActivateEquipmentById(FGameplayTag CategoryTag, int SlotId);
 
+	UFUNCTION(BlueprintCallable)
 	REN_API UEquipmentController* GetEquipmentControllerByTag(const FGameplayTag& Tag) const;
+
 
 	// ~ UActorComponent
 	virtual void BeginPlay() override;
@@ -70,14 +72,17 @@ public:
 
 protected:
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UEquipmentStateController> PendingController = nullptr;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UEquipmentStateController> CurrentController = nullptr;
+
 	UPROPERTY(EditAnywhere)
 	EDataSource SourceType = EDataSource::Static;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayTag DefaultEquippedTag;
-
-	UPROPERTY()
-	TMap<FEquipmentData, TObjectPtr<UEquipmentController>> EquippedControllers;
+	UPROPERTY(VisibleAnywhere)
+	TArray<TObjectPtr<UEquipmentController>> EquipmentControllers;
 
 	UPROPERTY()
 	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
@@ -89,30 +94,49 @@ protected:
 	TObjectPtr<UAssetManager> AssetManager = nullptr;
 
 	FGuid OwnerInstanceId;
-	TArray<FPrimaryAssetId> EquippedAssetIds;
 
 
-	void SyncEquipment(const FGuid& InOwnerId);
+	void UpdateEquipment(const FGuid& InOwnerId);
+	void CreateEquipment();
+	void RemoveEquipment();
 	void SpawnEquipmentActors();
-	void HandleDefaultEquipment();
 
-	void RefreshEquipmentData();
+	void RefreshEquipmentData(TArray<FPrimaryAssetId>& OutAssetIds);
 	void CleanupEquipmentData();
+	void RegisterEquipment(UEquipmentController* Controller);
+	void UnregisterEquipment(UEquipmentController* Controller);
 
-	void RegisterEquipment(const FEquipmentData& Data, UEquipmentController* Controller);
-	void UnregisterEquipment(const FEquipmentData& Data);
+	void HandleControllerQueue();
+	void ActivatePendingController();
+	void RemovePendingController();
+	void RemoveCurrentController();
 
-	bool GetIsSpawning() const;
-	void SetIsSpawning(bool bIsSpawning);
+	void BindController(UEquipmentStateController* Controller);
+	void UnbindController(UEquipmentStateController* Controller);
+
+	// ~ Bindings
+	void HandleOnEquipmentActivated(UEquipmentStateController* Controller);
+	void HandleOnEquipmentDeactivated(UEquipmentStateController* Controller);
+	// ~ End od Binding
+
+	bool IsInitialized() const
+	{
+		return _bInitialized;
+	}
+
+	void SetInitialized(bool bValue)
+	{
+		_bInitialized = bValue;
+	}
 
 private:
 
 	TSharedPtr<FStreamableHandle> _SpawnHandle = nullptr;
-	bool _bIsSpawning = false;
-	bool _bIsDefaultHandled = false;
 
 	UPROPERTY()
 	TMap<UClass*, FPoolCollection> _ControllerPool;
+	
+	bool _bInitialized = false;
 
 };
 
