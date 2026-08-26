@@ -5,5 +5,5 @@
 
 
 const FName FAssetFilterProperty::AssetId(TEXT("AssetId"));
-const FName FAssetFilterProperty::InstanceId(TEXT("ItemId"));
+const FName FAssetFilterProperty::InstanceId(TEXT("AssetInstanceId"));
 

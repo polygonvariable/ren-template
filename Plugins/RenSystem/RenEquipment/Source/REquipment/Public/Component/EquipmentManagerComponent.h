@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/EquipmentData.h"
+#include "Core/Type/EquipmentSpawnData.h"
 #include "Definition/PoolCollection.h"
 #include "Definition/QueryType.h"
 
@@ -21,8 +21,10 @@ class UEquipmentSubsystem;
 class UActorFreelistSubsystem;
 class UEquipmentController;
 struct FStreamableHandle;
+struct FEquipmentSlotDefinition;
 class UAnimInstance;
 class UEquipmentStateController;
+
 
 /**
  *
@@ -38,12 +40,12 @@ public:
 	UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer);
 
 
-	UPROPERTY(EditAnywhere)
-	TArray<FEquipmentData> EquipmentSpawnData;
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	TArray<FEquipmentInitializationData> EquipmentSpawnData;
 
-	DECLARE_MULTICAST_DELEGATE(FOnEquipmentSpawn);
-	FOnEquipmentSpawn OnEquipmentSpawnBegin;
-	FOnEquipmentSpawn OnEquipmentSpawnEnd;
+	DECLARE_MULTICAST_DELEGATE(FOnEquipmentManagerEvent);
+	FOnEquipmentManagerEvent OnEquipmentReset;
+	FOnEquipmentManagerEvent OnEquipmentUpdate;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -52,12 +54,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void DeinitializeManager();
 
-
 	UFUNCTION(BlueprintCallable)
 	REN_API void ActivateEquipmentById(FGameplayTag CategoryTag, int SlotId);
-
-	UFUNCTION(BlueprintCallable)
-	REN_API UEquipmentController* GetEquipmentControllerByTag(const FGameplayTag& Tag) const;
+	REN_API UEquipmentController* GetEquipmentControllerByTag(const FEquipmentSlotDefinition& SlotDefinition) const;
 
 
 	// ~ UActorComponent
@@ -95,6 +94,7 @@ protected:
 
 	FGuid OwnerInstanceId;
 
+	int CurrentIndex = 0;
 
 	void UpdateEquipment(const FGuid& InOwnerId);
 	void CreateEquipment();
@@ -133,7 +133,7 @@ private:
 
 	TSharedPtr<FStreamableHandle> _SpawnHandle = nullptr;
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TMap<UClass*, FPoolCollection> _ControllerPool;
 	
 	bool _bInitialized = false;

@@ -5,71 +5,88 @@
 
 // Project Headers
 #include "Core/EquipmentSettings.h"
+#include "Core/Type/EquipmentSpawnData.h"
 #include "Data/EquipmentStorage.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
-const TMap<FGameplayTag, FEquipmentKey>* UEquipmentStorageManager::GetOwnedEquipment(const FGuid& OwnerId) const
+void UEquipmentStorageManager::GetEquipmentByOwnerId(const FGuid& InOwnerInstanceId, TArray<FEquipmentInitializationData>& OutData) const
 {
-	if (!IsValid(LocalStorage))
-	{
-		return nullptr;
-	}
-
-	const FEquipmentInstance* Instance = LocalStorage->EquipmentInstances.Find(OwnerId);
-	if (!Instance)
-	{
-		return nullptr;
-	}
-	return &Instance->EquipmentSlot;
-}
-
-void UEquipmentStorageManager::GetOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const
-{
-	OutEquipmentIds.Empty();
-
-	if (IsValid(LocalStorage))
-	{
-		return;
-	}
-
-	const FEquipmentInstance* Instance = LocalStorage->EquipmentInstances.Find(OwnerId);
-	if (!Instance)
-	{
-		return;
-	}
-
-	for (const TPair<FGameplayTag, FEquipmentKey>& Kv : Instance->EquipmentSlot)
-	{
-		OutEquipmentIds.Add(Kv.Value.AssetInstanceId);
-	}
-}
-
-void UEquipmentStorageManager::GetNonOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const
-{
-	OutEquipmentIds.Empty();
+	OutData.Empty();
 
 	if (!IsValid(LocalStorage))
 	{
 		return;
 	}
 
-	const TMap<FGuid, FEquipmentInstance>& Instances = LocalStorage->EquipmentInstances;
-	for (const TPair<FGuid, FEquipmentInstance>& KvInstance : Instances)
+	const TMap<FGuid, FEquipmentSlotInstance> EquipmentInstances = LocalStorage->EquipmentInstances;
+	const FEquipmentOwnerInstance* OwnerInstance = LocalStorage->EquipmentOwners.Find(InOwnerInstanceId);
+	if (!OwnerInstance)
 	{
-		if (KvInstance.Key != OwnerId)
+		return;
+	}
+
+	const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerInstance->Slots;
+	for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : Slots)
+	{
+		const FEquipmentSlotInstance* SlotInstance = EquipmentInstances.Find(Kv.Value);
+		if (!SlotInstance)
 		{
-			for (const TPair<FGameplayTag, FEquipmentKey>& KvSlot : KvInstance.Value.EquipmentSlot)
+			continue;
+		}
+
+		FEquipmentInitializationData Data;
+		Data.AssetId = SlotInstance->EquipmentAssetId;
+		Data.AssetInstanceId = Kv.Value;
+		Data.SlotDefinition = Kv.Key;
+		
+		OutData.Add(FEquipmentInitializationData(SlotInstance->EquipmentAssetId, Kv.Value, Kv.Key));
+	}
+}
+
+void UEquipmentStorageManager::GetEquipmentIdsByOwnerId(const FGuid& InOwnerInstanceId, bool bInNegate, TArray<FGuid>& OutEquipmentInstanceIds) const
+{
+	OutEquipmentInstanceIds.Empty();
+
+	if (!IsValid(LocalStorage))
+	{
+		return;
+	}
+
+	const TMap<FGuid, FEquipmentOwnerInstance>& Owners = LocalStorage->EquipmentOwners;
+
+	if (!bInNegate)
+	{
+		const FEquipmentOwnerInstance* OwnerInstance = Owners.Find(InOwnerInstanceId);
+		if (!OwnerInstance)
+		{
+			return;
+		}
+
+		const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerInstance->Slots;
+		for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : Slots)
+		{
+			OutEquipmentInstanceIds.Add(Kv.Value);
+		}
+	}
+	else
+	{
+		for (const TPair<FGuid, FEquipmentOwnerInstance>& OwnerKv : Owners)
+		{
+			if (OwnerKv.Key != InOwnerInstanceId)
 			{
-				OutEquipmentIds.Add(KvSlot.Value.AssetInstanceId);
+				const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerKv.Value.Slots;
+				for (const TPair<FEquipmentSlotDefinition, FGuid>& SlotKv : Slots)
+				{
+					OutEquipmentInstanceIds.Add(SlotKv.Value);
+				}
 			}
 		}
 	}
 }
 
-
-bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FPrimaryAssetId& OutEquipmentAssetId) const
+bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotDefinition& InSlotDefinition, FPrimaryAssetId& OutEquipmentAssetId) const
 {
 	OutEquipmentAssetId = FPrimaryAssetId();
 
@@ -78,134 +95,106 @@ bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerId, const 
 		return false;
 	}
 
-	const FEquipmentInstance* Instance = LocalStorage->EquipmentInstances.Find(InOwnerId);
-	if (!Instance)
-	{
-		return false;
-	}
-	
-	const TMap<FGameplayTag, FEquipmentKey>& Slots = Instance->EquipmentSlot;
-	const FEquipmentKey* FoundId = Slots.Find(InEquipmentSlot);
-	if (!FoundId)
+	const FEquipmentOwnerInstance* OwnerInstance = LocalStorage->EquipmentOwners.Find(InOwnerInstanceId);
+	if (!OwnerInstance)
 	{
 		return false;
 	}
 
-	OutEquipmentAssetId = FoundId->AssetId;
+	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(InSlotDefinition);
+	if (!EquipmentInstanceId)
+	{
+		return false;
+	}
+
+	const FEquipmentSlotInstance* SlotInstance =LocalStorage->EquipmentInstances.Find(*EquipmentInstanceId);
+	if (!SlotInstance)
+	{
+		return false;
+	}
+
+	OutEquipmentAssetId = SlotInstance->EquipmentAssetId;
 	return true;
 }
 
-bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& EquipmentSlot, const FGuid& EquipmentId, const FPrimaryAssetId& EquipmentAssetId)
+bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition)
 {
-	if (!IsValid(LocalStorage) || !OwnerId.IsValid() || !OwnerAssetId.IsValid() || !EquipmentId.IsValid())
+	if (!IsValid(LocalStorage))
 	{
-		LOG_ERROR(LogEquipment, TEXT("Invalid parameters or asset manager"));
 		return false;
 	}
 
-	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-	if (!Settings->EquipmentSlots.HasTagExact(EquipmentSlot))
-	{
-		LOG_ERROR(LogEquipment, TEXT("Invalid equipment slot"));
-		return false;
-	}
+	TMap<FGuid, FEquipmentOwnerInstance>& EquipmentOwners = LocalStorage->EquipmentOwners;
+	TMap<FGuid, FEquipmentSlotInstance>& EquipmentInstances = LocalStorage->EquipmentInstances;
 
-	if (EquipmentAssetId.PrimaryAssetType != Settings->EquipmentType || OwnerAssetId.PrimaryAssetType != Settings->OwnerType)
-	{
-		LOG_ERROR(LogEquipment, TEXT("Invalid equipment or owner type"));
-		return false;
-	}
-
-	TMap<FGuid, FGuid>& Relations = LocalStorage->EquipmentRelations;
-	const FGuid* FoundOwnerId = Relations.Find(EquipmentId);
-	if (FoundOwnerId && *FoundOwnerId != OwnerId)
+	const FEquipmentSlotInstance* FoundSlotInstance = EquipmentInstances.Find(EquipmentInstanceId);
+	if (FoundSlotInstance && FoundSlotInstance->OwnerInstanceId != OwnerInstanceId)
 	{
 		LOG_ERROR(LogEquipment, TEXT("Equipment is already owned by another owner"));
 		return false;
 	}
 
-	FEquipmentInstance& EquipmentInstance = LocalStorage->EquipmentInstances.FindOrAdd(OwnerId);
-	if (!EquipmentInstance.OwnerAssetId.IsValid())
+	FEquipmentOwnerInstance& OwnerInstance = EquipmentOwners.FindOrAdd(OwnerInstanceId);
+	if (!OwnerInstance.OwnerAssetId.IsValid())
 	{
-		EquipmentInstance.OwnerAssetId = OwnerAssetId;
+		OwnerInstance.OwnerAssetId = OwnerAssetId;
 	}
 
-	FEquipmentKey ExistingKey(EquipmentAssetId, EquipmentId);
-	TMap<FGameplayTag, FEquipmentKey>& Slots = EquipmentInstance.EquipmentSlot;
-	
-	FGameplayTag SlotToRemove;
-	for (const TPair<FGameplayTag, FEquipmentKey>& Slot : Slots)
+	FEquipmentSlotDefinition SlotToRemove;
+	TMap<FEquipmentSlotDefinition, FGuid>& OwnerSlots = OwnerInstance.Slots;
+	for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : OwnerSlots)
 	{
-		if (Slot.Value == ExistingKey)
+		if (Kv.Value == EquipmentInstanceId)
 		{
-			SlotToRemove = Slot.Key;
+			SlotToRemove = Kv.Key;
 			break;
 		}
 	}
 
 	if (SlotToRemove.IsValid())
 	{
-		Slots.Remove(SlotToRemove);
+		OwnerSlots.Remove(SlotToRemove);
 	}
 
-	FEquipmentKey* PreviousKey = Slots.Find(EquipmentSlot);
-	if (PreviousKey)
+	FGuid* PreviousEquipment = OwnerSlots.Find(SlotDefinition);
+	if (PreviousEquipment)
 	{
-		Relations.Remove(PreviousKey->AssetInstanceId);
+		EquipmentInstances.Remove(*PreviousEquipment);
 	}
 
-	Slots.Add(EquipmentSlot, FEquipmentKey(EquipmentAssetId, EquipmentId));
-	Relations.Add(EquipmentId, OwnerId);
+	OwnerSlots.Add(SlotDefinition, EquipmentInstanceId);
+	EquipmentInstances.Add(EquipmentInstanceId, FEquipmentSlotInstance(EquipmentAssetId, OwnerInstanceId));
 
 	OnStorageUpdated.Broadcast();
 	return true;
+
 }
 
-bool UEquipmentStorageManager::RemoveEquipmentFromSlot(const FGuid& OwnerId, const FGameplayTag& SlotTag)
+bool UEquipmentStorageManager::RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition)
 {
 	if (!IsValid(LocalStorage))
 	{
 		return false;
 	}
 
-	FEquipmentInstance* EquipmentInstance = LocalStorage->EquipmentInstances.Find(OwnerId);
-	if (!EquipmentInstance)
+	TMap<FGuid, FEquipmentOwnerInstance>& EquipmentOwners = LocalStorage->EquipmentOwners;
+	TMap<FGuid, FEquipmentSlotInstance>& EquipmentInstances = LocalStorage->EquipmentInstances;
+
+	const FEquipmentOwnerInstance* OwnerInstance = EquipmentOwners.Find(OwnerInstanceId);
+	if (!OwnerInstance)
 	{
 		return false;
 	}
 
-	FEquipmentKey Key;
-	if (!EquipmentInstance->EquipmentSlot.RemoveAndCopyValue(SlotTag, Key))
+	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(SlotDefinition);
+	if (!EquipmentInstanceId)
 	{
 		return false;
 	}
 
-	LocalStorage->EquipmentRelations.Remove(Key.AssetInstanceId);
-
+	EquipmentInstances.Remove(*EquipmentInstanceId);
 	OnStorageUpdated.Broadcast();
 	return true;
-}
-
-
-bool UEquipmentStorageManager::HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const
-{
-	if (!IsValid(LocalStorage))
-	{
-		return false;
-	}
-
-	const FPrimaryAssetType& AssetType = AssetId.PrimaryAssetType;
-	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-	if (AssetType == Settings->EquipmentType)
-	{
-		return LocalStorage->EquipmentRelations.Contains(AssetInstanceId);
-	}
-	else if (AssetType == Settings->OwnerType)
-	{
-		return LocalStorage->EquipmentInstances.Contains(AssetInstanceId);
-	}
-
-	return false;
 }
 
 
@@ -224,13 +213,35 @@ void UEquipmentStorageManager::OnStorageLoaded(bool bIsNew)
 	if (IsValid(LocalStorage) && bIsNew)
 	{
 		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-		LocalStorage->EquipmentInstances = Settings->DefaultEquipment;
-		LocalStorage->EquipmentRelations = Settings->DefaultEquipmentRelations;
+		LocalStorage->EquipmentOwners = Settings->DefaultEquipmentOwners;
+		LocalStorage->EquipmentInstances = Settings->DefaultEquipmentInstances;
 	}
 }
 
 FGameEventDelegate& UEquipmentStorageManager::GetOnStorageUpdated()
 {
 	return OnStorageUpdated;
+}
+
+
+bool UEquipmentStorageManager::HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const
+{
+	if (!IsValid(LocalStorage))
+	{
+		return false;
+	}
+
+	const FPrimaryAssetType& AssetType = AssetId.PrimaryAssetType;
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	if (AssetType == Settings->EquipmentType)
+	{
+		return LocalStorage->EquipmentInstances.Contains(AssetInstanceId);
+	}
+	else if (AssetType == Settings->OwnerType)
+	{
+		return LocalStorage->EquipmentOwners.Contains(AssetInstanceId);
+	}
+
+	return false;
 }
 

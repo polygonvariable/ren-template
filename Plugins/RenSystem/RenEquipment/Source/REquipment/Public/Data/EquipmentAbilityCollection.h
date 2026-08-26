@@ -57,7 +57,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<UGameplayEffect>> EffectClasses;
 
-
 	// ~ UObject
 	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 	// ~ UObject

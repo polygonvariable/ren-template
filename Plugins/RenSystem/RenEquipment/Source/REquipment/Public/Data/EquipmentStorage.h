@@ -24,10 +24,10 @@ class UEquipmentStorage : public USaveGame
 public:
 
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FEquipmentInstance> EquipmentInstances; // OwnerId -> Equipment Instance
+	TMap<FGuid, FEquipmentOwnerInstance> EquipmentOwners;
 
 	UPROPERTY(SaveGame)
-	TMap<FGuid, FGuid> EquipmentRelations; // EquipmentId -> OwnerId
+	TMap<FGuid, FEquipmentSlotInstance> EquipmentInstances;
 
 };
 

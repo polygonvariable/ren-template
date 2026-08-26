@@ -30,8 +30,8 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UPanelWidget> SlotBox = nullptr;
 
-	UPROPERTY(EditAnywhere)
-	FGameplayTag SlotCategory;
+	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	FGameplayTag CategoryTag;
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UEquipmentSlotUI> SlotClass = nullptr;

@@ -16,7 +16,7 @@ class IAssetInstanceRelation;
 
 
 /**
- * 
+ * Rename to AssetInstanceReference
  */
 UCLASS(MinimalAPI)
 class UAssetInstanceRelationSubsystem : public UGameInstanceSubsystem

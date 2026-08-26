@@ -26,20 +26,23 @@
 #include "Log/LogMacro.h"
 
 
-bool UEquipmentController::InitializeController(const UEquipmentDataDefinition* InDataDefinition)
+bool UEquipmentController::InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition)
 {
 	if (IsInitialized())
 	{
-		LOG_ERROR(LogTemp, TEXT("Controller is already initialized"));
+		LOG_ERROR(LogEquipment, TEXT("Controller is already initialized"));
 		return false;
 	}
 
-	if (!IsValid(EquipmentActor) || !IsValid(InDataDefinition) || !EquipmentData.IsValid())
+	if (!IsValid(InEquipmentAsset) || !IsValid(InEquipmentActor) || !IsValid(InDataDefinition) || !InEquipmentData.IsValid())
 	{
-		LOG_ERROR(LogTemp, TEXT("Equipment actor, data definition, equipment data is invalid"));
+		LOG_ERROR(LogEquipment, TEXT("Equipment actor, data definition, equipment data is invalid"));
 		return false;
 	}
 
+	EquipmentAsset = InEquipmentAsset;
+	EquipmentData = InEquipmentData;
+	EquipmentActor = InEquipmentActor;
 	DataDefinition = InDataDefinition;
 
 	AttachEquipment();
@@ -96,18 +99,28 @@ void UEquipmentController::RefreshEquipment()
 {
 	if (!InstanceAscension)
 	{
-		LOG_ERROR(LogTemp, TEXT("Equipment ascension instance is invalid"));
+		LOG_ERROR(LogEquipment, TEXT("Equipment ascension instance is invalid"));
 		return;
 	}
 
 	const FAscensionData* AscensionData = InstanceAscension->GetAscensionInstance(EquipmentData.AssetId, EquipmentData.AssetInstanceId);
 	if (!AscensionData || GetEquipmentLevel() == AscensionData->Level)
 	{
-		LOG_WARNING(LogTemp, TEXT("Ascension data is invalid or level is not changed"));
+		LOG_WARNING(LogEquipment, TEXT("Ascension data is invalid or level is not changed"));
 		return;
 	}
 
 	SetEquipmentLevel(AscensionData->Level);
+}
+
+const UCoreDataAsset* UEquipmentController::GetEquipmentAsset() const
+{
+	return EquipmentAsset;
+}
+
+const FEquipmentInitializationData& UEquipmentController::GetEquipmentData() const
+{
+	return EquipmentData;
 }
 
 
@@ -121,7 +134,7 @@ const UEquipmentDataDefinition* UEquipmentController::GetEquipmentDataDefinition
 	return DataDefinition;
 }
 
-AActor* UEquipmentController::GetEquipmentActor() const
+AEquipmentActor* UEquipmentController::GetEquipmentActor() const
 {
 	return EquipmentActor;
 }
@@ -163,7 +176,7 @@ bool UEquipmentController::ImplementsGetWorld() const
 
 void UEquipmentController::InitializeAssetInstance()
 {
-	if (EquipmentData.SourceType == EDataSource::Runtime)
+	if (SourceType == EDataSource::Runtime)
 	{
 		const FPrimaryAssetId& AssetId = EquipmentData.AssetId;
 
@@ -219,55 +232,41 @@ bool UEquipmentController::CanActivate() const
 
 void UEquipmentController::CreateAbilities()
 {
-	//UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	//if (!IsValid(AbilitySystem) || !IsValid(AbilityCollection))
-	//{
-	//	LOG_ERROR(LogTemp, TEXT("AbilitySystem, ability collection, equipment tag data is invalid"));
-	//	return;
-	//}
+	const UEquipmentAbilityCollection* AbilityCollection = GetEquipmentAbilityCollection();
+	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
+	if (!IsValid(AbilitySystem) || !IsValid(AbilityCollection))
+	{
+		LOG_ERROR(LogEquipment, TEXT("AbilitySystem, ability collection, equipment tag data is invalid"));
+		return;
+	}
 
-	//for (const TSubclassOf<UGameplayEffect>& EffectClass : AbilityCollection->EffectClasses)
-	//{
-	//	if (IsValid(EffectClass))
-	//	{
-	//		FGameplayEffectContextHandle EffectContext = AbilitySystem->MakeEffectContext();
-	//		FGameplayEffectSpecHandle SpecHandle = AbilitySystem->MakeOutgoingSpec(EffectClass, GetEquipmentLevel(), EffectContext);
-	//		FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystem->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+	for (const TSubclassOf<UGameplayEffect>& EffectClass : AbilityCollection->EffectClasses)
+	{
+		if (IsValid(EffectClass))
+		{
+			FGameplayEffectContextHandle EffectContext = AbilitySystem->MakeEffectContext();
+			FGameplayEffectSpecHandle SpecHandle = AbilitySystem->MakeOutgoingSpec(EffectClass, GetEquipmentLevel(), EffectContext);
+			FActiveGameplayEffectHandle ActiveEffectHandle = AbilitySystem->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 
-	//		ActiveEffectHandles.Add(ActiveEffectHandle);
-	//	}
-	//}
+			ActiveEffectHandles.Add(ActiveEffectHandle);
+		}
+	}
+	
+	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
+	for (const FEquipmentAbilityData& AbilityData : Abilities)
+	{
+		const TSubclassOf<UGameplayAbility>& AbilityClass = AbilityData.AbilityClass;
 
-	//const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
-	//int AbilityNum = Abilities.Num();
-
-	//for (int i = 0; i < AbilityNum; i++)
-	//{
-	//	const FEquipmentAbilityData& AbilityData = Abilities[i];
-	//	const TSubclassOf<UGameplayAbility>& AbilityClass = AbilityData.AbilityClass;
-
-	//	if (IsValid(AbilityClass))
-	//	{
-	//		FGameplayAbilitySpec AbilitySpec(AbilityClass);
-	//		AbilitySpec.Level = GetEquipmentLevel();
-	//		AbilitySpec.SourceObject = this;
-	//		if (i == 0)
-	//		{
-	//			AbilitySpec.DynamicAbilityTags.AddTag(EquipmentTagData->AbilityTag);
-	//		}
-	//		else
-	//		{
-	//			AbilitySpec.DynamicAbilityTags.AddTag(EquipmentTagData->StateTag);
-	//			if (AbilityData.bEnableInput)
-	//			{
-	//				AbilitySpec.InputID = AbilityData.InputId;
-	//			}
-	//		}
-
-	//		FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
-	//		ActiveAbilityHandles.Add(AbilityHandle);
-	//	}
-	//}
+		if (IsValid(AbilityClass))
+		{
+			FGameplayAbilitySpec AbilitySpec(AbilityClass);
+			AbilitySpec.Level = GetEquipmentLevel();
+			AbilitySpec.SourceObject = this;
+			
+			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
+			ActiveAbilityHandles.Add(AbilityHandle);
+		}
+	}
 }
 
 void UEquipmentController::RemoveAbilities()
@@ -275,7 +274,7 @@ void UEquipmentController::RemoveAbilities()
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!IsValid(AbilitySystem))
 	{
-		LOG_ERROR(LogTemp, TEXT("AbilitySystem is invalid"));
+		LOG_ERROR(LogEquipment, TEXT("AbilitySystem is invalid"));
 		return;
 	}
 
@@ -297,7 +296,7 @@ void UEquipmentController::RefreshAbilities()
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!IsValid(AbilitySystem))
 	{
-		LOG_ERROR(LogTemp, TEXT("AbilitySystem is invalid"));
+		LOG_ERROR(LogEquipment, TEXT("AbilitySystem is invalid"));
 		return;
 	}
 
@@ -322,7 +321,7 @@ void UEquipmentController::AttachEquipment()
 {
 	if (!IsValid(EquipmentActor) || IsAttached())
 	{
-		LOG_ERROR(LogTemp, TEXT("Equipment actor is invalid or already attached"));
+		LOG_ERROR(LogEquipment, TEXT("Equipment actor is invalid or already attached"));
 		return;
 	}
 
@@ -334,7 +333,7 @@ void UEquipmentController::DetachEquipment()
 {
 	if (!IsValid(EquipmentActor) || !IsAttached())
 	{
-		LOG_ERROR(LogTemp, TEXT("Equipment actor is invalid or not attached"));
+		LOG_ERROR(LogEquipment, TEXT("Equipment actor is invalid or not attached"));
 		return;
 	}
 

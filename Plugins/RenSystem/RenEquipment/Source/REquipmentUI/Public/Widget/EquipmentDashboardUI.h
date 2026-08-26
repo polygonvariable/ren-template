@@ -26,7 +26,7 @@ class UEquipmentDashboardUI : public UAssetDashboardUI
 	GENERATED_BODY()
 
 public:
-	
+
 	// ~ UAssetDashboardUI
 	virtual void InitializeDetail() override;
 	virtual void RefreshDetail() override;
@@ -44,7 +44,7 @@ protected:
 	TObjectPtr<UEquipmentSlotCollectionUI> SlotCollection = nullptr;
 
 	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> SyncButton = nullptr;
+	TObjectPtr<UButton> ApplyButton = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UEquipmentSubsystem> EquipmentSubsystem = nullptr;
@@ -56,7 +56,7 @@ protected:
 
 
 	UFUNCTION()
-	void SyncEquipment();
+	void ApplyEquipmentToOwner();
 
 	// ~ UAssetDashboardUI
 	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;

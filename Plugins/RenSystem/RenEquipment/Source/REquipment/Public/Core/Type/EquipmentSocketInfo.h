@@ -3,30 +3,23 @@
 #pragma once
 
 // Generated Headers
-#include "EquipmentSocket.generated.h"
+#include "EquipmentSocketInfo.generated.h"
 
 
 /**
- *
+ * 
  */
 USTRUCT()
-struct FEquipmentSocket
+struct FEquipmentSocketInfo
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FEquipmentSocket() {};
-	FEquipmentSocket(int InSlotId, bool bInUseComponent, FName InSocketName)
-	{
-		SlotId = InSlotId;
-		bUseComponent = bInUseComponent;
-		SocketName = InSocketName;
-	};
+	FEquipmentSocketInfo() {};
+	FEquipmentSocketInfo(bool bInUseComponent, FName InSocketName) : bUseComponent(bInUseComponent), SocketName(InSocketName) {};
 
-	UPROPERTY(EditAnywhere)
-	int SlotId = 10;
 
 	UPROPERTY(EditAnywhere)
 	bool bUseComponent = true;
@@ -37,7 +30,8 @@ public:
 	UPROPERTY()
 	FTransform SocketTransform = FTransform::Identity;
 
-	bool IsValid()
+
+	bool IsValid() const
 	{
 		return SocketName.IsValid();
 	}

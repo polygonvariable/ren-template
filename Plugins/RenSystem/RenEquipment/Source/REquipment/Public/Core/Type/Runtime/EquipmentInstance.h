@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "Core/Type/EquipmentKey.h"
+#include "Core/Type/EquipmentSlotDefinition.h"
 
 // Generated Headers
 #include "EquipmentInstance.generated.h"
@@ -28,6 +29,48 @@ public:
 
 	UPROPERTY(EditAnywhere, SaveGame)
 	TMap<FGameplayTag, FEquipmentKey> EquipmentSlot;
+
+};
+
+
+/**
+ *
+ */
+USTRUCT()
+struct FEquipmentOwnerInstance
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, SaveGame)
+	FPrimaryAssetId OwnerAssetId;
+
+	UPROPERTY(EditAnywhere, SaveGame)
+	TMap<FEquipmentSlotDefinition, FGuid> Slots;
+
+};
+
+/**
+ *
+ */
+USTRUCT()
+struct FEquipmentSlotInstance
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FEquipmentSlotInstance() {};
+	FEquipmentSlotInstance(FPrimaryAssetId InEquipmentAssetId, FGuid InOwnerInstanceId) : EquipmentAssetId(InEquipmentAssetId), OwnerInstanceId(InOwnerInstanceId) {};
+
+	UPROPERTY(EditAnywhere, SaveGame)
+	FPrimaryAssetId EquipmentAssetId;
+
+	UPROPERTY(EditAnywhere, SaveGame)
+	FGuid OwnerInstanceId;
 
 };
 

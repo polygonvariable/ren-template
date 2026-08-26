@@ -14,8 +14,9 @@
 // Forward Declarations
 class IStorageProvider;
 class UEquipmentStorageManager;
+class UEquipmentController;
 struct FTaskResult;
-struct FGameplayTag;
+struct FEquipmentSlotDefinition;
 
 
 /**
@@ -32,11 +33,12 @@ public:
 	DECLARE_MULTICAST_DELEGATE_OneParam(FOnSyncEquipment, const FGuid& /* OwnerInstanceId */);
 	FOnSyncEquipment OnSyncEquipment;
 
+
 	REN_API void SyncEquipment(const FGuid& OwnerInstanceId) const;
 	REN_API UEquipmentStorageManager* GetStorageManager() const;
 
-	REN_API bool TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& Slot, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId);
-	REN_API bool TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FGameplayTag& Slot);
+	REN_API bool TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition);
+	REN_API bool TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition);
 
 protected:
 

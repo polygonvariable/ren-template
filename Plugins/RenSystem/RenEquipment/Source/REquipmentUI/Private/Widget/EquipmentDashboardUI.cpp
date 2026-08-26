@@ -29,7 +29,7 @@ void UEquipmentDashboardUI::RefreshDetail()
 	EquipmentCollection->RefreshEntries();
 }
 
-void UEquipmentDashboardUI::SyncEquipment()
+void UEquipmentDashboardUI::ApplyEquipmentToOwner()
 {
 	if (IsValid(EquipmentSubsystem))
 	{
@@ -57,7 +57,7 @@ void UEquipmentDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 	if (IsValid(StorageManager))
 	{
 		TArray<FGuid> EquipmentIds;
-		StorageManager->GetNonOwnedEquipmentIds(OwnerInstanceId, EquipmentIds);
+		StorageManager->GetEquipmentIdsByOwnerId(OwnerInstanceId, true, EquipmentIds);
 
 		UFilterCriterion_Guid* AssetFilter = EquipmentCollection->GetCriterionByName<UFilterCriterion_Guid>(FAssetFilterProperty::InstanceId);
 		if (IsValid(AssetFilter))
@@ -72,7 +72,7 @@ void UEquipmentDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 
 void UEquipmentDashboardUI::NativeConstruct()
 {
-	SyncButton->OnClicked.AddDynamic(this, &UEquipmentDashboardUI::SyncEquipment);
+	ApplyButton->OnClicked.AddDynamic(this, &UEquipmentDashboardUI::ApplyEquipmentToOwner);
 	FGameUIDelegate::OnUIActionStarted.AddUObject(this, &UEquipmentDashboardUI::LockControls);
 	FGameUIDelegate::OnUIActionCompleted.AddUObject(this, &UEquipmentDashboardUI::UnlockControls);
 
@@ -88,7 +88,7 @@ void UEquipmentDashboardUI::NativeConstruct()
 
 void UEquipmentDashboardUI::NativeDestruct()
 {
-	SyncButton->OnClicked.RemoveAll(this);
+	ApplyButton->OnClicked.RemoveAll(this);
 	FGameUIDelegate::OnUIActionStarted.RemoveAll(this);
 	FGameUIDelegate::OnUIActionCompleted.RemoveAll(this);
 

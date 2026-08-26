@@ -2,23 +2,14 @@
 
 #pragma once
 
-// Engine Headers
-
-// Project Headers
-
 // Generated Headers
 #include "TimerUtil.generated.h"
 
 // Module Macros
 #define REN_API RCORELIBRARY_API
 
-// Forward Declarations
-
-
 
 /**
- * 
- * 
  * 
  */
 class TimerUtil
@@ -98,8 +89,6 @@ public:
 
 
 /**
- * 
- * 
  * 
  */
 UCLASS(MinimalAPI)

@@ -81,18 +81,6 @@ private:
 };
 
 
-/**
- *
- */
-UCLASS(Abstract, MinimalAPI, Blueprintable, meta = (DisplayName = "Equipment Controller (Skill)"))
-class UEquipmentSkillController : public UEquipmentController
-{
-
-	GENERATED_BODY()
-
-};
-
-
 // Module Macros
 #undef REN_API
 

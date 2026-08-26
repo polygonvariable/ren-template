@@ -17,7 +17,7 @@ struct FPoolCollection
 
 public:
 
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TArray<TObjectPtr<UObject>> List;
 
 };

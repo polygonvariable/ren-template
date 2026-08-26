@@ -17,6 +17,7 @@
 // Forward Declarations
 class UEquipmentStorage;
 struct FGameplayTag;
+struct FEquipmentInitializationData;
 
 
 /**
@@ -32,13 +33,17 @@ public:
 
 	FGameEventDelegate OnStorageUpdated;
 
-	REN_API const TMap<FGameplayTag, FEquipmentKey>* GetOwnedEquipment(const FGuid& OwnerId) const;
-	REN_API void GetOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const;
-	REN_API void GetNonOwnedEquipmentIds(const FGuid& OwnerId, TArray<FGuid>& OutEquipmentIds) const;
 
-	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerId, const FGameplayTag& InEquipmentSlot, FPrimaryAssetId& OutEquipmentAssetId) const;
-	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& EquipmentSlot, const FGuid& EquipmentId, const FPrimaryAssetId& EquipmentAssetId);
-	REN_API bool RemoveEquipmentFromSlot(const FGuid& OwnerId, const FGameplayTag& SlotTag);
+	REN_API void GetEquipmentByOwnerId(const FGuid& InOwnerInstanceId, TArray<FEquipmentInitializationData>& OutInitializationData) const;
+	REN_API void GetEquipmentIdsByOwnerId(const FGuid& InOwnerInstanceId, bool bInNegate, TArray<FGuid>& OutEquipmentInstanceIds) const;
+
+	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotDefinition& InSlotDefinition, FPrimaryAssetId& OutEquipmentAssetId) const;
+	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition);
+	REN_API bool RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition);
+
+	// ~ IAssetInstanceRelation
+	virtual bool HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const override;
+	// ~ End of IAssetInstanceRelation
 
 	// ~ UStorageManager
 	virtual UObject* GetStorage() const override;
@@ -46,10 +51,6 @@ public:
 	virtual void OnStorageLoaded(bool bIsNew) override;
 	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
-
-	// ~ IAssetInstanceRelation
-	virtual bool HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const override;
-	// ~ End of IAssetInstanceRelation
 
 protected:
 

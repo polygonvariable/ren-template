@@ -28,6 +28,9 @@ class UEquipmentDataDefinition : public UAssetDataDefinition
 
 public:
 
+	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	FGameplayTag CategoryTag;
+
 	UPROPERTY(EditAnywhere)
 	TSoftClassPtr<UEquipmentController> ControllerClass = nullptr;
 
@@ -62,11 +65,6 @@ class UEquipmentDataDefinition_Weapon : public UEquipmentDataDefinition
 {
 
 	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
-	FGameplayTag CategoryTag;
 
 };
 

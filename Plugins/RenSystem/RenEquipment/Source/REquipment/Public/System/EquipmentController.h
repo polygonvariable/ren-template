@@ -7,7 +7,8 @@
 #include "GameplayAbilitySpecHandle.h"
 
 // Project Headers
-#include "Core/Type/EquipmentData.h"
+#include "Core/Type/EquipmentSpawnData.h"
+#include "Definition/QueryType.h"
 
 // Generated Headers
 #include "EquipmentController.generated.h"
@@ -29,7 +30,6 @@ class UEquipmentAbilityCollection;
 class UEquipmentDataDefinition;
 class UEquipmentFragment;
 struct FGameplayEventData;
-struct FEquipmentTagData;
 
 
 /**
@@ -44,25 +44,21 @@ class UEquipmentController : public UObject
 public:
 
 	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> EquipmentAsset;
-
-	UPROPERTY()
-	FEquipmentData EquipmentData;
-
-	UPROPERTY()
-	TObjectPtr<AEquipmentActor> EquipmentActor = nullptr;
+	EDataSource SourceType = EDataSource::Static;
 
 
-	virtual bool InitializeController(const UEquipmentDataDefinition* InDataDefinition);
+	virtual bool InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition);
 	virtual void DeinitializeController();
 
 	virtual bool ActivateEquipment();
 	virtual bool DeactivateEquipment(bool bForce = false);
 	virtual void RefreshEquipment();
 
+	REN_API const UCoreDataAsset* GetEquipmentAsset() const;
+	REN_API const FEquipmentInitializationData& GetEquipmentData() const;
 	REN_API const UEquipmentAbilityCollection* GetEquipmentAbilityCollection() const;
 	REN_API const UEquipmentDataDefinition* GetEquipmentDataDefinition() const;
-	REN_API AActor* GetEquipmentActor() const;
+	REN_API AEquipmentActor* GetEquipmentActor() const;
 	REN_API int GetEquipmentLevel() const;
 
 	bool IsInitialized() const;
@@ -81,12 +77,18 @@ public:
 protected:
 
 	UPROPERTY()
+	TObjectPtr<const UCoreDataAsset> EquipmentAsset = nullptr;
+
+	UPROPERTY()
+	FEquipmentInitializationData EquipmentData;
+
+	UPROPERTY()
+	TObjectPtr<AEquipmentActor> EquipmentActor = nullptr;
+
+	UPROPERTY()
 	TObjectPtr<const UEquipmentDataDefinition> DataDefinition = nullptr;
 
-	UPROPERTY()
 	TArray<FActiveGameplayEffectHandle> ActiveEffectHandles;
-
-	UPROPERTY()
 	TArray<FGameplayAbilitySpecHandle> ActiveAbilityHandles;
 
 	IAssetInstanceCollection* InstanceCollection = nullptr;

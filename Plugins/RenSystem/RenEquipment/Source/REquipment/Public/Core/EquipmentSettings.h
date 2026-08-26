@@ -7,8 +7,7 @@
 #include "GameplayTagContainer.h"
 
 // Project Headers
-#include "Core/Type/EquipmentCategory.h"
-#include "Core/Type/EquipmentTagData.h"
+#include "Core/Type/EquipmentCategoryData.h"
 #include "Core/Type/Runtime/EquipmentInstance.h"
 
 // Generated Headers
@@ -46,14 +45,20 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Storage")
 	TSubclassOf<UEquipmentStorageManager> StorageManagerClass;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
-	TMap<FGuid, FEquipmentInstance> DefaultEquipment;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
-	TMap<FGuid, FGuid> DefaultEquipmentRelations;
+	TMap<FGuid, FEquipmentOwnerInstance> DefaultEquipmentOwners;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
+	TMap<FGuid, FEquipmentSlotInstance> DefaultEquipmentInstances;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
+	TArray<FEquipmentCategoryData> EquipmentCategories;
+
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UEquipmentSubsystem> SubsystemClass;
+
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Asset")
 	FPrimaryAssetType EquipmentType;
@@ -64,46 +69,19 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Asset")
 	TArray<FName> EquipmentBundles;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Tags", meta = (Categories = "Equipment"))
-	FGameplayTagContainer EquipmentSlots;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Tags", meta = (Categories = "Equipment"))
-	FGameplayTag EquipmentDataTag;
-
-
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
-	TArray<FEquipmentCategory> EquipmentCategory;
-
-
-	/*
-	 * DataTag -> <AbilityTag, EventTag, StateTag>
-	 */
-	UPROPERTY(Config, EditDefaultsOnly, BlueprintReadOnly, Category = "Tags", meta = (Categories = "Data"))
-	TMap<FGameplayTag, FEquipmentTagData> EquipmentTagRelations;
-
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Gameplay Event")
-	bool bAllowEventActivation = false;
-
-
-
-
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Notify Tags", meta = (Categories = "Event"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Event Tags", meta = (Categories = "Equipment.Event"))
 	FGameplayTag EquipmentAttachNotify;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Notify Tags", meta = (Categories = "Event"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Event Tags", meta = (Categories = "Equipment.Event"))
 	FGameplayTag EquipmentDetachNotify;
 
 
-	static REN_API const FEquipmentSocket* GetSocketBySlotId(FGameplayTag CategoryTag, int SlotId, bool bEquip);
-	static REN_API const FEquipmentSocket* GetSocketBySlotIndex(FGameplayTag CategoryTag, int SlotIndex, bool bEquip);
-
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Get Equipment Settings"))
 	static REN_API const UEquipmentSettings* Get();
 
+	static REN_API const FEquipmentCategoryData* GetEquipmentCategoryByTag(FGameplayTag CategoryTag);
+	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(FGameplayTag CategoryTag, int SlotId);
 
-	static REN_API const FEquipmentTagData* GetTagData(const FGameplayTag& Tag);
-	static REN_API const FEquipmentTagData* GetTagDataByAbility(const FGameplayTag& Tag);
 	static REN_API const FGameplayTag& GetAttachmentEventTag(bool bEquip);
 
 };

@@ -86,6 +86,10 @@
 		{
 			"Name": "SlateIM",
 			"Enabled": true
+		},
+		{
+			"Name": "PCGPrimitives",
+			"Enabled": true
 		}
 	]
 }

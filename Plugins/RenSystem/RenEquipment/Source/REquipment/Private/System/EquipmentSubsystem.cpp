@@ -35,7 +35,7 @@ UEquipmentStorageManager* UEquipmentSubsystem::GetStorageManager() const
 	return StorageProvider->GetStorageManager<UEquipmentStorageManager>(StorageId);
 }
 
-bool UEquipmentSubsystem::TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGameplayTag& Slot, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId)
+bool UEquipmentSubsystem::TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition)
 {
 	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
 	if (!IsValid(AuthActionSubsystem))
@@ -54,13 +54,13 @@ bool UEquipmentSubsystem::TrySetEquipmentSlot(const FGuid& OwnerInstanceId, cons
 
 	Action->OwnerInstanceId = OwnerInstanceId;
 	Action->OwnerAssetId = OwnerAssetId;
-	Action->Slot = Slot;
 	Action->EquipmentInstanceId = EquipmentInstanceId;
 	Action->EquipmentAssetId = EquipmentAssetId;
+	Action->SlotDefinition = SlotDefinition;
 	return Action->StartAction();
 }
 
-bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FGameplayTag& Slot)
+bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition)
 {
 	UAuthActionSubsystem* AuthActionSubsystem = UAuthActionSubsystem::Get(GetGameInstance());
 	if (!IsValid(AuthActionSubsystem))
@@ -78,7 +78,7 @@ bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, c
 	}
 
 	Action->OwnerInstanceId = OwnerInstanceId;
-	Action->Slot = Slot;
+	Action->SlotDefinition = SlotDefinition;
 	return Action->StartAction();
 }
 

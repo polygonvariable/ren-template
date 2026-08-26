@@ -4,22 +4,17 @@
 
 // Engine Headers
 #include "Blueprint/UserWidget.h"
-#include "GameplayTagContainer.h"
-#include "ActiveGameplayEffectHandle.h"
-#include "Components/ProgressBar.h"
+#include "Core/Type/EquipmentSlotDefinition.h"
 
 // Generated Headers
 #include "EquipmentItemUI.generated.h"
 
 // Forward Declarations
 class UImage;
+class UOverlay;
 class UTextBlock;
-class UProgressBar;
-class UAbilitySystemComponent;
 class UEquipmentManagerComponent;
 class UEquipmentController;
-struct FGameplayEffectSpec;
-struct FActiveGameplayEffect;
 
 
 /**
@@ -34,16 +29,19 @@ class UEquipmentItemUI : public UUserWidget
 protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
+	TObjectPtr<UOverlay> EquipmentOverlay = nullptr;
+
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UImage> EquipmentImage = nullptr;
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UTextBlock> KeyTextBlock;
+	TObjectPtr<UTextBlock> KeyTextBlock = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	FText KeyText;
 
 	UPROPERTY(EditAnywhere)
-	FGameplayTag EquipmentSlot;
+	FEquipmentSlotDefinition SlotDefinition;
 
 
 	UEquipmentManagerComponent* GetEquipmentComponent() const;
@@ -74,8 +72,10 @@ protected:
 	void RegisterPlayer();
 	void UnregisterPlayer();
 
+	// ~ Bindings
 	virtual void OnPlayerRegistered(AActor* Target);
 	virtual void OnPlayerUnregistered();
+	// ~ End of Bindings
 
 	// ~ UUserWidget
 	virtual void NativePreConstruct() override;
@@ -90,110 +90,6 @@ private:
 
 	UPROPERTY()
 	TWeakObjectPtr<UEquipmentController>  _EquipmentController = nullptr;
-
-};
-
-
-
-
-
-
-
-
-/**
- *
- */
-UCLASS(Abstract)
-class UEquipmentWeaponItemUI : public UEquipmentItemUI
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> CurrentTextBlock;
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> MaxTextBlock;
-
-	void UpdateWeaponData();
-
-	// ~ UEquipmentItemUI
-	virtual void RegisterEquipmentController() override;
-	virtual void UnregisterEquipmentController() override;
-
-	virtual void SetDetail(UEquipmentController* Controller) override;
-	virtual void RefreshDetail() override;
-	virtual void ResetDetail() override;
-	// ~ End of UEquipmentItemUI
-
-};
-
-
-
-
-
-
-
-
-
-
-
-/**
- *
- */
-UCLASS(Abstract)
-class UEquipmentSkillItemUI : public UEquipmentItemUI
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UProgressBar> CooldownProgressBar;
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CooldownTextBlock;
-
-	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
-	TObjectPtr<UTextBlock> CostTextBlock;
-
-	UPROPERTY(EditAnywhere)
-	FGameplayTag EffectTag;
-
-	FNumberFormattingOptions FormatOptions;
-	FTimerHandle TimerHandle;
-
-
-	UAbilitySystemComponent* GetAbilitySystemComponent() const;
-
-	// ~ UEquipmentItemUI
-	virtual void OnPlayerRegistered(AActor* Target) override;
-	virtual void OnPlayerUnregistered() override;
-	// ~ End of UEquipmentItemUI
-
-	void RegisterAbilitySystem(AActor* Target);
-	void UnregisterAbilitySystem();
-
-	void HandleGameplayEffectApplied(UAbilitySystemComponent* ASC, const FGameplayEffectSpec& Spec, FActiveGameplayEffectHandle Handle);
-	void HandleGameplayEffectRemoved(const FActiveGameplayEffect& Effect);
-	void HandleEffectTimeChanged();
-
-	void GetEffectDurationAndRemainingTime(float& Duration, float& RemainingTime);
-	void CleanUpTimer();
-
-	// ~ UEquipmentItemUI
-	virtual void SetDetail(UEquipmentController* Controller) override;
-	virtual void ResetDetail() override;
-	virtual void NativeConstruct() override;
-	// ~ End of UEquipmentItemUI
-
-private:
-
-	UPROPERTY()
-	TWeakObjectPtr<UAbilitySystemComponent> _AbilitySystemComponent = nullptr;
 
 };
 

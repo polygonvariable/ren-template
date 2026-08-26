@@ -2,10 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Project Headers
+#include "Core/Type/EquipmentSlotDefinition.h"
 #include "Widget/AssetUI.h"
 
 // Generated Headers
@@ -30,8 +28,7 @@ class UEquipmentSlotUI : public UAssetUI
 public:
 
 	UPROPERTY(EditAnywhere)
-	FGameplayTag SlotTag;
-
+	FEquipmentSlotDefinition SlotDefinition;
 
 	// ~ UAssetUI
 	virtual void ResetDetail() override;

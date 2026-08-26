@@ -93,7 +93,7 @@ void UEquipmentAttachmentController::PlayEquipAnimation()
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
 	if (!IsValid(AnimInstance) || !IsValid(EquipAnimation))
 	{
-		LOG_ERROR(LogTemp, TEXT("Anim instance, equip animation is invalid or is not initialized"));
+		LOG_ERROR(LogEquipment, TEXT("Anim instance, equip animation is invalid or is not initialized"));
 		CompleteActivation();
 		return;
 	}
@@ -101,7 +101,7 @@ void UEquipmentAttachmentController::PlayEquipAnimation()
 	float PlayDuration = AnimInstance->Montage_Play(EquipAnimation, 1.0f);
 	if (PlayDuration <= 0.0f)
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to play equip animation"));
+		LOG_ERROR(LogEquipment, TEXT("Failed to play equip animation"));
 		CompleteActivation();
 		return;
 	}
@@ -117,7 +117,7 @@ void UEquipmentAttachmentController::PlayUnequipAnimation()
 	UAnimInstance* AnimInstance = GetOwnerAnimInstance();
 	if (!IsValid(AnimInstance) || !IsValid(UnequipAnimation))
 	{
-		LOG_ERROR(LogTemp, TEXT("Anim instance, unequip animation is invalid or is not initialized"));
+		LOG_ERROR(LogEquipment, TEXT("Anim instance, unequip animation is invalid or is not initialized"));
 		CompleteDeactivation();
 		return;
 	}
@@ -125,7 +125,7 @@ void UEquipmentAttachmentController::PlayUnequipAnimation()
 	float PlayDuration = AnimInstance->Montage_Play(UnequipAnimation, 1.0f);
 	if (PlayDuration <= 0.0f)
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to play unequip animation"));
+		LOG_ERROR(LogEquipment, TEXT("Failed to play unequip animation"));
 		CompleteDeactivation();
 		return;
 	}
@@ -208,8 +208,11 @@ void UEquipmentAttachmentController::AttachToEquipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSocket* Socket = UEquipmentSettings::GetSocketBySlotId(WeaponDefinition->CategoryTag, EquipmentData.SlotId, true);
-		AttachToSocket(Socket);
+		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(WeaponDefinition->CategoryTag, EquipmentData.SlotDefinition.SlotId);
+		if (SlotData)
+		{
+			AttachToSocket(SlotData->AttachSocket);
+		}
 	}
 }
 
@@ -218,21 +221,24 @@ void UEquipmentAttachmentController::AttachToUnequipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSocket* Socket = UEquipmentSettings::GetSocketBySlotId(WeaponDefinition->CategoryTag, EquipmentData.SlotId, false);
-		AttachToSocket(Socket);
+		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(WeaponDefinition->CategoryTag, EquipmentData.SlotDefinition.SlotId);
+		if (SlotData)
+		{
+			AttachToSocket(SlotData->DetachSocket);
+		}
 	}
 }
 
-void UEquipmentAttachmentController::AttachToSocket(const FEquipmentSocket* Socket)
+void UEquipmentAttachmentController::AttachToSocket(const FEquipmentSocketInfo& Socket)
 {
 	ACharacter* Character = GetEquipmentOwner<ACharacter>();
-	if (Socket && IsValid(Character))
+	if (IsValid(Character))
 	{
-		FName SocketName = Socket->SocketName;
-		FTransform SocketTransform = Socket->SocketTransform;
+		FName SocketName = Socket.SocketName;
+		FTransform SocketTransform = Socket.SocketTransform;
 
 		USceneComponent* TargetComponent = Character->GetMesh();
-		if (Socket->bUseComponent)
+		if (Socket.bUseComponent)
 		{
 			TargetComponent = Character->FindComponentByTag<USceneComponent>(SocketName);
 		}

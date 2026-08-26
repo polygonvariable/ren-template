@@ -25,7 +25,7 @@ public:
 	UGameplayEventNotify();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event,Equipment.Event"))
 	FGameplayTag EventTag;
 
 	// ~ UAnimNotify

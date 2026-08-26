@@ -10,6 +10,7 @@
 #include "Actor/EquipmentActor.h"
 #include "Core/EquipmentSettings.h"
 #include "System/EquipmentController.h"
+#include "Data/EquipmentAbilityCollection.h"
 
 
 bool UEquipmentStateAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
@@ -18,30 +19,30 @@ bool UEquipmentStateAbility::CanActivateAbility(const FGameplayAbilitySpecHandle
 	{
 		return false;
 	}
+	return true;
+	//FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
+	//if (!AbilitySpec || !AbilitySpec->SourceObject.IsValid())
+	//{
+	//	return false;
+	//}
 
-	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	if (!AbilitySpec || !AbilitySpec->SourceObject.IsValid())
-	{
-		return false;
-	}
+	//FGameplayTag EquipmentTag = AbilitySpec->DynamicAbilityTags.First();
 
-	FGameplayTag EquipmentTag = AbilitySpec->DynamicAbilityTags.First();
+	//const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	//const FEquipmentTagData* TagData = Settings->GetTagData(EquipmentTag);
+	//if (!TagData)
+	//{
+	//	return false;
+	//}
 
-	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-	const FEquipmentTagData* TagData = Settings->GetTagData(EquipmentTag);
-	if (!TagData)
-	{
-		return false;
-	}
+	//UAbilitySystemComponent* AbilitySystem = ActorInfo->AbilitySystemComponent.Get();
+	//if (!AbilitySystem)
+	//{
+	//	return false;
+	//}
 
-	UAbilitySystemComponent* AbilitySystem = ActorInfo->AbilitySystemComponent.Get();
-	if (!AbilitySystem)
-	{
-		return false;
-	}
-
-	// Only activate ability if the equipment state tag is not present
-	return !AbilitySystem->HasMatchingGameplayTag(TagData->StateTag);
+	//// Only activate ability if the equipment state tag is not present
+	//return !AbilitySystem->HasMatchingGameplayTag(TagData->StateTag);
 }
 
 #if WITH_EDITOR
@@ -97,30 +98,30 @@ bool UEquipmentWeaponAbility::CanActivateAbility(const FGameplayAbilitySpecHandl
 	{
 		return false;
 	}
+	return true;
+	//FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
+	//if (!AbilitySpec || !AbilitySpec->SourceObject.IsValid())
+	//{
+	//	return false;
+	//}
 
-	FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	if (!AbilitySpec || !AbilitySpec->SourceObject.IsValid())
-	{
-		return false;
-	}
+	//FGameplayTag EquipmentTag = AbilitySpec->DynamicAbilityTags.First();
 
-	FGameplayTag EquipmentTag = AbilitySpec->DynamicAbilityTags.First();
+	//const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	//const FEquipmentTagData* TagData = Settings->GetTagData(EquipmentTag);
+	//if (!TagData)
+	//{
+	//	return false;
+	//}
 
-	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
-	const FEquipmentTagData* TagData = Settings->GetTagData(EquipmentTag);
-	if (!TagData)
-	{
-		return false;
-	}
+	//UAbilitySystemComponent* AbilitySystem = ActorInfo->AbilitySystemComponent.Get();
+	//if (!AbilitySystem)
+	//{
+	//	return false;
+	//}
 
-	UAbilitySystemComponent* AbilitySystem = ActorInfo->AbilitySystemComponent.Get();
-	if (!AbilitySystem)
-	{
-		return false;
-	}
-
-	// Only activate ability if the equipment state tag is present
-	return AbilitySystem->HasMatchingGameplayTag(TagData->StateTag);
+	//// Only activate ability if the equipment state tag is present
+	//return AbilitySystem->HasMatchingGameplayTag(TagData->StateTag);
 }
 
 #if WITH_EDITOR
@@ -169,28 +170,6 @@ AEquipmentActor* UEquipmentWeaponAbility::GetEquipmentActor() const
 void UEquipmentSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-		return;
-	}
-
-	const FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	if (AbilitySpec && !EquipmentCooldownTags.IsValid())
-	{
-		const FGameplayTag& EquipmentTag = AbilitySpec->DynamicAbilityTags.First();
-		const FEquipmentTagData* TagData = UEquipmentSettings::GetTagDataByAbility(EquipmentTag);
-		if (TagData)
-		{
-			EquipmentCooldownTags = FGameplayTagContainer(TagData->CooldownTag);
-		}
-	}
-}
-
-const FGameplayTagContainer* UEquipmentSkillAbility::GetCooldownTags() const
-{
-	return &EquipmentCooldownTags;
 }
 
 void UEquipmentSkillAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
@@ -206,29 +185,52 @@ void UEquipmentSkillAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, 
 	}
 }
 
+
+bool UEquipmentSkillAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	UObject* Controller = GetSourceObject(Handle, ActorInfo);
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+
+	TArray<FActiveGameplayEffectHandle> Handles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")));
+	for (const FActiveGameplayEffectHandle& Item : Handles)
+	{
+		const FActiveGameplayEffect* Effect = ASC->GetActiveGameplayEffect(Item);
+		if (!Effect)
+		{
+			continue;
+		}
+
+		UObject* SourceController = Effect->Spec.GetContext().GetSourceObject();
+		if (SourceController == Controller)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+
 void UEquipmentSkillAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
 	const FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
-	if (!AbilitySpec)
+	UEquipmentController* Controller = Cast<UEquipmentController>(GetSourceObject(Handle, ActorInfo));
+	if (!AbilitySpec || !Controller)
 	{
 		return;
 	}
 
-	if (CooldownGameplayEffectClass && EquipmentCooldownTags.IsValid() && (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo)))
+	if (CooldownGameplayEffectClass && (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo)))
 	{
 		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(Handle, ActorInfo, ActivationInfo, CooldownGameplayEffectClass, GetAbilityLevel());
 		if (SpecHandle.IsValid())
 		{
-			SpecHandle.Data->DynamicGrantedTags.AppendTags(EquipmentCooldownTags);
+			SpecHandle.Data->GetContext().AddSourceObject(Controller);
+			SpecHandle.Data->AppendDynamicAssetTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")));
 			SpecHandle.Data->SetStackCount(1);
-			
+
 			ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 		}
 	}
 }
-
-
-
-
-
 

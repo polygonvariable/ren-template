@@ -8,6 +8,7 @@
 
 // Project Headers
 #include "Core/EquipmentSettings.h"
+#include "Core/Type/EquipmentSlotDefinition.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/EquipmentSlotUI.h"
 
@@ -28,29 +29,27 @@ void UEquipmentSlotCollectionUI::SetSecondaryDetail(const UAssetEntry* Entry)
 void UEquipmentSlotCollectionUI::NativePreConstruct()
 {
 	Super::NativePreConstruct();
-
+	
 	if (IsValid(SlotClass))
 	{
-		const FGameplayTagContainer& EquipmentSlots = UEquipmentSettings::Get()->EquipmentSlots;
-		int NumSlots = EquipmentSlots.Num();
-
-		SlotBox->ClearChildren();
-
-		for (int i = 0; i < NumSlots; i++)
+		const FEquipmentCategoryData* Category = UEquipmentSettings::GetEquipmentCategoryByTag(CategoryTag);
+		if (Category)
 		{
-			FGameplayTag SlotTag = EquipmentSlots.GetByIndex(i);
-			if (!SlotTag.MatchesTag(SlotCategory))
-			{
-				continue;
-			}
+			const TArray<FEquipmentSlotData>& Slots = Category->Slots;
 
-			UEquipmentSlotUI* SlotUI = CreateWidget<UEquipmentSlotUI>(this, SlotClass);
-			if (IsValid(SlotUI))
+			int NumSlots = Slots.Num();
+			for (int i = 0; i < NumSlots; i++)
 			{
-				SlotUI->SlotTag = SlotTag;
-				SlotUI->SetPadding(SlotSpacing);
-				SlotBox->AddChild(SlotUI);
+				UEquipmentSlotUI* SlotUI = CreateWidget<UEquipmentSlotUI>(this, SlotClass);
+				if (IsValid(SlotUI))
+				{
+					SlotUI->SlotDefinition = FEquipmentSlotDefinition(CategoryTag, Slots[i].SlotId);
+
+					SlotUI->SetPadding(SlotSpacing);
+					SlotBox->AddChild(SlotUI);
+				}
 			}
 		}
 	}
 }
+

@@ -25,7 +25,7 @@ void UAARemoveEquipmentSlot::OnCompleted(bool bSuccess)
 void UAARemoveEquipmentSlot::OnCleanup()
 {
 	EquipmentSubsystem = nullptr;
-	Slot = FGameplayTag::EmptyTag;
+	SlotDefinition.Reset();
 	OwnerInstanceId.Invalidate();
 }
 
@@ -44,7 +44,7 @@ void UAARemoveEquipmentSlot::Step_RemoveEquipment()
 		return;
 	}
 
-	if (!StorageManager->RemoveEquipmentFromSlot(OwnerInstanceId, Slot))
+	if (!StorageManager->RemoveEquipmentFromSlot(OwnerInstanceId, SlotDefinition))
 	{
 		Fail(TEXT("Failed to remove equipment from slot"));
 		return;

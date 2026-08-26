@@ -22,13 +22,13 @@ class UGameplayEventNotifyState : public UAnimNotifyState
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event,Equipment.Event"))
 	FGameplayTag EventStartTag;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event,Equipment.Event"))
 	FGameplayTag EventTickTag;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (Categories = "Event,Equipment.Event"))
 	FGameplayTag EventEndTag;
 
 	FGameplayEventData EventPayload;
