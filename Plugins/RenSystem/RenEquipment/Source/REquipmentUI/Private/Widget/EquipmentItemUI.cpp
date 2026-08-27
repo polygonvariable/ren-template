@@ -61,7 +61,7 @@ void UEquipmentItemUI::RegisterEquipmentController()
 		return;
 	}
 
-	UEquipmentController* Controller = Component->GetEquipmentControllerByTag(SlotDefinition);
+	UEquipmentController* Controller = Component->GetEquipmentControllerByTag(SlotId);
 	if (!IsValid(Controller))
 	{
 		return;

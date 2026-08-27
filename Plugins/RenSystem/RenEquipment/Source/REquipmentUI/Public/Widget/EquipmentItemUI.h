@@ -4,7 +4,7 @@
 
 // Engine Headers
 #include "Blueprint/UserWidget.h"
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers
 #include "EquipmentItemUI.generated.h"
@@ -41,7 +41,7 @@ protected:
 	FText KeyText;
 
 	UPROPERTY(EditAnywhere)
-	FEquipmentSlotDefinition SlotDefinition;
+	FEquipmentSlotId SlotId;
 
 
 	UEquipmentManagerComponent* GetEquipmentComponent() const;

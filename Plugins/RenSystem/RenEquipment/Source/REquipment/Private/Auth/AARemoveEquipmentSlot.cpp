@@ -25,7 +25,7 @@ void UAARemoveEquipmentSlot::OnCompleted(bool bSuccess)
 void UAARemoveEquipmentSlot::OnCleanup()
 {
 	EquipmentSubsystem = nullptr;
-	SlotDefinition.Reset();
+	SlotId.Reset();
 	OwnerInstanceId.Invalidate();
 }
 
@@ -44,7 +44,7 @@ void UAARemoveEquipmentSlot::Step_RemoveEquipment()
 		return;
 	}
 
-	if (!StorageManager->RemoveEquipmentFromSlot(OwnerInstanceId, SlotDefinition))
+	if (!StorageManager->RemoveEquipmentFromSlot(OwnerInstanceId, SlotId))
 	{
 		Fail(TEXT("Failed to remove equipment from slot"));
 		return;

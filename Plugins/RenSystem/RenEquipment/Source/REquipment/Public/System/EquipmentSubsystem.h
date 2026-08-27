@@ -16,7 +16,7 @@ class IStorageProvider;
 class UEquipmentStorageManager;
 class UEquipmentController;
 struct FTaskResult;
-struct FEquipmentSlotDefinition;
+struct FEquipmentSlotId;
 
 
 /**
@@ -37,8 +37,8 @@ public:
 	REN_API void SyncEquipment(const FGuid& OwnerInstanceId) const;
 	REN_API UEquipmentStorageManager* GetStorageManager() const;
 
-	REN_API bool TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition);
-	REN_API bool TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition);
+	REN_API bool TrySetEquipmentSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotId& SlotId);
+	REN_API bool TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotId& SlotId);
 
 protected:
 

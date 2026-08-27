@@ -108,7 +108,7 @@ protected:
  *
  */
 UCLASS(Abstract)
-class UEquipmentSkillAbility : public UEquipmentAbility
+class UEquipmentAbility_Skill : public UEquipmentAbility
 {
 
 	GENERATED_BODY()

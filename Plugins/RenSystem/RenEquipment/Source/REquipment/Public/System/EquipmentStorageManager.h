@@ -37,9 +37,9 @@ public:
 	REN_API void GetEquipmentByOwnerId(const FGuid& InOwnerInstanceId, TArray<FEquipmentInitializationData>& OutInitializationData) const;
 	REN_API void GetEquipmentIdsByOwnerId(const FGuid& InOwnerInstanceId, bool bInNegate, TArray<FGuid>& OutEquipmentInstanceIds) const;
 
-	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotDefinition& InSlotDefinition, FPrimaryAssetId& OutEquipmentAssetId) const;
-	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition);
-	REN_API bool RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition);
+	REN_API bool GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotId& InSlotId, FPrimaryAssetId& OutEquipmentAssetId) const;
+	REN_API bool SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotId& SlotId);
+	REN_API bool RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotId& SlotId);
 
 	// ~ IAssetInstanceRelation
 	virtual bool HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const override;

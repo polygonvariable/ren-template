@@ -208,7 +208,7 @@ void UEquipmentAttachmentController::AttachToEquipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(WeaponDefinition->CategoryTag, EquipmentData.SlotDefinition.SlotId);
+		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 		if (SlotData)
 		{
 			AttachToSocket(SlotData->AttachSocket);
@@ -221,7 +221,7 @@ void UEquipmentAttachmentController::AttachToUnequipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(WeaponDefinition->CategoryTag, EquipmentData.SlotDefinition.SlotId);
+		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 		if (SlotData)
 		{
 			AttachToSocket(SlotData->DetachSocket);

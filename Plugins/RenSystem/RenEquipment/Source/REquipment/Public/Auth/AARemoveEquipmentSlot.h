@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Auth/AuthAction.h"
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers
 #include "AARemoveEquipmentSlot.generated.h"
@@ -28,7 +28,7 @@ class UAARemoveEquipmentSlot : public UAuthAction
 public:
 
 	FGuid OwnerInstanceId;
-	FEquipmentSlotDefinition SlotDefinition;
+	FEquipmentSlotId SlotId;
 
 protected:
 

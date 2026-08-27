@@ -21,12 +21,15 @@ struct FEquipmentSlotData
 public:
 
 	FEquipmentSlotData() {};
-	FEquipmentSlotData(int InSlotId) : SlotId(InSlotId) {};
-	FEquipmentSlotData(int InSlotId, FEquipmentSocketInfo InAttachSocket, FEquipmentSocketInfo InDetachSocket) : SlotId(InSlotId), AttachSocket(InAttachSocket), DetachSocket(InDetachSocket) {};
+	FEquipmentSlotData(int InSlotId, int InInputId) : SlotId(InSlotId), InputId(InInputId) {};
+	FEquipmentSlotData(int InSlotId, int InInputId, FEquipmentSocketInfo InAttachSocket, FEquipmentSocketInfo InDetachSocket) : SlotId(InSlotId), InputId(InInputId), AttachSocket(InAttachSocket), DetachSocket(InDetachSocket) {};
 
 
 	UPROPERTY(EditAnywhere)
 	int SlotId = 10;
+
+	UPROPERTY(EditAnywhere)
+	int InputId = 10;
 
 	UPROPERTY(EditAnywhere)
 	FEquipmentSocketInfo AttachSocket;

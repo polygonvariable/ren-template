@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Auth/AuthAction.h"
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers
 #include "AASetEquipmentSlot.generated.h"
@@ -33,7 +33,7 @@ public:
 	FGuid EquipmentInstanceId;
 	FPrimaryAssetId EquipmentAssetId;
 
-	FEquipmentSlotDefinition SlotDefinition;
+	FEquipmentSlotId SlotId;
 	
 protected:
 

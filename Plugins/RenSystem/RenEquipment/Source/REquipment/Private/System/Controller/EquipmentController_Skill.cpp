@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "AbilitySystemComponent.h"
+#include "Core/EquipmentSettings.h"
 
 
 bool UEquipmentController_Skill::ActivateEquipment()
@@ -12,12 +13,12 @@ bool UEquipmentController_Skill::ActivateEquipment()
 	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	if (IsValid(ASC))
 	{
-		for (const FGameplayAbilitySpecHandle& Handle : ActiveAbilityHandles)
+		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(GetEquipmentData().SlotId);
+		if (SlotData)
 		{
-			ASC->TryActivateAbility(Handle);
+			ASC->PressInputID(SlotData->InputId);
 		}
 	}
-
 	return true;
 }
 

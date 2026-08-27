@@ -9,6 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
+#include "Core/EquipmentSettings.h"
 #include "Data/EquipmentAbilityCollection.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -73,7 +74,8 @@ void UEquipmentSkillItemUI::HandleOnGameplayEffectApplied(UAbilitySystemComponen
 		LOG_ERROR(LogEquipment, TEXT("Gameplay effect source is not of type equipment controller"));
 	}
 
-	if (Controller == GetEquipmentController() && Spec.GetDynamicAssetTags().HasTagExact(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")))
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	if (Controller == GetEquipmentController() && Spec.GetDynamicAssetTags().HasTagExact(Settings->EquipmentCooldownTag))
 	{
 		CreateCooldownCache();
 
@@ -103,8 +105,9 @@ void UEquipmentSkillItemUI::HandleOnGameplayEffectRemoved(const FActiveGameplayE
 	{
 		LOG_ERROR(LogEquipment, TEXT("Gameplay effect source is not of type equipment controller"));
 	}
-	
-	if (Controller == GetEquipmentController() && Effect.Spec.GetDynamicAssetTags().HasTagExact(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")))
+
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+	if (Controller == GetEquipmentController() && Effect.Spec.GetDynamicAssetTags().HasTagExact(Settings->EquipmentCooldownTag))
 	{
 		CleanUpTimer();
 		ClearCooldownCache();
@@ -157,8 +160,10 @@ void UEquipmentSkillItemUI::CreateCooldownCache()
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
 	if (IsValid(ASC))
 	{
+		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 		UEquipmentController* Controller = GetEquipmentController();
-		TArray<FActiveGameplayEffectHandle> Handles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")));
+
+		TArray<FActiveGameplayEffectHandle> Handles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(Settings->EquipmentCooldownTag));
 		for (const FActiveGameplayEffectHandle& Handle : Handles)
 		{
 			const FActiveGameplayEffect* Effect = ASC->GetActiveGameplayEffect(Handle);
@@ -236,10 +241,10 @@ void UEquipmentSkillItemUI::SetDetail(UEquipmentController* Controller)
 		return;
 	}
 
-	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
-	if (Abilities.IsValidIndex(0) && IsValid(Abilities[0].AbilityClass))
+	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->Abilities;
+	if (Abilities.IsValidIndex(0) && IsValid(Abilities[0]))
 	{
-		const UGameplayAbility* AbilityCDO = Abilities[0].AbilityClass->GetDefaultObject<UGameplayAbility>();
+		const UGameplayAbility* AbilityCDO = Abilities[0]->GetDefaultObject<UGameplayAbility>();
 		const UGameplayEffect* EffectCDO = AbilityCDO->GetCostGameplayEffect();
 
 		if (!IsValid(EffectCDO) || !EffectCDO->Modifiers.IsValidIndex(0))

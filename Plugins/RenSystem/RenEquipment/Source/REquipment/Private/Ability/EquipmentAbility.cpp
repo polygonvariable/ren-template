@@ -167,12 +167,12 @@ AEquipmentActor* UEquipmentWeaponAbility::GetEquipmentActor() const
 
 
 
-void UEquipmentSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void UEquipmentAbility_Skill::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void UEquipmentSkillAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+void UEquipmentAbility_Skill::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
 	if (CostGameplayEffectClass)
 	{
@@ -186,12 +186,13 @@ void UEquipmentSkillAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, 
 }
 
 
-bool UEquipmentSkillAbility::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
+bool UEquipmentAbility_Skill::CheckCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
 	UObject* Controller = GetSourceObject(Handle, ActorInfo);
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 
-	TArray<FActiveGameplayEffectHandle> Handles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")));
+	TArray<FActiveGameplayEffectHandle> Handles = ASC->GetActiveEffectsWithAllTags(FGameplayTagContainer(Settings->EquipmentCooldownTag));
 	for (const FActiveGameplayEffectHandle& Item : Handles)
 	{
 		const FActiveGameplayEffect* Effect = ASC->GetActiveGameplayEffect(Item);
@@ -211,7 +212,7 @@ bool UEquipmentSkillAbility::CheckCooldown(const FGameplayAbilitySpecHandle Hand
 }
 
 
-void UEquipmentSkillAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+void UEquipmentAbility_Skill::ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
 {
 	const FGameplayAbilitySpec* AbilitySpec = GetCurrentAbilitySpec();
 	UEquipmentController* Controller = Cast<UEquipmentController>(GetSourceObject(Handle, ActorInfo));
@@ -225,8 +226,10 @@ void UEquipmentSkillAbility::ApplyCooldown(const FGameplayAbilitySpecHandle Hand
 		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(Handle, ActorInfo, ActivationInfo, CooldownGameplayEffectClass, GetAbilityLevel());
 		if (SpecHandle.IsValid())
 		{
+			const UEquipmentSettings* Settings = UEquipmentSettings::Get();
+
 			SpecHandle.Data->GetContext().AddSourceObject(Controller);
-			SpecHandle.Data->AppendDynamicAssetTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Equipment.Cooldown")));
+			SpecHandle.Data->AppendDynamicAssetTags(FGameplayTagContainer(Settings->EquipmentCooldownTag));
 			SpecHandle.Data->SetStackCount(1);
 
 			ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);

@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Core/EquipmentSettings.h"
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 #include "Widget/AssetEntry.h"
 #include "Widget/EquipmentSlotUI.h"
 
@@ -43,7 +43,7 @@ void UEquipmentSlotCollectionUI::NativePreConstruct()
 				UEquipmentSlotUI* SlotUI = CreateWidget<UEquipmentSlotUI>(this, SlotClass);
 				if (IsValid(SlotUI))
 				{
-					SlotUI->SlotDefinition = FEquipmentSlotDefinition(CategoryTag, Slots[i].SlotId);
+					SlotUI->SlotId = FEquipmentSlotId(CategoryTag, Slots[i].SlotId);
 
 					SlotUI->SetPadding(SlotSpacing);
 					SlotBox->AddChild(SlotUI);

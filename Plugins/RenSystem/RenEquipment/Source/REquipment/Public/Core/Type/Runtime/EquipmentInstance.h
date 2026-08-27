@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "Core/Type/EquipmentKey.h"
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers
 #include "EquipmentInstance.generated.h"
@@ -48,7 +48,7 @@ public:
 	FPrimaryAssetId OwnerAssetId;
 
 	UPROPERTY(EditAnywhere, SaveGame)
-	TMap<FEquipmentSlotDefinition, FGuid> Slots;
+	TMap<FEquipmentSlotId, FGuid> Slots;
 
 };
 

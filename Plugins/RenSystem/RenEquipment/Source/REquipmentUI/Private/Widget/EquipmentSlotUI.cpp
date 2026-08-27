@@ -31,7 +31,7 @@ void UEquipmentSlotUI::RefreshDetail()
 	}
 
 	FPrimaryAssetId EquipmentAssetId;
-	if (!StorageManager->GetEquipmentAtSlot(OwnerInstanceId, SlotDefinition, EquipmentAssetId))
+	if (!StorageManager->GetEquipmentAtSlot(OwnerInstanceId, SlotId, EquipmentAssetId))
 	{
 		ResetDetail();
 		return;
@@ -45,7 +45,7 @@ void UEquipmentSlotUI::ClearSlot()
 	UEquipmentSubsystem* EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 	if (IsValid(EquipmentSubsystem))
 	{
-		EquipmentSubsystem->TryRemoveEquipmentSlot(OwnerInstanceId, SlotDefinition);
+		EquipmentSubsystem->TryRemoveEquipmentSlot(OwnerInstanceId, SlotId);
 	}
 }
 
@@ -150,6 +150,6 @@ bool UEquipmentSlotUI::NativeOnDrop(const FGeometry& InGeometry, const FDragDrop
 		return false;
 	}
 	
-	return EquipmentSubsystem->TrySetEquipmentSlot(OwnerInstanceId, OwnerAssetId, EquipmentInstanceId, EquipmentAssetId, SlotDefinition);
+	return EquipmentSubsystem->TrySetEquipmentSlot(OwnerInstanceId, OwnerAssetId, EquipmentInstanceId, EquipmentAssetId, SlotId);
 }
 

@@ -5,7 +5,9 @@
 
 // Engine Headers
 #include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
 #include "Engine/AssetManager.h"
+#include "EnhancedInputComponent.h"
 #include "StructUtils/InstancedStruct.h"
 #include "UObject/ObjectSaveContext.h"
 
@@ -18,6 +20,7 @@
 #include "Data/CoreDataAsset.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
+#include "Data/EquipmentInputMapping.h"
 #include "Interface/SpawnContextProvider.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
@@ -83,7 +86,12 @@ void UEquipmentManagerComponent::DeinitializeManager()
 }
 
 
-void UEquipmentManagerComponent::ActivateEquipmentById(FGameplayTag CategoryTag, int SlotId)
+void UEquipmentManagerComponent::ActivateEquipmentById(FGameplayTag SlotTag, int Id)
+{
+	ActivateEquipmentById(FEquipmentSlotId(SlotTag, Id));
+}
+
+void UEquipmentManagerComponent::ActivateEquipmentById(const FEquipmentSlotId& SlotId)
 {
 	if (!IsInitialized())
 	{
@@ -94,7 +102,7 @@ void UEquipmentManagerComponent::ActivateEquipmentById(FGameplayTag CategoryTag,
 	for (TObjectPtr<UEquipmentController> Controller : EquipmentControllers)
 	{
 		const FEquipmentInitializationData& EquipmentData = Controller->GetEquipmentData();
-		if (EquipmentData.SlotDefinition.CategoryTag == CategoryTag && EquipmentData.SlotDefinition.SlotId == SlotId)
+		if (EquipmentData.SlotId == SlotId)
 		{
 			TargetController = Controller;
 			break;
@@ -156,12 +164,12 @@ void UEquipmentManagerComponent::ActivateEquipmentById(FGameplayTag CategoryTag,
 	HandleControllerQueue();
 }
 
-UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(const FEquipmentSlotDefinition& SlotDefinition) const
+UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(const FEquipmentSlotId& SlotId) const
 {
 	const TObjectPtr<UEquipmentController>* Controller = EquipmentControllers.FindByPredicate(
-		[SlotDefinition](UEquipmentController* Controller)
+		[SlotId](UEquipmentController* Controller)
 		{
-			return (IsValid(Controller) && Controller->GetEquipmentData().SlotDefinition == SlotDefinition) == true;
+			return (IsValid(Controller) && Controller->GetEquipmentData().SlotId == SlotId) == true;
 		}
 	);
 	
@@ -559,5 +567,15 @@ void UEquipmentManagerComponent::HandleOnEquipmentDeactivated(UEquipmentStateCon
 
 	CurrentController = nullptr;
 	UnbindController(Controller);
+}
+
+bool UEquipmentManagerComponent::IsInitialized() const
+{
+	return _bInitialized;
+}
+
+void UEquipmentManagerComponent::SetInitialized(bool bValue)
+{
+	_bInitialized = bValue;
 }
 

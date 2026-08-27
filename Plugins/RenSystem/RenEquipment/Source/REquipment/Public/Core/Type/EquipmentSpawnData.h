@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers
 #include "EquipmentSpawnData.generated.h"
@@ -21,7 +21,7 @@ struct FEquipmentInitializationData
 public:
 
 	FEquipmentInitializationData() {};
-	FEquipmentInitializationData(FPrimaryAssetId InAssetId, FGuid InAssetInstanceId, FEquipmentSlotDefinition InSlotDefinition) : AssetId(InAssetId), AssetInstanceId(InAssetInstanceId), SlotDefinition(InSlotDefinition) {};
+	FEquipmentInitializationData(FPrimaryAssetId InAssetId, FGuid InAssetInstanceId, FEquipmentSlotId InSlotId) : AssetId(InAssetId), AssetInstanceId(InAssetInstanceId), SlotId(InSlotId) {};
 
 
 	UPROPERTY(EditAnywhere)
@@ -31,30 +31,30 @@ public:
 	FGuid AssetInstanceId;
 
 	UPROPERTY(EditAnywhere)
-	FEquipmentSlotDefinition SlotDefinition;
+	FEquipmentSlotId SlotId;
 
 
 	bool IsValid() const
 	{
-		return AssetId.IsValid() && SlotDefinition.IsValid();
+		return AssetId.IsValid() && SlotId.IsValid();
 	}
 
 	void Reset()
 	{
 		AssetId = FPrimaryAssetId();
 		AssetInstanceId.Invalidate();
-		SlotDefinition.Reset();
+		SlotId.Reset();
 	}
 
 	friend inline bool operator == (const FEquipmentInitializationData& A, const FEquipmentInitializationData& B)
 	{
-		return A.AssetId == B.AssetId && A.AssetInstanceId == B.AssetInstanceId && A.SlotDefinition == B.SlotDefinition;
+		return A.AssetId == B.AssetId && A.AssetInstanceId == B.AssetInstanceId && A.SlotId == B.SlotId;
 	}
 
 	friend inline uint32 GetTypeHash(const FEquipmentInitializationData& A)
 	{
 		uint32 Hash = GetTypeHash(A.AssetId);
-		Hash = HashCombineFast(Hash, GetTypeHash(A.SlotDefinition));
+		Hash = HashCombineFast(Hash, GetTypeHash(A.SlotId));
 		Hash = HashCombineFast(Hash, GetTypeHash(A.AssetInstanceId));
 		return Hash;
 	}

@@ -2,9 +2,8 @@
 
 #pragma once
 
-// Project Headers
+// Engine Headers
 #include "Engine/DataAsset.h"
-#include "GameplayTagContainer.h"
 
 // Generated Headers
 #include "EquipmentAbilityCollection.generated.h"
@@ -16,29 +15,8 @@
 class FObjectPreSaveContext;
 class UGameplayAbility;
 class UGameplayEffect;
+class UInputAction;
 
-
-/**
- *
- */
-USTRUCT()
-struct FEquipmentAbilityData
-{
-	
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayAbility> AbilityClass;
-
-	UPROPERTY(EditAnywhere)
-	bool bEnableInput = false;
-
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "bEnableInput==true", EditConditionHides))
-	int InputId = -1;
-
-};
 
 /**
  *
@@ -52,7 +30,7 @@ class UEquipmentAbilityCollection : public UPrimaryDataAsset
 public:
 
 	UPROPERTY(EditAnywhere)
-	TArray<FEquipmentAbilityData> Abilities;
+	TArray<TSubclassOf<UGameplayAbility>> Abilities;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<UGameplayEffect>> EffectClasses;
@@ -62,7 +40,6 @@ public:
 	// ~ UObject
 
 };
-
 
 
 // Module Macros

@@ -27,8 +27,8 @@ void UEquipmentStorageManager::GetEquipmentByOwnerId(const FGuid& InOwnerInstanc
 		return;
 	}
 
-	const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerInstance->Slots;
-	for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : Slots)
+	const TMap<FEquipmentSlotId, FGuid>& Slots = OwnerInstance->Slots;
+	for (const TPair<FEquipmentSlotId, FGuid>& Kv : Slots)
 	{
 		const FEquipmentSlotInstance* SlotInstance = EquipmentInstances.Find(Kv.Value);
 		if (!SlotInstance)
@@ -39,7 +39,7 @@ void UEquipmentStorageManager::GetEquipmentByOwnerId(const FGuid& InOwnerInstanc
 		FEquipmentInitializationData Data;
 		Data.AssetId = SlotInstance->EquipmentAssetId;
 		Data.AssetInstanceId = Kv.Value;
-		Data.SlotDefinition = Kv.Key;
+		Data.SlotId = Kv.Key;
 		
 		OutData.Add(FEquipmentInitializationData(SlotInstance->EquipmentAssetId, Kv.Value, Kv.Key));
 	}
@@ -64,8 +64,8 @@ void UEquipmentStorageManager::GetEquipmentIdsByOwnerId(const FGuid& InOwnerInst
 			return;
 		}
 
-		const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerInstance->Slots;
-		for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : Slots)
+		const TMap<FEquipmentSlotId, FGuid>& Slots = OwnerInstance->Slots;
+		for (const TPair<FEquipmentSlotId, FGuid>& Kv : Slots)
 		{
 			OutEquipmentInstanceIds.Add(Kv.Value);
 		}
@@ -76,8 +76,8 @@ void UEquipmentStorageManager::GetEquipmentIdsByOwnerId(const FGuid& InOwnerInst
 		{
 			if (OwnerKv.Key != InOwnerInstanceId)
 			{
-				const TMap<FEquipmentSlotDefinition, FGuid>& Slots = OwnerKv.Value.Slots;
-				for (const TPair<FEquipmentSlotDefinition, FGuid>& SlotKv : Slots)
+				const TMap<FEquipmentSlotId, FGuid>& Slots = OwnerKv.Value.Slots;
+				for (const TPair<FEquipmentSlotId, FGuid>& SlotKv : Slots)
 				{
 					OutEquipmentInstanceIds.Add(SlotKv.Value);
 				}
@@ -86,7 +86,7 @@ void UEquipmentStorageManager::GetEquipmentIdsByOwnerId(const FGuid& InOwnerInst
 	}
 }
 
-bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotDefinition& InSlotDefinition, FPrimaryAssetId& OutEquipmentAssetId) const
+bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerInstanceId, const FEquipmentSlotId& InSlotId, FPrimaryAssetId& OutEquipmentAssetId) const
 {
 	OutEquipmentAssetId = FPrimaryAssetId();
 
@@ -101,7 +101,7 @@ bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerInstanceId
 		return false;
 	}
 
-	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(InSlotDefinition);
+	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(InSlotId);
 	if (!EquipmentInstanceId)
 	{
 		return false;
@@ -117,7 +117,7 @@ bool UEquipmentStorageManager::GetEquipmentAtSlot(const FGuid& InOwnerInstanceId
 	return true;
 }
 
-bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotDefinition& SlotDefinition)
+bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, const FPrimaryAssetId& OwnerAssetId, const FGuid& EquipmentInstanceId, const FPrimaryAssetId& EquipmentAssetId, const FEquipmentSlotId& SlotId)
 {
 	if (!IsValid(LocalStorage))
 	{
@@ -140,9 +140,9 @@ bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, 
 		OwnerInstance.OwnerAssetId = OwnerAssetId;
 	}
 
-	FEquipmentSlotDefinition SlotToRemove;
-	TMap<FEquipmentSlotDefinition, FGuid>& OwnerSlots = OwnerInstance.Slots;
-	for (const TPair<FEquipmentSlotDefinition, FGuid>& Kv : OwnerSlots)
+	FEquipmentSlotId SlotToRemove;
+	TMap<FEquipmentSlotId, FGuid>& OwnerSlots = OwnerInstance.Slots;
+	for (const TPair<FEquipmentSlotId, FGuid>& Kv : OwnerSlots)
 	{
 		if (Kv.Value == EquipmentInstanceId)
 		{
@@ -156,13 +156,13 @@ bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, 
 		OwnerSlots.Remove(SlotToRemove);
 	}
 
-	FGuid* PreviousEquipment = OwnerSlots.Find(SlotDefinition);
+	FGuid* PreviousEquipment = OwnerSlots.Find(SlotId);
 	if (PreviousEquipment)
 	{
 		EquipmentInstances.Remove(*PreviousEquipment);
 	}
 
-	OwnerSlots.Add(SlotDefinition, EquipmentInstanceId);
+	OwnerSlots.Add(SlotId, EquipmentInstanceId);
 	EquipmentInstances.Add(EquipmentInstanceId, FEquipmentSlotInstance(EquipmentAssetId, OwnerInstanceId));
 
 	OnStorageUpdated.Broadcast();
@@ -170,7 +170,7 @@ bool UEquipmentStorageManager::SetEquipmentAtSlot(const FGuid& OwnerInstanceId, 
 
 }
 
-bool UEquipmentStorageManager::RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotDefinition& SlotDefinition)
+bool UEquipmentStorageManager::RemoveEquipmentFromSlot(const FGuid& OwnerInstanceId, const FEquipmentSlotId& SlotId)
 {
 	if (!IsValid(LocalStorage))
 	{
@@ -186,7 +186,7 @@ bool UEquipmentStorageManager::RemoveEquipmentFromSlot(const FGuid& OwnerInstanc
 		return false;
 	}
 
-	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(SlotDefinition);
+	const FGuid* EquipmentInstanceId = OwnerInstance->Slots.Find(SlotId);
 	if (!EquipmentInstanceId)
 	{
 		return false;

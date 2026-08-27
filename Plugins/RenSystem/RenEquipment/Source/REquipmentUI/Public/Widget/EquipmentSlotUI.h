@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/EquipmentSlotDefinition.h"
+#include "Core/Type/EquipmentSlotId.h"
 #include "Widget/AssetUI.h"
 
 // Generated Headers
@@ -28,7 +28,7 @@ class UEquipmentSlotUI : public UAssetUI
 public:
 
 	UPROPERTY(EditAnywhere)
-	FEquipmentSlotDefinition SlotDefinition;
+	FEquipmentSlotId SlotId;
 
 	// ~ UAssetUI
 	virtual void ResetDetail() override;

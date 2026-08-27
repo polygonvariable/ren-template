@@ -25,7 +25,7 @@ void UAASetEquipmentSlot::OnCompleted(bool bSuccess)
 void UAASetEquipmentSlot::OnCleanup()
 {
 	EquipmentSubsystem = nullptr;
-	SlotDefinition.Reset();
+	SlotId.Reset();
 
 	OwnerInstanceId.Invalidate();
 	OwnerAssetId = FPrimaryAssetId();
@@ -49,7 +49,7 @@ void UAASetEquipmentSlot::Step_AssignEquipment()
 		return;
 	}
 
-	if (!StorageManager->SetEquipmentAtSlot(OwnerInstanceId, OwnerAssetId, EquipmentInstanceId, EquipmentAssetId, SlotDefinition))
+	if (!StorageManager->SetEquipmentAtSlot(OwnerInstanceId, OwnerAssetId, EquipmentInstanceId, EquipmentAssetId, SlotId))
 	{
 		Fail(TEXT("Failed to set equipment at slot"));
 		return;

@@ -90,6 +90,10 @@
 		{
 			"Name": "PCGPrimitives",
 			"Enabled": true
+		},
+		{
+			"Name": "ContextualAnimation",
+			"Enabled": true
 		}
 	]
 }

@@ -7,21 +7,17 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/SpringArmComponent.h"
 
 // Project Headers
 #include "Actor/EquipmentActor.h"
-#include "Component/EquipmentManagerComponent.h"
 #include "Core/AssetInstanceUtil.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
-#include "Core/Interface/AssetInstanceCollectionProvider.h"
 #include "Core/Type/AscensionData.h"
 #include "Data/CoreDataAsset.h"
 #include "Data/EquipmentAbilityCollection.h"
 #include "Data/EquipmentDataDefinition.h"
-#include "Data/EquipmentFragment.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
@@ -232,11 +228,12 @@ bool UEquipmentController::CanActivate() const
 
 void UEquipmentController::CreateAbilities()
 {
+	const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 	const UEquipmentAbilityCollection* AbilityCollection = GetEquipmentAbilityCollection();
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
-	if (!IsValid(AbilitySystem) || !IsValid(AbilityCollection))
+	if (!SlotData || !IsValid(AbilitySystem) || !IsValid(AbilityCollection))
 	{
-		LOG_ERROR(LogEquipment, TEXT("AbilitySystem, ability collection, equipment tag data is invalid"));
+		LOG_ERROR(LogEquipment, TEXT("SlotData, AbilitySystem, AbilityCollection is invalid"));
 		return;
 	}
 
@@ -251,18 +248,17 @@ void UEquipmentController::CreateAbilities()
 			ActiveEffectHandles.Add(ActiveEffectHandle);
 		}
 	}
-	
-	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
-	for (const FEquipmentAbilityData& AbilityData : Abilities)
-	{
-		const TSubclassOf<UGameplayAbility>& AbilityClass = AbilityData.AbilityClass;
 
+	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->Abilities;
+	for (const TSubclassOf<UGameplayAbility>& AbilityClass : Abilities)
+	{
 		if (IsValid(AbilityClass))
 		{
 			FGameplayAbilitySpec AbilitySpec(AbilityClass);
 			AbilitySpec.Level = GetEquipmentLevel();
 			AbilitySpec.SourceObject = this;
-			
+			AbilitySpec.InputID = SlotData->InputId;
+
 			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
 			ActiveAbilityHandles.Add(AbilityHandle);
 		}

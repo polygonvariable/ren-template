@@ -20,6 +20,7 @@
 class UEquipmentStorage;
 class UEquipmentStorageManager;
 class UEquipmentSubsystem;
+struct FEquipmentSlotId;
 
 
 /**
@@ -70,17 +71,21 @@ public:
 	TArray<FName> EquipmentBundles;
 
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Event Tags", meta = (Categories = "Equipment.Event"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Tags", meta = (Categories = "Equipment.Cooldown"))
+	FGameplayTag EquipmentCooldownTag;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Tags", meta = (Categories = "Equipment.Event"))
 	FGameplayTag EquipmentAttachNotify;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Event Tags", meta = (Categories = "Equipment.Event"))
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Tags", meta = (Categories = "Equipment.Event"))
 	FGameplayTag EquipmentDetachNotify;
 
 
 	static REN_API const UEquipmentSettings* Get();
 
 	static REN_API const FEquipmentCategoryData* GetEquipmentCategoryByTag(FGameplayTag CategoryTag);
-	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(FGameplayTag CategoryTag, int SlotId);
+	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(FGameplayTag CategoryTag, int Id);
+	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(const FEquipmentSlotId& SlotId);
 
 	static REN_API const FGameplayTag& GetAttachmentEventTag(bool bEquip);
 

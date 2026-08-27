@@ -4,6 +4,7 @@
 
 // Project Headers
 #include "Core/Type/EquipmentSpawnData.h"
+#include "Core/Type/EquipmentSlotId.h"
 #include "Definition/PoolCollection.h"
 #include "Definition/QueryType.h"
 
@@ -21,9 +22,11 @@ class UEquipmentSubsystem;
 class UActorFreelistSubsystem;
 class UEquipmentController;
 struct FStreamableHandle;
-struct FEquipmentSlotDefinition;
 class UAnimInstance;
 class UEquipmentStateController;
+class UEquipmentInputMapping;
+class UEnhancedInputComponent;
+struct FInputActionValue;
 
 
 /**
@@ -38,7 +41,6 @@ class UEquipmentManagerComponent : public UActorComponent
 public:
 
 	UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer);
-
 
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
 	TArray<FEquipmentInitializationData> EquipmentSpawnData;
@@ -55,8 +57,9 @@ public:
 	virtual void DeinitializeManager();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void ActivateEquipmentById(FGameplayTag CategoryTag, int SlotId);
-	REN_API UEquipmentController* GetEquipmentControllerByTag(const FEquipmentSlotDefinition& SlotDefinition) const;
+	REN_API void ActivateEquipmentById(FGameplayTag SlotTag, int Id);
+	REN_API void ActivateEquipmentById(const FEquipmentSlotId& SlotId);
+	REN_API UEquipmentController* GetEquipmentControllerByTag(const FEquipmentSlotId& SlotId) const;
 
 
 	// ~ UActorComponent
@@ -71,16 +74,16 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TObjectPtr<UEquipmentStateController> PendingController = nullptr;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TObjectPtr<UEquipmentStateController> CurrentController = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	EDataSource SourceType = EDataSource::Static;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TArray<TObjectPtr<UEquipmentController>> EquipmentControllers;
 
 	UPROPERTY()
@@ -94,7 +97,6 @@ protected:
 
 	FGuid OwnerInstanceId;
 
-	int CurrentIndex = 0;
 
 	void UpdateEquipment(const FGuid& InOwnerId);
 	void CreateEquipment();
@@ -119,21 +121,14 @@ protected:
 	void HandleOnEquipmentDeactivated(UEquipmentStateController* Controller);
 	// ~ End od Binding
 
-	bool IsInitialized() const
-	{
-		return _bInitialized;
-	}
-
-	void SetInitialized(bool bValue)
-	{
-		_bInitialized = bValue;
-	}
+	bool IsInitialized() const;
+	void SetInitialized(bool bValue);
 
 private:
 
 	TSharedPtr<FStreamableHandle> _SpawnHandle = nullptr;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TMap<UClass*, FPoolCollection> _ControllerPool;
 	
 	bool _bInitialized = false;
