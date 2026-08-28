@@ -13,7 +13,7 @@
 #include "Log/LogMacro.h"
 
 
-void UEquipmentActivationInput_Weapon::InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotData* SlotData, UEnhancedInputComponent* InputComponent)
+void UEquipmentActivationInput_Weapon::InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotDefinition* SlotData, UEnhancedInputComponent* InputComponent)
 {
 	FEnhancedInputActionEventBinding& PressedBinding = InputComponent->BindAction(Input.InputAction, ETriggerEvent::Started, this, &UEquipmentActivationInput_Weapon::HandleOnInputPressed, Input.SlotId);
 	InputHandles.Add(PressedBinding.GetHandle());

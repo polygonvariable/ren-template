@@ -20,7 +20,7 @@
 class UAnimInstance;
 class UAnimMontage;
 struct FGameplayEventData;
-struct FEquipmentSocketInfo;
+struct FEquipmentSocketDefinition;
 
 
 /**
@@ -72,7 +72,7 @@ protected:
 
 	virtual void AttachToEquipSocket();
 	virtual void AttachToUnequipSocket();
-	virtual void AttachToSocket(const FEquipmentSocketInfo& Socket);
+	virtual void AttachToSocket(const FEquipmentSocketDefinition& Socket, const FTransform& SocketTransform);
 
 	// ~ Binidngs
 	virtual void HandleOnMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip);

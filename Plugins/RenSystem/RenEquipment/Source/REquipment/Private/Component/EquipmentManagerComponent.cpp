@@ -180,6 +180,11 @@ UEquipmentController* UEquipmentManagerComponent::GetEquipmentControllerByTag(co
 	return Controller->Get();
 }
 
+UEquipmentController* UEquipmentManagerComponent::GetActiveController() const
+{
+	return CurrentController;
+}
+
 
 void UEquipmentManagerComponent::BeginPlay()
 {
@@ -440,6 +445,7 @@ void UEquipmentManagerComponent::HandleControllerQueue()
 		UEquipmentStateController* PreviousEquipment = CurrentController;
 
 		CurrentController = nullptr;
+		OnEquipmentChanged.Broadcast();
 
 		UnbindController(PreviousEquipment);
 		ActivatePendingController();
@@ -477,6 +483,8 @@ void UEquipmentManagerComponent::ActivatePendingController()
 	}
 
 	CurrentController = Equipment;
+	OnEquipmentChanged.Broadcast();
+
 	PendingController = nullptr;
 	BindController(Equipment);
 
@@ -486,6 +494,7 @@ void UEquipmentManagerComponent::ActivatePendingController()
 		if (CurrentController == Equipment)
 		{
 			CurrentController = nullptr;
+			OnEquipmentChanged.Broadcast();
 		}
 		UnbindController(Equipment);
 		return;
@@ -501,6 +510,7 @@ void UEquipmentManagerComponent::RemovePendingController()
 void UEquipmentManagerComponent::RemoveCurrentController()
 {
 	CurrentController = nullptr;
+	OnEquipmentChanged.Broadcast();
 }
 
 
@@ -558,6 +568,8 @@ void UEquipmentManagerComponent::HandleOnEquipmentDeactivated(UEquipmentStateCon
 		PendingController = nullptr;
 
 		CurrentController = nullptr;
+		OnEquipmentChanged.Broadcast();
+
 		UnbindController(Controller);
 
 		PendingController = NextEquipment;
@@ -566,6 +578,8 @@ void UEquipmentManagerComponent::HandleOnEquipmentDeactivated(UEquipmentStateCon
 	}
 
 	CurrentController = nullptr;
+	OnEquipmentChanged.Broadcast();
+
 	UnbindController(Controller);
 }
 

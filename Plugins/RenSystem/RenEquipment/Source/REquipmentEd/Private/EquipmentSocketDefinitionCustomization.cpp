@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EquipmentSocketInfoCustomization.h"
+#include "EquipmentSocketDefinitionCustomization.h"
 
 // Engine Headers
 #include "DetailWidgetRow.h"
@@ -12,18 +12,18 @@
 #include "Widgets/Layout/SUniformGridPanel.h"
 
 // Project Headers
-#include "Core/Type/EquipmentSocketInfo.h"
+#include "Core/Type/EquipmentSocketDefinition.h"
 
 
-TSharedRef<IPropertyTypeCustomization> FEquipmentSocketInfoCustomization::MakeInstance()
+TSharedRef<IPropertyTypeCustomization> FEquipmentSocketDefinitionCustomization::MakeInstance()
 {
-    return MakeShared<FEquipmentSocketInfoCustomization>();
+    return MakeShared<FEquipmentSocketDefinitionCustomization>();
 }
 
-void FEquipmentSocketInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FEquipmentSocketDefinitionCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> StructPropertyHandle, FDetailWidgetRow& HeaderRow, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
-    TSharedPtr<IPropertyHandle> UseComponent_Property = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FEquipmentSocketInfo, bUseComponent));
-    TSharedPtr<IPropertyHandle> SocketName_Property = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FEquipmentSocketInfo, SocketName));
+    TSharedPtr<IPropertyHandle> UseComponent_Property = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FEquipmentSocketDefinition, bUseComponent));
+    TSharedPtr<IPropertyHandle> SocketName_Property = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FEquipmentSocketDefinition, SocketName));
 
     FSlateFontInfo BoldFont = StructCustomizationUtils.GetRegularFont();
     BoldFont.Size = 8;
@@ -40,7 +40,7 @@ void FEquipmentSocketInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHand
             SNew(SVerticalBox)
                 + SVerticalBox::Slot()
                 .AutoHeight()
-                .Padding(FMargin(0.0f, 4.0f))
+                .Padding(FMargin(0.0f, 6.0f))
                 [
                     SNew(SGridPanel)
                         + SGridPanel::Slot(0, 0)
@@ -51,7 +51,7 @@ void FEquipmentSocketInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHand
                                 .Font(BoldFont)
                         ]
                         + SGridPanel::Slot(1, 0)
-                        .Padding(6.0f, 0.0f, 0.0f, 0.0f)
+                        .Padding(12.0f, 0.0f, 0.0f, 0.0f)
                         [
                             UseComponent_Property->CreatePropertyValueWidget()
                         ]
@@ -63,7 +63,7 @@ void FEquipmentSocketInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHand
                                 .Font(BoldFont)
                         ]
                         + SGridPanel::Slot(1, 1)
-                        .Padding(6.0f, 0.0f, 0.0f, 0.0f)
+                        .Padding(12.0f, 0.0f, 0.0f, 0.0f)
                         [
                             SocketName_Property->CreatePropertyValueWidget()
                         ]
@@ -71,7 +71,7 @@ void FEquipmentSocketInfoCustomization::CustomizeHeader(TSharedRef<IPropertyHand
         ];
 }
 
-void FEquipmentSocketInfoCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
+void FEquipmentSocketDefinitionCustomization::CustomizeChildren(TSharedRef<IPropertyHandle> StructPropertyHandle, IDetailChildrenBuilder& ChildBuilder, IPropertyTypeCustomizationUtils& StructCustomizationUtils)
 {
     
 }

@@ -32,10 +32,10 @@ void UEquipmentSlotCollectionUI::NativePreConstruct()
 	
 	if (IsValid(SlotClass))
 	{
-		const FEquipmentCategoryData* Category = UEquipmentSettings::GetEquipmentCategoryByTag(CategoryTag);
+		const FEquipmentCategoryDefinition* Category = UEquipmentSettings::GetEquipmentCategoryByTag(CategoryTag);
 		if (Category)
 		{
-			const TArray<FEquipmentSlotData>& Slots = Category->Slots;
+			const TArray<FEquipmentSlotDefinition>& Slots = Category->Slots;
 
 			int NumSlots = Slots.Num();
 			for (int i = 0; i < NumSlots; i++)

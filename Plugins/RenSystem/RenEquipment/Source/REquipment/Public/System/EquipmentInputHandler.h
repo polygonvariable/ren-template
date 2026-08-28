@@ -2,29 +2,32 @@
 
 #pragma once
 
+// Project Headers
+#include "Core/Type/EquipmentInputBinding.h"
+
 // Generated Headers
-#include "EquipmentActivationInput.generated.h"
+#include "EquipmentInputHandler.generated.h"
 
 // Forward Declarations
 class UEnhancedInputComponent;
 class UAbilitySystemComponent;
 class UEquipmentManagerComponent;
-struct FEquipmentActivationBinding;
-struct FEquipmentSlotData;
+struct FEquipmentSlotDefinition;
+struct FInputActionValue;
 
 
 /**
  *
  */
 UCLASS(Abstract)
-class UEquipmentActivationInput : public UObject
+class UEquipmentInputHandler : public UObject
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual void RegisterInput(const TArray<FEquipmentActivationBinding>& Inputs);
+	virtual void RegisterInput();
 	virtual void UnregisterInput();
 
 protected:
@@ -37,7 +40,9 @@ protected:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const;
 	UEquipmentManagerComponent* GetEquipmentManagerComponent() const;
 
-	virtual void InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotData* SlotData, UEnhancedInputComponent* InputComponent);
+private:
+
+	mutable TWeakObjectPtr<UEquipmentManagerComponent> _EquipmentManager;
 
 };
 

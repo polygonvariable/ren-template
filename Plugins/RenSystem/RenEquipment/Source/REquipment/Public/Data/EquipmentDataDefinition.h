@@ -66,5 +66,13 @@ class UEquipmentDataDefinition_Weapon : public UEquipmentDataDefinition
 
 	GENERATED_BODY()
 
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Attachment")
+	FTransform AttachTransform;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Attachment")
+	FTransform DetachTransform;
+
 };
 

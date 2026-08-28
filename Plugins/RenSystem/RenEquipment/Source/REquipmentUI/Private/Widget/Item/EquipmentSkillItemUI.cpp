@@ -241,10 +241,10 @@ void UEquipmentSkillItemUI::SetDetail(UEquipmentController* Controller)
 		return;
 	}
 
-	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->Abilities;
-	if (Abilities.IsValidIndex(0) && IsValid(Abilities[0]))
+	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
+	if (Abilities.IsValidIndex(0) && IsValid(Abilities[0].AbilityClass))
 	{
-		const UGameplayAbility* AbilityCDO = Abilities[0]->GetDefaultObject<UGameplayAbility>();
+		const UGameplayAbility* AbilityCDO = Abilities[0].AbilityClass->GetDefaultObject<UGameplayAbility>();
 		const UGameplayEffect* EffectCDO = AbilityCDO->GetCostGameplayEffect();
 
 		if (!IsValid(EffectCDO) || !EffectCDO->Modifiers.IsValidIndex(0))

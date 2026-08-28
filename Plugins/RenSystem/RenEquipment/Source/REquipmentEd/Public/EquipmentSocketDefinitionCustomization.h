@@ -9,7 +9,7 @@
 /*
  *
  */
-class FEquipmentSocketInfoCustomization : public IPropertyTypeCustomization
+class FEquipmentSocketDefinitionCustomization : public IPropertyTypeCustomization
 {
 public:
 

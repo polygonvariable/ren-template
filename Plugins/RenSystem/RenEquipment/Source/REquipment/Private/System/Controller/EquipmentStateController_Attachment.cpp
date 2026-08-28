@@ -208,10 +208,10 @@ void UEquipmentAttachmentController::AttachToEquipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
+		const FEquipmentSlotDefinition* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 		if (SlotData)
 		{
-			AttachToSocket(SlotData->AttachSocket);
+			AttachToSocket(SlotData->AttachSocket, WeaponDefinition->AttachTransform);
 		}
 	}
 }
@@ -221,21 +221,20 @@ void UEquipmentAttachmentController::AttachToUnequipSocket()
 	const UEquipmentDataDefinition_Weapon* WeaponDefinition = Cast<UEquipmentDataDefinition_Weapon>(DataDefinition);
 	if (IsValid(WeaponDefinition))
 	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
+		const FEquipmentSlotDefinition* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 		if (SlotData)
 		{
-			AttachToSocket(SlotData->DetachSocket);
+			AttachToSocket(SlotData->DetachSocket, WeaponDefinition->DetachTransform);
 		}
 	}
 }
 
-void UEquipmentAttachmentController::AttachToSocket(const FEquipmentSocketInfo& Socket)
+void UEquipmentAttachmentController::AttachToSocket(const FEquipmentSocketDefinition& Socket, const FTransform& SocketTransform)
 {
 	ACharacter* Character = GetEquipmentOwner<ACharacter>();
 	if (IsValid(Character))
 	{
 		FName SocketName = Socket.SocketName;
-		FTransform SocketTransform = Socket.SocketTransform;
 
 		USceneComponent* TargetComponent = Character->GetMesh();
 		if (Socket.bUseComponent)

@@ -2,7 +2,7 @@
 
 #include "REquipmentEd.h"
 #include "EquipmentSlotIdCustomization.h"
-#include "EquipmentSocketInfoCustomization.h"
+#include "EquipmentSocketDefinitionCustomization.h"
 
 #define LOCTEXT_NAMESPACE "FREquipmentEdModule"
 
@@ -13,7 +13,7 @@ void FREquipmentEdModule::StartupModule()
     FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
     
     PropertyModule.RegisterCustomPropertyTypeLayout("EquipmentSlotId", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FEquipmentSlotIdCustomization::MakeInstance));
-    PropertyModule.RegisterCustomPropertyTypeLayout("EquipmentSocketInfo", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FEquipmentSocketInfoCustomization::MakeInstance));
+    PropertyModule.RegisterCustomPropertyTypeLayout("EquipmentSocketDefinition", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FEquipmentSocketDefinitionCustomization::MakeInstance));
     PropertyModule.NotifyCustomizationModuleChanged();
 }
 
@@ -25,7 +25,7 @@ void FREquipmentEdModule::ShutdownModule()
     {
         FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
         PropertyModule.UnregisterCustomPropertyTypeLayout("EquipmentSlotId");
-        PropertyModule.UnregisterCustomPropertyTypeLayout("EquipmentSocketInfo");
+        PropertyModule.UnregisterCustomPropertyTypeLayout("EquipmentSocketDefinition");
     }
 }
 

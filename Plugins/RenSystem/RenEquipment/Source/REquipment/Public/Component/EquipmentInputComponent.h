@@ -12,7 +12,7 @@
 #define REN_API REQUIPMENT_API
 
 // Forward Declarations
-class UEquipmentActivationInput;
+class UEquipmentInputHandler;
 struct FStreamableHandle;
 struct FInputActionValue;
 
@@ -41,7 +41,7 @@ public:
 protected:
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TArray<TObjectPtr<UEquipmentActivationInput>> InputActivations;
+	TArray<TObjectPtr<UEquipmentInputHandler>> InputHandlers;
 
 
 	void LoadAndRegisterInput();

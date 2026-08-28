@@ -10,7 +10,8 @@
 // Project Headers
 #include "Core/AssetManagerUtil.h"
 #include "Data/EquipmentInputMapping.h"
-#include "System/EquipmentActivationInput.h"
+#include "System/Input/EquipmentActionInput.h"
+#include "System/Input/EquipmentActivationInput.h"
 
 
 UEquipmentInputComponent::UEquipmentInputComponent(const FObjectInitializer& ObjectInitializer)
@@ -54,29 +55,42 @@ void UEquipmentInputComponent::RegisterInput()
 	for (const FSoftObjectPath& Path : InputMapping)
 	{
 		UEquipmentInputMapping* Input = Cast<UEquipmentInputMapping>(Path.ResolveObject());
-		if (!IsValid(Input) || !IsValid(Input->ActivationClass))
+		if (!IsValid(Input))
 		{
 			continue;
 		}
 
-		UEquipmentActivationInput* Activation = NewObject<UEquipmentActivationInput>(this, Input->ActivationClass);
-		Activation->RegisterInput(Input->ActivationBindings);
+		if (IsValid(Input->ActivationClass))
+		{
+			UEquipmentActivationInput* Activation = NewObject<UEquipmentActivationInput>(this, Input->ActivationClass);
+			Activation->Inputs = Input->ActivationBindings;
+			Activation->RegisterInput();
 
-		InputActivations.Add(Activation);
+			InputHandlers.Add(Activation);
+		}
+
+		if (IsValid(Input->ActionClass))
+		{
+			UEquipmentActionInput* Action = NewObject<UEquipmentActionInput>(this, Input->ActionClass);
+			Action->Actions = Input->ActionBindings;
+			Action->RegisterInput();
+
+			InputHandlers.Add(Action);
+		}
 	}
 }
 
 void UEquipmentInputComponent::UnregisterInput()
 {
-	for (UEquipmentActivationInput* Activation : InputActivations)
+	for (UEquipmentInputHandler* Handler : InputHandlers)
 	{
-		if (IsValid(Activation))
+		if (IsValid(Handler))
 		{
-			Activation->UnregisterInput();
-			Activation->MarkAsGarbage();
+			Handler->UnregisterInput();
+			Handler->MarkAsGarbage();
 		}
 	}
 
-	InputActivations.Empty();
+	InputHandlers.Empty();
 }
 

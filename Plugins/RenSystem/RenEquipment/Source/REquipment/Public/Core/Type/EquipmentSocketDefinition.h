@@ -3,22 +3,22 @@
 #pragma once
 
 // Generated Headers
-#include "EquipmentSocketInfo.generated.h"
+#include "EquipmentSocketDefinition.generated.h"
 
 
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FEquipmentSocketInfo
+struct FEquipmentSocketDefinition
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FEquipmentSocketInfo() {};
-	FEquipmentSocketInfo(bool bInUseComponent, FName InSocketName) : bUseComponent(bInUseComponent), SocketName(InSocketName) {};
+	FEquipmentSocketDefinition() {};
+	FEquipmentSocketDefinition(bool bInUseComponent, FName InSocketName) : bUseComponent(bInUseComponent), SocketName(InSocketName) {};
 
 
 	UPROPERTY(EditAnywhere)
@@ -26,9 +26,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	FName SocketName = NAME_None;
-
-	UPROPERTY()
-	FTransform SocketTransform = FTransform::Identity;
 
 
 	bool IsValid() const

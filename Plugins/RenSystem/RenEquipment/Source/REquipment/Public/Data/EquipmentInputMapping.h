@@ -6,42 +6,15 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "Core/Type/EquipmentSlotId.h"
+#include "Core/Type/EquipmentInputBinding.h"
 
 // Generated Headers
 #include "EquipmentInputMapping.generated.h"
 
-// Module Macros
-#define REN_API REQUIPMENT_API
-
 // Forward Declarations
 class UInputAction;
 class UEquipmentActivationInput;
-
-
-/**
- *
- */
-USTRUCT()
-struct FEquipmentActivationBinding
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UInputAction> InputAction = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FEquipmentSlotId SlotId;
-
-	bool IsValid() const
-	{
-		return InputAction != nullptr && SlotId.IsValid();
-	}
-
-};
+class UEquipmentActionInput;
 
 
 /**
@@ -61,9 +34,11 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Equipment Activation")
 	TSubclassOf<UEquipmentActivationInput> ActivationClass;
 
+	UPROPERTY(EditAnywhere, Category = "Equipment Triggers")
+	TArray<FEquipmentActionBinding> ActionBindings;
+
+	UPROPERTY(EditAnywhere, Category = "Equipment Triggers")
+	TSubclassOf<UEquipmentActionInput> ActionClass;
+
 };
-
-
-// Module Macros
-#undef REN_API
 

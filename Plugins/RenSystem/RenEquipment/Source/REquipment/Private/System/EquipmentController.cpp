@@ -228,7 +228,7 @@ bool UEquipmentController::CanActivate() const
 
 void UEquipmentController::CreateAbilities()
 {
-	const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
+	const FEquipmentSlotDefinition* SlotData = UEquipmentSettings::GetEquipmentSlotById(EquipmentData.SlotId);
 	const UEquipmentAbilityCollection* AbilityCollection = GetEquipmentAbilityCollection();
 	UAbilitySystemComponent* AbilitySystem = GetOwnerAbilitySystemComponent();
 	if (!SlotData || !IsValid(AbilitySystem) || !IsValid(AbilityCollection))
@@ -249,15 +249,16 @@ void UEquipmentController::CreateAbilities()
 		}
 	}
 
-	const TArray<TSubclassOf<UGameplayAbility>>& Abilities = AbilityCollection->Abilities;
-	for (const TSubclassOf<UGameplayAbility>& AbilityClass : Abilities)
+	const TArray<FEquipmentAbilityData>& Abilities = AbilityCollection->Abilities;
+	for (const FEquipmentAbilityData& Ability : Abilities)
 	{
+		TSubclassOf<UGameplayAbility> AbilityClass = Ability.AbilityClass;
 		if (IsValid(AbilityClass))
 		{
 			FGameplayAbilitySpec AbilitySpec(AbilityClass);
 			AbilitySpec.Level = GetEquipmentLevel();
 			AbilitySpec.SourceObject = this;
-			AbilitySpec.InputID = SlotData->InputId;
+			AbilitySpec.InputID = SlotData->InputId + Ability.InputIdOffset;
 
 			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
 			ActiveAbilityHandles.Add(AbilityHandle);

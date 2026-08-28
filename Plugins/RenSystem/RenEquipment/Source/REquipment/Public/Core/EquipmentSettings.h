@@ -7,7 +7,7 @@
 #include "GameplayTagContainer.h"
 
 // Project Headers
-#include "Core/Type/EquipmentCategoryData.h"
+#include "Core/Type/EquipmentCategoryDefinition.h"
 #include "Core/Type/Runtime/EquipmentInstance.h"
 
 // Generated Headers
@@ -54,7 +54,7 @@ public:
 	TMap<FGuid, FEquipmentSlotInstance> DefaultEquipmentInstances;
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Default Data")
-	TArray<FEquipmentCategoryData> EquipmentCategories;
+	TArray<FEquipmentCategoryDefinition> EquipmentCategories;
 
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
@@ -83,9 +83,9 @@ public:
 
 	static REN_API const UEquipmentSettings* Get();
 
-	static REN_API const FEquipmentCategoryData* GetEquipmentCategoryByTag(FGameplayTag CategoryTag);
-	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(FGameplayTag CategoryTag, int Id);
-	static REN_API const FEquipmentSlotData* GetEquipmentSlotById(const FEquipmentSlotId& SlotId);
+	static REN_API const FEquipmentCategoryDefinition* GetEquipmentCategoryByTag(FGameplayTag CategoryTag);
+	static REN_API const FEquipmentSlotDefinition* GetEquipmentSlotById(FGameplayTag CategoryTag, int Id);
+	static REN_API const FEquipmentSlotDefinition* GetEquipmentSlotById(const FEquipmentSlotId& SlotId);
 
 	static REN_API const FGameplayTag& GetAttachmentEventTag(bool bEquip);
 

@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "System/EquipmentActivationInput.h"
+#include "System/EquipmentInputHandler.h"
 
 // Engine Headers
 #include "AbilitySystemComponent.h"
@@ -12,27 +12,16 @@
 #include "Component/EquipmentManagerComponent.h"
 #include "Core/EquipmentSettings.h"
 #include "Data/EquipmentInputMapping.h"
+#include "System/EquipmentController.h"
+#include "Log/LogCategory.h"
+#include "Log/LogMacro.h"
 
 
-void UEquipmentActivationInput::RegisterInput(const TArray<FEquipmentActivationBinding>& Inputs)
+void UEquipmentInputHandler::RegisterInput()
 {
-	UEnhancedInputComponent* InputComponent = GetInputComponent();
-	if (!IsValid(InputComponent))
-	{
-		return;
-	}
-
-	for (const FEquipmentActivationBinding& Input : Inputs)
-	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(Input.SlotId);
-		if (Input.IsValid() && SlotData)
-		{
-			InternalInputBinding(Input, SlotData, InputComponent);
-		}
-	}
 }
 
-void UEquipmentActivationInput::UnregisterInput()
+void UEquipmentInputHandler::UnregisterInput()
 {
 	UEnhancedInputComponent* InputComponent = GetInputComponent();
 	if (!IsValid(InputComponent))
@@ -46,11 +35,8 @@ void UEquipmentActivationInput::UnregisterInput()
 	}
 }
 
-void UEquipmentActivationInput::InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotData* SlotData, UEnhancedInputComponent* InputComponent)
-{
-}
 
-APlayerController* UEquipmentActivationInput::GetOwner() const
+APlayerController* UEquipmentInputHandler::GetOwner() const
 {
 	UActorComponent* OwnerComponent = Cast<UActorComponent>(GetOuter());
 	if (!IsValid(OwnerComponent))
@@ -60,7 +46,7 @@ APlayerController* UEquipmentActivationInput::GetOwner() const
 	return OwnerComponent->GetOwner<APlayerController>();
 }
 
-UEnhancedInputComponent* UEquipmentActivationInput::GetInputComponent() const
+UEnhancedInputComponent* UEquipmentInputHandler::GetInputComponent() const
 {
 	APlayerController* PC = GetOwner();
 	if (!IsValid(PC))
@@ -70,7 +56,7 @@ UEnhancedInputComponent* UEquipmentActivationInput::GetInputComponent() const
 	return Cast<UEnhancedInputComponent>(PC->InputComponent);
 }
 
-UAbilitySystemComponent* UEquipmentActivationInput::GetAbilitySystemComponent() const
+UAbilitySystemComponent* UEquipmentInputHandler::GetAbilitySystemComponent() const
 {
 	APlayerController* PC = GetOwner();
 	if (!IsValid(PC))
@@ -80,7 +66,7 @@ UAbilitySystemComponent* UEquipmentActivationInput::GetAbilitySystemComponent() 
 	return UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(PC->GetPawn());
 }
 
-UEquipmentManagerComponent* UEquipmentActivationInput::GetEquipmentManagerComponent() const
+UEquipmentManagerComponent* UEquipmentInputHandler::GetEquipmentManagerComponent() const
 {
 	APlayerController* PC = GetOwner();
 	if (!IsValid(PC))

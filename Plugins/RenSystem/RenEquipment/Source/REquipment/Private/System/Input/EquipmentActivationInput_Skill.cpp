@@ -8,12 +8,13 @@
 #include "EnhancedInputComponent.h"
 
 // Project Headers
-#include "Core/Type/EquipmentSlotData.h"
+#include "Core/Type/EquipmentSlotDefinition.h"
 #include "Data/EquipmentInputMapping.h"
+#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
-void UEquipmentActivationInput_Skill::InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotData* SlotData, UEnhancedInputComponent* InputComponent)
+void UEquipmentActivationInput_Skill::InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotDefinition* SlotData, UEnhancedInputComponent* InputComponent)
 {
 	FEnhancedInputActionEventBinding& PressedBinding = InputComponent->BindAction(Input.InputAction, ETriggerEvent::Started, this, &UEquipmentActivationInput_Skill::HandleOnInputPressed, SlotData->InputId);
 	InputHandles.Add(PressedBinding.GetHandle());
@@ -28,7 +29,7 @@ void UEquipmentActivationInput_Skill::HandleOnInputPressed(const FInputActionVal
 	if (IsValid(ASC))
 	{
 		ASC->PressInputID(InputId);
-		LOG_WARNING(LogTemp, TEXT("Skill activation key pressed: %d"), InputId);
+		LOG_WARNING(LogEquipment, TEXT("Skill activation key pressed: %d"), InputId);
 	}
 }
 
@@ -38,7 +39,7 @@ void UEquipmentActivationInput_Skill::HandleOnInputReleased(const FInputActionVa
 	if (IsValid(ASC))
 	{
 		ASC->ReleaseInputID(InputId);
-		LOG_WARNING(LogTemp, TEXT("Skill activation key released: %d"), InputId);
+		LOG_WARNING(LogEquipment, TEXT("Skill activation key released: %d"), InputId);
 	}
 }
 

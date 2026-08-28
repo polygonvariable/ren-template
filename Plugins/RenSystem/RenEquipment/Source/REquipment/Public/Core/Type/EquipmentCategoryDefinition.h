@@ -6,32 +6,32 @@
 #include "GameplayTagContainer.h"
 
 // Project Headers
-#include "Core/Type/EquipmentSlotData.h"
+#include "Core/Type/EquipmentSlotDefinition.h"
 
 // Generated Headers
-#include "EquipmentCategoryData.generated.h"
+#include "EquipmentCategoryDefinition.generated.h"
 
 
 /**
  * 
  */
 USTRUCT(BlueprintType)
-struct FEquipmentCategoryData
+struct FEquipmentCategoryDefinition
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FEquipmentCategoryData() {}
-	FEquipmentCategoryData(FGameplayTag InCategoryTag, TArray<FEquipmentSlotData> InSlots) : CategoryTag(InCategoryTag), Slots(MoveTemp(InSlots)) {};
+	FEquipmentCategoryDefinition() {}
+	FEquipmentCategoryDefinition(FGameplayTag InCategoryTag, TArray<FEquipmentSlotDefinition> InSlots) : CategoryTag(InCategoryTag), Slots(MoveTemp(InSlots)) {};
 
 
 	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
 	FGameplayTag CategoryTag;
 
 	UPROPERTY(EditAnywhere)
-	TArray<FEquipmentSlotData> Slots;
+	TArray<FEquipmentSlotDefinition> Slots;
 
 
 	bool IsValid() const

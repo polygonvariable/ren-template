@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Type/EquipmentSlotId.h"
-#include "System/EquipmentActivationInput.h"
+#include "System/Input/EquipmentActivationInput.h"
 
 // Generated Headers
 #include "EquipmentActivationInput_Weapon.generated.h"
@@ -12,7 +12,7 @@
 // Forward Declarations
 struct FInputActionValue;
 struct FEquipmentActivationBinding;
-struct FEquipmentSlotData;
+struct FEquipmentSlotDefinition;
 
 
 /**
@@ -27,7 +27,7 @@ class UEquipmentActivationInput_Weapon : public UEquipmentActivationInput
 protected:
 
 	// ~ UEquipmentInputInteraction
-	virtual void InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotData* SlotData, UEnhancedInputComponent* InputComponent) override;
+	virtual void InternalInputBinding(const FEquipmentActivationBinding& Input, const FEquipmentSlotDefinition* SlotData, UEnhancedInputComponent* InputComponent) override;
 	// ~ End of UEquipmentInputInteraction
 
 	// ~ Input Bindings

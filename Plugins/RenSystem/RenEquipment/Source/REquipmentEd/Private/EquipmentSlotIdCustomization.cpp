@@ -33,10 +33,10 @@ void FEquipmentSlotIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
     //const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 
     //SlotOptions.Reset();
-    //for (const FEquipmentCategoryData& CData : Settings->EquipmentCategories)
+    //for (const FEquipmentCategoryDefinition& CData : Settings->EquipmentCategories)
     //{
-    //    const TArray<FEquipmentSlotData>& SlotData = CData.Slots;
-    //    for (const FEquipmentSlotData& SData : SlotData)
+    //    const TArray<FEquipmentSlotDefinition>& SlotData = CData.Slots;
+    //    for (const FEquipmentSlotDefinition& SData : SlotData)
     //    {
     //        TSharedPtr<FEquipmentSlotId> Option = MakeShared<FEquipmentSlotId>();
     //        Option->Id = SData.SlotId;
@@ -57,7 +57,7 @@ void FEquipmentSlotIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
             SNew(SVerticalBox)
                 + SVerticalBox::Slot()
                 .AutoHeight()
-                .Padding(FMargin(0.0f, 4.0f))
+                .Padding(FMargin(0.0f, 6.0f))
                 [
                     SNew(SGridPanel)
                         + SGridPanel::Slot(0, 0)
@@ -68,7 +68,7 @@ void FEquipmentSlotIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
                                 .Font(BoldFont)
                         ]
                         + SGridPanel::Slot(1, 0)
-                        .Padding(6.0f, 0.0f, 0.0f, 0.0f)
+                        .Padding(12.0f, 0.0f, 0.0f, 0.0f)
                         [
                             SNew(SGameplayTagCombo)
                                 .PropertyHandle(SlotTag_Property)
@@ -81,7 +81,7 @@ void FEquipmentSlotIdCustomization::CustomizeHeader(TSharedRef<IPropertyHandle> 
                                 .Font(BoldFont)
                         ]
                         + SGridPanel::Slot(1, 1)
-                        .Padding(6.0f, 0.0f, 0.0f, 0.0f)
+                        .Padding(12.0f, 0.0f, 0.0f, 0.0f)
                         [
                             Id_Property->CreatePropertyValueWidget()
                         ]

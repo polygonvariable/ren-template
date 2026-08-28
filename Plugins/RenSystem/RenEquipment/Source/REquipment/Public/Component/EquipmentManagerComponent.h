@@ -48,7 +48,7 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnEquipmentManagerEvent);
 	FOnEquipmentManagerEvent OnEquipmentReset;
 	FOnEquipmentManagerEvent OnEquipmentUpdate;
-
+	FOnEquipmentManagerEvent OnEquipmentChanged;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void InitializeManager();
@@ -61,6 +61,7 @@ public:
 	REN_API void ActivateEquipmentById(const FEquipmentSlotId& SlotId);
 	REN_API UEquipmentController* GetEquipmentControllerByTag(const FEquipmentSlotId& SlotId) const;
 
+	REN_API UEquipmentController* GetActiveController() const;
 
 	// ~ UActorComponent
 	virtual void BeginPlay() override;

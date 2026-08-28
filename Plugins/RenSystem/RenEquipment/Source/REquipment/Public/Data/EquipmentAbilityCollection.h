@@ -8,15 +8,31 @@
 // Generated Headers
 #include "EquipmentAbilityCollection.generated.h"
 
-// Module Macros
-#define REN_API REQUIPMENT_API
-
 // Forward Declarations
 class FObjectPreSaveContext;
 class UGameplayAbility;
 class UGameplayEffect;
 class UInputAction;
 
+
+/**
+ *
+ */
+USTRUCT()
+struct FEquipmentAbilityData
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayAbility> AbilityClass;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 10))
+	int InputIdOffset = 0;
+
+};
 
 /**
  *
@@ -30,7 +46,7 @@ class UEquipmentAbilityCollection : public UPrimaryDataAsset
 public:
 
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<UGameplayAbility>> Abilities;
+	TArray<FEquipmentAbilityData> Abilities;
 
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<UGameplayEffect>> EffectClasses;
@@ -40,8 +56,4 @@ public:
 	// ~ UObject
 
 };
-
-
-// Module Macros
-#undef REN_API
 

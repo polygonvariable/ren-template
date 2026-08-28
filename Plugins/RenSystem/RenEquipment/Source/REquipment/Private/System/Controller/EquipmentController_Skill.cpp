@@ -13,7 +13,7 @@ bool UEquipmentController_Skill::ActivateEquipment()
 	UAbilitySystemComponent* ASC = GetOwnerAbilitySystemComponent();
 	if (IsValid(ASC))
 	{
-		const FEquipmentSlotData* SlotData = UEquipmentSettings::GetEquipmentSlotById(GetEquipmentData().SlotId);
+		const FEquipmentSlotDefinition* SlotData = UEquipmentSettings::GetEquipmentSlotById(GetEquipmentData().SlotId);
 		if (SlotData)
 		{
 			ASC->PressInputID(SlotData->InputId);
