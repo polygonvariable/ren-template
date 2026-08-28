@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "REquipmentInput",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "REquipmentUI",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

@@ -8,9 +8,6 @@
 // Generated Headers
 #include "EquipmentInputComponent.generated.h"
 
-// Module Macros
-#define REN_API REQUIPMENT_API
-
 // Forward Declarations
 class UEquipmentInputHandler;
 struct FStreamableHandle;
@@ -57,7 +54,4 @@ private:
 	TSharedPtr<FStreamableHandle> _LoadHandle = nullptr;
 
 };
-
-// Module Macros
-#undef REN_API
 
