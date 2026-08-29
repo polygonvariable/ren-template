@@ -4,7 +4,6 @@
 
 // Project Headers
 #include "Core/Interface/AssetInstanceRelation.h"
-#include "Core/Type/Runtime/EquipmentInstance.h"
 #include "Delegate/GameEventDelegate.h"
 #include "Interface/StorageManager.h"
 
@@ -18,6 +17,7 @@
 class UEquipmentStorage;
 struct FGameplayTag;
 struct FEquipmentInitializationData;
+struct FEquipmentSlotId;
 
 
 /**

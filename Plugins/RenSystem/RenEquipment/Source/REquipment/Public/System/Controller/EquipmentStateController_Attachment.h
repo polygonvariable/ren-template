@@ -35,13 +35,13 @@ class UEquipmentAttachmentController : public UEquipmentStateController
 public:
 
 	// ~ UEquipmentController
-	virtual bool ActivateEquipment() override;
-	virtual bool DeactivateEquipment(bool bForce = false) override;
+	REN_API virtual bool ActivateEquipment() override;
+	REN_API virtual bool DeactivateEquipment(bool bForce = false) override;
 	// ~ End of UEquipmentController
 
 #if WITH_EDITOR
 	// ~ UObject
-	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	REN_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
 	// ~ End of UObject
 #endif
 
@@ -60,30 +60,30 @@ protected:
 	bool bDetachNotifyReceived = false;
 
 
-	virtual void LinkAnimInstance();
-	virtual void UnlinkAnimInstance();
+	void LinkAnimInstance();
+	void UnlinkAnimInstance();
 
-	virtual void PlayEquipAnimation();
-	virtual void PlayUnequipAnimation();
+	void PlayEquipAnimation();
+	void PlayUnequipAnimation();
 
-	virtual void RegisterMontageEndDelegate(UAnimInstance* AnimInstance, UAnimMontage* Montage, bool bIsEquip);
-	virtual void RegisterAttachmentNotify(bool bIsEquip);
-	virtual void UnregisterAttachmentNotify(bool bIsEquip);
+	void RegisterMontageEndDelegate(UAnimInstance* AnimInstance, UAnimMontage* Montage, bool bIsEquip);
+	void RegisterAttachmentNotify(bool bIsEquip);
+	void UnregisterAttachmentNotify(bool bIsEquip);
 
-	virtual void AttachToEquipSocket();
-	virtual void AttachToUnequipSocket();
-	virtual void AttachToSocket(const FEquipmentSocketDefinition& Socket, const FTransform& SocketTransform);
+	void AttachToEquipSocket();
+	void AttachToUnequipSocket();
+	void AttachToSocket(const FEquipmentSocketDefinition& Socket, const FTransform& SocketTransform);
 
 	// ~ Binidngs
-	virtual void HandleOnMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip);
-	virtual void HandleOnMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted);
-	virtual void HandleOnMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted);
+	REN_API virtual void HandleOnMontageAttachmentNotify(const FGameplayEventData* Payload, bool bIsEquip);
+	REN_API virtual void HandleOnMontageEquipEnded(UAnimMontage* Montage, bool bInterrupted);
+	REN_API virtual void HandleOnMontageUnequipEnded(UAnimMontage* Montage, bool bInterrupted);
 	// ~ End of Bindings
 
 	// ~ UEquipmentController
-	virtual void AttachEquipment() override;
-	virtual void CompleteActivation() override;
-	virtual void CompleteDeactivation() override;
+	REN_API virtual void AttachEquipment() override;
+	REN_API virtual void CompleteActivation() override;
+	REN_API virtual void CompleteDeactivation() override;
 	// ~ End of UEquipmentController
 
 };

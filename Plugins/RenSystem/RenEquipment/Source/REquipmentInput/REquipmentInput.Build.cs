@@ -26,18 +26,7 @@ public class REquipmentInput : ModuleRules
 			new string[]
 			{
 				"Core",
-                "InputCore",
-                "EnhancedInput",
 				// ... add other public dependencies that you statically link with here ...
-                "GameplayAbilities",
-                "DeveloperSettings",
-                "GameplayTags",
-                "RCoreCommon",
-				"RCorePool",
-                "RCoreAscension",
-                "RCoreStorage",
-				"RCoreAuthAction",
-                "RCoreAssetInstance",
                 "REquipment",
             }
 			);
@@ -51,11 +40,9 @@ public class REquipmentInput : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "EnhancedInput",
+                "GameplayAbilities",
                 "RCoreLibrary",
-                "RCoreDelegate",
-                "RCoreFilter",
-                "RCoreEquipment",
-                "RCoreAsset",
                 "RCoreAssetManager",
             }
 			);

@@ -26,8 +26,6 @@ public class REquipment : ModuleRules
 			new string[]
 			{
 				"Core",
-                "InputCore",
-                "EnhancedInput",
 				// ... add other public dependencies that you statically link with here ...
                 "GameplayAbilities",
                 "DeveloperSettings",
@@ -50,6 +48,7 @@ public class REquipment : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"GameplayTasks",
                 "RCoreLibrary",
                 "RCoreDelegate",
                 "RCoreFilter",

@@ -8,7 +8,7 @@
 #include "GameFramework/Character.h"
 
 // Project Headers
-#include "Actor/EquipmentActor.h"
+#include "EquipmentActor.h"
 #include "Core/EquipmentSettings.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Log/LogCategory.h"

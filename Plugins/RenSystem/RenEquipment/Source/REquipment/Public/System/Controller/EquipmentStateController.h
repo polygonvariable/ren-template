@@ -53,8 +53,8 @@ public:
 	EEquipmentState GetState() const;
 
 	// ~ UEquipmentStateController
-	virtual bool ActivateEquipment() override;
-	virtual bool DeactivateEquipment(bool bForce = false) override;
+	REN_API virtual bool ActivateEquipment() override;
+	REN_API virtual bool DeactivateEquipment(bool bForce = false) override;
 	// ~ End of UEquipmentStateController
 
 protected:
@@ -65,13 +65,13 @@ protected:
 	virtual void CompleteDeactivation();
 
 	// ~ Bindings
-	virtual void HandleOnDeactivationTagChanged(const FGameplayTag Tag, int32 NewCount);
+	REN_API virtual void HandleOnDeactivationTagChanged(const FGameplayTag Tag, int32 NewCount);
 	// ~ End of Bindings
 
 	// ~ UEquipmentStateController
-	virtual bool CanActivate() const;
-	virtual void InitializeGameplayEvent() override;
-	virtual void DeinitializeGameplayEvent() override;
+	REN_API virtual bool CanActivate() const;
+	REN_API virtual void InitializeGameplayEvent() override;
+	REN_API virtual void DeinitializeGameplayEvent() override;
 	// ~ End of UEquipmentStateController
 
 private:

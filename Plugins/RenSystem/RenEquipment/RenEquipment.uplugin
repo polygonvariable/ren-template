@@ -21,7 +21,22 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "REquipmentAbility",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "REquipmentInput",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "REquipmentWeapon",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "REquipmentSkill",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

@@ -9,18 +9,17 @@
 // Generated Headers
 #include "EquipmentActionInput.generated.h"
 
+// Module Macros
+#define REN_API REQUIPMENTINPUT_API
+
 // Forward Declarations
 class UEnhancedInputComponent;
-class UAbilitySystemComponent;
-class UEquipmentManagerComponent;
-struct FEquipmentSlotDefinition;
-struct FInputActionValue;
 
 
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UEquipmentActionInput : public UEquipmentInputHandler
 {
 
@@ -32,12 +31,16 @@ public:
 
 
 	// ~ UEquipmentInputHandler
-	virtual void RegisterInput() override;
+	REN_API virtual void RegisterInput() override;
 	// ~ End of UEquipmentInputHandler
 
 protected:
 
-	virtual void InternalInputBinding(const FEquipmentActionBinding& Action, UEnhancedInputComponent* InputComponent);
+	REN_API virtual void InternalInputBinding(const FEquipmentActionBinding& Action, UEnhancedInputComponent* InputComponent);
 
 };
+
+
+// Module Macros
+#undef REN_API
 

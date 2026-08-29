@@ -9,7 +9,7 @@
 #include "GameFramework/Character.h"
 
 // Project Headers
-#include "Actor/EquipmentActor.h"
+#include "EquipmentActor.h"
 #include "Core/AssetInstanceUtil.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AscensionInstanceProvider.h"
@@ -258,7 +258,10 @@ void UEquipmentController::CreateAbilities()
 			FGameplayAbilitySpec AbilitySpec(AbilityClass);
 			AbilitySpec.Level = GetEquipmentLevel();
 			AbilitySpec.SourceObject = this;
-			AbilitySpec.InputID = SlotData->InputId + Ability.InputIdOffset;
+			if (Ability.bAllowInput)
+			{
+				AbilitySpec.InputID = SlotData->InputId + Ability.InputIdOffset;
+			}
 
 			FGameplayAbilitySpecHandle AbilityHandle = AbilitySystem->GiveAbility(AbilitySpec);
 			ActiveAbilityHandles.Add(AbilityHandle);

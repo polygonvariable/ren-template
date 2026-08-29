@@ -28,30 +28,34 @@ class UEquipmentDataDefinition : public UAssetDataDefinition
 
 public:
 
-	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	UPROPERTY(EditAnywhere, Category = "Equipment Detail", meta = (Categories = "Equipment.Category"))
 	FGameplayTag CategoryTag;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Equipment Detail")
 	TSoftClassPtr<UEquipmentController> ControllerClass = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Equipment Detail")
 	TSoftClassPtr<AEquipmentActor> ActorClass = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Equipment Detail")
 	TSoftObjectPtr<UEquipmentAbilityCollection> AbilityCollection = nullptr;
 
 	/** Tag that can be used to activate this equipment */
-	UPROPERTY(EditAnywhere, Category = "Tags")
+	UPROPERTY(EditAnywhere, Category = "Activation Tags")
 	FGameplayTagContainer ActivationTag;
 
 	/** Tag that can be used to deactivate this equipment */
-	UPROPERTY(EditAnywhere, Category = "Tags")
+	UPROPERTY(EditAnywhere, Category = "Activation Tags")
 	FGameplayTagContainer DeactivationTag;
 
 #if WITH_EDITORONLY_DATA
 	// ~ UAssetDataDefinition
 	virtual void AppendAssetBundleData(FAssetBundleData& Data) override;
 	// ~ End of UAssetDataDefinition
+
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UObject
 #endif
 
 };

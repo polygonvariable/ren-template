@@ -8,18 +8,20 @@
 // Generated Headers
 #include "EquipmentInputHandler.generated.h"
 
+// Module Macros
+#define REN_API REQUIPMENTINPUT_API
+
 // Forward Declarations
+class APawn;
 class UEnhancedInputComponent;
 class UAbilitySystemComponent;
 class UEquipmentManagerComponent;
-struct FEquipmentSlotDefinition;
-struct FInputActionValue;
 
 
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UEquipmentInputHandler : public UObject
 {
 
@@ -27,22 +29,33 @@ class UEquipmentInputHandler : public UObject
 
 public:
 
-	virtual void RegisterInput();
-	virtual void UnregisterInput();
+	REN_API virtual void InitializeHandler();
+	REN_API virtual void DeinitializeHandler();
+
+	void RegisterPawn();
+	void UnregisterPawn();
+
+	REN_API virtual void RegisterInput();
+	REN_API virtual void UnregisterInput();
 
 protected:
 
 	TArray<uint8> InputHandles;
 
 
-	APlayerController* GetOwner() const;
-	UEnhancedInputComponent* GetInputComponent() const;
-	UAbilitySystemComponent* GetAbilitySystemComponent() const;
-	UEquipmentManagerComponent* GetEquipmentManagerComponent() const;
+	REN_API APlayerController* GetOwner() const;
+	REN_API UEnhancedInputComponent* GetInputComponent() const;
+	REN_API UAbilitySystemComponent* GetAbilitySystemComponent() const;
+	REN_API UEquipmentManagerComponent* GetEquipmentManagerComponent() const;
 
-private:
-
-	mutable TWeakObjectPtr<UEquipmentManagerComponent> _EquipmentManager;
+	// ~ Binding
+	UFUNCTION()
+	REN_API virtual void HandleOnPawnChanged(APawn* OldPawn, APawn* NewPawn);
+	// ~ End of Binding
 
 };
+
+
+// Module Macros
+#undef REN_API
 

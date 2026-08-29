@@ -9,13 +9,39 @@
 
 // Project Headers
 #include "AbilitySystemBlueprintLibrary.h"
-#include "Component/EquipmentManagerComponent.h"
-#include "Core/EquipmentSettings.h"
-#include "Data/EquipmentInputMapping.h"
-#include "System/EquipmentController.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
+#include "EquipmentManagerComponent.h"
 
+
+void UEquipmentInputHandler::InitializeHandler()
+{
+	RegisterPawn();
+	RegisterInput();
+}
+
+void UEquipmentInputHandler::DeinitializeHandler()
+{
+	UnregisterPawn();
+	UnregisterInput();
+}
+
+void UEquipmentInputHandler::RegisterPawn()
+{
+	APlayerController* PC = GetOwner();
+	if (IsValid(PC))
+	{
+		PC->OnPossessedPawnChanged.AddDynamic(this, &UEquipmentInputHandler::HandleOnPawnChanged);
+		//PC->GetOnNewPawnNotifier().AddUObject(this, &UEquipmentInputHandler::HandleOnPawnChanged);
+	}
+}
+
+void UEquipmentInputHandler::UnregisterPawn()
+{
+	APlayerController* PC = GetOwner();
+	if (IsValid(PC))
+	{
+		PC->GetOnNewPawnNotifier().RemoveAll(this);
+	}
+}
 
 void UEquipmentInputHandler::RegisterInput()
 {
@@ -34,7 +60,6 @@ void UEquipmentInputHandler::UnregisterInput()
 		InputComponent->RemoveBindingByHandle(Handle);
 	}
 }
-
 
 APlayerController* UEquipmentInputHandler::GetOwner() const
 {
@@ -81,5 +106,9 @@ UEquipmentManagerComponent* UEquipmentInputHandler::GetEquipmentManagerComponent
 	}
 
 	return Pawn->GetComponentByClass<UEquipmentManagerComponent>();
+}
+
+void UEquipmentInputHandler::HandleOnPawnChanged(APawn* OldPawn, APawn* NewPawn)
+{
 }
 

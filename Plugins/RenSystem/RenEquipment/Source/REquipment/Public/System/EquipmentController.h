@@ -17,10 +17,7 @@
 #define REN_API REQUIPMENT_API
 
 // Forward Declarations
-class ACharacter;
 class UAnimInstance;
-class UGameplayEffect;
-class UGameplayAbility;
 class UAbilitySystemComponent;
 class UCoreDataAsset;
 class AEquipmentActor;
@@ -28,14 +25,12 @@ class IAssetInstanceCollection;
 class IAscensionInstanceProvider;
 class UEquipmentAbilityCollection;
 class UEquipmentDataDefinition;
-class UEquipmentFragment;
-struct FGameplayEventData;
 
 
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI)
+UCLASS(Abstract, MinimalAPI, BlueprintType)
 class UEquipmentController : public UObject
 {
 
@@ -47,30 +42,32 @@ public:
 	EDataSource SourceType = EDataSource::Static;
 
 
-	virtual bool InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition);
-	virtual void DeinitializeController();
+	bool InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition);
+	void DeinitializeController();
 
-	virtual bool ActivateEquipment();
-	virtual bool DeactivateEquipment(bool bForce = false);
-	virtual void RefreshEquipment();
+	REN_API virtual bool ActivateEquipment();
+	REN_API virtual bool DeactivateEquipment(bool bForce = false);
+	REN_API virtual void RefreshEquipment();
 
 	REN_API const UCoreDataAsset* GetEquipmentAsset() const;
 	REN_API const FEquipmentInitializationData& GetEquipmentData() const;
 	REN_API const UEquipmentAbilityCollection* GetEquipmentAbilityCollection() const;
 	REN_API const UEquipmentDataDefinition* GetEquipmentDataDefinition() const;
+
+	UFUNCTION(BlueprintCallable)
 	REN_API AEquipmentActor* GetEquipmentActor() const;
 	REN_API int GetEquipmentLevel() const;
 
-	bool IsInitialized() const;
-	bool IsAttached() const;
+	REN_API bool IsInitialized() const;
+	REN_API bool IsAttached() const;
 
 	// ~ UObject
-	virtual class UWorld* GetWorld() const override;
+	REN_API virtual class UWorld* GetWorld() const override final;
 	// ~ End of UObject
 
 #if WITH_EDITOR
 	// ~ UObject
-	virtual bool ImplementsGetWorld() const override;
+	REN_API virtual bool ImplementsGetWorld() const override final;
 	// ~ End of UObject
 #endif
 
@@ -95,27 +92,27 @@ protected:
 	IAscensionInstanceProvider* InstanceAscension = nullptr;
 
 
-	virtual void InitializeAssetInstance();
-	virtual void DeinitializeAssetInstance();
+	void InitializeAssetInstance();
+	void DeinitializeAssetInstance();
 
-	virtual void InitializeGameplayEvent();
-	virtual void DeinitializeGameplayEvent();
+	REN_API virtual void InitializeGameplayEvent();
+	REN_API virtual void DeinitializeGameplayEvent();
 
-	virtual bool CanActivate() const;
+	REN_API virtual bool CanActivate() const;
 
 	void CreateAbilities();
 	void RemoveAbilities();
 	void RefreshAbilities();
 
-	virtual void AttachEquipment();
-	virtual void DetachEquipment();
+	REN_API virtual void AttachEquipment();
+	REN_API virtual void DetachEquipment();
 	
-	virtual void OnControllerInitialized();
-	virtual void OnControllerDeinitialized();
+	REN_API virtual void OnControllerInitialized();
+	REN_API virtual void OnControllerDeinitialized();
 
-	UAnimInstance* GetOwnerAnimInstance() const;
-	UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
-	AActor* GetEquipmentOwner() const;
+	REN_API UAnimInstance* GetOwnerAnimInstance() const;
+	REN_API UAbilitySystemComponent* GetOwnerAbilitySystemComponent() const;
+	REN_API AActor* GetEquipmentOwner() const;
 
 	template<class T>
 	T* GetEquipmentOwner() const
@@ -123,8 +120,8 @@ protected:
 		return Cast<T>(GetEquipmentOwner());
 	}
 
-	void SetEquipmentLevel(int Level);
-	void SetIsAttached(bool bAttached);
+	REN_API void SetEquipmentLevel(int Level);
+	REN_API void SetIsAttached(bool bAttached);
 	void SetIsInitialized(bool bInitialized);
 
 private:

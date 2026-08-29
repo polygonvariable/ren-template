@@ -14,7 +14,6 @@
 // Forward Declarations
 class IStorageProvider;
 class UEquipmentStorageManager;
-class UEquipmentController;
 struct FTaskResult;
 struct FEquipmentSlotId;
 

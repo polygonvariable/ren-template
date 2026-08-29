@@ -10,7 +10,7 @@
 #include "GameFramework/PlayerController.h"
 
 // Project Headers
-#include "Component/EquipmentManagerComponent.h"
+#include "EquipmentManagerComponent.h"
 #include "Data/CoreDataAsset.h"
 #include "System/EquipmentController.h"
 

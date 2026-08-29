@@ -12,7 +12,6 @@
 class FObjectPreSaveContext;
 class UGameplayAbility;
 class UGameplayEffect;
-class UInputAction;
 
 
 /**
@@ -29,7 +28,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UGameplayAbility> AbilityClass;
 
-	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 10))
+	UPROPERTY(EditAnywhere)
+	bool bAllowInput = true;
+
+	UPROPERTY(EditAnywhere, meta = (ClampMin = 0, ClampMax = 10, EditCondition = "bAllowInput==true", EditConditionHides))
 	int InputIdOffset = 0;
 
 };

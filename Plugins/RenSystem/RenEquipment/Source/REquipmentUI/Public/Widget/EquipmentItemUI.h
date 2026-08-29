@@ -9,6 +9,9 @@
 // Generated Headers
 #include "EquipmentItemUI.generated.h"
 
+// Module Macros
+#define REN_API REQUIPMENTUI_API
+
 // Forward Declarations
 class UImage;
 class UOverlay;
@@ -20,7 +23,7 @@ class UEquipmentController;
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS(Abstract, MinimalAPI)
 class UEquipmentItemUI : public UUserWidget
 {
 
@@ -44,8 +47,8 @@ protected:
 	FEquipmentSlotId SlotId;
 
 
-	UEquipmentManagerComponent* GetEquipmentComponent() const;
-	UEquipmentController* GetEquipmentController() const;
+	REN_API UEquipmentManagerComponent* GetEquipmentComponent() const;
+	REN_API UEquipmentController* GetEquipmentController() const;
 
 	template<class T>
 	T* GetEquipmentComponent() const
@@ -59,28 +62,28 @@ protected:
 		return Cast<T>(_EquipmentController.Get());
 	}
 
-	virtual void RegisterEquipmentComponent(AActor* Target);
-	virtual void UnregisterEquipmentComponent();
+	void RegisterEquipmentComponent(AActor* Target);
+	void UnregisterEquipmentComponent();
 
-	virtual void RegisterEquipmentController();
-	virtual void UnregisterEquipmentController();
+	REN_API virtual void RegisterEquipmentController();
+	REN_API virtual void UnregisterEquipmentController();
 
-	virtual void SetDetail(UEquipmentController* Controller);
-	virtual void RefreshDetail();
-	virtual void ResetDetail();
+	REN_API virtual void SetDetail(UEquipmentController* Controller);
+	REN_API virtual void RefreshDetail();
+	REN_API virtual void ResetDetail();
 
 	void RegisterPlayer();
 	void UnregisterPlayer();
 
 	// ~ Bindings
-	virtual void OnPlayerRegistered(AActor* Target);
-	virtual void OnPlayerUnregistered();
+	REN_API virtual void OnPlayerRegistered(AActor* Target);
+	REN_API virtual void OnPlayerUnregistered();
 	// ~ End of Bindings
 
 	// ~ UUserWidget
-	virtual void NativePreConstruct() override;
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+	REN_API virtual void NativePreConstruct() override;
+	REN_API virtual void NativeConstruct() override;
+	REN_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 private:
@@ -92,4 +95,7 @@ private:
 	TWeakObjectPtr<UEquipmentController>  _EquipmentController = nullptr;
 
 };
+
+// Module Macros
+#undef REN_API
 
