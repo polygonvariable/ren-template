@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "EquipmentAbility.h"
+#include "Abilities/GameplayAbility.h"
 
 // Generated Headers
 #include "EquipmentAbility_Skill.generated.h"
@@ -13,7 +13,7 @@
  *
  */
 UCLASS(Abstract)
-class UEquipmentAbility_Skill : public UEquipmentAbility
+class UEquipmentAbility_Skill : public UGameplayAbility
 {
 
 	GENERATED_BODY()

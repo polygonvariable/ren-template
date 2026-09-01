@@ -33,6 +33,7 @@ public class REquipmentSkill : ModuleRules
                 "REquipment",
                 "REquipmentInput",
 				"REquipmentUI",
+                "REquipmentAbility",
             }
 			);
 			

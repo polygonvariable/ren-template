@@ -51,10 +51,10 @@ public:
 	FOnEquipmentManagerEvent OnEquipmentChanged;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void InitializeManager();
+	void InitializeManager();
 
 	UFUNCTION(BlueprintCallable)
-	virtual void DeinitializeManager();
+	void DeinitializeManager();
 
 	UFUNCTION(BlueprintCallable)
 	REN_API void ActivateEquipmentById(FGameplayTag SlotTag, int Id);

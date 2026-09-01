@@ -7,6 +7,7 @@
 
 // Project Headers
 #include "Data/AssetDataDefinition.h"
+#include "Core/Type/EquipmentSocketDefinition.h"
 
 // Generated Headers
 #include "EquipmentDataDefinition.generated.h"
@@ -77,6 +78,15 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Attachment")
 	FTransform DetachTransform;
+
+	UPROPERTY(EditAnywhere, Category = "Attachment Socket")
+	bool bOverrideSocket = false;
+
+	UPROPERTY(EditAnywhere, Category = "Attachment Socket", meta = (EditCondition = "bOverrideSocket==true", EditConditionHides))
+	FEquipmentSocketDefinition AttachSocket;
+
+	UPROPERTY(EditAnywhere, Category = "Attachment Socket", meta = (EditCondition = "bOverrideSocket==true", EditConditionHides))
+	FEquipmentSocketDefinition DetachSocket;
 
 };
 

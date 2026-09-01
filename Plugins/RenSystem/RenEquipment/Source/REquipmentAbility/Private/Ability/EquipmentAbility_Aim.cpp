@@ -4,6 +4,7 @@
 #include "Ability/EquipmentAbility_Aim.h"
 
 // Engine Headers
+#include "Abilities/Tasks/AbilityTask_Repeat.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
@@ -14,10 +15,10 @@
 
 UEquipmentAbility_Aim::UEquipmentAbility_Aim()
 {
-	SetAssetTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Ability.Aim"))));
+	SetAssetTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag(TEXT("Equipment.Aim"))));
 
-	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Ability.Aim")));
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("State.Aim")));
+	BlockAbilitiesWithTag.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Equipment.Aim")));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Equipment.Aim")));
 
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 }

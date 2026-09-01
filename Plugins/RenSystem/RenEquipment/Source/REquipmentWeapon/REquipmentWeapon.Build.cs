@@ -28,9 +28,12 @@ public class REquipmentWeapon : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
+                "GameplayAbilities",
+                "GameplayTags",
                 "REquipment",
                 "REquipmentInput",
 				"REquipmentUI",
+                "REquipmentAbility",
             }
 			);
 			
@@ -44,7 +47,7 @@ public class REquipmentWeapon : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
-                "GameplayAbilities",
+                "GameplayTasks",
                 "RCoreLibrary",
                 "RCoreAssetManager",
             }

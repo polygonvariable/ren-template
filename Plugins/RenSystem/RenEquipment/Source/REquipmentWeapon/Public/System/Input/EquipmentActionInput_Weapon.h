@@ -32,6 +32,7 @@ public:
 
 protected:
 
+	/** TArray<InputIdOffset, GeneratedInputId=(SlotInputId + InputIdOffset)> */
 	TMap<int, int> ActiveInputs;
 
 	int CurrentSlotInputId = -1;

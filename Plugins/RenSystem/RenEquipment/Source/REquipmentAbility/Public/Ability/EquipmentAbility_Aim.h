@@ -38,13 +38,13 @@ protected:
     TSubclassOf<UGameplayEffect> AimEffectClass;
 
     UPROPERTY(EditAnywhere)
-    float SocketLength = 64.0f;
+    float SocketLength = 100.0f;
 
     UPROPERTY(EditAnywhere)
-    FVector SocketOffset = FVector(0, 45, 0);
+    FVector SocketOffset = FVector(0.0f, 45.0f, 0.0f);
 
     UPROPERTY(EditAnywhere)
-    float FieldOfView = 55.0f;
+    float FieldOfView = 90.0f;
 
     FActiveGameplayEffectHandle AimHandle;
 
