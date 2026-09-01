@@ -1,0 +1,76 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+// Engine Headers
+#include "GameFramework/Actor.h"
+
+// Generated Headers
+#include "EnvironmentActor.generated.h"
+
+// Forward Declarations
+class USceneComponent;
+class USkyLightComponent;
+class UVolumetricCloudComponent;
+class USkyAtmosphereComponent;
+class UExponentialHeightFogComponent;
+class UStaticMeshComponent;
+class UPostProcessComponent;
+class UOrbitalLightComponent;
+
+
+/**
+ * 
+ */
+UCLASS()
+class AEnvironmentActor : public AActor
+{
+
+	GENERATED_BODY()
+	
+public:
+
+	AEnvironmentActor();
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<USceneComponent> SceneComponent;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<USkyLightComponent> SkyLight;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<USkyAtmosphereComponent> SkyAtmosphere;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UVolumetricCloudComponent> VolumetricCloud;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFog;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UPostProcessComponent> PostProcess;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UOrbitalLightComponent> SunLight;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UOrbitalLightComponent> MoonLight;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> SkyMesh;
+
+	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+	TObjectPtr<UStaticMeshComponent> MoonMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
+	float TimeOfDay = 0.0f;
+
+protected:
+
+	// ~ AActor
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// ~ End of AActor
+
+};
+

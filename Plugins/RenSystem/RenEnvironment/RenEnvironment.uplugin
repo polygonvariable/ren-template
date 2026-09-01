@@ -16,32 +16,32 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RenEnvironment",
+			"Name": "REnvironment",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEnvironmentPaint",
+			"Name": "REnvironmentPaint",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenEnvironmentEd",
+			"Name": "REnvironmentEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenWeather",
+			"Name": "RWeather",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenWeatherEd",
+			"Name": "RWeatherEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RenSeason",
+			"Name": "RSeason",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}
