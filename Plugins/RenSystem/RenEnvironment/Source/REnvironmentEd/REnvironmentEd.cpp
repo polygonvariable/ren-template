@@ -69,6 +69,7 @@ void FREnvironmentEdModule::StartupModule()
 	SetIconAndThumbnail(TEXT("EnvironmentAtmosphereProfileAsset"), TEXT("ProfileAtmosphere128.png"));
 
 	SetIconAndThumbnail(TEXT("EnvironmentActor"), TEXT("ActorEnvironment128.png"));
+	SetIconAndThumbnail(TEXT("EnvironmentRegionActor"), TEXT("ActorEnvironment128.png"));
 	SetIconAndThumbnail(TEXT("EnvironmentNiagaraCanvas"), TEXT("ActorNiagaraPaint128.png"));
 	SetIconAndThumbnail(TEXT("EnvironmentMaterialCanvas"), TEXT("ActorMaterialPaint128.png"));
 
@@ -104,7 +105,7 @@ void FREnvironmentEdModule::SetIconAndThumbnail(FString ClassName, FString Image
 	FString ThumbnailClass = TEXT("ClassThumbnail.") + ClassName;
 	FString IconClass = TEXT("ClassIcon.") + ClassName;
 
-	FString BasePath = IPluginManager::Get().FindPlugin(TEXT("REnvironment"))->GetBaseDir() + TEXT("/Resources/");
+	FString BasePath = IPluginManager::Get().FindPlugin(TEXT("RenEnvironment"))->GetBaseDir() + TEXT("/Resources/");
 
 	FString ThumbnailPath = BasePath + ImagePath;
 	FString IconPath = BasePath + ImagePath;

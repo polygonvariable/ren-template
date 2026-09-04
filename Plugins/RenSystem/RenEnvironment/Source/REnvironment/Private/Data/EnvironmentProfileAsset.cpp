@@ -3,11 +3,6 @@
 // Parent Header
 #include "Data/EnvironmentProfileAsset.h"
 
-// Engine Headers
-
-// Project Header
-
-
 
 FPrimaryAssetId UEnvironmentProfileAsset::GetPrimaryAssetId() const
 {
@@ -17,46 +12,6 @@ FPrimaryAssetId UEnvironmentProfileAsset::GetPrimaryAssetId() const
 FPrimaryAssetType UEnvironmentProfileAsset::GetPrimaryAssetType()
 {
     return FPrimaryAssetType(TEXT("Environment.Profile"));
-}
-
-FPrimaryAssetId UEnvironmentProfileAsset::MakePrimaryAssetId(const FName& AssetName)
-{
-    return FPrimaryAssetId(UEnvironmentProfileAsset::GetPrimaryAssetType(), AssetName);
-}
-
-bool UEnvironmentProfileAsset::IsValid(const FPrimaryAssetId& AssetId)
-{
-    bool bAssetValid = AssetId.IsValid();
-    bool bTypeValid = AssetId.PrimaryAssetType == UEnvironmentProfileAsset::GetPrimaryAssetType();
-
-    return bAssetValid && bTypeValid;
-}
-
-bool UEnvironmentProfileAsset::GetType(const FAssetData& AssetData, FName& ProfileType)
-{
-    return AssetData.GetTagValue<FName>(GET_MEMBER_NAME_CHECKED(UEnvironmentProfileAsset, ProfileType), ProfileType);
-}
-
-bool UEnvironmentProfileAsset::GetType(const FAssetData& AssetData, EEnvironmentProfileType& ProfileType)
-{
-    if (!AssetData.IsValid())
-    {
-        return false;
-    }
-
-    FName TypeText;
-    GetType(AssetData, TypeText);
-
-    const UEnum* Enum = StaticEnum<EEnvironmentProfileType>();
-    int64 EnumValue = Enum->GetValueByName(TypeText);
-    if (EnumValue == INDEX_NONE)
-    {
-        ProfileType = EEnvironmentProfileType::Default;
-        return false;
-    }
-
-    ProfileType = static_cast<EEnvironmentProfileType>(EnumValue);
-    return true;
 }
 
 

@@ -8,7 +8,6 @@
 #include "Log/LogMacro.h"
 
 
-
 bool UPriorityList::AddItem(UObject* Item, int Priority)
 {
 	if (!IsValid(Item) || Priority < 0)

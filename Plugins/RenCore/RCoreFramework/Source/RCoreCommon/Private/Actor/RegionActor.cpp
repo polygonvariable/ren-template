@@ -17,6 +17,7 @@ ARegionActor::ARegionActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	SetCanBeDamaged(false);
 }
 
 UPrimitiveComponent* ARegionActor::GetCollisionComponent_Implementation() const

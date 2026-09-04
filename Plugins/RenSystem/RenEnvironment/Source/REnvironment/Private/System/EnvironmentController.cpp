@@ -4,13 +4,7 @@
 #include "System/EnvironmentController.h"
 
 // Project Header
-#include "Log/LogMacro.h"
-#include "Log/LogCategory.h"
-#include "Util/TimerUtil.h"
-
-#include "RCoreCommon/Public/Priority/PriorityList.h"
 #include "Data/EnvironmentProfileAsset.h"
-
 
 
 void UEnvironmentDiscreteController::Initialize(AActor* Actor)
@@ -24,104 +18,86 @@ void UEnvironmentDiscreteController::Deinitialize()
 
 void UEnvironmentStackedController::Initialize(AActor* Actor)
 {
-	if (IsValid(PriorityList) || !IsValid(Actor))
-	{
-		return;
-	}
 
-	PriorityList = NewObject<UPriorityList>(this);
-	if (IsValid(PriorityList))
-	{
-		FPriorityListDelegates& PriorityDelegates = PriorityList->GetPriorityDelegates();
-		PriorityDelegates.OnChanged.BindUObject(this, &UEnvironmentStackedController::HandleItemChanged);
-	}
-
-	if (!IsValid(Timer))
-	{
-		Timer = NewObject<UTimer>(this);
-		if (!IsValid(Timer))
-		{
-			LOG_ERROR(LogWeather, TEXT("Failed to create Timer"));
-			return;
-		}
-		Timer->OnTick.BindUObject(this, &UEnvironmentStackedController::HandleTimerTick);
-	}
 }
 
 void UEnvironmentStackedController::Deinitialize()
 {
-	if (IsValid(PriorityList))
-	{
-		FPriorityListDelegates& PriorityDelegates = PriorityList->GetPriorityDelegates();
-		PriorityDelegates.ClearAll();
-
-		PriorityList->CleanUpItems();
-		PriorityList->MarkAsGarbage();
-	}
-	PriorityList = nullptr;
-
-	if (IsValid(Timer))
-	{
-		Timer->Clear();
-		Timer->OnTick.Unbind();
-		Timer->MarkAsGarbage();
-	}
-	Timer = nullptr;
+	ClearPriorityItems();
+	ClearTransition();
 }
 
 bool UEnvironmentStackedController::AddProfile(UEnvironmentProfileAsset* Profile, int Priority)
 {
-	if (!IsValid(PriorityList))
-	{
-		return false;
-	}
-	return PriorityList->AddItem(Profile, Priority);
+	return AddPriorityItem(Profile, Priority);
 }
 
 bool UEnvironmentStackedController::RemoveProfile(int Priority)
 {
-	if (!IsValid(PriorityList))
-	{
-		return false;
-	}
-	return PriorityList->RemoveItem(Priority);
+	return RemovePriorityItem(Priority);
 }
 
-void UEnvironmentStackedController::HandleItemChanged(UObject* Item)
+
+TMap<int, TWeakObjectPtr<UObject>>& UEnvironmentStackedController::GetPriorityItems()
 {
-	UEnvironmentProfileAsset* Profile = Cast<UEnvironmentProfileAsset>(Item);
+	return _PriorityItems;
+}
+
+int& UEnvironmentStackedController::GetHighestPriority()
+{
+	return _HighestPriority;
+}
+
+void UEnvironmentStackedController::OnPriorityItemChanged(UObject* Item)
+{
+	const UEnvironmentProfileAsset* Profile = Cast<UEnvironmentProfileAsset>(Item);
 	if (IsValid(Profile))
 	{
-		SetTransitionRate(Profile->TransitionRate);
-		SetTransitionDuration(Profile->TransitionDuration);
+		_TransitionRate = FMath::Max(0.05f, Profile->TransitionRate);
+		_TransitionDuration = FMath::Clamp(Profile->TransitionDuration, 0.05f, 30.0f);
+		TransitionCurve = Profile->TransitionCurve;
 	}
 }
+
 
 void UEnvironmentStackedController::StartTransition()
 {
-	if (IsValid(Timer))
+	ClearTransition();
+
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	TimerManager.SetTimer(TimerHandle, this, &UEnvironmentStackedController::HandleOnTransitionTick, _TransitionRate, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
+}
+
+void UEnvironmentStackedController::ClearTransition()
+{
+	_ElapsedTime = 0.0f;
+
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	TimerManager.ClearTimer(TimerHandle);
+	TimerHandle.Invalidate();
+}
+
+void UEnvironmentStackedController::OnTransitionChanged(float Alpha)
+{
+
+}
+
+void UEnvironmentStackedController::HandleOnTransitionTick()
+{
+	if (_TransitionDuration <= 0.0f || FMath::IsNearlyZero(_TransitionRate))
 	{
-		Timer->Restart(TransitionRate, TransitionDuration);
+		ClearTransition();
+		return;
 	}
-}
 
-void UEnvironmentStackedController::SetTransitionRate(float InRate)
-{
-	TransitionRate = FMath::Max(0.05f, InRate);
-}
+	_ElapsedTime = FMath::Clamp(_ElapsedTime + _TransitionRate, 0.0f, _TransitionDuration);
 
-void UEnvironmentStackedController::SetTransitionDuration(float InDuration)
-{
-	TransitionDuration = FMath::Clamp(InDuration, 0.05f, 30.0f);
-}
+	OnTransitionChanged(FMath::Clamp(_ElapsedTime / _TransitionDuration, 0.0f, 1.0f));
 
-float UEnvironmentStackedController::GetTransitionDuration() const
-{
-	return TransitionDuration;
-}
-
-void UEnvironmentStackedController::HandleTimerTick(float ElapsedTime)
-{
-
+	if (_ElapsedTime >= _TransitionDuration)
+	{
+		ClearTransition();
+		return;
+	}
 }
 

@@ -70,7 +70,7 @@ void FRWeatherEdModule::SetIconAndThumbnail(FString ClassName, FString ImagePath
 	FString ThumbnailClass = TEXT("ClassThumbnail.") + ClassName;
 	FString IconClass = TEXT("ClassIcon.") + ClassName;
 
-	FString BasePath = IPluginManager::Get().FindPlugin(TEXT("REnvironment"))->GetBaseDir() + TEXT("/Resources/");
+	FString BasePath = IPluginManager::Get().FindPlugin(TEXT("RenEnvironment"))->GetBaseDir() + TEXT("/Resources/");
 
 	FString ThumbnailPath = BasePath + ImagePath;
 	FString IconPath = BasePath + ImagePath;

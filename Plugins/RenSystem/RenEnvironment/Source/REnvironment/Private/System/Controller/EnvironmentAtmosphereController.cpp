@@ -5,15 +5,12 @@
 
 // Engine Headers
 #include "Components/SkyAtmosphereComponent.h"
-#include "EngineUtils.h"
 
 // Project Headers
+#include "Core/Type/EnvironmentProfileType.h"
+#include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-
-#include "Data/EnvironmentProfileAsset.h"
-#include "Core/Type/EnvironmentProfileType.h"
-
 
 
 UEnvironmentAtmosphereController::UEnvironmentAtmosphereController()
@@ -38,31 +35,25 @@ void UEnvironmentAtmosphereController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentAtmosphereController::HandleItemChanged(UObject* Item)
+void UEnvironmentAtmosphereController::OnPriorityItemChanged(UObject* Item)
 {
-	Super::HandleItemChanged(Item);
+	Super::OnPriorityItemChanged(Item);
 
+	UEnvironmentAtmosphereProfileAsset* Profile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
 	USkyAtmosphereComponent* SkyAtmosphere = SkyAtmosphereComponent.Get();
-	if (!IsValid(SkyAtmosphere))
+	if (!IsValid(Profile)|| !IsValid(SkyAtmosphere))
 	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("AtmosphereComponent is invalid"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("AtmosphereProfile or AtmosphereComponent is invalid"));
 		return;
 	}
 
-	UEnvironmentAtmosphereProfileAsset* AtmosphereProfile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
-	if (!IsValid(AtmosphereProfile))
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("AtmosphereProfile asset is invalid"));
-		return;
-	}
-
-	CurentMieScattering = SkyAtmosphere->MieScatteringScale;
-	TargetMieScattering = AtmosphereProfile->MieScatteringScale;
+	CurrentMieScattering = SkyAtmosphere->MieScatteringScale;
+	TargetMieScattering = Profile->MieScatteringScale;
 
 	StartTransition();
 }
 
-void UEnvironmentAtmosphereController::HandleTimerTick(float ElapsedTime)
+void UEnvironmentAtmosphereController::OnTransitionChanged(float Alpha)
 {
 	USkyAtmosphereComponent* SkyAtmosphere = SkyAtmosphereComponent.Get();
 	if (!IsValid(SkyAtmosphere))
@@ -71,12 +62,10 @@ void UEnvironmentAtmosphereController::HandleTimerTick(float ElapsedTime)
 		return;
 	}
 
-	float Duration = GetTransitionDuration();
-	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
-	float NewMieScattering = FMath::Lerp(CurentMieScattering, TargetMieScattering, Alpha);
+	float NewMieScattering = FMath::Lerp(CurrentMieScattering, TargetMieScattering, Alpha);
 
 	SkyAtmosphere->SetMieScatteringScale(NewMieScattering);
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Elapsed: %f, Duration: %f, Alpha: %f"), ElapsedTime, Duration, Alpha);
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Alpha: %f"), Alpha);
 }
 

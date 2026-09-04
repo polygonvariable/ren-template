@@ -26,12 +26,6 @@ public:
 
 	UEnvironmentAtmosphereController();
 
-protected:
-
-	TWeakObjectPtr<USkyAtmosphereComponent> SkyAtmosphereComponent;
-
-public:
-
 	// ~ UEnvironmentStackedController
 	virtual void Initialize(AActor* Actor) override;
 	virtual void Deinitialize() override;
@@ -39,12 +33,14 @@ public:
 
 protected:
 
-	float CurentMieScattering = 0.0f;
+	TWeakObjectPtr<USkyAtmosphereComponent> SkyAtmosphereComponent;
+	float CurrentMieScattering = 0.0f;
 	float TargetMieScattering = 0.0f;
 
+
 	// ~ UEnvironmentStackedController
-	virtual void HandleItemChanged(UObject* Item) override;
-	virtual void HandleTimerTick(float ElapsedTime) override;
+	virtual void OnPriorityItemChanged(UObject* Item) override;
+	virtual void OnTransitionChanged(float Alpha) override;
 	// ~ End of UEnvironmentStackedController
 
 };

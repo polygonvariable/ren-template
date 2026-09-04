@@ -12,7 +12,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "RCoreLibrary/Private/Util/TimerUtil.inl"
-#include "RCoreSettings/Public/WorldConfigSettings.h"
+#include "RCoreSettings/Public/WorldFragmentSettings.h"
 #include "Data/EnvironmentAsset.h"
 #include "WeatherAsset.h"
 #include "WeatherController.h"
@@ -181,48 +181,48 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_INFO(LogWeather, TEXT("OnWorldComponentsUpdated"));
 
-	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
-	if (!IsValid(WorldSettings))
-	{
-		LOG_ERROR(LogWeather, TEXT("WorldConfigSettings is invalid"));
-		return;
-	}
+	//AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(InWorld.GetWorldSettings());
+	//if (!IsValid(WorldSettings))
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("WorldFragmentSettings is invalid"));
+	//	return;
+	//}
 
-	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset))
-	{
-		LOG_ERROR(LogWeather, TEXT("EnvironmentAsset is invalid"));
-		return;
-	}
+	//UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
+	//if (!IsValid(EnvironmentAsset))
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("EnvironmentAsset is invalid"));
+	//	return;
+	//}
 
-	if (!EnvironmentAsset->bWeatherEnabled)
-	{
-		LOG_ERROR(LogWeather, TEXT("Weather is disabled"));
-		return;
-	}
-	
-	if (!CreateWeatherController(EnvironmentAsset->WeatherController))
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherController"));
-		return;
-	}
+	//if (!EnvironmentAsset->bWeatherEnabled)
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("Weather is disabled"));
+	//	return;
+	//}
+	//
+	//if (!CreateWeatherController(EnvironmentAsset->WeatherController))
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("Failed to create WeatherController"));
+	//	return;
+	//}
 
-	if (!CreateWeatherMPC(EnvironmentAsset->WeatherParameterCollection))
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherMaterialCollection"));
-		return;
-	}
+	//if (!CreateWeatherMPC(EnvironmentAsset->WeatherParameterCollection))
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("Failed to create WeatherMaterialCollection"));
+	//	return;
+	//}
 
-	if (!CreateWeatherTimer(EnvironmentAsset->WeatherRefreshDuration))
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherTimer"));
-		return;
-	}
+	//if (!CreateWeatherTimer(EnvironmentAsset->WeatherRefreshDuration))
+	//{
+	//	LOG_ERROR(LogWeather, TEXT("Failed to create WeatherTimer"));
+	//	return;
+	//}
 
-	FPrimaryAssetId& DefaultWeather = EnvironmentAsset->DefaultWeather;
-	int Priority = EnvironmentAsset->DefaultWeatherPriority;
+	//FPrimaryAssetId& DefaultWeather = EnvironmentAsset->DefaultWeather;
+	//int Priority = EnvironmentAsset->DefaultWeatherPriority;
 
-	LoadDefaultWeather(DefaultWeather, Priority);
+	//LoadDefaultWeather(DefaultWeather, Priority);
 }
 
 void UWeatherSubsystem::Deinitialize()

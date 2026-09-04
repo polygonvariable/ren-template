@@ -9,10 +9,7 @@
 #include "PriorityList.generated.h"
 
 
-
 /**
- *
- *
  *
  */
 struct FPriorityListDelegates
@@ -44,8 +41,6 @@ public:
 
 
 /**
- * 
- * 
  * 
  */
 UCLASS()

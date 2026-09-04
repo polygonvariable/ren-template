@@ -4,20 +4,19 @@
 
 // Project Headers
 #include "Core/Type/EnvironmentProfileType.h"
+#include "Priority/PriorityListInterface.h"
 
 // Generated Headers
 #include "EnvironmentController.generated.h"
 
 // Forward Declarations
-class UTimer;
-class UPriorityList;
 class UEnvironmentProfileAsset;
 
 
 /**
  * 
  */
-UCLASS(Abstract)
+UCLASS(Abstract, NotBlueprintable)
 class UEnvironmentDiscreteController : public UObject
 {
 
@@ -34,8 +33,8 @@ public:
 /**
  * 
  */
-UCLASS(Abstract)
-class UEnvironmentStackedController : public UObject
+UCLASS(Abstract, NotBlueprintable)
+class UEnvironmentStackedController : public UObject, public IPriorityListInterface
 {
 
 	GENERATED_BODY()
@@ -43,6 +42,7 @@ class UEnvironmentStackedController : public UObject
 public:
 
 	EEnvironmentProfileType ProfileType;
+
 
 	virtual void Initialize(AActor* Actor);
 	virtual void Deinitialize();
@@ -52,31 +52,34 @@ public:
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<UPriorityList> PriorityList;
+	FTimerHandle TimerHandle;
+	TObjectPtr<UCurveFloat> TransitionCurve = nullptr;
 
-	// ~ Bindings
-	virtual void HandleItemChanged(UObject* Item);
-	// ~ End of Bindings
 
-	// ~ Timer
 	void StartTransition();
+	void ClearTransition();
+	virtual void OnTransitionChanged(float Alpha);
 
-	virtual void HandleTimerTick(float ElapsedTime);
-
-	float GetTransitionDuration() const;
-	// ~ End of Timer
+	// ~ IPriorityListInterface
+	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() override final;
+	virtual int& GetHighestPriority() override final;
+	virtual void OnPriorityItemChanged(UObject* Item) override;
+	// ~ End of IPriorityListInterface
 
 private:
 
 	UPROPERTY()
-	TObjectPtr<UTimer> Timer;
+	TMap<int, TWeakObjectPtr<UObject>> _PriorityItems;
+	int _HighestPriority = 0;
 
-	float TransitionRate = 0.5f;
-	float TransitionDuration = 1.0f;
+	float _TransitionRate = 0.5f;
+	float _TransitionDuration = 1.0f;
+	float _ElapsedTime = 0.0f;
 
-	void SetTransitionRate(float InRate);
-	void SetTransitionDuration(float InDuration);
+
+	// ~ Binding
+	void HandleOnTransitionTick();
+	// ~ End of Binding
 
 };
 

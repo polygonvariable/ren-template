@@ -29,6 +29,12 @@ public:
 	FName SunComponentTag = TEXT("Environment.Sun");
 	FName MoonComponentTag = TEXT("Environment.Moon");
 
+
+	// ~ UEnvironmentDiscreteController
+	virtual void Initialize(AActor* Actor) override;
+	virtual void Deinitialize() override;
+	// ~ UEnvironmentDiscreteController
+
 protected:
 
 	UPROPERTY()
@@ -44,13 +50,6 @@ protected:
 	void StartDayTimer();
 	void StopDayTimer();
 	void HandleDayTimerTick();
-
-public:
-
-	// ~ UEnvironmentDiscreteController
-	virtual void Initialize(AActor* Actor) override;
-	virtual void Deinitialize() override;
-	// ~ UEnvironmentDiscreteController
 
 };
 

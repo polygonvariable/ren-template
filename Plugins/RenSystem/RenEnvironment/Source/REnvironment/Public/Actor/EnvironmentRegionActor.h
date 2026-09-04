@@ -34,20 +34,21 @@ protected:
 	TMap<TObjectPtr<UEnvironmentProfileAsset>, int> ProfileAssets;
 
 	UPROPERTY()
-	TWeakObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
 
 
 	void AddProfile();
 	void RemoveProfile();
 
-
+	// ~ ARegionActor
 	void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
+	// ~ End of ARegionActor
 
-protected:
-
+	// ~ AActor
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	// ~ End of AActor
 
 };
 

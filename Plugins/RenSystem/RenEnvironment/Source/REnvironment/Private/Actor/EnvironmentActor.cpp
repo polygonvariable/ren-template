@@ -213,3 +213,17 @@ void AEnvironmentActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+void AEnvironmentActor::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	if (IsValid(SunLight))
+	{
+		SunLight->SetTimeOfDay(TimeOfDay);
+	}
+	if (IsValid(MoonLight))
+	{
+		MoonLight->SetTimeOfDay(TimeOfDay);
+	}
+}
+

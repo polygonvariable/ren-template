@@ -139,7 +139,7 @@ void UWeatherController::AddEnvironmentProfile(UWeatherAsset* WeatherAsset)
 		FGuid LatentId = FGuid::NewGuid();
 		LatentIds.Add({ AssetId, LatentId });
 
-		Environment->AddProfile(LatentId, AssetId, Priority);
+		//Environment->AddProfile(LatentId, AssetId, Priority);
 	}
 }
 
@@ -162,7 +162,7 @@ void UWeatherController::RemoveEnvironmentProfile(UWeatherAsset* WeatherAsset)
 		const FPrimaryAssetId& ProfileId = Kv.Key;
 		const FGuid& LatentId = Kv.Value;
 
-		Environment->RemoveProfile(LatentId, ProfileId, Priority);
+		//Environment->RemoveProfile(LatentId, ProfileId, Priority);
 	}
 }
 

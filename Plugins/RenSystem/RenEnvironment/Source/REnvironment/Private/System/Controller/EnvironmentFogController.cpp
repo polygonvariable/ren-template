@@ -5,14 +5,12 @@
 
 // Engine Headers
 #include "Components/ExponentialHeightFogComponent.h"
-#include "EngineUtils.h"
 
 // Project Headers
+#include "Core/Type/EnvironmentProfileType.h"
+#include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Data/EnvironmentProfileAsset.h"
-#include "Core/Type/EnvironmentProfileType.h"
-
 
 
 UEnvironmentFogController::UEnvironmentFogController()
@@ -37,31 +35,25 @@ void UEnvironmentFogController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentFogController::HandleItemChanged(UObject* Item)
+void UEnvironmentFogController::OnPriorityItemChanged(UObject* Item)
 {
-	Super::HandleItemChanged(Item);
+	Super::OnPriorityItemChanged(Item);
 
+	UEnvironmentFogProfileAsset* Profile = Cast<UEnvironmentFogProfileAsset>(Item);
 	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
-	if (!IsValid(ExponentialHeightFog))
+	if (!IsValid(Profile) || !IsValid(ExponentialHeightFog))
 	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("ExponentialHeightFog is invalid"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("FogProfile or ExponentialHeightFog is invalid"));
 		return;
 	}
 
-	UEnvironmentFogProfileAsset* FogProfile = Cast<UEnvironmentFogProfileAsset>(Item);
-	if (!IsValid(FogProfile))
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("FogProfile asset is invalid"));
-		return;
-	}
-
-	CurentDensity = ExponentialHeightFog->FogDensity;
-	TargetDensity = FogProfile->FogDensity;
+	CurrentDensity = ExponentialHeightFog->FogDensity;
+	TargetDensity = Profile->FogDensity;
 
 	StartTransition();
 }
 
-void UEnvironmentFogController::HandleTimerTick(float ElapsedTime)
+void UEnvironmentFogController::OnTransitionChanged(float Alpha)
 {
 	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
 	if (!IsValid(ExponentialHeightFog))
@@ -69,13 +61,10 @@ void UEnvironmentFogController::HandleTimerTick(float ElapsedTime)
 		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("ExponentialHeightFog is invalid"));
 		return;
 	}
-
-	float Duration = GetTransitionDuration();
-	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
-	float NewDensity = FMath::Lerp(CurentDensity, TargetDensity, Alpha);
-
+	
+	float NewDensity = FMath::Lerp(CurrentDensity, TargetDensity, Alpha);
 	ExponentialHeightFog->SetFogDensity(NewDensity);
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Elapsed: %f, Duration: %f, Alpha: %f"), ElapsedTime, Duration, Alpha);
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Alpha: %f"), Alpha);
 }
 

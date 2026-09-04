@@ -8,38 +8,34 @@
 
 // Project Headers
 #include "Log/LogMacro.h"
-
 #include "System/EnvironmentSubsystem.h"
-
 
 
 void AEnvironmentRegionActor::AddProfile()
 {
-	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
-	if (!IsValid(SubsystemPtr))
+	if (!IsValid(EnvironmentSubsystem))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
 		return;
 	}
 
-	for (auto& Kvp : ProfileAssets)
+	for (const TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kv : ProfileAssets)
 	{
-		//SubsystemPtr->AddStackedProfile(Kvp.Key, Kvp.Value);
+		EnvironmentSubsystem->AddProfile(Kv.Key, Kv.Value);
 	}
 }
 
 void AEnvironmentRegionActor::RemoveProfile()
 {
-	UEnvironmentSubsystem* SubsystemPtr = EnvironmentSubsystem.Get();
-	if (!IsValid(SubsystemPtr))
+	if (!IsValid(EnvironmentSubsystem))
 	{
 		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
 		return;
 	}
 
-	for (auto& Kvp : ProfileAssets)
+	for (const TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kv : ProfileAssets)
 	{
-		//SubsystemPtr->RemoveStackedProfile(Kvp.Key, Kvp.Value);
+		EnvironmentSubsystem->RemoveProfile(Kv.Key, Kv.Value);
 	}
 }
 
@@ -73,7 +69,7 @@ void AEnvironmentRegionActor::BeginPlay()
 void AEnvironmentRegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	RemoveProfile();
-	EnvironmentSubsystem.Reset();
+	EnvironmentSubsystem = nullptr;
 
 	Super::EndPlay(EndPlayReason);
 }

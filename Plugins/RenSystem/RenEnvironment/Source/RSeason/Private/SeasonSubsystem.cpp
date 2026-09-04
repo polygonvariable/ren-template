@@ -16,7 +16,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"
-#include "RCoreSettings/Public/WorldConfigSettings.h"
+#include "RCoreSettings/Public/WorldFragmentSettings.h"
 #include "Data/EnvironmentAsset.h"
 #include "SeasonAsset.h"
 
@@ -214,37 +214,37 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogSeason, TEXT("OnWorldComponentsUpdated"));
 
-	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
-	if (!IsValid(WorldSettings))
-	{
-		LOG_ERROR(LogSeason, TEXT("WorldConfigSettings is invalid"));
-		return;
-	}
+	//AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(InWorld.GetWorldSettings());
+	//if (!IsValid(WorldSettings))
+	//{
+	//	LOG_ERROR(LogSeason, TEXT("WorldFragmentSettings is invalid"));
+	//	return;
+	//}
 
-	UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
-	if (!IsValid(EnvironmentAsset))
-	{
-		LOG_ERROR(LogSeason, TEXT("EnvironmentAsset is invalid"));
-		return;
-	}
+	//UEnvironmentAsset* EnvironmentAsset = Cast<UEnvironmentAsset>(WorldSettings->EnvironmentAsset);
+	//if (!IsValid(EnvironmentAsset))
+	//{
+	//	LOG_ERROR(LogSeason, TEXT("EnvironmentAsset is invalid"));
+	//	return;
+	//}
 
-	bool bSeasonEnabled = EnvironmentAsset->bSeasonEnabled;
-	UMaterialParameterCollection* ParameterCollection = EnvironmentAsset->SeasonParameterCollection.Get();
+	//bool bSeasonEnabled = EnvironmentAsset->bSeasonEnabled;
+	//UMaterialParameterCollection* ParameterCollection = EnvironmentAsset->SeasonParameterCollection.Get();
 
-	if (!bSeasonEnabled || !ParameterCollection)
-	{
-		LOG_ERROR(LogSeason, TEXT("Season is disabled, ParameterCollection is invalid"));
-		return;
-	}
-	
-	MPC = InWorld.GetParameterCollectionInstance(ParameterCollection);
-	if (!IsValid(MPC))
-	{
-		LOG_ERROR(LogSeason, TEXT("Season MPC is invalid"));
-		return;
-	}
+	//if (!bSeasonEnabled || !ParameterCollection)
+	//{
+	//	LOG_ERROR(LogSeason, TEXT("Season is disabled, ParameterCollection is invalid"));
+	//	return;
+	//}
+	//
+	//MPC = InWorld.GetParameterCollectionInstance(ParameterCollection);
+	//if (!IsValid(MPC))
+	//{
+	//	LOG_ERROR(LogSeason, TEXT("Season MPC is invalid"));
+	//	return;
+	//}
 
-	LoadDefaultSeasons(EnvironmentAsset->DefaultSeasons);
+	//LoadDefaultSeasons(EnvironmentAsset->DefaultSeasons);
 }
 
 void USeasonSubsystem::Deinitialize()

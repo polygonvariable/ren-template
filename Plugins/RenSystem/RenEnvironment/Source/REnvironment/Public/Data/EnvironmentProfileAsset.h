@@ -2,11 +2,9 @@
 
 #pragma once
 
-// Engine Headers
-#include "Engine/DataAsset.h"
-
 // Project Headers
 #include "Core/Type/EnvironmentProfileType.h"
+#include "Data/Asset/MetadataAsset.h"
 
 // Generated Headers
 #include "EnvironmentProfileAsset.generated.h"
@@ -16,7 +14,7 @@
  * 
  */
 UCLASS(Abstract, MinimalAPI)
-class UEnvironmentProfileAsset : public UPrimaryDataAsset
+class UEnvironmentProfileAsset : public UMetadataAsset
 {
 
     GENERATED_BODY()
@@ -32,19 +30,15 @@ public:
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
     float TransitionDuration = 5.0f;
 
-public:
+    UPROPERTY(EditDefaultsOnly)
+    TObjectPtr<UCurveFloat> TransitionCurve;
+
 
     // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
-
     static FPrimaryAssetType GetPrimaryAssetType();
-    static FPrimaryAssetId MakePrimaryAssetId(const FName& AssetName);
-
-    static bool IsValid(const FPrimaryAssetId& AssetId);
-    static bool GetType(const FAssetData& AssetData, FName& ProfileType);
-    static bool GetType(const FAssetData& AssetData, EEnvironmentProfileType& ProfileType);
 
 };
 

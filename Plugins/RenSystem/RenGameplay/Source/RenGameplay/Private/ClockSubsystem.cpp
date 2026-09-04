@@ -16,7 +16,7 @@
 #include "RCoreClock/Public/ClockProviderInterface.h"
 #include "RCoreClock/Public/ClockRecord.h"
 
-#include "RCoreSettings/Public/WorldConfigSettings.h"
+#include "RCoreSettings/Public/WorldFragmentSettings.h"
 
 
 
@@ -267,7 +267,7 @@ void UClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	FWorldDelegates::OnWorldBeginTearDown.RemoveAll(this);
 	FWorldDelegates::OnWorldBeginTearDown.AddUObject(this, &UClockSubsystem::HandleWorldBeginTearDown);
 
-	AWorldConfigSettings* WorldSettings = Cast<AWorldConfigSettings>(InWorld.GetWorldSettings());
+	AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(InWorld.GetWorldSettings());
 	if (!IsValid(WorldSettings))
 	{
 		LOG_ERROR(LogTemp, TEXT("WorldSettings is invalid"));

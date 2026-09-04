@@ -5,14 +5,12 @@
 
 // Engine Headers
 #include "Components/DirectionalLightComponent.h"
-#include "EngineUtils.h"
 
 // Project Headers
+#include "Core/Type/EnvironmentProfileType.h"
+#include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Data/EnvironmentProfileAsset.h"
-#include "Core/Type/EnvironmentProfileType.h"
-
 
 
 UEnvironmentLightController::UEnvironmentLightController()
@@ -45,17 +43,17 @@ void UEnvironmentLightController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentLightController::HandleItemChanged(UObject* Item)
+void UEnvironmentLightController::OnPriorityItemChanged(UObject* Item)
 {
-	Super::HandleItemChanged(Item);
+	Super::OnPriorityItemChanged(Item);
 
 	UDirectionalLightComponent* Sun = SunComponent.Get();
 	UDirectionalLightComponent* Moon = MoonComponent.Get();
-	UEnvironmentLightProfileAsset* LightProfile = Cast<UEnvironmentLightProfileAsset>(Item);
+	UEnvironmentLightProfileAsset* Profile = Cast<UEnvironmentLightProfileAsset>(Item);
 
-	if (!IsValid(Sun) || !IsValid(Moon) || !IsValid(LightProfile))
+	if (!IsValid(Sun) || !IsValid(Moon) || !IsValid(Profile))
 	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Sun, Moon, LightProfile is invalid"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Sun, Moon, Profile is invalid"));
 		return;
 	}
 
@@ -65,16 +63,16 @@ void UEnvironmentLightController::HandleItemChanged(UObject* Item)
 	CurrentSunColor = Sun->LightColor;
 	CurrentMoonColor = Moon->LightColor;
 
-	TargetSunIntensity = LightProfile->SunIntensity;
-	TargetMoonIntensity = LightProfile->MoonIntensity;
+	TargetSunIntensity = Profile->SunIntensity;
+	TargetMoonIntensity = Profile->MoonIntensity;
 
-	TargetSunColor = LightProfile->SunColor;
-	TargetMoonColor = LightProfile->MoonColor;
+	TargetSunColor = Profile->SunColor;
+	TargetMoonColor = Profile->MoonColor;
 
 	StartTransition();
 }
 
-void UEnvironmentLightController::HandleTimerTick(float ElapsedTime)
+void UEnvironmentLightController::OnTransitionChanged(float Alpha)
 {
 	UDirectionalLightComponent* Sun = SunComponent.Get();
 	UDirectionalLightComponent* Moon = MoonComponent.Get();
@@ -84,9 +82,6 @@ void UEnvironmentLightController::HandleTimerTick(float ElapsedTime)
 		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Sun, Moon is invalid"));
 		return;
 	}
-
-	float Duration = GetTransitionDuration();
-	float Alpha = FMath::Clamp(ElapsedTime / Duration, 0.0f, 1.0f);
 
 	float NewSunIntensity = FMath::Lerp(CurrentSunIntensity, TargetSunIntensity, Alpha);
 	float NewMoonIntensity = FMath::Lerp(CurrentMoonIntensity, TargetMoonIntensity, Alpha);
@@ -100,6 +95,6 @@ void UEnvironmentLightController::HandleTimerTick(float ElapsedTime)
 	Sun->LightColor = FLinearColor(NewSunColor).ToFColor(false);
 	Moon->LightColor = FLinearColor(NewSunColor).ToFColor(false);
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Elapsed: %f, Duration: %f, Alpha: %f"), ElapsedTime, Duration, Alpha);
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Alpha: %f"), Alpha);
 }
 

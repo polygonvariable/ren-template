@@ -29,12 +29,6 @@ public:
 	FName SunTag = TEXT("Environment.Sun");
 	FName MoonTag = TEXT("Environment.Moon");
 
-protected:
-
-	TWeakObjectPtr<UDirectionalLightComponent> SunComponent;
-	TWeakObjectPtr<UDirectionalLightComponent> MoonComponent;
-
-public:
 
 	// ~ UEnvironmentStackedController
 	virtual void Initialize(AActor* Actor) override;
@@ -42,6 +36,9 @@ public:
 	// ~ End of UEnvironmentStackedController
 
 protected:
+
+	TWeakObjectPtr<UDirectionalLightComponent> SunComponent;
+	TWeakObjectPtr<UDirectionalLightComponent> MoonComponent;
 
 	float CurrentSunIntensity = 0.0f;
 	FColor CurrentSunColor = FColor::White;
@@ -55,9 +52,10 @@ protected:
 	float TargetMoonIntensity = 0.0f;
 	FColor TargetMoonColor = FColor::White;
 
+
 	// ~ UEnvironmentStackedController
-	virtual void HandleItemChanged(UObject* Item) override;
-	virtual void HandleTimerTick(float ElapsedTime) override;
+	virtual void OnPriorityItemChanged(UObject* Item) override;
+	virtual void OnTransitionChanged(float Alpha) override;
 	// ~ End of UEnvironmentStackedController
 
 };

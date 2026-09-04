@@ -25,12 +25,6 @@ public:
 
 	UEnvironmentFogController();
 
-protected:
-
-	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFogComponent;
-
-public:
-
 	// ~ UEnvironmentStackedController
 	virtual void Initialize(AActor* Actor) override;
 	virtual void Deinitialize() override;
@@ -38,12 +32,14 @@ public:
 
 protected:
 
-	float CurentDensity = 0.0f;
+	TWeakObjectPtr<UExponentialHeightFogComponent> ExponentialHeightFogComponent;
+	float CurrentDensity = 0.0f;
 	float TargetDensity = 0.0f;
 
+
 	// ~ UEnvironmentStackedController
-	virtual void HandleItemChanged(UObject* Item) override;
-	virtual void HandleTimerTick(float ElapsedTime) override;
+	virtual void OnPriorityItemChanged(UObject* Item) override;
+	virtual void OnTransitionChanged(float Alpha) override;
 	// ~ End of UEnvironmentStackedController
 
 };

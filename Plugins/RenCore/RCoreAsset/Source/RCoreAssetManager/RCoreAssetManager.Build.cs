@@ -30,7 +30,7 @@ public class RCoreAssetManager : ModuleRules
             }
 			);
 			
-		
+
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
