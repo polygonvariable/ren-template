@@ -94,6 +94,10 @@
 		{
 			"Name": "ContextualAnimation",
 			"Enabled": true
+		},
+		{
+			"Name": "TextureGraph",
+			"Enabled": true
 		}
 	]
 }

@@ -3,16 +3,10 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
-// Project Headers
 
 // Generated Headers
 #include "WeatherEffectActor.generated.h"
-
-// Forward Declarations
-
 
 
 /**

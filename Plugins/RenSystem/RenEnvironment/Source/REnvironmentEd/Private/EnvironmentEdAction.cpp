@@ -10,7 +10,6 @@
 #include "Data/EnvironmentProfileAsset.h"
 
 
-
 #define ACTION_METHODS_IMPLEMENTATION(Class, Name, Color, Type, Category) \
     FText Class::GetName() const \
     { \
@@ -29,11 +28,9 @@
         return Category; \
     }
 
-ACTION_METHODS_IMPLEMENTATION(FEnvironmentProfileActions, TEXT("Environment Profile"), TEXT("#3D7C31"), UEnvironmentProfileAsset, EAssetTypeCategories::Misc)
-
 ACTION_METHODS_IMPLEMENTATION(FEnvironmentFogProfileActions, TEXT("Fog Profile"), TEXT("#3D7C31"), UEnvironmentFogProfileAsset, EAssetTypeCategories::Misc)
 ACTION_METHODS_IMPLEMENTATION(FEnvironmentLightProfileActions, TEXT("Light Profile"), TEXT("#3D7C31"), UEnvironmentLightProfileAsset, EAssetTypeCategories::Misc)
 ACTION_METHODS_IMPLEMENTATION(FEnvironmentAtmosphereProfileActions, TEXT("Atmosphere Profile"), TEXT("#3D7C31"), UEnvironmentAtmosphereProfileAsset, EAssetTypeCategories::Misc)
 
-ACTION_METHODS_IMPLEMENTATION(FEnvironmentAssetActions, TEXT("Environment Asset"), TEXT("#3D7C31"), UEnvironmentAsset, EAssetTypeCategories::Misc)
+ACTION_METHODS_IMPLEMENTATION(FEnvironmentWorldConfigActions, TEXT("Environment World Config"), TEXT("#3D7C31"), UEnvironmentWorldConfig, EAssetTypeCategories::Misc)
 

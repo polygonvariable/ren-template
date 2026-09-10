@@ -3,14 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "AssetTypeActions_Base.h"
-
-// Project Headers
-
-// Generated Headers
-
-// Forward Declarations
 
 
 #define ACTION_METHODS_DECLARE() \
@@ -21,21 +14,6 @@
 
 
 /**
- *
- *
- */
-class FEnvironmentProfileActions : public FAssetTypeActions_Base
-{
-
-public:
-
-	ACTION_METHODS_DECLARE()
-
-};
-
-
-/**
- *
  *
  */
 class FEnvironmentFogProfileActions : public FAssetTypeActions_Base
@@ -49,7 +27,6 @@ public:
 
 /**
  *
- *
  */
 class FEnvironmentLightProfileActions : public FAssetTypeActions_Base
 {
@@ -62,7 +39,6 @@ public:
 
 /**
  *
- *
  */
 class FEnvironmentAtmosphereProfileActions : public FAssetTypeActions_Base
 {
@@ -73,12 +49,10 @@ public:
 
 };
 
-
 /**
  *
- *
  */
-class FEnvironmentAssetActions : public FAssetTypeActions_Base
+class FEnvironmentWorldConfigActions : public FAssetTypeActions_Base
 {
 
 public:
@@ -86,4 +60,3 @@ public:
 	ACTION_METHODS_DECLARE()
 
 };
-

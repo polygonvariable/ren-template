@@ -24,18 +24,15 @@ void FREnvironmentEdModule::StartupModule()
 	{
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
 		
-		TSharedPtr<FEnvironmentProfileActions> EnvironmentProfile = MakeShareable(new FEnvironmentProfileActions());
 		TSharedPtr<FEnvironmentFogProfileActions> FogProfile = MakeShareable(new FEnvironmentFogProfileActions());
 		TSharedPtr<FEnvironmentLightProfileActions> LightProfile = MakeShareable(new FEnvironmentLightProfileActions());
 		TSharedPtr<FEnvironmentAtmosphereProfileActions> AtmosphereProfile = MakeShareable(new FEnvironmentAtmosphereProfileActions());
+		TSharedPtr<FEnvironmentWorldConfigActions> EnvironmentWorldConfig = MakeShareable(new FEnvironmentWorldConfigActions());
 
-		TSharedPtr<FEnvironmentAssetActions> EnvironmentAction = MakeShareable(new FEnvironmentAssetActions());
-
-		AssetActions.Push(EnvironmentProfile);
 		AssetActions.Push(FogProfile);
 		AssetActions.Push(LightProfile);
 		AssetActions.Push(AtmosphereProfile);
-		AssetActions.Push(EnvironmentAction);
+		AssetActions.Push(EnvironmentWorldConfig);
 
 		for (TSharedPtr<IAssetTypeActions> Action : AssetActions)
 		{
@@ -61,7 +58,7 @@ void FREnvironmentEdModule::StartupModule()
 
 	StyleSet = MakeShared<FSlateStyleSet>(FName("REnvironmentStyle"));
 
-	SetIconAndThumbnail(TEXT("EnvironmentAsset"), TEXT("EnvironmentAsset128.png"));
+	SetIconAndThumbnail(TEXT("EnvironmentWorldConfig"), TEXT("EnvironmentAsset128.png"));
 	SetIconAndThumbnail(TEXT("EnvironmentProfileAsset"), TEXT("EnvironmentAsset128.png"));
 
 	SetIconAndThumbnail(TEXT("EnvironmentFogProfileAsset"), TEXT("ProfileFog128.png"));

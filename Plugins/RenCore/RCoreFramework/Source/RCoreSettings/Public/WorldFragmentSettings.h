@@ -14,6 +14,7 @@
 // Forward Declarations
 class UPrimaryDataAsset;
 class UWorldFragment;
+class UWorldConfigAsset;
 
 
 /**
@@ -33,18 +34,18 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
 	TObjectPtr<UPrimaryDataAsset> ClockAsset;
 
-	UPROPERTY(EditDefaultsOnly, Instanced, Category = "World Fragments")
-	TArray<TObjectPtr<UWorldFragment>> Fragments;
+	UPROPERTY(EditDefaultsOnly, Category = "World Configs")
+	TArray<TObjectPtr<UWorldConfigAsset>> Configs;
 
-	
-	REN_API const UWorldFragment* FindFragmentByClass(TSubclassOf<UWorldFragment> InClass) const;
+
+	REN_API const UWorldConfigAsset* FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const;
 
 	template<typename T>
-	const T* FindFragmentByClass() const
+	const T* FindConfigByClass() const
 	{
-		return Cast<T>(FindFragmentByClass(T::StaticClass()));
+		return Cast<T>(FindConfigByClass(T::StaticClass()));
 	}
-
+	
 };
 
 

@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Generated Headers
 #include "MaterialSurfaceProperty.generated.h"
 
@@ -37,11 +34,14 @@ public:
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Opacity = 0.0f;
 
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
+    float WPO = 0.0f;
+
     void Reset();
     void Clamp();
 
-    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SpecularName, FName RoughnessName, FName OpacityName);
-    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SpecularName, FName RoughnessName, FName OpacityName);
+    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName);
+    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName);
 
     static FMaterialSurfaceProperty Lerp(const FMaterialSurfaceProperty& A, const FMaterialSurfaceProperty& B, float Alpha);
 

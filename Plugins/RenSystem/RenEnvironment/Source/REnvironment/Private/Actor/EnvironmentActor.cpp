@@ -133,6 +133,7 @@ AEnvironmentActor::AEnvironmentActor()
 			SunLight->bEnableLightShaftOcclusion = true;
 			SunLight->bEnableLightShaftBloom = true;
 			SunLight->BloomThreshold = 1.0f;
+			SunLight->BloomMaxBrightness = 5.0f;
 
 			SunLight->EnabledStartTime = 7.25f;
 			SunLight->EnabledEndTime = 20.25f;
@@ -179,6 +180,7 @@ AEnvironmentActor::AEnvironmentActor()
 		if (IsValid(SkyMesh))
 		{
 			SkyMesh->SetupAttachment(SceneComponent);
+			SkyMesh->SetMobility(EComponentMobility::Static);
 			SkyMesh->SetCastShadow(false);
 			SkyMesh->SetCastContactShadow(false);
 			SkyMesh->SetAffectDynamicIndirectLighting(false);

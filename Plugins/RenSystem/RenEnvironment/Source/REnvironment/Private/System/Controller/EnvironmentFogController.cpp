@@ -65,6 +65,6 @@ void UEnvironmentFogController::OnTransitionChanged(float Alpha)
 	float NewDensity = FMath::Lerp(CurrentDensity, TargetDensity, Alpha);
 	ExponentialHeightFog->SetFogDensity(NewDensity);
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Alpha: %f"), Alpha);
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("EnvironmentFog Alpha: %f"), Alpha);
 }
 

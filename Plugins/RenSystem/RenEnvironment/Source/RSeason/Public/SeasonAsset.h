@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
-// #include "Profile/WeatherWeight.h"
+// #include "Profile/Core/Type/WeatherWeight.h"
 
 // Generated Headers
 #include "SeasonAsset.generated.h"

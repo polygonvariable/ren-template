@@ -3,10 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-
-// Project Headers
 
 // Generated Headers
 #include "RegionActor.generated.h"
@@ -15,9 +12,7 @@
 class UPrimitiveComponent;
 
 
-
 /**
- * 
  * 
  */
 UCLASS(Abstract)

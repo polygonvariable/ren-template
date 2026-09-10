@@ -8,11 +8,14 @@
 // Generated Headers
 #include "EnvironmentSettings.generated.h"
 
+// Module Macros
+#define REN_API RENVIRONMENT_API
+
 
 /**
  *
  */
-UCLASS(Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Environment"))
+UCLASS(MinimalAPI, Config = RenProject, DefaultConfig, meta = (DisplayName = "RSystem - Environment"))
 class UEnvironmentSettings : public UDeveloperSettings
 {
 
@@ -25,7 +28,11 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly)
 	TArray<FName> EnvironmentBundles;
 
-	static const UEnvironmentSettings* Get();
+	REN_API static const UEnvironmentSettings* Get();
 
 };
+
+
+// Module Macros
+#undef REN_API
 

@@ -4,7 +4,9 @@
 #include "WeatherEdAction.h"
 
 // Project Headers
-#include "WeatherAsset.h"
+#include "Data/WeatherAsset.h"
+#include "Data/WeatherCollectionAsset.h"
+#include "Data/WeatherWorldConfig.h"
 
 
 FText FWeatherAssetActions::GetName() const
@@ -23,6 +25,27 @@ UClass* FWeatherAssetActions::GetSupportedClass() const
 }
 
 uint32 FWeatherAssetActions::GetCategories()
+{
+    return EAssetTypeCategories::Misc;
+}
+
+
+FText FWeatherWorldConfigActions::GetName() const
+{
+    return FText::FromString(TEXT("Weather World Config"));
+}
+
+FColor FWeatherWorldConfigActions::GetTypeColor() const
+{
+    return FColor::FromHex(TEXT("#317C7C"));
+}
+
+UClass* FWeatherWorldConfigActions::GetSupportedClass() const
+{
+    return UWeatherWorldConfig::StaticClass();
+}
+
+uint32 FWeatherWorldConfigActions::GetCategories()
 {
     return EAssetTypeCategories::Misc;
 }

@@ -12,9 +12,10 @@
 #include "EnvironmentRegionActor.generated.h"
 
 // Forward Declarations
+class UAssetManager;
 class UPrimitiveComponent;
 class UEnvironmentSubsystem;
-class UEnvironmentProfileAsset;
+struct FStreamableHandle;
 
 
 /**
@@ -30,16 +31,21 @@ class AEnvironmentRegionActor : public ARegionActor
 	
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TMap<TObjectPtr<UEnvironmentProfileAsset>, int> ProfileAssets;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowedTypes = "Environment.Profile"))
+	TMap<FPrimaryAssetId, int> ProfileAssets;
 
-	UPROPERTY()
 	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
+	TSharedPtr<FStreamableHandle> AssetHandle;
 
 
+	void LoadProfile();
 	void AddProfile();
 	void RemoveProfile();
 
+	// ~ Binding
+	void HandleOnProfileLoaded();
+	// ~ End of Binding
+	
 	// ~ ARegionActor
 	void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;

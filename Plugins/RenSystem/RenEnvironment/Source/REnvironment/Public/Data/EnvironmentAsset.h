@@ -9,10 +9,13 @@
 
 // Project Headers
 #include "Data/Asset/MetadataAsset.h"
-#include "WorldFragment.h"
+#include "WorldConfigAsset.h"
 
 // Generated Headers
 #include "EnvironmentAsset.generated.h"
+
+// Module Macros
+#define REN_API RENVIRONMENT_API
 
 // Forward Declarations
 class UPriorityList;
@@ -25,117 +28,28 @@ class UEnvironmentDiscreteController;
  *
  */
 UCLASS(MinimalAPI)
-class UEnvironmentFragment : public UWorldFragment
+class UEnvironmentWorldConfig : public UWorldConfigAsset
 {
 
     GENERATED_BODY()
 
 public:
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Controller")
     TArray<TSubclassOf<UEnvironmentStackedController>> StackedControllers;
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, Category = "Controller")
     TArray<TSubclassOf<UEnvironmentDiscreteController>> DiscreteControllers;
 
-    UPROPERTY(EditDefaultsOnly, meta = (AllowedTypes = "Environment.Profile"))
+    UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowedTypes = "Environment.Profile"))
     TArray<FPrimaryAssetId> DefaultProfiles;
 
-    UPROPERTY(EditDefaultsOnly)
-    int DefaultProfilePriority = 0;
+    UPROPERTY(EditDefaultsOnly, Category = "Default")
+    int ProfilePriority = 0;
 
 };
 
 
-/**
- *
- */
-UCLASS(MinimalAPI)
-class UEnvironmentAsset : public UMetadataAsset
-{
-
-	GENERATED_BODY()
-
-public:
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather")
-    bool bWeatherEnabled = true;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather")
-    FSoftClassPath WeatherManager;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather", meta = (AllowedTypes = "Environment.Weather"))
-    FPrimaryAssetId DefaultWeather;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather")
-    int DefaultWeatherPriority = 0;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather")
-    TObjectPtr<UMaterialParameterCollection> WeatherParameterCollection;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather", meta = (AllowedClasses = "/Script/RenWeather.WeatherController"))
-    UClass* WeatherController;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather")
-    float WeatherRefreshDuration = 5.0f;
-
-
-    UPROPERTY(EditDefaultsOnly, Category = "Season")
-    bool bSeasonEnabled = true;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Season", meta = (AllowedTypes = "Environment.Season"))
-    TArray<FPrimaryAssetId> DefaultSeasons;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Season")
-    TObjectPtr<UMaterialParameterCollection> SeasonParameterCollection;
-
-#if WITH_EDITOR
-
-    // ~ UObject
-    virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const
-    {
-        bool bAnyFailed = false;
-
-        /*
-        if (bWeatherEnabled)
-        {
-            if (!WeatherManager.IsValid())
-            {
-                Context.AddError(FText::FromString(TEXT("Weather Manager is invalid.")));
-				bAnyFailed = true;
-            }
-
-            if (!DefaultWeather.IsValid())
-            {
-                Context.AddError(FText::FromString(TEXT("Default Weather is invalid.")));
-				bAnyFailed = true;
-            }
-
-            if (!WeatherParameterCollection)
-            {
-                Context.AddError(FText::FromString(TEXT("Weather Parameter Collection is invalid.")));
-				bAnyFailed = true;
-            }
-
-            if (!WeatherController)
-            {
-                Context.AddError(FText::FromString(TEXT("Weather Controller is invalid.")));
-                bAnyFailed = true;
-            }
-
-            if (WeatherRefreshDuration <= 1.0f)
-            {
-                Context.AddError(FText::FromString(TEXT("Weather Refresh Duration must be greater than 1.")));
-				bAnyFailed = true;
-            }
-        }*/
-
-        EDataValidationResult Result = (bAnyFailed) ? EDataValidationResult::Invalid : EDataValidationResult::Valid;
-        return Result;
-    }
-    // ~ End of UObject
-
-#endif
-
-};
+// Module Macros
+#undef REN_API
 

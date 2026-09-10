@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 
 // Project Headers
+#include "Actor/EnvironmentActor.h"
 #include "Core/AssetManagerUtil.h"
 #include "Core/EnvironmentSettings.h"
 #include "Data/EnvironmentAsset.h"
@@ -16,7 +17,8 @@
 #include "Log/LogMacro.h"
 #include "RCoreSettings/Public/WorldFragmentSettings.h"
 #include "System/EnvironmentController.h"
-#include "Actor/EnvironmentActor.h"
+#include "Data/EnvironmentAsset.h"
+
 
 bool UEnvironmentSubsystem::AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
 {
@@ -132,7 +134,7 @@ bool UEnvironmentSubsystem::RegisterDiscreteController(TSubclassOf<UEnvironmentD
 }
 
 
-void UEnvironmentSubsystem::RegisterControllers(const UEnvironmentFragment* Fragment)
+void UEnvironmentSubsystem::RegisterControllers(const UEnvironmentWorldConfig* Data)
 {
 	AEnvironmentActor* Actor = nullptr;
 	for (TActorIterator<AEnvironmentActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
@@ -141,12 +143,12 @@ void UEnvironmentSubsystem::RegisterControllers(const UEnvironmentFragment* Frag
 		break;
 	}
 
-	for (const TSubclassOf<UEnvironmentStackedController>& Controller : Fragment->StackedControllers)
+	for (const TSubclassOf<UEnvironmentStackedController>& Controller : Data->StackedControllers)
 	{
 		RegisterStackedController(Controller, Actor);
 	}
 
-	for (const TSubclassOf<UEnvironmentDiscreteController>& Controller : Fragment->DiscreteControllers)
+	for (const TSubclassOf<UEnvironmentDiscreteController>& Controller : Data->DiscreteControllers)
 	{
 		RegisterDiscreteController(Controller, Actor);
 	}
@@ -178,28 +180,28 @@ void UEnvironmentSubsystem::UnregisterControllers()
 }
 
 
-void UEnvironmentSubsystem::RegisterDefaultProfiles(const UEnvironmentFragment* Fragment)
+void UEnvironmentSubsystem::RegisterDefaultProfiles(const UEnvironmentWorldConfig* Data)
 {
-	const TArray<FPrimaryAssetId>& AssetIds = Fragment->DefaultProfiles;
+	const TArray<FPrimaryAssetId>& AssetIds = Data->DefaultProfiles;
 
 	for (const FPrimaryAssetId& AssetId : AssetIds)
 	{
 		UEnvironmentProfileAsset* ProfileAsset = AssetManager->GetPrimaryAssetObject<UEnvironmentProfileAsset>(AssetId);
 		if (IsValid(ProfileAsset))
 		{
-			AddProfile(ProfileAsset, Fragment->DefaultProfilePriority);
+			AddProfile(ProfileAsset, Data->ProfilePriority);
 		}
 	}
 }
 
-const UEnvironmentFragment* UEnvironmentSubsystem::GetEnvironmentFragment() const
+const UEnvironmentWorldConfig* UEnvironmentSubsystem::GetEnvironmentWorldConfig() const
 {
 	AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(GetWorld()->GetWorldSettings());
 	if (!IsValid(WorldSettings))
 	{
 		return nullptr;
 	}
-	return WorldSettings->FindFragmentByClass<UEnvironmentFragment>();
+	return WorldSettings->FindConfigByClass<UEnvironmentWorldConfig>();
 }
 
 
@@ -207,15 +209,15 @@ void UEnvironmentSubsystem::HandleOnEnvironmentLoaded()
 {
 	FAssetManagerUtil::ReleaseHandle(ProfileHandle);
 
-	const UEnvironmentFragment* Fragment = GetEnvironmentFragment();
-	if (!IsValid(Fragment))
+	const UEnvironmentWorldConfig* Data = GetEnvironmentWorldConfig();
+	if (!IsValid(Data))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("EnvironmentFragment is invalid"));
 		return;
 	}
 
-	RegisterControllers(Fragment);
-	RegisterDefaultProfiles(Fragment);
+	RegisterControllers(Data);
+	RegisterDefaultProfiles(Data);
 }
 
 
@@ -239,8 +241,8 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	FAssetManagerUtil::CancelHandle(ProfileHandle);
 
-	const UEnvironmentFragment* Fragment = GetEnvironmentFragment();
-	if (!IsValid(Fragment))
+	const UEnvironmentWorldConfig* Data = GetEnvironmentWorldConfig();
+	if (!IsValid(Data))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("EnvironmentFragment is invalid"));
 		return;
@@ -249,7 +251,7 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
-	const TArray<FPrimaryAssetId>& Profiles = Fragment->DefaultProfiles;
+	const TArray<FPrimaryAssetId>& Profiles = Data->DefaultProfiles;
 
 	ProfileHandle = AssetManager->LoadPrimaryAssets(Profiles, Bundles, FStreamableDelegate::CreateUObject(this, &UEnvironmentSubsystem::HandleOnEnvironmentLoaded));
 }
@@ -258,7 +260,7 @@ void UEnvironmentSubsystem::Deinitialize()
 {
 	UnregisterControllers();
 
-	FAssetManagerUtil::ReleaseHandle(ProfileHandle);
+	FAssetManagerUtil::CancelHandle(ProfileHandle);
 	if (IsValid(AssetManager))
 	{
 		AssetManager->UnloadPrimaryAssetsWithType(UEnvironmentProfileAsset::GetPrimaryAssetType());
@@ -267,5 +269,15 @@ void UEnvironmentSubsystem::Deinitialize()
 
 	LOG_WARNING(LogEnvironment, TEXT("EnvironmentSubsystem Deinitialized"));
 	Super::Deinitialize();
+}
+
+
+UEnvironmentSubsystem* UEnvironmentSubsystem::Get(UWorld* World)
+{
+	if (!IsValid(World))
+	{
+		return nullptr;
+	}
+	return World->GetSubsystem<UEnvironmentSubsystem>();
 }
 

@@ -5,55 +5,93 @@
 
 // Engine Headers
 #include "Components/PrimitiveComponent.h"
+#include "Engine/AssetManager.h"
 
 // Project Headers
+#include "Core/AssetManagerUtil.h"
+#include "Core/EnvironmentSettings.h"
+#include "Data/EnvironmentProfileAsset.h"
+#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/EnvironmentSubsystem.h"
 
 
-void AEnvironmentRegionActor::AddProfile()
+void AEnvironmentRegionActor::LoadProfile()
 {
-	if (!IsValid(EnvironmentSubsystem))
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	if (!IsValid(AssetManager))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
 		return;
 	}
 
-	for (const TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kv : ProfileAssets)
+	FAssetManagerUtil::CancelHandle(AssetHandle);
+
+	TArray<FPrimaryAssetId> AssetIds;
+	ProfileAssets.GetKeys(AssetIds);
+
+	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
+	const TArray<FName>& Bundle = Settings->EnvironmentBundles;
+
+	AssetHandle = AssetManager->LoadPrimaryAssets(AssetIds, Bundle, FStreamableDelegate::CreateUObject(this, &AEnvironmentRegionActor::HandleOnProfileLoaded));
+}
+
+void AEnvironmentRegionActor::AddProfile()
+{
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	if (!IsValid(EnvironmentSubsystem) || !IsValid(AssetManager))
 	{
-		EnvironmentSubsystem->AddProfile(Kv.Key, Kv.Value);
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Environment subsystem or asset manager is invalid"));
+		return;
+	}
+
+	for (const TPair<FPrimaryAssetId, int>& Kv : ProfileAssets)
+	{
+		EnvironmentSubsystem->AddProfile(AssetManager->GetPrimaryAssetObject<UEnvironmentProfileAsset>(Kv.Key), Kv.Value);
 	}
 }
 
 void AEnvironmentRegionActor::RemoveProfile()
 {
-	if (!IsValid(EnvironmentSubsystem))
+	FAssetManagerUtil::CancelHandle(AssetHandle);
+
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	if (!IsValid(EnvironmentSubsystem) || !IsValid(AssetManager))
 	{
-		PRINT_ERROR(LogTemp, 1.0f, TEXT("Invalid environment subsystem"));
+		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("Environment subsystem or asset manager is invalid"));
 		return;
 	}
 
-	for (const TPair<TObjectPtr<UEnvironmentProfileAsset>, int>& Kv : ProfileAssets)
+	for (const TPair<FPrimaryAssetId, int>& Kv : ProfileAssets)
 	{
-		EnvironmentSubsystem->RemoveProfile(Kv.Key, Kv.Value);
+		EnvironmentSubsystem->RemoveProfile(AssetManager->GetPrimaryAssetObject<UEnvironmentProfileAsset>(Kv.Key), Kv.Value);
 	}
+}
+
+
+void AEnvironmentRegionActor::HandleOnProfileLoaded()
+{
+	FAssetManagerUtil::ReleaseHandle(AssetHandle);
+	AddProfile();
 }
 
 void AEnvironmentRegionActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (DoesCollidedWithPlayer(OtherActor))
+	if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
 	{
-		AddProfile();
+		bPlayerInRegion = true;
+		LoadProfile();
 	}
 }
 
 void AEnvironmentRegionActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
-	if (DoesCollidedWithPlayer(OtherActor))
+	if (DoesCollidedWithPlayer(OtherActor) && bPlayerInRegion)
 	{
+		bPlayerInRegion = false;
 		RemoveProfile();
 	}
 }
+
 
 void AEnvironmentRegionActor::BeginPlay()
 {

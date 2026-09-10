@@ -23,7 +23,9 @@ void FRWeatherEdModule::StartupModule()
 		IAssetTools& AssetTools = FModuleManager::GetModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
 		TSharedPtr<FWeatherAssetActions> WeatherAsset = MakeShareable(new FWeatherAssetActions());
+		TSharedPtr<FWeatherWorldConfigActions> WeatherWorldConfig = MakeShareable(new FWeatherWorldConfigActions());
 		AssetActions.Push(WeatherAsset);
+		AssetActions.Push(WeatherWorldConfig);
 
 		for (TSharedPtr<IAssetTypeActions> Action : AssetActions)
 		{
@@ -39,6 +41,7 @@ void FRWeatherEdModule::StartupModule()
 	StyleSet = MakeShared<FSlateStyleSet>(FName("RenWeatherStyle"));
 
 	SetIconAndThumbnail(TEXT("WeatherAsset"), TEXT("Weather128.png"));
+	SetIconAndThumbnail(TEXT("WeatherWorldConfig"), TEXT("Weather128.png"));
 
 	FSlateStyleRegistry::RegisterSlateStyle(*StyleSet.Get());
 }

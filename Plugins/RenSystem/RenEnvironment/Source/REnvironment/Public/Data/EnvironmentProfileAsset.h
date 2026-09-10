@@ -25,7 +25,7 @@ public:
     EEnvironmentProfileType ProfileType;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
-    float TransitionRate = 0.5f;
+    float TransitionRate = 0.15f;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
     float TransitionDuration = 5.0f;

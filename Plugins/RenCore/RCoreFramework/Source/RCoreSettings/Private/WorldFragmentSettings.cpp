@@ -4,16 +4,16 @@
 #include "WorldFragmentSettings.h"
 
 // Project Headers
-#include "WorldFragment.h"
+#include "WorldConfigAsset.h"
 
 
-const UWorldFragment* AWorldFragmentSettings::FindFragmentByClass(TSubclassOf<UWorldFragment> InClass) const
+const UWorldConfigAsset* AWorldFragmentSettings::FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const
 {
-	for (const TObjectPtr<UWorldFragment>& Fragment : Fragments)
+	for (const TObjectPtr<UWorldConfigAsset>& Item : Configs)
 	{
-		if (Fragment->IsA(InClass))
+		if (Item->IsA(InClass))
 		{
-			return Fragment.Get();
+			return Item.Get();
 		}
 	}
 	return nullptr;

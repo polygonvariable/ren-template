@@ -6,9 +6,6 @@
 // Engine Headers
 #include "Materials/MaterialParameterCollectionInstance.h"
 
-// Project Header
-
-
 
 void FMaterialSurfaceProperty::Reset()
 {
@@ -16,6 +13,7 @@ void FMaterialSurfaceProperty::Reset()
 	Specular = 0.0f;
 	Roughness = 0.0f;
 	Opacity = 0.0f;
+	WPO = 1.0f;
 }
 
 void FMaterialSurfaceProperty::Clamp()
@@ -25,24 +23,33 @@ void FMaterialSurfaceProperty::Clamp()
 	Opacity = FMath::Clamp(Opacity, -1.0f, 1.0f);
 }
 
-void FMaterialSurfaceProperty::GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SpecularName, FName RoughnessName, FName OpacityName)
+void FMaterialSurfaceProperty::GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName)
 {
-    if (!Instance) return;
+	if (!IsValid(Instance))
+	{
+		return;
+	}
 
     Instance->GetVectorParameterValue(TintName, Tint);
-    Instance->GetScalarParameterValue(SpecularName, Specular);
-    Instance->GetScalarParameterValue(RoughnessName, Roughness);
-    Instance->GetScalarParameterValue(OpacityName, Opacity);
+
+	FLinearColor SROW;
+	Instance->GetVectorParameterValue(SROWName, SROW);
+
+	Specular = SROW.R;
+	Roughness = SROW.G;
+	Opacity = SROW.B;
+	WPO = SROW.A;
 }
 
-void FMaterialSurfaceProperty::SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SpecularName, FName RoughnessName, FName OpacityName)
+void FMaterialSurfaceProperty::SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName)
 {
-    if (!Instance) return;
+	if (!IsValid(Instance))
+	{
+		return;
+	}
 
 	Instance->SetVectorParameterValue(TintName, Tint);
-	Instance->SetScalarParameterValue(SpecularName, Specular);
-	Instance->SetScalarParameterValue(RoughnessName, Roughness);
-	Instance->SetScalarParameterValue(OpacityName, Opacity);
+	Instance->SetVectorParameterValue(SROWName, FVector4(Specular, Roughness, Opacity, WPO));
 }
 
 FMaterialSurfaceProperty FMaterialSurfaceProperty::Lerp(const FMaterialSurfaceProperty& A, const FMaterialSurfaceProperty& B, float Alpha)
@@ -53,6 +60,7 @@ FMaterialSurfaceProperty FMaterialSurfaceProperty::Lerp(const FMaterialSurfacePr
 	Result.Specular = FMath::Lerp(A.Specular, B.Specular, Alpha);
 	Result.Roughness = FMath::Lerp(A.Roughness, B.Roughness, Alpha);
 	Result.Opacity = FMath::Lerp(A.Opacity, B.Opacity, Alpha);
+	Result.WPO = FMath::Lerp(A.WPO, B.WPO, Alpha);
 
 	Result.Clamp();
 

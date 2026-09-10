@@ -3,14 +3,12 @@
 // Parent Header
 #include "Actor/WeatherEffectActor.h"
 
-// Engine Headers
-
-// Project Header
-
-
 
 AWeatherEffectActor::AWeatherEffectActor()
 {
     PrimaryActorTick.bCanEverTick = false;
+    SetActorTickEnabled(false);
+    SetActorEnableCollision(false);
+    SetCanBeDamaged(false);
 }
 

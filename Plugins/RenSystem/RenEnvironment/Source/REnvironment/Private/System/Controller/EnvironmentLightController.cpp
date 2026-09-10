@@ -95,6 +95,6 @@ void UEnvironmentLightController::OnTransitionChanged(float Alpha)
 	Sun->LightColor = FLinearColor(NewSunColor).ToFColor(false);
 	Moon->LightColor = FLinearColor(NewSunColor).ToFColor(false);
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Alpha: %f"), Alpha);
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("EnvironmentLight Alpha: %f"), Alpha);
 }
 

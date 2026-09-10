@@ -19,7 +19,7 @@ class UAssetManager;
 class UEnvironmentDiscreteController;
 class UEnvironmentStackedController;
 class UEnvironmentProfileAsset;
-class UEnvironmentFragment;
+class UEnvironmentWorldConfig;
 struct FStreamableHandle;
 
 
@@ -55,11 +55,11 @@ protected:
 	bool RegisterStackedController(TSubclassOf<UEnvironmentStackedController> ControllerClass, AActor* EnvironmentActor);
 	bool RegisterDiscreteController(TSubclassOf<UEnvironmentDiscreteController> ControllerClass, AActor* EnvironmentActor);
 
-	void RegisterControllers(const UEnvironmentFragment* Fragment);
+	void RegisterControllers(const UEnvironmentWorldConfig* Data);
 	void UnregisterControllers();
 
-	void RegisterDefaultProfiles(const UEnvironmentFragment* Fragment);
-	const UEnvironmentFragment* GetEnvironmentFragment() const;
+	void RegisterDefaultProfiles(const UEnvironmentWorldConfig* Data);
+	const UEnvironmentWorldConfig* GetEnvironmentWorldConfig() const;
 
 	// ~ Binding
 	void HandleOnEnvironmentLoaded();
@@ -73,6 +73,10 @@ protected:
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
+
+public:
+
+	static REN_API UEnvironmentSubsystem* Get(UWorld* World);
 
 };
 
