@@ -16,3 +16,4 @@ class UWorldConfigAsset : public UDataAsset
 	GENERATED_BODY()
 
 };
+

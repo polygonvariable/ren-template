@@ -5,6 +5,7 @@
 
 // Engine Headers
 #include "Engine/AssetManager.h"
+#include "NiagaraSystem.h"
 
 // Project Header
 #include "Actor/WeatherEffectActor.h"
@@ -25,7 +26,7 @@ AWeatherEffectManagerActor::AWeatherEffectManagerActor()
 }
 
 
-void AWeatherEffectManagerActor::ActivateEffects(const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes)
+void AWeatherEffectManagerActor::ActivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems)
 {
     UWorld* World = GetWorld();
 
@@ -33,15 +34,15 @@ void AWeatherEffectManagerActor::ActivateEffects(const TArray<TSoftClassPtr<AWea
     SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
     SpawnParameters.Owner = this;
 
-    for (const TSoftClassPtr<AWeatherEffectActor>& Class : Classes)
+    for (const TSoftObjectPtr<UNiagaraSystem>& Item : Systems)
     {
-        UClass* EffectClass = Class.Get();
-        if (!IsValid(EffectClass))
+        UNiagaraSystem* Niagara = Item.Get();
+        if (!IsValid(Niagara))
         {
             continue;
         }
 
-        TObjectPtr<AWeatherEffectActor>* FoundActor = EffectActors.FindByPredicate([EffectClass](AWeatherEffectActor* Actor) { return IsValid(Actor) && Actor->IsA(EffectClass); });
+        TObjectPtr<AWeatherEffectActor>* FoundActor = EffectActors.FindByPredicate([Niagara](AWeatherEffectActor* Actor) { return IsValid(Actor) && Actor->GetNiagaraSystem() == Niagara; });
         if (FoundActor)
         {
             AWeatherEffectActor* Actor = FoundActor->Get();
@@ -52,26 +53,28 @@ void AWeatherEffectManagerActor::ActivateEffects(const TArray<TSoftClassPtr<AWea
             continue;
         }
 
-        AWeatherEffectActor* Actor = World->SpawnActor<AWeatherEffectActor>(EffectClass, SpawnParameters);
+        AWeatherEffectActor* Actor = World->SpawnActorDeferred<AWeatherEffectActor>(AWeatherEffectActor::StaticClass(), FTransform(), this, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
         if (IsValid(Actor))
         {
+            Actor->SetNiagaraSystem(Niagara);
             Actor->ActivateEffect();
+            Actor->FinishSpawning(FTransform());
             EffectActors.Add(Actor);
         }
     }
 }
 
-void AWeatherEffectManagerActor::DeactivateEffects(const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes)
+void AWeatherEffectManagerActor::DeactivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems)
 {
-    for (const TSoftClassPtr<AWeatherEffectActor>& Class : Classes)
+    for (const TSoftObjectPtr<UNiagaraSystem>& Item : Systems)
     {
-        UClass* EffectClass = Class.Get();
-        if (!IsValid(EffectClass))
+        UNiagaraSystem* Niagara = Item.Get();
+        if (!IsValid(Niagara))
         {
             continue;
         }
 
-        TObjectPtr<AWeatherEffectActor>* FoundActor = EffectActors.FindByPredicate([EffectClass](AWeatherEffectActor* Actor) { return IsValid(Actor) && Actor->IsA(EffectClass); });
+        TObjectPtr<AWeatherEffectActor>* FoundActor = EffectActors.FindByPredicate([Niagara](AWeatherEffectActor* Actor) { return IsValid(Actor) && Actor->GetNiagaraSystem() == Niagara; });
         if (FoundActor)
         {
             AWeatherEffectActor* Actor = FoundActor->Get();
@@ -97,7 +100,7 @@ void AWeatherEffectManagerActor::HandleOnEffectLoaded(UWeatherAsset* WeatherAsse
 
     if (IsValid(WeatherAsset))
     {
-        ActivateEffects(WeatherAsset->EffectClasses);
+        ActivateEffects(WeatherAsset->NiagaraSystems);
     }
 }
 
@@ -109,17 +112,17 @@ void AWeatherEffectManagerActor::HandleWeatherChanged(UWeatherAsset* WeatherAsse
         return;
     }
 
-    const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes = WeatherAsset->EffectClasses;
-    if (Classes.Num() == 0)
+    const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems = WeatherAsset->NiagaraSystems;
+    if (Systems.Num() == 0)
     {
-        LOG_ERROR(LogWeather, TEXT("Weather effect classes is empty"));
+        LOG_ERROR(LogWeather, TEXT("Weather niagara systems is empty"));
         return;
     }
 
     TArray<FSoftObjectPath> SoftObjects;
-    for (const TSoftClassPtr<AWeatherEffectActor>& Class : Classes)
+    for (const TSoftObjectPtr<UNiagaraSystem>& Item : Systems)
     {
-        SoftObjects.Add(Class.ToSoftObjectPath());
+        SoftObjects.Add(Item.ToSoftObjectPath());
     }
 
     FStreamableManager& Manager = UAssetManager::GetStreamableManager();
@@ -137,7 +140,7 @@ void AWeatherEffectManagerActor::HandleWeatherRemoved(UWeatherAsset* WeatherAsse
     }
 
     RemoveLoadHandle(WeatherAsset);
-    DeactivateEffects(WeatherAsset->EffectClasses);
+    DeactivateEffects(WeatherAsset->NiagaraSystems);
 }
 
 

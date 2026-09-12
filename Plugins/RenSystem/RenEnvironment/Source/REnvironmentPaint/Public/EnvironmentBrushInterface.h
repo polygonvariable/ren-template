@@ -3,20 +3,15 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "UObject/Interface.h"
-
-// Project Headers
 
 // Generated Headers
 #include "EnvironmentBrushInterface.generated.h"
 
-// Forward Declarations
 
-// Delegates Declarations
-
-
-
+/*
+ *
+ */
 UINTERFACE(MinimalAPI, Blueprintable)
 class UEnvironmentBrushInterface : public UInterface
 {
@@ -29,6 +24,7 @@ class IEnvironmentBrushInterface
 
 public:
 
+	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density) { return false; };
 	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) { return false; };
 	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, UMaterialInstanceDynamic*& Material) { return false; };
 	

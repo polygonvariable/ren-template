@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // Project Headers
-#include "RCoreCommon/Public/Actor/RegionActor.h"
+#include "Actor/RegionActor.h"
 
 // Generated Headers
 #include "EnvironmentRegionActor.generated.h"

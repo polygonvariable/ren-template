@@ -14,7 +14,7 @@
 #include "Data/WeatherWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "RCoreSettings/Public/WorldFragmentSettings.h"
+#include "WorldFragmentSettings.h"
 #include "System/WeatherController.h"
 
 

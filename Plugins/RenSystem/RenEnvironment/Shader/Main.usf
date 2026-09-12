@@ -1,0 +1,99 @@
+//----------------------------------------------------------
+// Inputs:
+// (InGrid2d) - Grid2D Collection
+// (InReadRT) - Render Target
+// (InPoints) - Vector4(Location.X, Location.Y, [Size, SizeScale], [Density, DensityScale])
+// (InPixelRatio) - float((1.0f / RTSize) * CanvasSize)
+//
+// Outputs:
+// (OutRGBA) - Linear Color
+//----------------------------------------------------------
+
+//----------------------------------------------------------
+// Constants
+//----------------------------------------------------------
+float BaseRadius  = 1.0f;
+float BaseDensity = 1.0f;
+
+int Num;
+InPoints.Length(Num);
+
+// Per-channel radius & density factors: R,G,B,A
+float4 ChannelFactor = float4(1.0f, 1.4f, 1.8f, 2.2f);
+
+// Create UV
+float2 UV;
+InGrid2d.ExecutionIndexToUnit(UV);
+
+// Create Grid Index
+float GridIndexX;
+float GridIndexY;
+InGrid2d.ExecutionIndexToGridIndex(GridIndexX, GridIndexY);
+
+// Get Number of Cells
+float NumCellX;
+float NumCellY;
+InGrid2d.GetNumCells(NumCellX, NumCellY);
+
+// Create Grid Location
+float2 GridLocation;
+GridLocation.x = (GridIndexX + (NumCellX * (-0.5))) * InPixelRatio;
+GridLocation.y = (GridIndexY + (NumCellY * (-0.5))) * InPixelRatio;
+
+//----------------------------------------------------------
+// Draw Points
+//----------------------------------------------------------
+float4 NewColor = float4(0, 0, 0, 0);
+for (int i = 0; i < Num; i++)
+{
+    float4 Point;
+    InPoints.Get(i, Point);
+
+    //----------------------------------------------------------
+    // Inline unpack Point.z  (Size, SizeScale)
+    //----------------------------------------------------------
+    uint bitsZ = asuint(Point.z);
+
+    uint highZ = (bitsZ >> 16) & 0xFFFF;
+    uint lowZ  = bitsZ & 0xFFFF;
+
+    float Size = f16tof32(highZ);
+    float SizeScale = f16tof32(lowZ);
+
+    //----------------------------------------------------------
+    // Inline unpack Point.w  (Density, DensityScale)
+    //----------------------------------------------------------
+    uint bitsW = asuint(Point.w);
+
+    uint highW = (bitsW >> 16) & 0xFFFF;
+    uint lowW  = bitsW & 0xFFFF;
+
+    float Density = f16tof32(highW);
+    float DensityScale = f16tof32(lowW);
+
+    //----------------------------------------------------------
+    // Paint
+    //----------------------------------------------------------
+    float PointRadius = max(Size, 0.0001);
+    float PointDensity = max(Density, 0.0001);
+
+    float4 FinalRadius = PointRadius * ChannelFactor;
+    float4 FinalDensity = PointDensity;
+
+    float Distance = length(Point.xy - GridLocation);
+    float4 nd = saturate(Distance / FinalRadius);
+
+    float4 CircleMask = 1.0 - nd;
+    CircleMask *= CircleMask;
+
+    float4 PointContribution = CircleMask * FinalDensity;
+
+    NewColor = max(NewColor, PointContribution);
+}
+
+// Read Previous Color
+float4 PreviousColor;
+InReadRT.SampleRenderTargetValue(UV, 0, PreviousColor);
+
+// Return New Color
+OutRGBA = saturate(PreviousColor + NewColor);

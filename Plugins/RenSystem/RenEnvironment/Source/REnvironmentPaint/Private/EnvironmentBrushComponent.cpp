@@ -8,26 +8,32 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Project Headers
+#include "System/EnvironmentCanvasSubsystem.h"
 
 
-
-void UEnvironmentBrushComponent::Activate(bool bReset)
+UEnvironmentBrushComponent::UEnvironmentBrushComponent()
 {
-	Super::Activate(bReset);
+	bAutoActivate = true;
+	PrimaryComponentTick.bCanEverTick = false;
+}
 
-	ACharacter* Character = Cast<ACharacter>(GetOwner());
-	if (Character)
+
+void UEnvironmentBrushComponent::RegisterBrush()
+{
+	UEnvironmentCanvasSubsystem* Subsystem = UEnvironmentCanvasSubsystem::Get(GetWorld());
+	if (IsValid(Subsystem))
 	{
-		CharacterMovement = Character->GetCharacterMovement();
-		bIsCharacter = true;
+		Subsystem->RegisterBrush(this);
 	}
 }
 
-void UEnvironmentBrushComponent::Deactivate()
+void UEnvironmentBrushComponent::UnregisterBrush()
 {
-	CharacterMovement = nullptr;
-
-	Super::Deactivate();
+	UEnvironmentCanvasSubsystem* Subsystem = UEnvironmentCanvasSubsystem::Get(GetWorld());
+	if (IsValid(Subsystem))
+	{
+		Subsystem->UnregisterBrush(this);
+	}
 }
 
 
@@ -47,11 +53,9 @@ void UEnvironmentBrushComponent::SetBrushSize(FVector2D Size)
 }
 
 
-bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density)
+bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& Size, float& Density)
 {
-	const FTransform& Transform = GetComponentToWorld();
-	Location = Transform.GetLocation();
-	Velocity = GetOwner()->GetVelocity();
+	Location = GetComponentToWorld().GetLocation();
 	Density = BrushDensity;
 	Size = BrushSize;
 
@@ -64,5 +68,52 @@ bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector& Vel
 	}
 
 	return bCanDraw;
+}
+
+bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density)
+{
+	Location = GetComponentToWorld().GetLocation();
+	Density = BrushDensity;
+	Velocity = GetComponentVelocity();
+	Size = BrushSize;
+
+	if (bIsCharacter)
+	{
+		if (!IsValid(CharacterMovement) || CharacterMovement->MovementMode != MOVE_Walking)
+		{
+			return false;
+		}
+	}
+
+	return bCanDraw;
+}
+
+
+void UEnvironmentBrushComponent::Activate(bool bReset)
+{
+	Super::Activate(bReset);
+
+	ACharacter* Character = Cast<ACharacter>(GetOwner());
+	if (Character)
+	{
+		CharacterMovement = Character->GetCharacterMovement();
+		bIsCharacter = true;
+	}
+
+	RegisterBrush();
+}
+
+void UEnvironmentBrushComponent::Deactivate()
+{
+	UnregisterBrush();
+	CharacterMovement = nullptr;
+
+	Super::Deactivate();
+}
+
+void UEnvironmentBrushComponent::EndPlay(EEndPlayReason::Type Reason)
+{
+	UnregisterBrush();
+	Super::EndPlay(Reason);
 }
 

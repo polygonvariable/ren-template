@@ -32,6 +32,12 @@ public:
     UPROPERTY(Config)
     int TonemapperSharpen = 0;
 
+    UPROPERTY(Config)
+    bool bNanite = false;
+
+    UPROPERTY(Config)
+    bool bEnvironmentPaint = false;
+
 
     void RegisterCVar();
     void UnregisterCVar();
@@ -48,6 +54,8 @@ protected:
     IConsoleVariable* AACVar = nullptr;
     IConsoleVariable* SharpenCVar = nullptr;
     IConsoleVariable* MaxFPSCVar = nullptr;
+    IConsoleVariable* NaniteCVar = nullptr;
+    IConsoleVariable* EnvironmentPaintCVar = nullptr;
 
 
     void BindCVarDelegate(IConsoleVariable* Variable);
@@ -57,8 +65,10 @@ protected:
     void UpdateSettingValues();
 
     void UpdateCVarValue(IConsoleVariable* Variable, int Value, int Min, int Max);
+    void UpdateCVarValue(IConsoleVariable* Variable, bool Value);
     void UpdateSettingValue(IConsoleVariable* Variable, int& Value, int Min, int Max);
     void UpdateSettingValue(IConsoleVariable* Variable, float& Value, int Min, int Max);
+    void UpdateSettingValue(IConsoleVariable* Variable, bool& Value);
 
     // ~ Binding
     void HandleOnCVarChanged(IConsoleVariable* Variable);

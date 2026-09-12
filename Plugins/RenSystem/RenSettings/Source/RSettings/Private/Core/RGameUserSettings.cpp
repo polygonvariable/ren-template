@@ -17,6 +17,8 @@ void URGameUserSettings::LoadSettings(bool bForceReload)
 	AACVar = ConsoleManager.FindConsoleVariable(TEXT("r.AntiAliasingMethod"));
 	SharpenCVar = ConsoleManager.FindConsoleVariable(TEXT("r.Tonemapper.Sharpen"));
 	MaxFPSCVar = ConsoleManager.FindConsoleVariable(TEXT("t.MaxFPS"));
+	NaniteCVar = ConsoleManager.FindConsoleVariable(TEXT("r.Nanite"));
+	EnvironmentPaintCVar = ConsoleManager.FindConsoleVariable(TEXT("ren.Environment.Paint"));
 
 	Super::LoadSettings(bForceReload);
 }
@@ -44,6 +46,8 @@ void URGameUserSettings::RegisterCVar()
 	BindCVarDelegate(AACVar);
 	BindCVarDelegate(SharpenCVar);
 	BindCVarDelegate(MaxFPSCVar);
+	BindCVarDelegate(NaniteCVar);
+	BindCVarDelegate(EnvironmentPaintCVar);
 }
 
 void URGameUserSettings::UnregisterCVar()
@@ -52,6 +56,8 @@ void URGameUserSettings::UnregisterCVar()
 	ClearCVarDelegate(AACVar);
 	ClearCVarDelegate(SharpenCVar);
 	ClearCVarDelegate(MaxFPSCVar);
+	ClearCVarDelegate(NaniteCVar);
+	ClearCVarDelegate(EnvironmentPaintCVar);
 }
 
 
@@ -82,6 +88,9 @@ void URGameUserSettings::UpdateCVarValues()
 	UpdateCVarValue(AACVar, AntiAliasingMethod, 0, 5);
 	UpdateCVarValue(SharpenCVar, TonemapperSharpen, 0, 2);
 	UpdateCVarValue(MaxFPSCVar, FrameRateLimit, 0, 120);
+
+	UpdateCVarValue(NaniteCVar, bNanite);
+	UpdateCVarValue(EnvironmentPaintCVar, bEnvironmentPaint);
 }
 
 void URGameUserSettings::UpdateSettingValues()
@@ -90,6 +99,9 @@ void URGameUserSettings::UpdateSettingValues()
 	UpdateSettingValue(AACVar, AntiAliasingMethod, 0, 5);
 	UpdateSettingValue(SharpenCVar, TonemapperSharpen, 0, 2);
 	UpdateSettingValue(MaxFPSCVar, FrameRateLimit, 0, 120);
+
+	UpdateSettingValue(NaniteCVar, bNanite);
+	UpdateSettingValue(EnvironmentPaintCVar, bEnvironmentPaint);
 }
 
 
@@ -98,6 +110,14 @@ void URGameUserSettings::UpdateCVarValue(IConsoleVariable* Variable, int Value, 
 	if (Variable)
 	{
 		Variable->Set(FMath::Clamp(Value, Min, Max), ECVF_SetByConsole);
+	}
+}
+
+void URGameUserSettings::UpdateCVarValue(IConsoleVariable* Variable, bool Value)
+{
+	if (Variable)
+	{
+		Variable->Set(Value, ECVF_SetByConsole);
 	}
 }
 
@@ -114,6 +134,14 @@ void URGameUserSettings::UpdateSettingValue(IConsoleVariable* Variable, float& V
 	if (Variable)
 	{
 		Value = FMath::Clamp(Variable->GetFloat(), Min, Max);
+	}
+}
+
+void URGameUserSettings::UpdateSettingValue(IConsoleVariable* Variable, bool& Value)
+{
+	if (Variable)
+	{
+		Value = Variable->GetBool();
 	}
 }
 

@@ -16,8 +16,6 @@
 ARegionActor::ARegionActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	SetActorTickEnabled(false);
-	SetActorEnableCollision(false);
 	SetCanBeDamaged(false);
 }
 

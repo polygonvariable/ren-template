@@ -10,7 +10,7 @@
 #include "Styling/SlateStyleRegistry.h"
 
 // Project Headers
-#include "RWeatherEd/Public/WeatherEdAction.h"
+#include "WeatherEdAction.h"
 
 
 #define LOCTEXT_NAMESPACE "FRWeatherEdModule"

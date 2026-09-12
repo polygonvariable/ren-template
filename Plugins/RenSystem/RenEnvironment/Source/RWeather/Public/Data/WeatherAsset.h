@@ -14,6 +14,7 @@
 
 // Forward Declarations
 class AWeatherEffectActor;
+class UNiagaraSystem;
 class UEnvironmentProfileAsset;
 
 
@@ -37,8 +38,11 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     FWeatherSurfaceEffect SurfaceEffect;
 
+    //UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
+    //TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
+
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
-    TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
+    TArray<TSoftObjectPtr<UNiagaraSystem>> NiagaraSystems;
 
     UPROPERTY(EditDefaultsOnly, Category = "Environment")
     TArray<TObjectPtr<UEnvironmentProfileAsset>> EnvironmentProfiles;

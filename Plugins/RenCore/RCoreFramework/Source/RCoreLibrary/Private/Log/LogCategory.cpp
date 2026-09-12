@@ -29,6 +29,7 @@ DEFINE_LOG_CATEGORY(LogPriorityList);
 
 // ~ Environment Categories
 DEFINE_LOG_CATEGORY(LogEnvironment);
+DEFINE_LOG_CATEGORY(LogEnvironmentPaint);
 DEFINE_LOG_CATEGORY(LogWeather);
 DEFINE_LOG_CATEGORY(LogSeason);
 // ~ End of Environment Categories

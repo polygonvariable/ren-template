@@ -36,6 +36,7 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogPriorityList, Log, All);
 
 // ~ Environment Categories
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEnvironment, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEnvironmentPaint, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogWeather, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogSeason, Log, All);
 // ~ End of Environment Categories

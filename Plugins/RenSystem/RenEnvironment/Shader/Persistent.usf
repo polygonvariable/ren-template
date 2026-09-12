@@ -1,0 +1,78 @@
+//----------------------------------------------------------
+// Inputs:
+// (InGrid2d) - Grid2D Collection
+// (InReadRT) - Render Target
+// (InDeltaTime) - float(Engine.DeltaTime)
+// (InTime) - float(Engine.Time)
+// (InPixelOffset) - Vector2
+//
+// Outputs:
+// (OutRGBA) - Linear Color
+//----------------------------------------------------------
+
+//----------------------------------------------------------
+// Constants
+//----------------------------------------------------------
+// Get Grid Unit
+float2 GridUnit;
+InGrid2d.ExecutionIndexToUnit(GridUnit);
+
+// Create UV
+float2 UV;
+UV.x = InPixelOffset.x + GridUnit.x;
+UV.y = InPixelOffset.y + GridUnit.y;
+
+float DecayRate = 0.01f;
+float WindStrength = 0.01f; // How fast the pixels move
+float NoiseScale = 10.0f;   // How tight the swirls/waves are
+float NoiseSpeed = 0.5f;    // How fast the wind changes direction
+
+//----------------------------------------------------------
+// Genrate wind noise:
+// Generate pseudo-curl noise using sine and cosine waves
+// This mathematically mimics fluid swirls without any textures
+//----------------------------------------------------------
+float2 P = UV * NoiseScale;
+float T = InTime * NoiseSpeed;
+
+// Multiple independent wave layers
+float WindX =
+    sin(P.y + T * 1.13f) +
+    sin(P.y * 2.31f - T * 0.73f) +
+    cos(P.x * 1.71f + T * 0.91f) +
+    cos((P.x + P.y) * 1.37f - T * 1.27f);
+
+float WindY =
+    cos(P.x * 0.93f - T * 1.07f) +
+    cos(P.x * 2.17f + T * 0.61f) +
+    sin(P.y * 1.63f + T * 0.83f) +
+    sin((P.x - P.y) * 1.21f + T * 1.19f);
+
+float2 WindVelocity = float2(WindX, WindY);
+
+// Normalize so the speed doesn't become excessive
+WindVelocity = normalize(WindVelocity + 0.0001f);
+
+//----------------------------------------------------------
+// Genrate UV Offset:
+// Calculate where to sample from (Advection)
+// We step backwards along the wind vector to figure out where the pixel came from
+//----------------------------------------------------------
+float2 OffsetUV = UV - (WindVelocity * WindStrength * InDeltaTime);
+
+//----------------------------------------------------------
+// Mask Render Target Bounds
+//----------------------------------------------------------
+float MaskColor = 1.0f;
+if (OffsetUV.x < 0.0f || OffsetUV.x > 1.0f || OffsetUV.y < 0.0f || OffsetUV.y > 1.0f)
+{
+    MaskColor = 0.0f;
+}
+
+// Sample the Render Target at the new offset position
+float4 PreviousColor;
+InReadRT.SampleRenderTargetValue(OffsetUV, 0, PreviousColor);
+
+// Output with decay
+float Decay = exp(-DecayRate * InDeltaTime);
+OutRGBA = saturate(PreviousColor * Decay * MaskColor);

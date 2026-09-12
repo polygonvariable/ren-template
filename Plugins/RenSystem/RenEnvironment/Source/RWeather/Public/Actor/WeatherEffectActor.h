@@ -8,11 +8,17 @@
 // Generated Headers
 #include "WeatherEffectActor.generated.h"
 
+// Forward Declarations
+class USceneComponent;
+class UNiagaraComponent;
+class UNiagaraSystem;
+class UArrowComponent;
+
 
 /**
  *
  */
-UCLASS(Abstract)
+UCLASS()
 class AWeatherEffectActor : public AActor
 {
 
@@ -22,11 +28,45 @@ public:
 
 	AWeatherEffectActor();
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void ActivateEffect();
 
-    UFUNCTION(BlueprintImplementableEvent)
+    void SetNiagaraSystem(UNiagaraSystem* Asset);
+    UNiagaraSystem* GetNiagaraSystem() const;
+
+    void ActivateEffect();
     void DeactivateEffect();
+
+#if WITH_EDITORONLY_DATA
+    // ~ AActor
+    virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+    // ~ End of AActor
+#endif
+
+protected:
+
+    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    TObjectPtr<USceneComponent> SceneComponent;
+
+    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    TObjectPtr<UNiagaraComponent> NiagaraComponent;
+
+#if WITH_EDITORONLY_DATA
+    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    TObjectPtr<UArrowComponent> ArrowComponent;
+#endif
+
+    FTimerHandle FollowTimer;
+
+
+    void CreateFollowTimer();
+    void RemoveFollowTimer();
+
+    // ~ Binding
+    void HandleOnTimerTick();
+    // ~ End of Binding
+
+    // ~ AActor
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+    // ~ End of AActor
 
 };
 

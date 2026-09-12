@@ -20,6 +20,18 @@ class UGameUserSettings;
 /**
  *
  */
+UENUM()
+enum class ESettingValueType
+{
+	Bool,
+	Int,
+	Float
+};
+
+
+/**
+ *
+ */
 UCLASS(Abstract)
 class USettingOptionUI : public UUserWidget
 {
@@ -32,6 +44,9 @@ public:
 	void SaveCVar();
 
 protected:
+
+	UPROPERTY(EditAnywhere)
+	ESettingValueType ValueType;
 
 	UPROPERTY(EditAnywhere)
 	FString TargetCVar;
@@ -52,8 +67,13 @@ protected:
 	bool bHighestPriority = false;
 
 
-	virtual int GetSettingOptionValue() const;
-	virtual void SetSettingOptionValue(int Value);
+	virtual bool GetSettingValue(bool& Value) const;
+	virtual bool GetSettingValue(int& Value) const;
+	virtual bool GetSettingValue(float& Value) const;
+
+	virtual void SetSettingValue(bool Value);
+	virtual void SetSettingValue(int Value);
+	virtual void SetSettingValue(float Value);
 
 
 	// ~ UUserWidget
@@ -72,6 +92,29 @@ private:
 /**
  *
  */
+USTRUCT()
+struct FSettingDropdownOption
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FString Title;
+
+	UPROPERTY(EditAnywhere)
+	int IntOption;
+
+	UPROPERTY(EditAnywhere)
+	bool BoolOption;
+
+};
+
+
+/**
+ *
+ */
 UCLASS(Abstract)
 class USettingOption_DropdownUI : public USettingOptionUI
 {
@@ -81,16 +124,11 @@ class USettingOption_DropdownUI : public USettingOptionUI
 protected:
 
 	UPROPERTY(EditAnywhere)
-	TArray<FString> DefaultOptions;
-
-	UPROPERTY(EditAnywhere)
-	TArray<int> ValueOptions;
-
-	UPROPERTY(EditAnywhere)
-	bool bUseValueOption = false;
+	TArray<FSettingDropdownOption> Options;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UComboBoxString> SettingDropdown = nullptr;
+
 
 	// ~ Binding
 	UFUNCTION()
@@ -98,8 +136,10 @@ protected:
 	// ~ End of Binding
 
 	// ~ USettingOptionUI
-	virtual int GetSettingOptionValue() const override;
-	virtual void SetSettingOptionValue(int Value) override;
+	virtual bool GetSettingValue(bool& Value) const override;
+	virtual bool GetSettingValue(int& Value) const override;
+	virtual void SetSettingValue(int Value) override;
+	virtual void SetSettingValue(bool Value) override;
 	// ~ End of USettingOptionUI
 
 	// ~ UUserWidget
@@ -119,6 +159,10 @@ class USettingOption_SliderUI : public USettingOptionUI
 {
 
 	GENERATED_BODY()
+
+public:
+
+	USettingOption_SliderUI();
 
 protected:
 
@@ -148,8 +192,8 @@ protected:
 	// ~ End of Binding
 
 	// ~ USettingOptionUI
-	virtual int GetSettingOptionValue() const override;
-	virtual void SetSettingOptionValue(int Value) override;
+	virtual bool GetSettingValue(int& Value) const override;
+	virtual void SetSettingValue(int Value) override;
 	// ~ End of USettingOptionUI
 
 	// ~ UUserWidget

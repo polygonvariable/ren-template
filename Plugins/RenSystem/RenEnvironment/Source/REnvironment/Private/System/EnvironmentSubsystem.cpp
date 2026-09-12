@@ -15,7 +15,7 @@
 #include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "RCoreSettings/Public/WorldFragmentSettings.h"
+#include "WorldFragmentSettings.h"
 #include "System/EnvironmentController.h"
 #include "Data/EnvironmentAsset.h"
 

@@ -4,6 +4,15 @@
 
 #define LOCTEXT_NAMESPACE "FREnvironmentPaintModule"
 
+
+static bool CVar_REnvironmentPaint = false;
+static FAutoConsoleVariableRef CVarREnvironmentPaint(
+	TEXT("ren.Environment.Paint"),
+	CVar_REnvironmentPaint,
+	TEXT("Enables environment painting"),
+	ECVF_Default
+);
+
 void FREnvironmentPaintModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module

@@ -9,6 +9,7 @@
 class UWeatherAsset;
 class UWeatherSubsystem;
 class AWeatherEffectActor;
+class UNiagaraSystem;
 struct FStreamableHandle;
 
 
@@ -36,8 +37,8 @@ protected:
 	TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>> LoadHandles;
 
 
-	void ActivateEffects(const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes);
-	void DeactivateEffects(const TArray<TSoftClassPtr<AWeatherEffectActor>>& Classes);
+	void ActivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems);
+	void DeactivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems);
 
 	void RemoveLoadHandle(UWeatherAsset* WeatherAsset);
 

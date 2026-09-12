@@ -3,7 +3,6 @@
 #pragma once
 
 // Engine Headers
-#include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
 
 // Project Headers
@@ -18,9 +17,6 @@ class UCharacterMovementComponent;
 
 
 /*
- * TODO:
- * Rename to EnvironmentBrushComponent
- * Can affect performance with too many brushes, use ComputeCanvas & ComputeBrush instead.
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -31,9 +27,25 @@ class UEnvironmentBrushComponent : public USceneComponent, public IEnvironmentBr
 
 public:
 
+	UEnvironmentBrushComponent();
+
+	void RegisterBrush();
+	void UnregisterBrush();
+
 	void SetBrushDensity(float Density);
 	void SetBrushSize(FVector2D Size);
 	void SetCanDraw(bool bEnable);
+
+	// ~ IEnvironmentBrushInterface
+	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density) override;
+	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) override;
+	// ~ End of IEnvironmentBrushInterface
+
+	// ~ USceneComponent
+	virtual void Activate(bool bReset) override;
+	virtual void Deactivate() override;
+	virtual void EndPlay(EEndPlayReason::Type Reason) override;
+	// ~ End of USceneComponent
 
 protected:
 
@@ -51,17 +63,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BrushDensity = 1.0f;
-
-public:
-
-	// ~ USceneComponent
-	virtual void Activate(bool bReset) override;
-	virtual void Deactivate() override;
-	// ~ End of USceneComponent
-
-	// ~ IEnvironmentBrushInterface
-	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) override;
-	// ~ End of IEnvironmentBrushInterface
 
 };
 
