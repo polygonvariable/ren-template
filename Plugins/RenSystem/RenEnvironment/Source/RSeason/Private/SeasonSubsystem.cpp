@@ -158,10 +158,10 @@ void USeasonSubsystem::HandleDayChanged(int CurrentDay)
 
 	FMaterialSurfaceProperty& SurfaceProperty = SeasonAsset->SurfaceProperty;
 
-	HandleScalarTransition(TEXT("SeasonSpecular"), SurfaceProperty.Specular, 1.0f);
-	HandleScalarTransition(TEXT("SeasonRoughness"), SurfaceProperty.Roughness, 1.0f);
-	HandleScalarTransition(TEXT("SeasonOpacity"), SurfaceProperty.Opacity, 1.0f);
-	HandleVectorTransition(TEXT("SeasonTint"), SurfaceProperty.Tint, 1.0f);
+	//HandleScalarTransition(TEXT("SeasonSpecular"), SurfaceProperty.Specular, 1.0f);
+	//HandleScalarTransition(TEXT("SeasonRoughness"), SurfaceProperty.Roughness, 1.0f);
+	//HandleScalarTransition(TEXT("SeasonOpacity"), SurfaceProperty.Opacity, 1.0f);
+	//HandleVectorTransition(TEXT("SeasonTint"), SurfaceProperty.Tint, 1.0f);
 
 	LOG_INFO(LogSeason, TEXT("Season transition"));
 }

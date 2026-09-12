@@ -4,14 +4,23 @@
 
 #define LOCTEXT_NAMESPACE "FREnvironmentPaintModule"
 
-
-static bool CVar_REnvironmentPaint = false;
+static bool LValue_REnvironmentPaint = false;
 static FAutoConsoleVariableRef CVarREnvironmentPaint(
 	TEXT("ren.Environment.Paint"),
-	CVar_REnvironmentPaint,
+	LValue_REnvironmentPaint,
 	TEXT("Enables environment painting"),
 	ECVF_Default
 );
+
+#if WITH_EDITOR
+static bool LValue_REnvironmentPaintDebug = false;
+static FAutoConsoleVariableRef CVarREnvironmentPaintDebug(
+	TEXT("ren.Environment.Paint.Debug"),
+	LValue_REnvironmentPaintDebug,
+	TEXT("Enables environment painting debug"),
+	ECVF_Default
+);
+#endif
 
 void FREnvironmentPaintModule::StartupModule()
 {

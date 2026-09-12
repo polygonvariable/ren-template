@@ -6,7 +6,6 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "Core/Type/WeatherSurfaceEffect.h"
 #include "MaterialSurfaceProperty.h"
 
 // Generated Headers
@@ -34,12 +33,6 @@ public:
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     FMaterialSurfaceProperty SurfaceProperty;
-
-    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
-    FWeatherSurfaceEffect SurfaceEffect;
-
-    //UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
-    //TArray<TSoftClassPtr<AWeatherEffectActor>> EffectClasses;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     TArray<TSoftObjectPtr<UNiagaraSystem>> NiagaraSystems;

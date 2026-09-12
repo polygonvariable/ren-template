@@ -3,7 +3,6 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/WeatherSurfaceEffect.h"
 #include "Core/WeatherDelegate.h"
 #include "MaterialSurfaceProperty.h"
 #include "Priority/PriorityListInterface.h"
@@ -53,9 +52,7 @@ protected:
 
 	FTimerHandle TimerHandle;
 	FMaterialSurfaceProperty SourceSurfaceProperty;
-	FWeatherSurfaceEffect SourceSurfaceEffect;
 	FMaterialSurfaceProperty TargetSurfaceProperty;
-	FWeatherSurfaceEffect TargetSurfaceEffect;
 
 
 	void AddEnvironmentProfile();

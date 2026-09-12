@@ -22,13 +22,13 @@
 #include "NiagaraSystem.h"
 
 // Project Headers
-#include "REnvironment/REnvironment.h"
 #include "Core/AssetManagerUtil.h"
 #include "Data/EnvironmentPaintWorldConfig.h"
 #include "EnvironmentBrushComponent.h"
 #include "EnvironmentBrushInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "REnvironment/REnvironment.h"
 #include "Util/MiscUtil.h"
 #include "WorldFragmentSettings.h"
 
@@ -92,7 +92,7 @@ void UEnvironmentCanvasSubsystem::UnregisterBrush(UActorComponent* Component)
 #if WITH_EDITOR
 void UEnvironmentCanvasSubsystem::DrawDebug()
 {
-	if (IsValid(NiagaraComponent))
+	if (bDrawDebug)
 	{
 		FVector StartLocation = NiagaraLocation;
 		FVector EndLocation = StartLocation + FVector(0.0f, 0.0f, 100.0f);
@@ -328,7 +328,14 @@ void UEnvironmentCanvasSubsystem::HandleOnEnvironmentCVarChanged(IConsoleVariabl
 		return;
 	}
 
-	if (EnvironmentPaintCVar)
+#if WITH_EDITOR
+	if (EnvironmentPaintDebugCVar && Variable == EnvironmentPaintDebugCVar)
+	{
+		bDrawDebug = EnvironmentPaintDebugCVar->GetBool();
+	}
+#endif
+
+	if (EnvironmentPaintCVar && Variable == EnvironmentPaintCVar)
 	{
 		bIsDrawing = (EnvironmentPaintCVar->GetInt() > 0);
 		if (bIsDrawing)
@@ -394,9 +401,9 @@ void UEnvironmentCanvasSubsystem::Tick(float DeltaTime)
 	MoveRenderTargets();
 	DrawRenderTargets();
 
-//#if WITH_EDITOR
-//	DrawDebug();
-//#endif
+#if WITH_EDITOR
+	DrawDebug();
+#endif
 }
 
 bool UEnvironmentCanvasSubsystem::IsTickable() const
@@ -436,6 +443,14 @@ void UEnvironmentCanvasSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 	{
 		EnvironmentPaintCVar->OnChangedDelegate().AddUObject(this, &UEnvironmentCanvasSubsystem::HandleOnEnvironmentCVarChanged);
 	}
+
+#if WITH_EDITOR
+	EnvironmentPaintDebugCVar = IConsoleManager::Get().FindConsoleVariable(TEXT("ren.Environment.Paint.Debug"));
+	if (EnvironmentPaintDebugCVar)
+	{
+		EnvironmentPaintDebugCVar->OnChangedDelegate().AddUObject(this, &UEnvironmentCanvasSubsystem::HandleOnEnvironmentCVarChanged);
+	}
+#endif
 }
 
 void UEnvironmentCanvasSubsystem::OnWorldBeginPlay(UWorld& InWorld)

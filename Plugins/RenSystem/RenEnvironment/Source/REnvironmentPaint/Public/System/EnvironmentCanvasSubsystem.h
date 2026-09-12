@@ -85,6 +85,8 @@ protected:
 	IConsoleVariable* EnvironmentPaintCVar;
 
 #if WITH_EDITOR
+	IConsoleVariable* EnvironmentPaintDebugCVar;
+	bool bDrawDebug = false;
 	void DrawDebug();
 #endif
 

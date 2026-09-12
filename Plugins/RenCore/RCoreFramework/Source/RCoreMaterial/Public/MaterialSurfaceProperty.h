@@ -9,9 +9,7 @@
 #define REN_API RCOREMATERIAL_API
 
 
-
 /**
- * 
  * 
  */
 USTRUCT(BlueprintType)
@@ -23,7 +21,10 @@ struct REN_API FMaterialSurfaceProperty
 public:
 
     UPROPERTY(EditDefaultsOnly)
-    FLinearColor Tint = FColor::Transparent;
+    FLinearColor ColorAdd = FColor::Transparent;
+
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    float ColorMultiply = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Specular = 0.0f;
@@ -34,14 +35,27 @@ public:
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
     float Opacity = 0.0f;
 
+    UPROPERTY(EditDefaultsOnly)
+    float WPO = 1.0f;
+
+    UPROPERTY(EditDefaultsOnly)
+    float Displacement = 1.0f;
+
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "-1", UIMax = "1", ClampMin = "-1", ClampMax = "1"))
-    float WPO = 0.0f;
+    float Coverage = 0.0f;
+
+    UPROPERTY(EditDefaultsOnly)
+    float MaskType = 0.0f;
+
+    UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
+    float MaskAdd = 0.0f;
+
 
     void Reset();
     void Clamp();
 
-    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName);
-    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName);
+    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
+    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
 
     static FMaterialSurfaceProperty Lerp(const FMaterialSurfaceProperty& A, const FMaterialSurfaceProperty& B, float Alpha);
 

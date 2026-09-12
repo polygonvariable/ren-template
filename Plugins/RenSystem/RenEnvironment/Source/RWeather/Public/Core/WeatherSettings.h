@@ -23,19 +23,32 @@ public:
 	UWeatherSettings(const FObjectInitializer& ObjectInitializer);
 
 
+	/*
+	 * RGB	- Color added
+	 * A	- Color Multiplied
+	 */
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Surface Property")
-	FName SurfaceTint = TEXT("WeatherA.Tint");
+	FName SurfaceTint = TEXT("WeatherAttribute.Tint");
 
+	/*
+	 * S	- Specular
+	 * R	- Roughness
+	 * O	- Opacity
+	 * W	- WPO
+	 */
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Surface Property")
-	FName SurfaceSROW = TEXT("WeatherA.SROW");
+	FName SurfaceSROW = TEXT("WeatherAttribute.SROW");
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Surface Effect")
-	FName EffectRain = TEXT("WeatherE.Rain");
+	/*
+	 * D	- Displacement
+	 * C	- Coverage (The mask coverage)
+	 * M	- Mask Type
+	 * A	- Mask Add (Add value to mask of Specular & Roughness)
+	 */
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Surface Property")
+	FName SurfaceDCMA = TEXT("WeatherAttribute.DCMA");
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Surface Effect")
-	FName EffectSnow = TEXT("WeatherE.Snow");
 
-	
 	static const UWeatherSettings* Get();
 
 };

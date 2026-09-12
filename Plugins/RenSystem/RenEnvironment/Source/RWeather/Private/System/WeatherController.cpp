@@ -84,12 +84,16 @@ void UWeatherController::StartTransition()
 {
 	ClearTransition();
 
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Weather transition started"));
+
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	TimerManager.SetTimer(TimerHandle, this, &UWeatherController::HandleOnTransitionTick, _TransitionRate, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
 }
 
 void UWeatherController::ClearTransition()
 {
+	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Weather transition stopped"));
+
 	_ElapsedTime = 0.0f;
 
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
@@ -105,14 +109,10 @@ void UWeatherController::OnTransitionChanged(float Alpha)
 	}
 
 	FMaterialSurfaceProperty SurfaceProperty = FMaterialSurfaceProperty::Lerp(SourceSurfaceProperty, TargetSurfaceProperty, Alpha);
-	FWeatherSurfaceEffect SurfaceEffect = FWeatherSurfaceEffect::Lerp(SourceSurfaceEffect, TargetSurfaceEffect, Alpha);
 
 	const UWeatherSettings* Settings = UWeatherSettings::Get();
 
-	SurfaceProperty.SetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW);
-	SurfaceEffect.SetParameters(MPCInstance);
-
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Weather Alpha: %f"), Alpha);
+	SurfaceProperty.SetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
 }
 
 void UWeatherController::HandleOnTransitionTick()
@@ -161,15 +161,11 @@ void UWeatherController::OnPriorityItemChanged(UObject* Item)
 	TransitionCurve = WeatherAsset->TransitionCurve;
 
 	TargetSurfaceProperty = CurrentWeather->SurfaceProperty;
-	TargetSurfaceEffect = CurrentWeather->SurfaceEffect;
-
 	SourceSurfaceProperty.Reset();
-	SourceSurfaceEffect.Reset();
 
 	const UWeatherSettings* Settings = UWeatherSettings::Get();
 
-	SourceSurfaceProperty.GetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW);
-	SourceSurfaceEffect.GetParameters(MPCInstance);
+	SourceSurfaceProperty.GetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
 
 	_TransitionRate = CurrentWeather->TransitionRate;
 	_TransitionDuration = CurrentWeather->TransitionDuration;
