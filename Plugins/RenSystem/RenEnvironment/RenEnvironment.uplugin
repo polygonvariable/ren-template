@@ -48,6 +48,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "SlateIM",
+			"Enabled": true
+		},
+		{
 			"Name": "Niagara",
 			"Enabled": true
 		},

@@ -61,17 +61,16 @@ public:
 	void SetTimeOfDay(float NewTime);
 
 	UFUNCTION(BlueprintCallable)
-	float GetTimeOfDay();
+	float GetTimeOfDay() const;
 
 protected:
-
 
 	UPROPERTY(EditAnywhere, meta = (UIMin = "0", UIMax = "24", ClampMin = "0", ClampMax = "24"))
 	float TimeOfDay = 12.0f;
 
 
 	void UpdateLightRotation();
-	void UpdateLightShadow();
+	void UpdateLightVisibility();
 
 	bool IsLightTime(float InTimeOfDay) const;
 

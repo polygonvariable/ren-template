@@ -12,8 +12,8 @@
 // Project Headers
 #include "WeatherEdAction.h"
 
-
 #define LOCTEXT_NAMESPACE "FRWeatherEdModule"
+
 
 void FRWeatherEdModule::StartupModule()
 {

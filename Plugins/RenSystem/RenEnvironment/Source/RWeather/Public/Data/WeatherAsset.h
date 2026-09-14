@@ -53,9 +53,22 @@ public:
     TObjectPtr<UCurveFloat> TransitionCurve;
 
 
+#if WITH_EDITORONLY_DATA
+    UFUNCTION(Category = "Debug", CallInEditor)
+    void ApplySurfaceToWorld();
+#endif
+
     // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
+
+#if WITH_EDITORONLY_DATA
+    // ~ UPrimaryDataAsset
+    virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+    // ~ End of UPrimaryDataAsset
+#endif
+
+public:
 
     static FPrimaryAssetType GetPrimaryAssetType();
 

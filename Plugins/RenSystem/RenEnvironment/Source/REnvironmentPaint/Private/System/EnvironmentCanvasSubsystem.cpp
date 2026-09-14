@@ -5,15 +5,8 @@
 
 // Engine Headers
 #include "Engine/AssetManager.h"
-#include "Engine/Canvas.h"
 #include "Engine/TextureRenderTarget2D.h"
-#include "EngineUtils.h"
-#include "GameFramework/Character.h"
-#include "Kismet/KismetMaterialLibrary.h"
 #include "Kismet/KismetRenderingLibrary.h"
-#include "Kismet/KismetRenderingLibrary.h"
-#include "Kismet/KismetRenderingLibrary.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
 #include "Materials/MaterialParameterCollectionInstance.h"
 #include "NiagaraComponent.h"
@@ -22,33 +15,16 @@
 #include "NiagaraSystem.h"
 
 // Project Headers
+#include "Component/EnvironmentBrushComponent.h"
 #include "Core/AssetManagerUtil.h"
 #include "Data/EnvironmentPaintWorldConfig.h"
-#include "EnvironmentBrushComponent.h"
-#include "EnvironmentBrushInterface.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "REnvironment/REnvironment.h"
 #include "Util/MiscUtil.h"
 #include "WorldFragmentSettings.h"
 
 
-void UEnvironmentCanvasSubsystem::RegisterBrush(AActor* Actor)
-{
-	if (!IsValid(Actor) || (BrushLimit > 0 && BrushCollection.Num() >= BrushLimit))
-	{
-		LOG_WARNING(LogEnvironmentPaint, TEXT("Actor in invalid or brushes limit reached"));
-		return;
-	}
-
-	TArray<UActorComponent*> Components = Actor->GetComponentsByInterface(UEnvironmentBrushInterface::StaticClass());
-	for (UActorComponent* Component : Components)
-	{
-		RegisterBrush(Component);
-	}
-}
-
-void UEnvironmentCanvasSubsystem::RegisterBrush(UActorComponent* Component)
+void UEnvironmentCanvasSubsystem::RegisterBrush(UEnvironmentBrushComponent* Component)
 {
 	if (BrushLimit > 0 && BrushCollection.Num() >= BrushLimit)
 	{
@@ -56,35 +32,17 @@ void UEnvironmentCanvasSubsystem::RegisterBrush(UActorComponent* Component)
 		return;
 	}
 
-	IEnvironmentBrushInterface* Interface = Cast<IEnvironmentBrushInterface>(Component);
-	if (Interface && !BrushCollection.Contains(Interface))
+	if (Component && !BrushCollection.Contains(Component))
 	{
-		BrushToAdd.Add(TWeakInterfacePtr<IEnvironmentBrushInterface>(Interface));
+		BrushToAdd.Add(TWeakInterfacePtr<UEnvironmentBrushComponent>(Component));
 	}
 }
 
-
-void UEnvironmentCanvasSubsystem::UnregisterBrush(AActor* Actor)
+void UEnvironmentCanvasSubsystem::UnregisterBrush(UEnvironmentBrushComponent* Component)
 {
-	if (!IsValid(Actor))
+	if (Component && !BrushCollection.Contains(Component))
 	{
-		LOG_ERROR(LogEnvironmentPaint, TEXT("Actor is invalid or not a brush"));
-		return;
-	}
-
-	TArray<UActorComponent*> Components = Actor->GetComponentsByInterface(UEnvironmentBrushInterface::StaticClass());
-	for (UActorComponent* Component : Components)
-	{
-		UnregisterBrush(Component);
-	}
-}
-
-void UEnvironmentCanvasSubsystem::UnregisterBrush(UActorComponent* Component)
-{
-	IEnvironmentBrushInterface* Interface = Cast<IEnvironmentBrushInterface>(Component);
-	if (Interface && !BrushCollection.Contains(Interface))
-	{
-		BrushToRemove.Add(TWeakInterfacePtr<IEnvironmentBrushInterface>(Interface));
+		BrushToRemove.Add(TWeakInterfacePtr<UEnvironmentBrushComponent>(Component));
 	}
 }
 
@@ -104,7 +62,7 @@ void UEnvironmentCanvasSubsystem::DrawDebug()
 #endif
 
 
-void UEnvironmentCanvasSubsystem::ResolvePendingBrushes()
+void UEnvironmentCanvasSubsystem::ResolvePendingBrush()
 {
 	if (BrushToAdd.Num() > 0)
 	{
@@ -115,46 +73,40 @@ void UEnvironmentCanvasSubsystem::ResolvePendingBrushes()
 	if (BrushToRemove.Num() > 0)
 	{
 		BrushCollection.RemoveAll(
-			[this](const TWeakInterfacePtr<IEnvironmentBrushInterface>& Interface)
+			[this](const TWeakInterfacePtr<UEnvironmentBrushComponent>& Item)
 			{
-				return BrushToRemove.Contains(Interface);
+				return BrushToRemove.Contains(Item);
 			}
 		);
 		BrushToRemove.Reset();
 	}
 }
 
-void UEnvironmentCanvasSubsystem::MoveRenderTargets()
+void UEnvironmentCanvasSubsystem::MoveRenderTarget()
 {
-	if (!IsValid(MPCInstance))
-	{
-		PRINT_ERROR(LogEnvironment, 1.0f, TEXT("MPCInstance is invalid"));
-		return;
-	}
-
 	PixelOffset = GetPixelOffset();
 
-	NiagaraComponent->SetVariableVec2(CanvasParameters.NS_PixelOffset, (PixelOffset / CanvasSize));
+	NiagaraComponent->SetVariableVec2(CanvasParameter.NS_PixelOffset, (PixelOffset / CanvasSize));
 	NiagaraLocation = NiagaraLocation + FVector(PixelOffset.X, PixelOffset.Y, 0.0f);
 
-	MPCInstance->SetVectorParameterValue(CanvasParameters.MPC_CanvasLocation, NiagaraLocation);
+	MPCInstance->SetVectorParameterValue(CanvasParameter.MPC_CanvasLocation, NiagaraLocation);
 }
 
-void UEnvironmentCanvasSubsystem::DrawRenderTargets()
+void UEnvironmentCanvasSubsystem::DrawRenderTarget()
 {
 	int PointCount = 0;
 
 	TArray<FVector4> BrushPoints;
 	BrushPoints.Reserve(PointLimit);
 
-	for (TWeakInterfacePtr<IEnvironmentBrushInterface>& Interface : BrushCollection)
+	for (TWeakInterfacePtr<UEnvironmentBrushComponent>& Item : BrushCollection)
 	{
 		if (PointCount > PointLimit)
 		{
 			break;
 		}
 
-		IEnvironmentBrushInterface* Brush = Interface.Get();
+		UEnvironmentBrushComponent* Brush = Item.Get();
 		if (!Brush)
 		{
 			continue;
@@ -178,7 +130,7 @@ void UEnvironmentCanvasSubsystem::DrawRenderTargets()
 		PointCount++;
 	}
 
-	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector4(NiagaraComponent, CanvasParameters.NS_DrawPoints, BrushPoints);
+	UNiagaraDataInterfaceArrayFunctionLibrary::SetNiagaraArrayVector4(NiagaraComponent, CanvasParameter.NS_DrawPoints, BrushPoints);
 }
 
 
@@ -220,8 +172,8 @@ bool UEnvironmentCanvasSubsystem::InitializeMPC(const UMaterialParameterCollecti
 		return false;
 	}
 
-	MPCInstance->SetScalarParameterValue(CanvasParameters.MPC_CanvasSize, CanvasSize);
-	MPCInstance->SetVectorParameterValue(CanvasParameters.MPC_CanvasLocation, NiagaraLocation);
+	MPCInstance->SetScalarParameterValue(CanvasParameter.MPC_CanvasSize, CanvasSize);
+	MPCInstance->SetVectorParameterValue(CanvasParameter.MPC_CanvasLocation, NiagaraLocation);
 	return true;
 }
 
@@ -234,11 +186,11 @@ bool UEnvironmentCanvasSubsystem::InitializePixelRatio()
 	}
 
 	PixelRatio = (1.0 / RenderTargetSize) * CanvasSize;
-	NiagaraComponent->SetVariableFloat(CanvasParameters.NS_PixelRatio, PixelRatio);
+	NiagaraComponent->SetVariableFloat(CanvasParameter.NS_PixelRatio, PixelRatio);
 	return true;
 }
 
-bool UEnvironmentCanvasSubsystem::InitializeRenderTargets(UTextureRenderTarget2D* MainRT, UTextureRenderTarget2D* PersistentRT)
+bool UEnvironmentCanvasSubsystem::ClearRenderTarget(UTextureRenderTarget2D* MainRT, UTextureRenderTarget2D* PersistentRT)
 {
 	if (!IsValid(MainRT) || !IsValid(PersistentRT))
 	{
@@ -263,6 +215,7 @@ bool UEnvironmentCanvasSubsystem::InitializeController()
 
 	PlayerController->OnPossessedPawnChanged.AddDynamic(this, &UEnvironmentCanvasSubsystem::HandleOnPawnChanged);
 
+	CameraManager = PlayerController->PlayerCameraManager;
 	Controller = PlayerController;
 	Pawn = PlayerController->GetPawn();
 
@@ -277,6 +230,7 @@ void UEnvironmentCanvasSubsystem::DeinitializeController()
 		PlayerController->OnPossessedPawnChanged.RemoveAll(this);
 	}
 
+	CameraManager = nullptr;
 	Controller = nullptr;
 	Pawn = nullptr;
 }
@@ -295,7 +249,7 @@ void UEnvironmentCanvasSubsystem::HandleOnEnvironmentCanvasLoaded()
 		return;
 	}
 
-	CanvasParameters = Config->CanvasParameters;
+	CanvasParameter = Config->CanvasParameter;
 	RenderTargetSize = Config->RenderTargetSize;
 	CanvasSize = Config->CanvasSize;
 	BrushLimit = Config->BrushLimit;
@@ -310,20 +264,20 @@ void UEnvironmentCanvasSubsystem::HandleOnEnvironmentCanvasLoaded()
 	bool bMPC = InitializeMPC(Config->MPC.Get());
 	bool bPixelRatio = InitializePixelRatio();
 	bool bController = InitializeController();
-	bool bRenderTarget = InitializeRenderTargets(Config->MainRT.Get(), Config->PersistentRT.Get());
+	bool bRenderTarget = ClearRenderTarget(Config->MainRT.Get(), Config->PersistentRT.Get());
 	if (!bMPC || !bPixelRatio || !bController || !bRenderTarget)
 	{
 		LOG_ERROR(LogEnvironmentPaint, TEXT("Initialization condition failed during canvas creation"));
 		return;
 	}
 
-	bCreatedSuccessfully = true;
+	bInitializedSuccessfully = true;
 	HandleOnEnvironmentCVarChanged(EnvironmentPaintCVar);
 }
 
 void UEnvironmentCanvasSubsystem::HandleOnEnvironmentCVarChanged(IConsoleVariable* Variable)
 {
-	if (!bCreatedSuccessfully)
+	if (!bInitializedSuccessfully)
 	{
 		return;
 	}
@@ -362,13 +316,13 @@ void UEnvironmentCanvasSubsystem::HandleOnEnvironmentCVarChanged(IConsoleVariabl
 
 FVector2D UEnvironmentCanvasSubsystem::GetPixelOffset() const
 {
-	APawn* Player = Pawn.Get();
-	if (!IsValid(Player))
+	APlayerCameraManager* Camera = CameraManager.Get();
+	if (!IsValid(Camera))
 	{
 		return FVector2D::ZeroVector;
 	}
 
-	FVector PlayerLocation = Player->GetActorLocation();
+	FVector PlayerLocation = Camera->GetCameraLocation();
 
 	float X = FMath::Floor(PlayerLocation.X / PixelRatio);
 	float Y = FMath::Floor(PlayerLocation.Y / PixelRatio);
@@ -397,9 +351,9 @@ TStatId UEnvironmentCanvasSubsystem::GetStatId() const
 
 void UEnvironmentCanvasSubsystem::Tick(float DeltaTime)
 {
-	ResolvePendingBrushes();
-	MoveRenderTargets();
-	DrawRenderTargets();
+	ResolvePendingBrush();
+	MoveRenderTarget();
+	DrawRenderTarget();
 
 #if WITH_EDITOR
 	DrawDebug();
@@ -408,7 +362,7 @@ void UEnvironmentCanvasSubsystem::Tick(float DeltaTime)
 
 bool UEnvironmentCanvasSubsystem::IsTickable() const
 {
-	return bIsDrawing && bCreatedSuccessfully;
+	return bIsDrawing && bInitializedSuccessfully;
 }
 
 
@@ -484,7 +438,7 @@ void UEnvironmentCanvasSubsystem::OnWorldEndPlay(UWorld& InWorld)
 	EnvironmentPaintCVar = nullptr;
 
 	bIsDrawing = false;
-	bCreatedSuccessfully = false;
+	bInitializedSuccessfully = false;
 	FAssetManagerUtil::CancelHandle(StreamHandle);
 
 	DeinitializeNiagara();

@@ -7,7 +7,6 @@
 #include "SunPosition.h"
 
 
-
 UOrbitalLightComponent::UOrbitalLightComponent()
 {
 	PrimaryComponentTick.bStartWithTickEnabled = false;
@@ -20,13 +19,20 @@ UOrbitalLightComponent::UOrbitalLightComponent()
 	DynamicShadowDistanceMovableLight = 4000.0f;
 }
 
+
 void UOrbitalLightComponent::SetTimeOfDay(float NewTime)
 {
 	TimeOfDay = NewTime;
 
 	UpdateLightRotation();
-    UpdateLightShadow();
+    UpdateLightVisibility();
 }
+
+float UOrbitalLightComponent::GetTimeOfDay() const
+{
+    return TimeOfDay;
+}
+
 
 void UOrbitalLightComponent::UpdateLightRotation()
 {
@@ -44,15 +50,16 @@ void UOrbitalLightComponent::UpdateLightRotation()
     SetRelativeRotation(FRotator(RotationPitch, RotationYaw, 0.0f));
 }
 
-void UOrbitalLightComponent::UpdateLightShadow()
+void UOrbitalLightComponent::UpdateLightVisibility()
 {
-    bool bCanCastShadows = IsLightTime(TimeOfDay);
+    bool bLightTime = IsLightTime(TimeOfDay);
 
-    if (CastShadows != bCanCastShadows)
+    if (CastShadows != bLightTime)
     {
-        bEnableLightShaftOcclusion = bCanCastShadows;
-        bEnableLightShaftBloom = bCanCastShadows;
-        SetCastShadows(bCanCastShadows);
+        bEnableLightShaftOcclusion = bLightTime;
+        bEnableLightShaftBloom = bLightTime;
+        SetCastShadows(bLightTime);
+        SetHiddenInGame(!bLightTime);
     }
 }
 
@@ -78,10 +85,5 @@ bool UOrbitalLightComponent::IsLightTime(float InTimeOfDay) const
     }
 
     return false;
-}
-
-float UOrbitalLightComponent::GetTimeOfDay()
-{
-	return TimeOfDay;
 }
 

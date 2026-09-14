@@ -48,6 +48,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<UWeatherAsset> CurrentWeather;
 
+	UPROPERTY()
 	TObjectPtr<UCurveFloat> TransitionCurve = nullptr;
 
 	FTimerHandle TimerHandle;

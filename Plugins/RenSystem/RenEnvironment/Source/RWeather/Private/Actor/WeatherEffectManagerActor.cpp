@@ -86,6 +86,18 @@ void AWeatherEffectManagerActor::DeactivateEffects(const TArray<TSoftObjectPtr<U
     }
 }
 
+void AWeatherEffectManagerActor::DeactivateAllEffects()
+{
+    for (TObjectPtr<AWeatherEffectActor> Item : EffectActors)
+    {
+        AWeatherEffectActor* Actor = Item.Get();
+        if (IsValid(Actor))
+        {
+            Actor->DeactivateEffect();
+        }
+    }
+}
+
 void AWeatherEffectManagerActor::RemoveLoadHandle(UWeatherAsset* WeatherAsset)
 {
     TSharedPtr<FStreamableHandle> Handle;
@@ -106,6 +118,8 @@ void AWeatherEffectManagerActor::HandleOnEffectLoaded(UWeatherAsset* WeatherAsse
 
 void AWeatherEffectManagerActor::HandleWeatherChanged(UWeatherAsset* WeatherAsset)
 {
+    DeactivateAllEffects();
+
     if (!IsValid(WeatherAsset) || LoadHandles.Contains(WeatherAsset))
     {
         LOG_ERROR(LogWeather, TEXT("AssetManager, WeatherAsset is invalid or Weather is already active"));

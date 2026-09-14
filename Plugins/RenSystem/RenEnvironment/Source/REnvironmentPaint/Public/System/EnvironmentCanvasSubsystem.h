@@ -3,24 +3,24 @@
 #pragma once
 
 // Engine Headers
-#include "Subsystems/WorldSubsystem.h"
-#include "Components/SceneComponent.h"
 #include "NiagaraTickBehaviorEnum.h"
+#include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "EnvironmentPaintConstant.h"
+#include "Core/Type/EnvironmentCanvasParameter.h"
 
 // Generated Headers
 #include "EnvironmentCanvasSubsystem.generated.h"
 
 // Forward Declarations
 class IConsoleVariable;
+class APlayerCameraManager;
 class UNiagaraComponent;
 class UNiagaraSystem;
-class IEnvironmentBrushInterface;
 class UTextureRenderTarget2D;
 class UMaterialParameterCollection;
 class UMaterialParameterCollectionInstance;
+class UEnvironmentBrushComponent;
 class UEnvironmentPaintWorldConfig;
 struct FStreamableHandle;
 
@@ -36,11 +36,8 @@ class UEnvironmentCanvasSubsystem : public UTickableWorldSubsystem
 
 public:
 
-	void RegisterBrush(AActor* Actor);
-	void RegisterBrush(UActorComponent* Component);
-
-	void UnregisterBrush(AActor* Actor);
-	void UnregisterBrush(UActorComponent* Component);
+	void RegisterBrush(UEnvironmentBrushComponent* Component);
+	void UnregisterBrush(UEnvironmentBrushComponent* Component);
 
 	// ~ UTickableWorldSubsystem
 	virtual TStatId GetStatId() const override;
@@ -59,26 +56,27 @@ public:
 protected:
 
 	bool bIsDrawing = false;
-	bool bCreatedSuccessfully = false;
+	bool bInitializedSuccessfully = false;
 
 	TSharedPtr<FStreamableHandle> StreamHandle;
 	TObjectPtr<UNiagaraComponent> NiagaraComponent;
 
-	TArray<TWeakInterfacePtr<IEnvironmentBrushInterface>> BrushToAdd;
-	TArray<TWeakInterfacePtr<IEnvironmentBrushInterface>> BrushToRemove;
-	TArray<TWeakInterfacePtr<IEnvironmentBrushInterface>> BrushCollection;
+	TArray<TWeakInterfacePtr<UEnvironmentBrushComponent>> BrushToAdd;
+	TArray<TWeakInterfacePtr<UEnvironmentBrushComponent>> BrushToRemove;
+	TArray<TWeakInterfacePtr<UEnvironmentBrushComponent>> BrushCollection;
 
 	TObjectPtr<UMaterialParameterCollectionInstance> MPCInstance;
 	float PixelRatio = 1.0f;
 	FVector2D PixelOffset;
 
 	FVector NiagaraLocation;
-	FEnvironmentCanvasParameters CanvasParameters;
+	FEnvironmentCanvasParameter CanvasParameter;
 	int CanvasSize;
 	int RenderTargetSize;
 	int BrushLimit = 32;
 	int PointLimit = 16;
 
+	TWeakObjectPtr<APlayerCameraManager> CameraManager;
 	TWeakObjectPtr<APlayerController> Controller;
 	TWeakObjectPtr<APawn> Pawn;
 
@@ -90,17 +88,17 @@ protected:
 	void DrawDebug();
 #endif
 
-	void ResolvePendingBrushes();
+	void ResolvePendingBrush();
 
-	void MoveRenderTargets();
-	void DrawRenderTargets();
+	void MoveRenderTarget();
+	void DrawRenderTarget();
 
 	bool InitializeNiagara(UNiagaraSystem* System, ENiagaraTickBehavior TickBehaviour);
 	void DeinitializeNiagara();
 
 	bool InitializeMPC(const UMaterialParameterCollection* Collection);
 	bool InitializePixelRatio();
-	bool InitializeRenderTargets(UTextureRenderTarget2D* MainRT, UTextureRenderTarget2D* PersistentRT);
+	bool ClearRenderTarget(UTextureRenderTarget2D* MainRT, UTextureRenderTarget2D* PersistentRT);
 
 	bool InitializeController();
 	void DeinitializeController();

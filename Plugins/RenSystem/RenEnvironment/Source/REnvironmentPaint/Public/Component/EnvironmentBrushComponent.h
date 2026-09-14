@@ -5,9 +5,6 @@
 // Engine Headers
 #include "Components/SceneComponent.h"
 
-// Project Headers
-#include "EnvironmentBrushInterface.h"
-
 // Generated Headers
 #include "EnvironmentBrushComponent.generated.h"
 
@@ -15,12 +12,11 @@
 class UCharacterMovementComponent;
 
 
-
 /*
  * 
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class UEnvironmentBrushComponent : public USceneComponent, public IEnvironmentBrushInterface
+class UEnvironmentBrushComponent : public USceneComponent
 {
 
 	GENERATED_BODY()
@@ -37,8 +33,7 @@ public:
 	void SetCanDraw(bool bEnable);
 
 	// ~ IEnvironmentBrushInterface
-	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density) override;
-	virtual bool GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density) override;
+	virtual bool GetBrushDetails(FVector& Location, FVector2D& Size, float& Density);
 	// ~ End of IEnvironmentBrushInterface
 
 	// ~ USceneComponent
@@ -55,6 +50,14 @@ protected:
 	UPROPERTY()
 	bool bIsCharacter = false;
 
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDrawDebug = false;
+#endif
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bLineTrace = true;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCanDraw = true;
 
@@ -63,6 +66,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BrushDensity = 1.0f;
+
+
+	bool IsNearGround() const;
 
 };
 

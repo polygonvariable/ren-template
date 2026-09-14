@@ -2,10 +2,12 @@
 
 #pragma once
 
-// Project Headers
-#include "EnvironmentPaintConstant.h"
-#include "WorldConfigAsset.h"
+// Engine Headers
 #include "NiagaraTickBehaviorEnum.h"
+
+// Project Headers
+#include "Core/Type/EnvironmentCanvasParameter.h"
+#include "WorldConfigAsset.h"
 
 // Generated Headers
 #include "EnvironmentPaintWorldConfig.generated.h"
@@ -49,7 +51,7 @@ public:
 	int CanvasSize = 4096;
 
 	UPROPERTY(EditAnywhere, Category = "Canvas")
-	FEnvironmentCanvasParameters CanvasParameters;
+	FEnvironmentCanvasParameter CanvasParameter;
 
 	/** Num of brushes interfaces that can be registered */
 	UPROPERTY(EditAnywhere, Category = "Brush")
@@ -61,6 +63,13 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Material")
 	TSoftObjectPtr<UMaterialParameterCollection> MPC;
+
+
+#if WITH_EDITORONLY_DATA
+	// ~ UPrimaryDataAsset
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UPrimaryDataAsset
+#endif
 
 };
 

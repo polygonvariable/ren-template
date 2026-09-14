@@ -103,12 +103,13 @@ void UWeatherController::ClearTransition()
 
 void UWeatherController::OnTransitionChanged(float Alpha)
 {
-	if (!IsValid(MPCInstance))
+	if (!IsValid(MPCInstance) || !IsValid(TransitionCurve))
 	{
 		return;
 	}
 
-	FMaterialSurfaceProperty SurfaceProperty = FMaterialSurfaceProperty::Lerp(SourceSurfaceProperty, TargetSurfaceProperty, Alpha);
+	float Curve = TransitionCurve->GetFloatValue(Alpha);
+	FMaterialSurfaceProperty SurfaceProperty = FMaterialSurfaceProperty::Lerp(SourceSurfaceProperty, TargetSurfaceProperty, Curve);
 
 	const UWeatherSettings* Settings = UWeatherSettings::Get();
 
@@ -135,8 +136,6 @@ void UWeatherController::HandleOnTransitionTick()
 }
 
 
-
-
 TMap<int, TWeakObjectPtr<UObject>>& UWeatherController::GetPriorityItems()
 {
 	return _PriorityItems;
@@ -157,7 +156,6 @@ void UWeatherController::OnPriorityItemChanged(UObject* Item)
 	}
 
 	CurrentWeather = WeatherAsset;
-
 	TransitionCurve = WeatherAsset->TransitionCurve;
 
 	TargetSurfaceProperty = CurrentWeather->SurfaceProperty;

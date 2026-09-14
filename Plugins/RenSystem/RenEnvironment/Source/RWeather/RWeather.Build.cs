@@ -43,7 +43,7 @@ public class RWeather : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"Niagara",
+                "Niagara",
                 "RCoreClock",
                 "RCoreSettings",
                 "RCoreLibrary",
@@ -51,9 +51,13 @@ public class RWeather : ModuleRules
                 "RCoreAssetManager",
             }
 			);
-		
-		
-		DynamicallyLoadedModuleNames.AddRange(
+
+        if (Target.bBuildEditor)
+        {
+            PrivateDependencyModuleNames.Add("UnrealEd");
+        }
+
+        DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...

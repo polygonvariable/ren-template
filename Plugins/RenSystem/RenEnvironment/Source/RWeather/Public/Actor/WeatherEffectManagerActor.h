@@ -39,6 +39,7 @@ protected:
 
 	void ActivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems);
 	void DeactivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems);
+	void DeactivateAllEffects();
 
 	void RemoveLoadHandle(UWeatherAsset* WeatherAsset);
 

@@ -3,7 +3,6 @@
 #pragma once
 
 // Project Headers
-#include "Data/EnvironmentAsset.h"
 #include "WorldConfigAsset.h"
 
 // Generated Headers
@@ -47,11 +46,11 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     float RefreshDuration = 5.0f;
 
-    // ~ UPrimaryDataAsset
 #if WITH_EDITORONLY_DATA
+    // ~ UPrimaryDataAsset
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
-#endif
     // ~ End of UPrimaryDataAsset
+#endif
 
 };
 

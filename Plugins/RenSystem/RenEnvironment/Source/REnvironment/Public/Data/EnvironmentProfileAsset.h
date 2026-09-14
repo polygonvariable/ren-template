@@ -38,6 +38,12 @@ public:
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
+#if WITH_EDITORONLY_DATA
+    // ~ UPrimaryDataAsset
+    virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+    // ~ End of UPrimaryDataAsset
+#endif
+
     static FPrimaryAssetType GetPrimaryAssetType();
 
 };

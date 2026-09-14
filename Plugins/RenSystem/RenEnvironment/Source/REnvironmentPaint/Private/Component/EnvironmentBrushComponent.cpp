@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "EnvironmentBrushComponent.h"
+#include "Component/EnvironmentBrushComponent.h"
 
 // Engine Headers
 #include "GameFramework/Character.h"
@@ -52,7 +52,6 @@ void UEnvironmentBrushComponent::SetBrushSize(FVector2D Size)
 	BrushSize = Size;
 }
 
-
 bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& Size, float& Density)
 {
 	Location = GetComponentToWorld().GetLocation();
@@ -61,31 +60,13 @@ bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector2D& S
 
 	if (bIsCharacter)
 	{
-		if (!IsValid(CharacterMovement) || CharacterMovement->MovementMode != MOVE_Walking)
+		if (IsValid(CharacterMovement) && CharacterMovement->MovementMode == MOVE_Falling)
 		{
 			return false;
 		}
 	}
 
-	return bCanDraw;
-}
-
-bool UEnvironmentBrushComponent::GetBrushDetails(FVector& Location, FVector& Velocity, FVector2D& Size, float& Density)
-{
-	Location = GetComponentToWorld().GetLocation();
-	Density = BrushDensity;
-	Velocity = GetComponentVelocity();
-	Size = BrushSize;
-
-	if (bIsCharacter)
-	{
-		if (!IsValid(CharacterMovement) || CharacterMovement->MovementMode != MOVE_Walking)
-		{
-			return false;
-		}
-	}
-
-	return bCanDraw;
+	return bCanDraw && IsNearGround();
 }
 
 
@@ -115,5 +96,29 @@ void UEnvironmentBrushComponent::EndPlay(EEndPlayReason::Type Reason)
 {
 	UnregisterBrush();
 	Super::EndPlay(Reason);
+}
+
+bool UEnvironmentBrushComponent::IsNearGround() const
+{
+	if (!bLineTrace)
+	{
+		return true;
+	}
+
+	const FVector Start = GetComponentToWorld().GetLocation() + FVector(0.0f, 0.0f, 20.0f);
+	const FVector End = Start - FVector(0.0f, 0.0f, 60.0f);
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+
+#if WITH_EDITORONLY_DATA
+	if (bDrawDebug)
+	{
+		DrawDebugDirectionalArrow(GetWorld(), Start, End, 10.0f, FColor::Yellow, false, -1.0f, 1, 2.5f);
+	}
+#endif
+
+	FHitResult Hit;
+	return GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, QueryParams);
 }
 

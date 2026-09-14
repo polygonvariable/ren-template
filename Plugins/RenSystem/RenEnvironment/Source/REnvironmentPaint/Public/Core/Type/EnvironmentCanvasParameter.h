@@ -2,19 +2,15 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
-// Project Headers
-
 // Generated Headers
-#include "EnvironmentPaintConstant.generated.h"
-
-// Forward Declarations
+#include "EnvironmentCanvasParameter.generated.h"
 
 
+/*
+ *
+ */
 USTRUCT(BlueprintType)
-struct FEnvironmentCanvasParameters
+struct FEnvironmentCanvasParameter
 {
 
 	GENERATED_BODY()
@@ -22,19 +18,10 @@ struct FEnvironmentCanvasParameters
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName A_BrushTag = TEXT("Environment.Brush");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName MPC_CanvasSize = TEXT("Canvas.Size");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName MPC_CanvasLocation = TEXT("Canvas.Location");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName MPC_CanvasLocationScale = TEXT("Canvas.LocationScale");
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FName M_Offset = TEXT("Offset");
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FName NS_PixelRatio = TEXT("User.PixelRatio");

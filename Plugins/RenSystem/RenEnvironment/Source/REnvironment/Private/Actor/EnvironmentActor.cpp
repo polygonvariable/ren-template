@@ -129,15 +129,18 @@ AEnvironmentActor::AEnvironmentActor()
 			SunLight->CastStaticShadows = false;
 			SunLight->bCastVolumetricShadow = false;
 			SunLight->bAffectTranslucentLighting = false;
+			SunLight->bUseRayTracedDistanceFieldShadows = false;
 
 			SunLight->bEnableLightShaftOcclusion = true;
 			SunLight->bEnableLightShaftBloom = true;
 			SunLight->BloomThreshold = 1.0f;
-			SunLight->BloomMaxBrightness = 5.0f;
+			SunLight->BloomMaxBrightness = 2.5f;
+			SunLight->FarShadowCascadeCount = 0;
 
 			SunLight->EnabledStartTime = 7.25f;
 			SunLight->EnabledEndTime = 20.25f;
 
+			SunLight->SetSpecularScale(0.25f);
 			SunLight->SetIntensity(10.0f);
 			SunLight->SetForwardShadingPriority(1);
 			SunLight->SetAtmosphereSunLightIndex(0);
@@ -155,17 +158,20 @@ AEnvironmentActor::AEnvironmentActor()
 			MoonLight->CastStaticShadows = false;
 			MoonLight->bCastVolumetricShadow = false;
 			MoonLight->bAffectTranslucentLighting = false;
+			MoonLight->bUseRayTracedDistanceFieldShadows = false;
 
 			MoonLight->bEnableLightShaftOcclusion = true;
 			MoonLight->bEnableLightShaftBloom = true;
-			MoonLight->BloomThreshold = 0.025f;
+			MoonLight->BloomThreshold = 1.0f;
+			MoonLight->BloomMaxBrightness = 2.5f;
+			MoonLight->FarShadowCascadeCount = 0;
 
 			MoonLight->EnabledStartTime = 19.25f;
 			MoonLight->EnabledEndTime = 8.25f;
 
 			MoonLight->bInverseRotation = true;
 
-			MoonLight->SetSpecularScale(0.05f);
+			MoonLight->SetSpecularScale(0.25f);
 			MoonLight->SetIntensity(5.0f);
 			MoonLight->SetLightSourceAngle(0.0f);
 			MoonLight->SetForwardShadingPriority(0);

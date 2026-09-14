@@ -14,8 +14,8 @@
 #include "Data/WeatherWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "WorldFragmentSettings.h"
 #include "System/WeatherController.h"
+#include "WorldFragmentSettings.h"
 
 
 bool UWeatherSubsystem::AddWeather(UWeatherAsset* WeatherAsset, int Priority)
@@ -113,7 +113,7 @@ void UWeatherSubsystem::HandleOnWeatherTimerTick()
 void UWeatherSubsystem::HandleOnWeatherLoaded()
 {
 	FAssetManagerUtil::ReleaseHandle(WeatherHandle);
-
+	
 	const UWeatherWorldConfig* Config = GetWeatherWorldConfig();
 	if (!IsValid(Config))
 	{
