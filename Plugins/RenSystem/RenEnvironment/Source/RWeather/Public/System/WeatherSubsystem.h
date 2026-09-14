@@ -11,6 +11,9 @@
 // Generated Headers
 #include "WeatherSubsystem.generated.h"
 
+// Module Macros
+#define REN_API RWEATHER_API
+
 // Forward Declarations
 class UAssetManager;
 class UWeatherController;
@@ -22,7 +25,7 @@ struct FStreamableHandle;
 /**
  * 
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UWeatherSubsystem : public UWorldSubsystem
 {
 
@@ -36,7 +39,7 @@ public:
 	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
 	bool RemoveWeather(int Priority);
 
-	UWeatherController* GetWeatherController();
+	REN_API UWeatherController* GetWeatherController() const;
 
 protected:
 
@@ -78,5 +81,13 @@ protected:
 	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
 
+public:
+
+	static REN_API UWeatherSubsystem* Get(UWorld* World);
+
 };
+
+
+// Module Macros
+#undef REN_API
 

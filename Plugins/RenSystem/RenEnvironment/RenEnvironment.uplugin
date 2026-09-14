@@ -41,6 +41,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RWeatherDebug",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RSeason",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

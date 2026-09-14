@@ -8,6 +8,9 @@
 // Generated Headers
 #include "WeatherEffectActor.generated.h"
 
+// Module Macros
+#define REN_API RWEATHER_API
+
 // Forward Declarations
 class USceneComponent;
 class UNiagaraComponent;
@@ -28,14 +31,16 @@ public:
 
 	AWeatherEffectActor();
 
-
     void SetNiagaraSystem(UNiagaraSystem* Asset);
-    UNiagaraSystem* GetNiagaraSystem() const;
+    REN_API UNiagaraSystem* GetNiagaraSystem() const;
 
     void ActivateEffect();
     void DeactivateEffect();
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
+
+    REN_API UNiagaraComponent* GetEditorNiagaraComponent();
+
     // ~ AActor
     virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
     // ~ End of AActor
@@ -69,4 +74,8 @@ protected:
     // ~ End of AActor
 
 };
+
+
+// Module Macros
+#undef REN_API
 

@@ -39,7 +39,7 @@ bool UWeatherSubsystem::RemoveWeather(int Priority)
 }
 
 
-UWeatherController* UWeatherSubsystem::GetWeatherController()
+UWeatherController* UWeatherSubsystem::GetWeatherController() const
 {
 	return WeatherController.Get();
 }
@@ -212,5 +212,15 @@ void UWeatherSubsystem::Deinitialize()
 
 	LOG_WARNING(LogWeather, TEXT("WeatherSubsystem Deinitialized"));
 	Super::Deinitialize();
+}
+
+
+UWeatherSubsystem* UWeatherSubsystem::Get(UWorld* World)
+{
+	if (!IsValid(World))
+	{
+		return nullptr;
+	}
+	return World->GetSubsystem<UWeatherSubsystem>();
 }
 

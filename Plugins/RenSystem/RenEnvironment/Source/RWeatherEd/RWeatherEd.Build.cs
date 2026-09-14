@@ -40,7 +40,6 @@ public class RWeatherEd : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"Projects",
-                "AssetTools",
                 "UnrealEd",
                 "RWeather",
             }

@@ -25,6 +25,17 @@ AWeatherEffectManagerActor::AWeatherEffectManagerActor()
     SetCanBeDamaged(false);
 }
 
+#if WITH_EDITOR
+const TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& AWeatherEffectManagerActor::GetEditorWeatherEffectHandles() const
+{
+    return LoadHandles;
+}
+
+const TArray<TObjectPtr<AWeatherEffectActor>>& AWeatherEffectManagerActor::GetEditorWeatherEffects() const
+{
+    return EffectActors;
+}
+#endif
 
 void AWeatherEffectManagerActor::ActivateEffects(const TArray<TSoftObjectPtr<UNiagaraSystem>>& Systems)
 {
@@ -102,7 +113,7 @@ void AWeatherEffectManagerActor::RemoveLoadHandle(UWeatherAsset* WeatherAsset)
 {
     TSharedPtr<FStreamableHandle> Handle;
     LoadHandles.RemoveAndCopyValue(WeatherAsset, Handle);
-    FAssetManagerUtil::ReleaseHandle(Handle);
+    FAssetManagerUtil::CancelHandle(Handle);
 }
 
 

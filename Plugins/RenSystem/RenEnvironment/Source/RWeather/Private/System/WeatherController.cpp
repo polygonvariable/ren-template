@@ -49,6 +49,31 @@ bool UWeatherController::RemoveWeather(int Priority)
 }
 
 
+
+#if WITH_EDITOR
+float UWeatherController::GetEditorWeatherTransition() const
+{
+	return _ElapsedTime;
+}
+int UWeatherController::GetEditorCurrentWeatherPriority() const
+{
+	return _HighestPriority;
+}
+const FString UWeatherController::GetEditorCurrentWeatherName() const
+{
+	return IsValid(CurrentWeather) ? CurrentWeather->GetFName().ToString() : TEXT("Invalid Asset");
+}
+const UWeatherAsset* UWeatherController::GetEditorCurrentWeather() const
+{
+	return CurrentWeather;
+}
+const TMap<int, TWeakObjectPtr<UObject>>& UWeatherController::GetEditorWeathers() const
+{
+	return _PriorityItems;
+}
+#endif
+
+
 void UWeatherController::AddEnvironmentProfile()
 {
 	if (!IsValid(EnvironmentSubsystem) || !IsValid(CurrentWeather))

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class REnvironmentEd : ModuleRules
+public class RWeatherDebug : ModuleRules
 {
-	public REnvironmentEd(ReadOnlyTargetRules Target) : base(Target)
+	public RWeatherDebug(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,6 +27,7 @@ public class REnvironmentEd : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"SlateIM",
             }
 			);
 			
@@ -39,9 +40,8 @@ public class REnvironmentEd : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"Projects",
-                "UnrealEd",
-                "REnvironment",
+                "Niagara",
+                "RWeather",
             }
 			);
 		

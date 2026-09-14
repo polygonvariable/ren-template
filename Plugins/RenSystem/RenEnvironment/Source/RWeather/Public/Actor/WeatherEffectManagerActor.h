@@ -5,6 +5,9 @@
 // Generated Headers
 #include "WeatherEffectManagerActor.generated.h"
 
+// Module Macros
+#define REN_API RWEATHER_API
+
 // Forward Declarations
 class UWeatherAsset;
 class UWeatherSubsystem;
@@ -16,7 +19,7 @@ struct FStreamableHandle;
 /**
  * 
  */
-UCLASS(NotPlaceable)
+UCLASS(MinimalAPI, NotPlaceable)
 class AWeatherEffectManagerActor : public AInfo
 {
 
@@ -25,6 +28,11 @@ class AWeatherEffectManagerActor : public AInfo
 public:
 
 	AWeatherEffectManagerActor();
+
+#if WITH_EDITOR
+	REN_API const TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& GetEditorWeatherEffectHandles() const;
+	REN_API const TArray<TObjectPtr<AWeatherEffectActor>>& GetEditorWeatherEffects() const;
+#endif
 
 protected:
 
@@ -55,4 +63,8 @@ protected:
 	// ~ End of AActor
 
 };
+
+
+// Module Macros
+#undef REN_API
 

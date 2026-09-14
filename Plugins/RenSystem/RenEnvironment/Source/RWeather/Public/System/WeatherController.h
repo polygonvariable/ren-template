@@ -10,6 +10,9 @@
 // Generated Headers
 #include "WeatherController.generated.h"
 
+// Module Macros
+#define REN_API RWEATHER_API
+
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
 class UWeatherAsset;
@@ -19,7 +22,7 @@ class UEnvironmentSubsystem;
 /**
  * 
  */
-UCLASS()
+UCLASS(MinimalAPI)
 class UWeatherController : public UObject, public IPriorityListInterface
 {
 
@@ -36,6 +39,14 @@ public:
 
 	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
 	bool RemoveWeather(int Priority);
+
+#if WITH_EDITOR
+	REN_API float GetEditorWeatherTransition() const;
+	REN_API int GetEditorCurrentWeatherPriority() const;
+	REN_API const FString GetEditorCurrentWeatherName() const;
+	REN_API const UWeatherAsset* GetEditorCurrentWeather() const;
+	REN_API const TMap<int, TWeakObjectPtr<UObject>>& GetEditorWeathers() const;
+#endif
 
 protected:
 
@@ -86,4 +97,8 @@ private:
 	// ~ End of Binding
 
 };
+
+
+// Module Macros
+#undef REN_API
 
