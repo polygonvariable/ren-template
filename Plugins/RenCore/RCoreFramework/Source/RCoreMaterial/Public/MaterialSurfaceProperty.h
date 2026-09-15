@@ -20,7 +20,7 @@ struct REN_API FMaterialSurfaceProperty
 
 public:
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, meta = (HideAlphaChannel))
     FLinearColor ColorAdd = FColor::Transparent;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0", UIMax = "1", ClampMin = "0", ClampMax = "1"))
@@ -54,13 +54,7 @@ public:
     void Reset();
     void Clamp();
 
-    void GetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
-    void SetParameters(UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
-
-    static FMaterialSurfaceProperty Lerp(const FMaterialSurfaceProperty& A, const FMaterialSurfaceProperty& B, float Alpha);
-
 };
-
 
 
 // Module Macros

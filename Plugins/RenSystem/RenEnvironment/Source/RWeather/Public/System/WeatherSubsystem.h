@@ -64,17 +64,14 @@ protected:
 
 	void RegisterDefaultWeather(const FPrimaryAssetId& AssetId, int Priority);
 	
-	const UWeatherWorldConfig* GetWeatherWorldConfig() const;
-
-	// ~ Bindings
+	// ~ Binding
 	void HandleOnWeatherTimerTick();
 	void HandleOnWeatherLoaded();
-	// ~ End of Bindings
-
-protected:
+	// ~ End of Binding
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
 	virtual void OnWorldEndPlay(UWorld& InWorld) override;

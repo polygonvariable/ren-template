@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RCoreEquipment : ModuleRules
+public class RSeasonDebug : ModuleRules
 {
-	public RCoreEquipment(ReadOnlyTargetRules Target) : base(Target)
+	public RSeasonDebug(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,7 +27,7 @@ public class RCoreEquipment : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreAuthAction",
+				"SlateIM",
             }
 			);
 			
@@ -40,8 +40,9 @@ public class RCoreEquipment : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+                "RSeason",
             }
-            );
+			);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(

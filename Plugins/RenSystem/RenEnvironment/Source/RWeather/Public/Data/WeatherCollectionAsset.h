@@ -36,11 +36,14 @@ public:
 
     UWeatherAsset* GetRandomWeather() const;
 
+#if WITH_EDITOR
     // ~ UPrimaryDataAsset
-#if WITH_EDITORONLY_DATA
     virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+    // ~ End of UPrimaryDataAsset
 #endif
+
+    // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 

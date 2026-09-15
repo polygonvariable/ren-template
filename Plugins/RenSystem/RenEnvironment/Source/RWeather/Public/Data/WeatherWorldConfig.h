@@ -8,7 +8,6 @@
 // Generated Headers
 #include "WeatherWorldConfig.generated.h"
 
-// Forward Declarations
 class UMaterialParameterCollection;
 class UWeatherController;
 class AWeatherEffectManagerActor;
@@ -46,11 +45,16 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     float RefreshDuration = 5.0f;
 
-#if WITH_EDITORONLY_DATA
+
+#if WITH_EDITOR
     // ~ UPrimaryDataAsset
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
     // ~ End of UPrimaryDataAsset
 #endif
+
+public:
+
+    static const UWeatherWorldConfig* Get(UWorld* World);
 
 };
 

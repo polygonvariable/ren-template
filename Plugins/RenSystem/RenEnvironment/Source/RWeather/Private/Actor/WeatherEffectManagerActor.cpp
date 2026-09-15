@@ -25,7 +25,7 @@ AWeatherEffectManagerActor::AWeatherEffectManagerActor()
     SetCanBeDamaged(false);
 }
 
-#if WITH_EDITOR
+#if UE_BUILD_DEVELOPMENT
 const TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& AWeatherEffectManagerActor::GetEditorWeatherEffectHandles() const
 {
     return LoadHandles;

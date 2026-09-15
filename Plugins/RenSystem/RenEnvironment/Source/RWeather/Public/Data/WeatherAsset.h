@@ -62,7 +62,7 @@ public:
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
     // ~ UPrimaryDataAsset
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
     // ~ End of UPrimaryDataAsset

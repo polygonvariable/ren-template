@@ -37,10 +37,11 @@ public:
     void ActivateEffect();
     void DeactivateEffect();
 
-#if WITH_EDITOR
-
+#if UE_BUILD_DEVELOPMENT
     REN_API UNiagaraComponent* GetEditorNiagaraComponent();
+#endif
 
+#if WITH_EDITOR
     // ~ AActor
     virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
     // ~ End of AActor

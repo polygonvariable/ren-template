@@ -29,7 +29,7 @@ public:
 
 	AWeatherEffectManagerActor();
 
-#if WITH_EDITOR
+#if UE_BUILD_DEVELOPMENT
 	REN_API const TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& GetEditorWeatherEffectHandles() const;
 	REN_API const TArray<TObjectPtr<AWeatherEffectActor>>& GetEditorWeatherEffects() const;
 #endif

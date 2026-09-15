@@ -81,12 +81,14 @@ void AWeatherEffectActor::DeactivateEffect()
 }
 
 
-#if WITH_EDITOR
+#if UE_BUILD_DEVELOPMENT
 UNiagaraComponent* AWeatherEffectActor::GetEditorNiagaraComponent()
 {
     return NiagaraComponent;
 }
+#endif
 
+#if WITH_EDITOR
 EDataValidationResult AWeatherEffectActor::IsDataValid(FDataValidationContext& Context) const
 {
     EDataValidationResult Result = Super::IsDataValid(Context);

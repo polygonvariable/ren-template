@@ -11,6 +11,7 @@
 #include "Data/WeatherAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "MaterialLibrary.h"
 #include "System/EnvironmentSubsystem.h"
 
 
@@ -50,7 +51,7 @@ bool UWeatherController::RemoveWeather(int Priority)
 
 
 
-#if WITH_EDITOR
+#if UE_BUILD_DEVELOPMENT
 float UWeatherController::GetEditorWeatherTransition() const
 {
 	return _ElapsedTime;
@@ -109,7 +110,7 @@ void UWeatherController::StartTransition()
 {
 	ClearTransition();
 
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Weather transition started"));
+	PRINT_INFO(LogWeather, 5.0f, TEXT("Weather transition started"));
 
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	TimerManager.SetTimer(TimerHandle, this, &UWeatherController::HandleOnTransitionTick, _TransitionRate, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
@@ -117,7 +118,7 @@ void UWeatherController::StartTransition()
 
 void UWeatherController::ClearTransition()
 {
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("Weather transition stopped"));
+	PRINT_INFO(LogWeather, 5.0f, TEXT("Weather transition stopped"));
 
 	_ElapsedTime = 0.0f;
 
@@ -133,12 +134,12 @@ void UWeatherController::OnTransitionChanged(float Alpha)
 		return;
 	}
 
-	float Curve = TransitionCurve->GetFloatValue(Alpha);
-	FMaterialSurfaceProperty SurfaceProperty = FMaterialSurfaceProperty::Lerp(SourceSurfaceProperty, TargetSurfaceProperty, Curve);
-
 	const UWeatherSettings* Settings = UWeatherSettings::Get();
+	float Curve = TransitionCurve->GetFloatValue(Alpha);
 
-	SurfaceProperty.SetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
+	FMaterialSurfaceProperty SurfaceProperty;
+	FMaterialLibrary::LerpSurfaceProperty(SourceSurfaceProperty, TargetSurfaceProperty, Curve, SurfaceProperty);
+	FMaterialLibrary::SetSurfaceProperty(SurfaceProperty, MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
 }
 
 void UWeatherController::HandleOnTransitionTick()
@@ -188,7 +189,7 @@ void UWeatherController::OnPriorityItemChanged(UObject* Item)
 
 	const UWeatherSettings* Settings = UWeatherSettings::Get();
 
-	SourceSurfaceProperty.GetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
+	FMaterialLibrary::GetSurfaceProperty(SourceSurfaceProperty, MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
 
 	_TransitionRate = CurrentWeather->TransitionRate;
 	_TransitionDuration = CurrentWeather->TransitionDuration;

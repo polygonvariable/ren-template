@@ -8,7 +8,7 @@ static bool LValue_RWeatherDebug = false;
 static FAutoConsoleVariableRef CVarRWeatherDebug(
 	TEXT("ren.Environment.Weather.Debug"),
 	LValue_RWeatherDebug,
-	TEXT("Enables environment weather debug"),
+	TEXT("Enable weather debug"),
 	ECVF_Default
 );
 

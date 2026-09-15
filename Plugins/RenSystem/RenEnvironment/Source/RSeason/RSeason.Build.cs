@@ -27,6 +27,8 @@ public class RSeason : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"DeveloperSettings",
+                "RCoreCommon",
                 "RCoreMaterial",
                 "REnvironment",
             }
@@ -48,9 +50,13 @@ public class RSeason : ModuleRules
                 "RCoreAssetManager",
             }
 			);
-		
-		
-		DynamicallyLoadedModuleNames.AddRange(
+
+        if (Target.bBuildEditor)
+        {
+            PrivateDependencyModuleNames.Add("UnrealEd");
+        }
+
+        DynamicallyLoadedModuleNames.AddRange(
 			new string[]
 			{
 				// ... add any modules that your module loads dynamically here ...

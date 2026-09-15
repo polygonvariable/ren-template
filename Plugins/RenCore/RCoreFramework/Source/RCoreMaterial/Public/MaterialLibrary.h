@@ -2,8 +2,8 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
+// Project Headers
+#include "MaterialSurfaceProperty.h"
 
 // Module Macros
 #define REN_API RCOREMATERIAL_API
@@ -16,13 +16,12 @@ class UMaterialParameterCollectionInstance;
 /**
  *
  */
-class MaterialLibrary
+namespace FMaterialLibrary
 {
 
-public:
-
-	REN_API static void LerpScalarParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, float Target, float Alpha);
-	REN_API static void LerpVectorParameter(UMaterialParameterCollectionInstance* MPC, FName ParameterName, const FLinearColor& Target, float Alpha);
+	REN_API void GetSurfaceProperty(FMaterialSurfaceProperty& Surface, UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
+	REN_API void SetSurfaceProperty(const FMaterialSurfaceProperty& Surface, UMaterialParameterCollectionInstance* Instance, FName TintName, FName SROWName, FName DCMAName);
+	REN_API void LerpSurfaceProperty(const FMaterialSurfaceProperty& A, const FMaterialSurfaceProperty& B, float Alpha, FMaterialSurfaceProperty& OutResult);
 
 };
 

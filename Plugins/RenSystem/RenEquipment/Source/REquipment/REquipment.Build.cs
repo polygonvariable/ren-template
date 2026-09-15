@@ -52,7 +52,6 @@ public class REquipment : ModuleRules
                 "RCoreLibrary",
                 "RCoreDelegate",
                 "RCoreFilter",
-                "RCoreEquipment",
                 "RCoreAsset",
                 "RCoreAssetManager",
             }

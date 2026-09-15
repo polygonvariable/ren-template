@@ -6,8 +6,8 @@
 // Engine Headers
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
-#endif
 #include "UObject/ObjectSaveContext.h"
+#endif
 
 // Project Headers
 #include "Data/WeatherAsset.h"
@@ -29,7 +29,7 @@ UWeatherAsset* UWeatherCollectionAsset::GetRandomWeather() const
     return nullptr;
 }
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 void UWeatherCollectionAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
     Super::PreSave(ObjectSaveContext);

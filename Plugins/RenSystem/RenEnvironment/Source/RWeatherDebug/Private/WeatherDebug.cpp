@@ -4,11 +4,11 @@
 #include "WeatherDebug.h"
 
 // Engine Headers
-#include "SlateIM.h"
-#include "EngineUtils.h"
 #include "Engine/AssetManager.h"
-#include "NiagaraSystem.h"
+#include "EngineUtils.h"
 #include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
+#include "SlateIM.h"
 
 // Project Headers
 #include "Actor/WeatherEffectActor.h"
@@ -37,7 +37,12 @@ void FWeatherDebugWidget::Draw_WeatherManager(AWeatherEffectManagerActor* Manage
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
-		SlateIM::Text(TEXT("Weather Manager: " + Manager->GetFName().ToString()));
+		SlateIM::BeginHorizontalStack();
+		{
+			SlateIM::Text(TEXT("Weather Manager:"));
+			SlateIM::Text(Manager->GetFName().ToString(), FColor::Cyan);
+		}
+		SlateIM::EndHorizontalStack();
 	}
 }
 
@@ -48,7 +53,12 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor*
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
-		SlateIM::Text(TEXT("Weather Effects: (" + FString::FromInt(Effects.Num()) + ")"));
+		SlateIM::BeginHorizontalStack();
+		{
+			SlateIM::Text(TEXT("Weather Effects:"));
+			SlateIM::Text(FString::FromInt(Effects.Num()), FColor::Cyan);
+		}
+		SlateIM::EndHorizontalStack();
 		SlateIM::BeginTable();
 		{
 			SlateIM::BeginTableHeader();
@@ -105,7 +115,12 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManager
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
-		SlateIM::Text(TEXT("Weather Effect Handles: (" + FString::FromInt(Effects.Num()) + ")"));
+		SlateIM::BeginHorizontalStack();
+		{
+			SlateIM::Text(TEXT("Weather Effects Handles:"));
+			SlateIM::Text(FString::FromInt(Effects.Num()), FColor::Cyan);
+		}
+		SlateIM::EndHorizontalStack();
 		SlateIM::BeginTable();
 		{
 			SlateIM::BeginTableHeader();
@@ -232,7 +247,15 @@ void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 			}
 			else
 			{
-				SlateIM::Text(TEXT("Weather Manager: Invalid"));
+				if (SlateIM::NextTableCell())
+				{
+					SlateIM::BeginHorizontalStack();
+					{
+						SlateIM::Text(TEXT("Weather Manager:"));
+						SlateIM::Text(TEXT("Invalid"), FColor::Red);
+					}
+					SlateIM::EndHorizontalStack();
+				}
 			}
 
 			if (Controller)
@@ -242,7 +265,15 @@ void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 			}
 			else
 			{
-				SlateIM::Text(TEXT("Weather Controller: Invalid"));
+				if (SlateIM::NextTableCell())
+				{
+					SlateIM::BeginHorizontalStack();
+					{
+						SlateIM::Text(TEXT("Weather Controller:"));
+						SlateIM::Text(TEXT("Invalid"), FColor::Red);
+					}
+					SlateIM::EndHorizontalStack();
+				}
 			}
 			
 			SlateIM::EndTable();

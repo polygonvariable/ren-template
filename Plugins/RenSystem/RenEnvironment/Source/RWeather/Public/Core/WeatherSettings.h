@@ -8,6 +8,9 @@
 // Generated Headers
 #include "WeatherSettings.generated.h"
 
+// Forward Declarations
+class UWeatherSubsystem;
+
 
 /**
  *
@@ -22,6 +25,9 @@ public:
 
 	UWeatherSettings(const FObjectInitializer& ObjectInitializer);
 
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
+	TSubclassOf<UWeatherSubsystem> SubsystemClass;
 
 	/*
 	 * RGB	- Color added

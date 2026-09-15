@@ -5,40 +5,67 @@
 
 // Engine Headers
 #if WITH_EDITOR
+#include "Materials/MaterialParameterCollection.h"
 #include "Misc/DataValidation.h"
 #endif
-#include "Materials/MaterialParameterCollection.h"
 
 // Project Headers
+#if WITH_EDITOR
 #include "Actor/WeatherEffectManagerActor.h"
 #include "System/WeatherController.h"
+#endif
+#include "WorldFragmentSettings.h"
 
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 EDataValidationResult UWeatherWorldConfig::IsDataValid(FDataValidationContext& Context) const
 {
     EDataValidationResult Result = Super::IsDataValid(Context);
 
     if (bEnabled)
     {
+        if (!DefaultWeather.IsValid())
+        {
+            Context.AddError(FText::FromString("Weather asset is invalid"));
+            return EDataValidationResult::Invalid;
+        }
+
+        if (DefaultPriority <= 0)
+        {
+            Context.AddError(FText::FromString("Invalid weather priority"));
+            return EDataValidationResult::Invalid;
+        }
+
         if (!IsValid(WeatherMPC))
         {
             Context.AddError(FText::FromString("Weather material parameter is invalid"));
-            Result = EDataValidationResult::Invalid;
+            return EDataValidationResult::Invalid;
         }
-        else if (!IsValid(WeatherController))
+        
+        if (!IsValid(WeatherController))
         {
             Context.AddError(FText::FromString("Weather controller is invalid"));
-            Result = EDataValidationResult::Invalid;
+            return EDataValidationResult::Invalid;
         }
-        else if (!IsValid(EffectManager))
+        
+        if (!IsValid(EffectManager))
         {
             Context.AddError(FText::FromString("Weather effect manager is invalid"));
-            Result = EDataValidationResult::Invalid;
+            return EDataValidationResult::Invalid;
         }
     }
 
     return Result;
 }
 #endif
+
+const UWeatherWorldConfig* UWeatherWorldConfig::Get(UWorld* World)
+{
+    AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(World->GetWorldSettings());
+    if (!IsValid(WorldSettings))
+    {
+        return nullptr;
+    }
+    return WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
+}
 

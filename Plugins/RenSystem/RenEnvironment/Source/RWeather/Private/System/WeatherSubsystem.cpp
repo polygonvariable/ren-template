@@ -10,6 +10,7 @@
 #include "Actor/WeatherEffectManagerActor.h"
 #include "Core/AssetManagerUtil.h"
 #include "Core/EnvironmentSettings.h"
+#include "Core/WeatherSettings.h"
 #include "Data/WeatherAsset.h"
 #include "Data/WeatherWorldConfig.h"
 #include "Log/LogCategory.h"
@@ -112,9 +113,9 @@ void UWeatherSubsystem::HandleOnWeatherTimerTick()
 
 void UWeatherSubsystem::HandleOnWeatherLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(WeatherHandle);
+	FAssetManagerUtil::CancelHandle(WeatherHandle);
 	
-	const UWeatherWorldConfig* Config = GetWeatherWorldConfig();
+	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(GetWorld());
 	if (!IsValid(Config))
 	{
 		LOG_ERROR(LogWeather, TEXT("WeatherFragmentData is invalid"));
@@ -145,20 +146,25 @@ void UWeatherSubsystem::HandleOnWeatherLoaded()
 }
 
 
-const UWeatherWorldConfig* UWeatherSubsystem::GetWeatherWorldConfig() const
-{
-	AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(GetWorld()->GetWorldSettings());
-	if (!IsValid(WorldSettings))
-	{
-		return nullptr;
-	}
-	return WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
-}
-
-
 bool UWeatherSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
 	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
+}
+
+bool UWeatherSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	if (!Super::ShouldCreateSubsystem(Outer) || GetClass() != UWeatherSettings::Get()->SubsystemClass)
+	{
+		return false;
+	}
+
+	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(Cast<UWorld>(Outer));
+	if (!IsValid(Config))
+	{
+		return false;
+	}
+
+	return Config->bEnabled;
 }
 
 void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -174,17 +180,16 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogWeather, TEXT("WeatherSubsystem OnWorldComponentsUpdated"));
 
-	const UWeatherWorldConfig* Config = GetWeatherWorldConfig();
+	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(&InWorld);
 	if (!IsValid(Config) || !Config->bEnabled)
 	{
-		LOG_ERROR(LogEnvironment, TEXT("WeatherFragmentData is invalid or disabled"));
+		LOG_ERROR(LogWeather, TEXT("WeatherFragmentData is invalid or disabled"));
 		return;
 	}
 
 	FAssetManagerUtil::CancelHandle(WeatherHandle);
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
-
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
 	const FPrimaryAssetId Weather = Config->DefaultWeather;
 

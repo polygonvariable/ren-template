@@ -13,6 +13,7 @@
 #if WITH_EDITOR
 #include "Core/WeatherSettings.h"
 #include "Data/WeatherWorldConfig.h"
+#include "MaterialLibrary.h"
 #include "WorldFragmentSettings.h"
 #endif
 
@@ -22,7 +23,7 @@ FPrimaryAssetId UWeatherAsset::GetPrimaryAssetId() const
     return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
 }
 
-#if WITH_EDITORONLY_DATA
+#if WITH_EDITOR
 void UWeatherAsset::ApplySurfaceToWorld()
 {
     if (!GEditor)
@@ -36,24 +37,26 @@ void UWeatherAsset::ApplySurfaceToWorld()
         AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(World->GetWorldSettings());
         if (!IsValid(WorldSettings))
         {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Failed to get world settings")));
             return;
         }
 
         const UWeatherSettings* Settings = UWeatherSettings::Get();
-        const UWeatherWorldConfig* WeatherSettings = WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
-        if (!IsValid(WeatherSettings))
+        const UWeatherWorldConfig* WorldConfig = WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
+        if (!IsValid(WorldConfig))
         {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Unable to get weather world config")));
             return;
         }
 
-        UMaterialParameterCollectionInstance* MPCInstance = World->GetParameterCollectionInstance(WeatherSettings->WeatherMPC);
+        UMaterialParameterCollectionInstance* MPCInstance = World->GetParameterCollectionInstance(WorldConfig->WeatherMPC);
         if (!MPCInstance)
         {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Unable to get weather MPC")));
             return;
         }
 
-        FMaterialSurfaceProperty TempSurface = SurfaceProperty;
-        TempSurface.SetParameters(MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
+        FMaterialLibrary::SetSurfaceProperty(SurfaceProperty, MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
     }
 }
 

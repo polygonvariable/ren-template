@@ -57,10 +57,6 @@
 		{
 			"Name": "RCoreFramework",
 			"Enabled": true
-		},
-		{
-			"Name": "RCoreEquipment",
-			"Enabled": true
 		}
 	]
 }

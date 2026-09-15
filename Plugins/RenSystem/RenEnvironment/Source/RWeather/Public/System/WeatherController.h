@@ -40,7 +40,7 @@ public:
 	bool AddWeather(UWeatherAsset* WeatherAsset, int Priority);
 	bool RemoveWeather(int Priority);
 
-#if WITH_EDITOR
+#if UE_BUILD_DEVELOPMENT
 	REN_API float GetEditorWeatherTransition() const;
 	REN_API int GetEditorCurrentWeatherPriority() const;
 	REN_API const FString GetEditorCurrentWeatherName() const;

@@ -33,7 +33,6 @@ public class RInventory : ModuleRules
                 "RCoreAsset",
 				"RCoreAssetManager",
                 "RCoreAssetInstance",
-                "RCoreEquipment",
                 "RCoreStorage",
                 "RCoreCommon",
             }
