@@ -27,12 +27,11 @@ public class REnvironment : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreCommon",
+                "Landscape",
+                "DeveloperSettings",
+                "RCoreCommon",
                 "RCoreAsset",
                 "RCoreSettings",
-                "Landscape",
-				"DeveloperSettings",
-                //"LandscapeEditor",
             }
 			);
 			
@@ -46,9 +45,9 @@ public class REnvironment : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "SunPosition",
-                "RCoreClock",
                 "RCoreLibrary",
                 "RCoreAssetManager",
+                "RCoreWorldDataClock",
             }
 			);
 		

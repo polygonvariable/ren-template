@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Data/EnvironmentAsset.h"
+#include "Data/EnvironmentWorldConfig.h"
 #include "Data/EnvironmentProfileAsset.h"
 
 

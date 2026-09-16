@@ -41,13 +41,23 @@ public:
 
 	REN_API UWeatherController* GetWeatherController() const;
 
+	// ~ UWorldSubsystem
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
+	virtual void OnWorldEndPlay(UWorld& InWorld) override;
+	// ~ End of UWorldSubsystem
+
 protected:
 
 	UPROPERTY()
-	TObjectPtr<AActor> EffectManager;
+	TObjectPtr<const UWeatherWorldConfig> WeatherConfig;
 
 	UPROPERTY()
 	TObjectPtr<UAssetManager> AssetManager;
+
+	UPROPERTY()
+	TObjectPtr<AActor> EffectManager;
 
 	UPROPERTY()
 	TObjectPtr<UWeatherController> WeatherController;
@@ -62,6 +72,9 @@ protected:
 	bool CreateWeatherController(UClass* ControllerClass, UMaterialParameterCollection* MPC);
 	void RemoveWeatherController();
 
+	bool CreateWeatherManager(UClass* ManagerClass);
+	void RemoveWeatherManager();
+
 	void RegisterDefaultWeather(const FPrimaryAssetId& AssetId, int Priority);
 	
 	// ~ Binding
@@ -71,11 +84,6 @@ protected:
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
-	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
-	virtual void OnWorldEndPlay(UWorld& InWorld) override;
-	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
 
 public:

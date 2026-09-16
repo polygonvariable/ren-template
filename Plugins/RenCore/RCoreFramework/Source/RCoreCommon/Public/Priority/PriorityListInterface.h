@@ -38,9 +38,11 @@ protected:
 	virtual void OnPriorityItemCleared() {};
 
 	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() = 0;
-	virtual int& GetHighestPriority() = 0;
+	int GetHighestPriority() const;
 
 private:
+
+	int HighestPriority = 0;
 
 	void UpdateHighestPriority();
 

@@ -14,6 +14,7 @@
 #include "Actor/WeatherEffectActor.h"
 #include "Actor/WeatherEffectManagerActor.h"
 #include "Data/WeatherAsset.h"
+#include "MiscLibrary.h"
 #include "System/WeatherController.h"
 #include "System/WeatherSubsystem.h"
 
@@ -232,69 +233,56 @@ void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 {
 	AWeatherEffectManagerActor* Manager = GetWeatherManager();
 	UWeatherController* Controller = GetController();
-	if (GEngine && GEngine->GameViewport)
+
+	SlateIM::FWindowParams WindowParams;
+	WindowParams.WindowSize = FVector2f(150.0f * 2, 250.0f * 1.5);
+	WindowParams.bAlwaysOnTop = true;
+
+	if (SlateIM::BeginWindowRoot(TEXT("WeatherWindow"), WindowParams))
 	{
-		if (SlateIM::BeginViewportRoot(TEXT("WeatherWindow"), GEngine->GameViewport))
+		SlateIM::BeginTable();
+		SlateIM::AddTableColumn(TEXT("Weather_Debug"), TEXT("Weather Debugger:"));
+
+		if (Manager)
 		{
-			SlateIM::BeginTable();
-			SlateIM::AddTableColumn(TEXT("Weather_Debug"), TEXT("Weather Debugger:"));
-
-			if (Manager)
+			Draw_WeatherManager(Manager);
+			Draw_WeatherManagerEffects(Manager);
+			Draw_WeatherManagerEffectHandles(Manager);
+		}
+		else
+		{
+			if (SlateIM::NextTableCell())
 			{
-				Draw_WeatherManager(Manager);
-				Draw_WeatherManagerEffects(Manager);
-				Draw_WeatherManagerEffectHandles(Manager);
-			}
-			else
-			{
-				if (SlateIM::NextTableCell())
+				SlateIM::BeginHorizontalStack();
 				{
-					SlateIM::BeginHorizontalStack();
-					{
-						SlateIM::Text(TEXT("Weather Manager:"));
-						SlateIM::Text(TEXT("Invalid"), FColor::Red);
-					}
-					SlateIM::EndHorizontalStack();
+					SlateIM::Text(TEXT("Weather Manager:"));
+					SlateIM::Text(TEXT("Invalid"), FColor::Red);
 				}
+				SlateIM::EndHorizontalStack();
 			}
+		}
 
-			if (Controller)
+		if (Controller)
+		{
+			Draw_WeatherControllerActive(Controller);
+			Draw_WeatherControllerList(Controller);
+		}
+		else
+		{
+			if (SlateIM::NextTableCell())
 			{
-				Draw_WeatherControllerActive(Controller);
-				Draw_WeatherControllerList(Controller);
-			}
-			else
-			{
-				if (SlateIM::NextTableCell())
+				SlateIM::BeginHorizontalStack();
 				{
-					SlateIM::BeginHorizontalStack();
-					{
-						SlateIM::Text(TEXT("Weather Controller:"));
-						SlateIM::Text(TEXT("Invalid"), FColor::Red);
-					}
-					SlateIM::EndHorizontalStack();
+					SlateIM::Text(TEXT("Weather Controller:"));
+					SlateIM::Text(TEXT("Invalid"), FColor::Red);
 				}
+				SlateIM::EndHorizontalStack();
 			}
+		}
 			
-			SlateIM::EndTable();
-		}
-		SlateIM::EndRoot();
+		SlateIM::EndTable();
 	}
-}
-
-UWorld* FWeatherDebugWidget::GetWorld()
-{
-	if (GEngine)
-	{
-		for (const FWorldContext& Context : GEngine->GetWorldContexts())
-		{
-			if (Context.WorldType == EWorldType::Game || Context.WorldType == EWorldType::PIE)
-			{
-				return Context.World();
-			}
-		}
-	}
-	return nullptr;
+	SlateIM::EndRoot();
 }
 
 UWeatherController* FWeatherDebugWidget::GetController()
@@ -304,8 +292,8 @@ UWeatherController* FWeatherDebugWidget::GetController()
 		return WeatherController.Get();
 	}
 
-	UWeatherSubsystem* Subsystem = UWeatherSubsystem::Get(GetWorld());
-	if (Subsystem)
+	UWeatherSubsystem* Subsystem = UWeatherSubsystem::Get(FMiscLibrary::GetCurrentWorld());
+	if (IsValid(Subsystem))
 	{
 		UWeatherController* Controller = Subsystem->GetWeatherController();
 
@@ -323,10 +311,10 @@ AWeatherEffectManagerActor* FWeatherDebugWidget::GetWeatherManager()
 		return WeatherManager.Get();
 	}
 
-	UWorld* World = GetWorld();
+	UWorld* World = FMiscLibrary::GetCurrentWorld();
 	if (IsValid(World))
 	{
-		for (TActorIterator<AWeatherEffectManagerActor> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+		for (TActorIterator<AWeatherEffectManagerActor> ActorItr(World); ActorItr; ++ActorItr)
 		{
 			WeatherManager = TWeakObjectPtr<AWeatherEffectManagerActor>(*ActorItr);
 		}

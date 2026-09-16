@@ -8,12 +8,7 @@
 // Generated Headers
 #include "WorldFragmentSettings.generated.h"
 
-// Module Macros
-#define REN_API RCORESETTINGS_API
-
 // Forward Declarations
-class UPrimaryDataAsset;
-class UWorldFragment;
 class UWorldConfigAsset;
 
 
@@ -28,27 +23,30 @@ class AWorldFragmentSettings : public AWorldSettings
 	
 public:
 
-	UPROPERTY(EditAnywhere, Category = "World Config Settings")
-	FVector SpawnLocation;
-
-	UPROPERTY(EditAnywhere, meta = (AllowedClasses = "/Script/RenAsset.ClockAsset"), Category = "World Config Settings")
-	TObjectPtr<UPrimaryDataAsset> ClockAsset;
-
 	UPROPERTY(EditDefaultsOnly, Category = "World Configs")
 	TArray<TObjectPtr<UWorldConfigAsset>> Configs;
 
 
-	REN_API const UWorldConfigAsset* FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const;
+	RCORESETTINGS_API const UWorldConfigAsset* FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const;
 
 	template<typename T>
 	const T* FindConfigByClass() const
 	{
 		return Cast<T>(FindConfigByClass(T::StaticClass()));
 	}
+
+public:
+
+	template<typename T>
+	static const T* GetConfigByClass(UWorld* World)
+	{
+		AWorldFragmentSettings* Settings = Cast<AWorldFragmentSettings>(World->GetWorldSettings());
+		if (!IsValid(Settings))
+		{
+			return nullptr;
+		}
+		return Settings->FindConfigByClass<T>();
+	}
 	
 };
-
-
-// Module Macros
-#undef REN_API
 

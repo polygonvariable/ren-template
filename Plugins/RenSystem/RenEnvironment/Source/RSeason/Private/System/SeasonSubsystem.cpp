@@ -5,29 +5,18 @@
 
 // Engine Headers
 #include "Engine/AssetManager.h"
-#include "EngineUtils.h"
-#include "Kismet/KismetMaterialLibrary.h"
 #include "Materials/MaterialParameterCollection.h"
-#include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Headers
 #include "Core/AssetManagerUtil.h"
 #include "Core/EnvironmentSettings.h"
 #include "Core/SeasonSettings.h"
-#include "Core/SeasonSettings.h"
-#include "Data/EnvironmentAsset.h"
-#include "Data/SeasonAsset.h"
 #include "Data/SeasonCollectionAsset.h"
 #include "Data/SeasonWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Log/LogMacro.h"
-#include "Manager/RAssetManager.inl"
-#include "RCoreClock/Public/ClockManagerInterface.h"
-#include "RCoreMaterial/Public/MaterialSurfaceProperty.h"
 #include "RCoreSettings/Public/WorldFragmentSettings.h"
 #include "System/SeasonController.h"
-#include "Util/SubsystemUtil.h"
 
 
 USeasonController* USeasonSubsystem::GetSeasonController() const
@@ -99,14 +88,8 @@ bool USeasonSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 	{
 		return false;
 	}
-
-	const USeasonWorldConfig* Config = USeasonWorldConfig::Get(Cast<UWorld>(Outer));
-	if (!IsValid(Config))
-	{
-		return false;
-	}
-
-	return Config->bEnabled;
+	const USeasonWorldConfig* Config = AWorldFragmentSettings::GetConfigByClass<USeasonWorldConfig>(Cast<UWorld>(Outer));
+	return IsValid(Config) && Config->bEnabled;
 }
 
 void USeasonSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -121,8 +104,8 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
 	LOG_WARNING(LogSeason, TEXT("SeasonSubsystem OnWorldComponentsUpdated"));
 
-	const USeasonWorldConfig* Config = USeasonWorldConfig::Get(&InWorld);
-	if (!IsValid(Config) || !Config->bEnabled)
+	SeasonConfig = AWorldFragmentSettings::GetConfigByClass<USeasonWorldConfig>(&InWorld);
+	if (!IsValid(SeasonConfig) || !SeasonConfig->bEnabled)
 	{
 		LOG_ERROR(LogWeather, TEXT("WeatherFragmentData is invalid or disabled"));
 		return;
@@ -132,18 +115,20 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
-	const FPrimaryAssetId Weather = Config->DefaultSeason;
+	const FPrimaryAssetId Weather = SeasonConfig->DefaultSeason;
 
 	AssetHandle = AssetManager->LoadPrimaryAsset(Weather, Bundles, FStreamableDelegate::CreateUObject(this, &USeasonSubsystem::HandleOnSeasonLoaded));
 }
 
-void USeasonSubsystem::Deinitialize()
+void USeasonSubsystem::OnWorldEndPlay(UWorld& InWorld)
 {
+	RemoveSeasonController();
+
 	FAssetManagerUtil::CancelHandle(AssetHandle);
 	AssetManager = nullptr;
+	SeasonConfig = nullptr;
 
-	LOG_WARNING(LogSeason, TEXT("SeasonSubsystem Deinitialized"));
-	Super::Deinitialize();
+	LOG_WARNING(LogSeason, TEXT("SeasonSubsystem OnWorldEndPlay"));
 }
 
 USeasonSubsystem* USeasonSubsystem::Get(UWorld* World)

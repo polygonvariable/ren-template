@@ -11,13 +11,13 @@
 #include "Actor/EnvironmentActor.h"
 #include "Core/AssetManagerUtil.h"
 #include "Core/EnvironmentSettings.h"
-#include "Data/EnvironmentAsset.h"
+#include "Data/EnvironmentWorldConfig.h"
 #include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "WorldFragmentSettings.h"
 #include "System/EnvironmentController.h"
-#include "Data/EnvironmentAsset.h"
+#include "Data/EnvironmentWorldConfig.h"
 
 
 bool UEnvironmentSubsystem::AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority)
@@ -194,36 +194,41 @@ void UEnvironmentSubsystem::RegisterDefaultProfiles(const UEnvironmentWorldConfi
 	}
 }
 
-const UEnvironmentWorldConfig* UEnvironmentSubsystem::GetEnvironmentWorldConfig() const
-{
-	AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(GetWorld()->GetWorldSettings());
-	if (!IsValid(WorldSettings))
-	{
-		return nullptr;
-	}
-	return WorldSettings->FindConfigByClass<UEnvironmentWorldConfig>();
-}
-
 
 void UEnvironmentSubsystem::HandleOnEnvironmentLoaded()
 {
 	FAssetManagerUtil::ReleaseHandle(ProfileHandle);
 
-	const UEnvironmentWorldConfig* Data = GetEnvironmentWorldConfig();
-	if (!IsValid(Data))
+	if (!IsValid(WorldConfig))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("EnvironmentFragment is invalid"));
 		return;
 	}
 
-	RegisterControllers(Data);
-	RegisterDefaultProfiles(Data);
+	RegisterControllers(WorldConfig);
+	RegisterDefaultProfiles(WorldConfig);
 }
 
 
 bool UEnvironmentSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
 	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
+}
+
+bool UEnvironmentSubsystem::ShouldCreateSubsystem(UObject* Outer) const
+{
+	if (!Super::ShouldCreateSubsystem(Outer) || GetClass() != UEnvironmentSettings::Get()->SubsystemClass)
+	{
+		return false;
+	}
+
+	const UEnvironmentWorldConfig* Config = AWorldFragmentSettings::GetConfigByClass<UEnvironmentWorldConfig>(Cast<UWorld>(Outer));
+	if (!IsValid(Config))
+	{
+		return false;
+	}
+
+	return Config->bEnabled;
 }
 
 void UEnvironmentSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -241,8 +246,8 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	FAssetManagerUtil::CancelHandle(ProfileHandle);
 
-	const UEnvironmentWorldConfig* Data = GetEnvironmentWorldConfig();
-	if (!IsValid(Data))
+	WorldConfig = AWorldFragmentSettings::GetConfigByClass<UEnvironmentWorldConfig>(&InWorld);
+	if (!IsValid(WorldConfig))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("EnvironmentFragment is invalid"));
 		return;
@@ -251,7 +256,7 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
-	const TArray<FPrimaryAssetId>& Profiles = Data->DefaultProfiles;
+	const TArray<FPrimaryAssetId>& Profiles = WorldConfig->DefaultProfiles;
 
 	ProfileHandle = AssetManager->LoadPrimaryAssets(Profiles, Bundles, FStreamableDelegate::CreateUObject(this, &UEnvironmentSubsystem::HandleOnEnvironmentLoaded));
 }

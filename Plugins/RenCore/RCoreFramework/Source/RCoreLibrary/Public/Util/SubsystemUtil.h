@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Module Macros
+#define REN_API RCORELIBRARY_API
+
 // Engine Headers
 class UWorld;
 class UObject;
@@ -9,6 +12,56 @@ class USubsystem;
 class UGameInstance;
 class UClass;
 
+
+/*
+ *
+ */
+namespace FSubsystemLibrary
+{
+
+	REN_API USubsystem* GetSubsystemByInterface(UWorld* Context, UClass* InterfaceClass);
+	REN_API USubsystem* GetSubsystemByInterface(UGameInstance* Context, UClass* InterfaceClass);
+
+	template <typename TContext, typename TSubsystem, typename TInterface>
+	TSubsystem* GetSubsystemByInterface(TContext* Context)
+	{
+		if (!IsValid(Context)) return nullptr;
+
+		const TArray<TSubsystem*>& Subsystems = Context->template GetSubsystemArrayCopy<TSubsystem>();
+		UClass* SubsystemClass = TInterface::UClassType::StaticClass();
+
+		for (TSubsystem* Subsystem : Subsystems)
+		{
+			if (IsValid(Subsystem) && Subsystem->GetClass()->ImplementsInterface(SubsystemClass))
+			{
+				return Subsystem;
+			}
+		}
+
+		return nullptr;
+	}
+
+	template <typename TContext, typename TSubsystem, typename TInterface>
+	TInterface* GetSubsystemInterface(TContext* Context)
+	{
+		if (!IsValid(Context)) return nullptr;
+
+		return Cast<TInterface>(GetSubsystemByInterface<TContext, TSubsystem, TInterface>(Context));
+	}
+
+	template <typename TInterface>
+	TInterface* GetSubsystemInterface(UWorld* Context)
+	{
+		return GetSubsystemInterface<UWorld, UWorldSubsystem, TInterface>(Context);
+	}
+
+	template <typename TInterface>
+	TInterface* GetSubsystemInterface(UGameInstance* Context)
+	{
+		return GetSubsystemInterface<UGameInstance, UGameInstanceSubsystem, TInterface>(Context);
+	}
+
+}
 
 
 class SubsystemUtil

@@ -9,11 +9,11 @@
 
 const UWorldConfigAsset* AWorldFragmentSettings::FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const
 {
-	for (const TObjectPtr<UWorldConfigAsset>& Item : Configs)
+	for (const TObjectPtr<UWorldConfigAsset>& Config : Configs)
 	{
-		if (Item->IsA(InClass))
+		if (IsValid(Config) && Config->IsA(InClass))
 		{
-			return Item.Get();
+			return Config.Get();
 		}
 	}
 	return nullptr;

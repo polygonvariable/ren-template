@@ -50,7 +50,6 @@ bool UWeatherController::RemoveWeather(int Priority)
 }
 
 
-
 #if UE_BUILD_DEVELOPMENT
 float UWeatherController::GetEditorWeatherTransition() const
 {
@@ -58,7 +57,7 @@ float UWeatherController::GetEditorWeatherTransition() const
 }
 int UWeatherController::GetEditorCurrentWeatherPriority() const
 {
-	return _HighestPriority;
+	return GetHighestPriority();
 }
 const FString UWeatherController::GetEditorCurrentWeatherName() const
 {
@@ -70,7 +69,7 @@ const UWeatherAsset* UWeatherController::GetEditorCurrentWeather() const
 }
 const TMap<int, TWeakObjectPtr<UObject>>& UWeatherController::GetEditorWeathers() const
 {
-	return _PriorityItems;
+	return _WeatherItems;
 }
 #endif
 
@@ -164,12 +163,7 @@ void UWeatherController::HandleOnTransitionTick()
 
 TMap<int, TWeakObjectPtr<UObject>>& UWeatherController::GetPriorityItems()
 {
-	return _PriorityItems;
-}
-
-int& UWeatherController::GetHighestPriority()
-{
-	return _HighestPriority;
+	return _WeatherItems;
 }
 
 void UWeatherController::OnPriorityItemChanged(UObject* Item)

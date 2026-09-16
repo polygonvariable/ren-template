@@ -7,6 +7,7 @@
 #include "Materials/MaterialParameterCollectionInstance.h"
 
 // Project Header
+#include "ClockManagerInterface.h"
 #include "Core/SeasonSettings.h"
 #include "Data/SeasonAsset.h"
 #include "Data/SeasonCollectionAsset.h"
@@ -14,6 +15,7 @@
 #include "Log/LogMacro.h"
 #include "MaterialLibrary.h"
 #include "System/EnvironmentSubsystem.h"
+#include "Util/SubsystemUtil.h"
 
 
 void USeasonController::Initialize(UMaterialParameterCollectionInstance* InMPCInstance)
@@ -21,17 +23,21 @@ void USeasonController::Initialize(UMaterialParameterCollectionInstance* InMPCIn
 	MPCInstance = InMPCInstance;
 	EnvironmentSubsystem = UEnvironmentSubsystem::Get(GetWorld());
 
-
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	TimerManager.SetTimer(TimerHandle, this, &USeasonController::HandleOnTimerTick, 0.5f, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
-
+	ClockManager = FSubsystemLibrary::GetSubsystemInterface<IClockManagerInterface>(GetWorld());
+	if (ClockManager)
+	{
+		ClockManager->GetYearLength(YearLength);
+		ClockManager->OnClockDayChanged().AddUObject(this, &USeasonController::HandleOnDayChanged);
+	}
 }
 
 void USeasonController::Deinitialize()
 {
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	TimerManager.ClearTimer(TimerHandle);
-	TimerHandle.Invalidate();
+	if (ClockManager)
+	{
+		ClockManager->OnClockDayChanged().RemoveAll(this);
+	}
+	ClockManager = nullptr;
 
 	MPCInstance = nullptr;
 	CurrentCollection = nullptr;
@@ -53,11 +59,15 @@ bool USeasonController::RemoveSeason(int Priority)
 #if UE_BUILD_DEVELOPMENT
 int USeasonController::GetEditorYearLength() const
 {
-	return (CurrentCollection) ? CurrentCollection->YearLength : -1;
+	return YearLength;
 }
 int USeasonController::GetEditorCurrentDay() const
 {
-	return CurrentDay;
+	if (ClockManager)
+	{
+		return ClockManager->GetCurrentDay();
+	}
+	return 1;
 }
 const USeasonCollectionAsset* USeasonController::GetEditorCurrentSeasonCollection() const
 {
@@ -65,72 +75,31 @@ const USeasonCollectionAsset* USeasonController::GetEditorCurrentSeasonCollectio
 }
 const TMap<int, TWeakObjectPtr<UObject>>& USeasonController::GetEditorSeasonCollectionList() const
 {
-	return _PriorityItems;
+	return _SeasonItems;
 }
 #endif
 
 
-void USeasonController::HandleOnTimerTick()
+void USeasonController::HandleOnDayChanged(int Day)
 {
-	if (!CurrentCollection)
+	float Alpha = 0.0f;
+	const USeasonAsset* Season = CurrentCollection->GetSeasonByDay(Day, YearLength, Alpha);
+
+	if (IsValid(Season))
 	{
-		return;
-	}
+		const USeasonSettings* Settings = USeasonSettings::Get();
 
-    int YearLength = CurrentCollection->YearLength;
-    if (CurrentCollection->Seasons.Num() == 0 || YearLength <= 0)
-    {
-        return;
-    }
+		FMaterialSurfaceProperty ResultSurface;
+		FMaterialSurfaceProperty DefaultSurface;
 
-    const int Day = (CurrentDay - 1 + YearLength) % YearLength;
-    const int StartDay = (CurrentCollection->SeasonStartDay - 1 + YearLength) % YearLength;
-    const int RelativeDay = (Day - StartDay + YearLength) % YearLength;
-
-    int AccumulatedDays = 0;
-    for (const FSeasonData& Season : CurrentCollection->Seasons)
-    {
-        const int SeasonStartRelativeDay = AccumulatedDays;
-        AccumulatedDays += Season.Duration;
-
-        if (RelativeDay < AccumulatedDays)
-        {
-            if (!Season.Asset || !Season.Asset->TransitionCurve)
-            {
-                return;
-            }
-
-			const USeasonSettings* Settings = USeasonSettings::Get();
-
-            const int LocalDay = RelativeDay - SeasonStartRelativeDay;
-            const float Alpha = (Season.Duration > 1) ? static_cast<float>(LocalDay) / static_cast<float>(Season.Duration - 1) : 1.0f;
-
-            float SeasonWeight = FMath::Clamp(Season.Asset->TransitionCurve->GetFloatValue(Alpha), 0.0f, 1.0f);
-
-			FMaterialSurfaceProperty ResultSurface;
-			FMaterialSurfaceProperty DefaultSurface;
-
-			FMaterialLibrary::LerpSurfaceProperty(DefaultSurface, Season.Asset->SurfaceProperty, SeasonWeight, ResultSurface);
-			FMaterialLibrary::SetSurfaceProperty(ResultSurface, MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
-            break;
-        }
-    }
-
-	CurrentDay++;
-	if (CurrentDay > YearLength)
-	{
-		CurrentDay = 1;
+		FMaterialLibrary::LerpSurfaceProperty(DefaultSurface, Season->SurfaceProperty, Alpha, ResultSurface);
+		FMaterialLibrary::SetSurfaceProperty(ResultSurface, MPCInstance, Settings->SurfaceTint, Settings->SurfaceSROW, Settings->SurfaceDCMA);
 	}
 }
 
 TMap<int, TWeakObjectPtr<UObject>>& USeasonController::GetPriorityItems()
 {
-	return _PriorityItems;
-}
-
-int& USeasonController::GetHighestPriority()
-{
-	return _HighestPriority;
+	return _SeasonItems;
 }
 
 void USeasonController::OnPriorityItemChanged(UObject* Item)

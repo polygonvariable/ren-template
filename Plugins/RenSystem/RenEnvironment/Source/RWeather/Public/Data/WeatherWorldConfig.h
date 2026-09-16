@@ -52,9 +52,5 @@ public:
     // ~ End of UPrimaryDataAsset
 #endif
 
-public:
-
-    static const UWeatherWorldConfig* Get(UWorld* World);
-
 };
 

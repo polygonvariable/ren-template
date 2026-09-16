@@ -13,9 +13,8 @@
 
 // Forward Declarations
 class UAssetManager;
-class USeasonCollectionAsset;
-class USeasonAsset;
 class USeasonController;
+class USeasonWorldConfig;
 struct FStreamableHandle;
 
 
@@ -36,21 +35,20 @@ public:
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
-	virtual void Deinitialize() override;
+	virtual void OnWorldEndPlay(UWorld& InWorld) override;
 	// ~ End of UWorldSubsystem
 
 protected:
 
-	int YearLength = 20;
-	int CurrentDay = 1;
+	UPROPERTY()
+	TObjectPtr<UAssetManager> AssetManager;
 
 	UPROPERTY()
-	USeasonCollectionAsset* ActiveCollection;
-	
+	TObjectPtr<const USeasonWorldConfig> SeasonConfig;
+
 	UPROPERTY()
 	TObjectPtr<USeasonController> SeasonController;
-	
-	TObjectPtr<UAssetManager> AssetManager;
+
 	TSharedPtr<FStreamableHandle> AssetHandle;
 
 

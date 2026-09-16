@@ -14,7 +14,6 @@
 #include "Actor/WeatherEffectManagerActor.h"
 #include "System/WeatherController.h"
 #endif
-#include "WorldFragmentSettings.h"
 
 
 #if WITH_EDITOR
@@ -58,14 +57,4 @@ EDataValidationResult UWeatherWorldConfig::IsDataValid(FDataValidationContext& C
     return Result;
 }
 #endif
-
-const UWeatherWorldConfig* UWeatherWorldConfig::Get(UWorld* World)
-{
-    AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(World->GetWorldSettings());
-    if (!IsValid(WorldSettings))
-    {
-        return nullptr;
-    }
-    return WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
-}
 

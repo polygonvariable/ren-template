@@ -17,6 +17,7 @@ class UMaterialParameterCollectionInstance;
 class USeasonCollectionAsset;
 class USeasonAsset;
 class UEnvironmentSubsystem;
+class IClockManagerInterface;
 
 
 /**
@@ -45,6 +46,8 @@ public:
 
 protected:
 
+	int YearLength = 1;
+
 	UPROPERTY()
 	TObjectPtr<UMaterialParameterCollectionInstance>  MPCInstance;
 
@@ -54,15 +57,15 @@ protected:
 	UPROPERTY()
 	TObjectPtr<USeasonCollectionAsset> CurrentCollection;
 
-	FTimerHandle TimerHandle;
-	int CurrentDay = 1;
+	IClockManagerInterface* ClockManager;
 
 
-	void HandleOnTimerTick();
+	// ~ Binding
+	void HandleOnDayChanged(int Day);
+	// ~ End of Binding
 
 	// ~ IPriorityListInterface
 	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() override final;
-	virtual int& GetHighestPriority() override final;
 	virtual void OnPriorityItemChanged(UObject* Item) override;
 	virtual void OnPriorityItemRemoved(UObject* Item, bool bReplaced) override;
 	virtual void OnPriorityItemCleared() override;
@@ -71,8 +74,7 @@ protected:
 private:
 
 	UPROPERTY()
-	TMap<int, TWeakObjectPtr<UObject>> _PriorityItems;
-	int _HighestPriority = 0;
+	TMap<int, TWeakObjectPtr<UObject>> _SeasonItems;
 
 };
 

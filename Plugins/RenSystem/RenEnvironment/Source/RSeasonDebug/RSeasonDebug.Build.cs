@@ -41,6 +41,7 @@ public class RSeasonDebug : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RSeason",
+                "RCoreLibrary",
             }
 			);
 		

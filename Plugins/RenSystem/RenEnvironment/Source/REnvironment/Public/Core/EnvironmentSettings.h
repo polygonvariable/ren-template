@@ -11,6 +11,9 @@
 // Module Macros
 #define REN_API RENVIRONMENT_API
 
+// Forward Declaration
+class UEnvironmentSubsystem;
+
 
 /**
  *
@@ -25,8 +28,14 @@ public:
 
 	UEnvironmentSettings(const FObjectInitializer& ObjectInitializer);
 
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
+	TSubclassOf<UEnvironmentSubsystem> SubsystemClass;
+
 	UPROPERTY(Config, EditDefaultsOnly)
 	TArray<FName> EnvironmentBundles;
+
+public:
 
 	REN_API static const UEnvironmentSettings* Get();
 

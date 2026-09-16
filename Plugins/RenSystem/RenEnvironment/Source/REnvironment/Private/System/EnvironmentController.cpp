@@ -40,12 +40,7 @@ bool UEnvironmentStackedController::RemoveProfile(int Priority)
 
 TMap<int, TWeakObjectPtr<UObject>>& UEnvironmentStackedController::GetPriorityItems()
 {
-	return _PriorityItems;
-}
-
-int& UEnvironmentStackedController::GetHighestPriority()
-{
-	return _HighestPriority;
+	return _ControllerItems;
 }
 
 void UEnvironmentStackedController::OnPriorityItemChanged(UObject* Item)

@@ -31,10 +31,9 @@ protected:
     TWeakObjectPtr<UWeatherController> WeatherController;
     TWeakObjectPtr<AWeatherEffectManagerActor> WeatherManager;
 
-    UWorld* GetWorld();
+
     UWeatherController* GetController();
     AWeatherEffectManagerActor* GetWeatherManager();
-
 
     void Draw_WeatherManager(AWeatherEffectManagerActor* Manager);
     void Draw_WeatherManagerEffects(AWeatherEffectManagerActor* Manager);

@@ -76,7 +76,6 @@ protected:
 
 	// ~ IPriorityListInterface
 	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() override final;
-	virtual int& GetHighestPriority() override final;
 	virtual void OnPriorityItemChanged(UObject* Item) override;
 	virtual void OnPriorityItemRemoved(UObject* Item, bool bReplaced) override;
 	virtual void OnPriorityItemCleared() override;
@@ -85,8 +84,7 @@ protected:
 private:
 
 	UPROPERTY()
-	TMap<int, TWeakObjectPtr<UObject>> _PriorityItems;
-	int _HighestPriority = 0;
+	TMap<int, TWeakObjectPtr<UObject>> _WeatherItems;
 
 	float _TransitionRate = 0.5f;
 	float _TransitionDuration = 1.0f;

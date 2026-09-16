@@ -41,11 +41,11 @@ void UEnvironmentDayNightController::StopDayTimer()
 
 void UEnvironmentDayNightController::HandleDayTimerTick()
 {
-	float NormalizedTime = ClockManagerInterface->GetSmoothNormalizedTime();
-	float RealTime = NormalizedTime * 24.0f;
+	//float NormalizedTime = ClockManagerInterface->GetSmoothNormalizedTime();
+	//float RealTime = NormalizedTime * 24.0f;
 
-	SunComponent->SetTimeOfDay(RealTime);
-	MoonComponent->SetTimeOfDay(RealTime);
+	//SunComponent->SetTimeOfDay(RealTime);
+	//MoonComponent->SetTimeOfDay(RealTime);
 }
 
 
@@ -69,14 +69,14 @@ void UEnvironmentDayNightController::Initialize(AActor* Actor)
 		return;
 	}
 
-	FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
-	ClockDelegate.OnClockStarted.AddUObject(this, &UEnvironmentDayNightController::StartDayTimer);
-	ClockDelegate.OnClockStopped.AddUObject(this, &UEnvironmentDayNightController::StopDayTimer);
+	//FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
+	//ClockDelegate.OnClockStarted.AddUObject(this, &UEnvironmentDayNightController::StartDayTimer);
+	//ClockDelegate.OnClockStopped.AddUObject(this, &UEnvironmentDayNightController::StopDayTimer);
 
-	if (ClockManager->IsClockActive())
-	{
-		StartDayTimer();
-	}
+	//if (ClockManager->IsClockActive())
+	//{
+	//	StartDayTimer();
+	//}
 
 	ClockManagerInterface = TWeakInterfacePtr<IClockManagerInterface>(ClockManager);
 }
@@ -86,9 +86,9 @@ void UEnvironmentDayNightController::Deinitialize()
 	IClockManagerInterface* ClockManager = ClockManagerInterface.Get();
 	if (ClockManager)
 	{
-		FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
-		ClockDelegate.OnClockStarted.RemoveAll(this);
-		ClockDelegate.OnClockStopped.RemoveAll(this);
+		//FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
+		//ClockDelegate.OnClockStarted.RemoveAll(this);
+		//ClockDelegate.OnClockStopped.RemoveAll(this);
 	}
 	ClockManagerInterface.Reset();
 

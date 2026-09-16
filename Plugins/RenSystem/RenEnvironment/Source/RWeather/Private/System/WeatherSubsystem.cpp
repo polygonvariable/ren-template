@@ -94,6 +94,31 @@ void UWeatherSubsystem::RemoveWeatherController()
 }
 
 
+bool UWeatherSubsystem::CreateWeatherManager(UClass* ManagerClass)
+{
+	if (!IsValid(ManagerClass))
+	{
+		return false;
+	}
+
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
+	EffectManager = GetWorld()->SpawnActor<AWeatherEffectManagerActor>(ManagerClass, SpawnParameters);
+
+	return IsValid(EffectManager);
+}
+
+void UWeatherSubsystem::RemoveWeatherManager()
+{
+	if (IsValid(EffectManager) && !EffectManager->IsActorBeingDestroyed())
+	{
+		EffectManager->Destroy();
+	}
+	EffectManager = nullptr;
+}
+
+
 void UWeatherSubsystem::RegisterDefaultWeather(const FPrimaryAssetId& AssetId, int Priority)
 {
 	UWeatherAsset* WeatherAsset = AssetManager->GetPrimaryAssetObject<UWeatherAsset>(AssetId);
@@ -115,34 +140,25 @@ void UWeatherSubsystem::HandleOnWeatherLoaded()
 {
 	FAssetManagerUtil::CancelHandle(WeatherHandle);
 	
-	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(GetWorld());
-	if (!IsValid(Config))
+	if (!CreateWeatherController(WeatherConfig->WeatherController, WeatherConfig->WeatherMPC))
 	{
-		LOG_ERROR(LogWeather, TEXT("WeatherFragmentData is invalid"));
-		return;
-	}
-
-	if (!CreateWeatherController(Config->WeatherController, Config->WeatherMPC))
-	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherController"));
+		LOG_ERROR(LogWeather, TEXT("Failed to create weather controller"));
 		return;
 	}
 	
-	if (!CreateWeatherTimer(Config->RefreshDuration))
+	if (!CreateWeatherTimer(WeatherConfig->RefreshDuration))
 	{
-		LOG_ERROR(LogWeather, TEXT("Failed to create WeatherTimer"));
+		LOG_ERROR(LogWeather, TEXT("Failed to create weather timer"));
 		return;
 	}
 
-	if (IsValid(Config->EffectManager))
+	if (!CreateWeatherManager(WeatherConfig->EffectManager))
 	{
-		FActorSpawnParameters SpawnParameters;
-		SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		EffectManager = GetWorld()->SpawnActor<AWeatherEffectManagerActor>(Config->EffectManager, SpawnParameters);
+		LOG_ERROR(LogWeather, TEXT("Failed to create weather manager"));
+		return;
 	}
 
-	RegisterDefaultWeather(Config->DefaultWeather, Config->DefaultPriority);
+	RegisterDefaultWeather(WeatherConfig->DefaultWeather, WeatherConfig->DefaultPriority);
 }
 
 
@@ -158,13 +174,8 @@ bool UWeatherSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 		return false;
 	}
 
-	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(Cast<UWorld>(Outer));
-	if (!IsValid(Config))
-	{
-		return false;
-	}
-
-	return Config->bEnabled;
+	const UWeatherWorldConfig* Config = AWorldFragmentSettings::GetConfigByClass<UWeatherWorldConfig>(Cast<UWorld>(Outer));
+	return IsValid(Config) && Config->bEnabled;
 }
 
 void UWeatherSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -180,8 +191,8 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogWeather, TEXT("WeatherSubsystem OnWorldComponentsUpdated"));
 
-	const UWeatherWorldConfig* Config = UWeatherWorldConfig::Get(&InWorld);
-	if (!IsValid(Config) || !Config->bEnabled)
+	WeatherConfig = AWorldFragmentSettings::GetConfigByClass<UWeatherWorldConfig>(&InWorld);
+	if (!IsValid(WeatherConfig) || !WeatherConfig->bEnabled)
 	{
 		LOG_ERROR(LogWeather, TEXT("WeatherFragmentData is invalid or disabled"));
 		return;
@@ -191,7 +202,7 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
-	const FPrimaryAssetId Weather = Config->DefaultWeather;
+	const FPrimaryAssetId Weather = WeatherConfig->DefaultWeather;
 
 	WeatherHandle = AssetManager->LoadPrimaryAsset(Weather, Bundles, FStreamableDelegate::CreateUObject(this, &UWeatherSubsystem::HandleOnWeatherLoaded));
 }
@@ -200,25 +211,14 @@ void UWeatherSubsystem::OnWorldEndPlay(UWorld& InWorld)
 {
 	RemoveWeatherTimer();
 	RemoveWeatherController();
+	RemoveWeatherManager();
 
-	if (IsValid(EffectManager) && !EffectManager->IsActorBeingDestroyed())
-	{
-		EffectManager->Destroy();
-	}
-	EffectManager = nullptr;
+	FAssetManagerUtil::CancelHandle(WeatherHandle);
+	AssetManager = nullptr;
+	WeatherConfig = nullptr;
 
 	Super::OnWorldEndPlay(InWorld);
 }
-
-void UWeatherSubsystem::Deinitialize()
-{
-	FAssetManagerUtil::CancelHandle(WeatherHandle);
-	AssetManager = nullptr;
-
-	LOG_WARNING(LogWeather, TEXT("WeatherSubsystem Deinitialized"));
-	Super::Deinitialize();
-}
-
 
 UWeatherSubsystem* UWeatherSubsystem::Get(UWorld* World)
 {

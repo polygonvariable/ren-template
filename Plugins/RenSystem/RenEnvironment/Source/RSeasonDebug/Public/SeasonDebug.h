@@ -29,9 +29,8 @@ protected:
 
     TWeakObjectPtr<USeasonController> SeasonController;
 
-    UWorld* GetWorld();
-    USeasonController* GetController();
 
+    USeasonController* GetController();
 
     // ~ FSlateIMWidgetBase
     virtual void DrawWidget(float DeltaTime) override;

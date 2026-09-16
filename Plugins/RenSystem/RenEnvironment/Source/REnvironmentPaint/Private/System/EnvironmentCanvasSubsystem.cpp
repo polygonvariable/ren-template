@@ -20,7 +20,7 @@
 #include "Data/EnvironmentPaintWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Util/MiscUtil.h"
+#include "MiscLibrary.h"
 #include "WorldFragmentSettings.h"
 
 
@@ -124,8 +124,8 @@ void UEnvironmentCanvasSubsystem::DrawRenderTarget()
 
 		FVector DrawLocation = Location - NiagaraLocation;
 
-		float PackedDensity = FMiscUtil::PackFloats(Density, 1.0f);
-		float PackedSize = FMiscUtil::PackFloats(Size.Length(), 1.0f);
+		float PackedDensity = FMiscLibrary::PackFloats(Density, 1.0f);
+		float PackedSize = FMiscLibrary::PackFloats(Size.Length(), 1.0f);
 		BrushPoints.Add(FVector4(DrawLocation.X, DrawLocation.Y, PackedSize, PackedDensity));
 		PointCount++;
 	}

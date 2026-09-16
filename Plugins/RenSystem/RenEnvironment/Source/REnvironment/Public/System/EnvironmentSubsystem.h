@@ -38,7 +38,17 @@ public:
 	REN_API bool RemoveProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
 	REN_API bool RemoveProfile(EEnvironmentProfileType ProfileType, int Priority);
 
+	// ~ UWorldSubsystem
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
+	virtual void Deinitialize() override;
+	// ~ End of UWorldSubsystem
+
 protected:
+
+	UPROPERTY()
+	TObjectPtr<const UEnvironmentWorldConfig> WorldConfig;
 
 	UPROPERTY()
 	TObjectPtr<UAssetManager> AssetManager;
@@ -59,7 +69,6 @@ protected:
 	void UnregisterControllers();
 
 	void RegisterDefaultProfiles(const UEnvironmentWorldConfig* Data);
-	const UEnvironmentWorldConfig* GetEnvironmentWorldConfig() const;
 
 	// ~ Binding
 	void HandleOnEnvironmentLoaded();
@@ -69,9 +78,6 @@ protected:
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
-	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
 
 public:

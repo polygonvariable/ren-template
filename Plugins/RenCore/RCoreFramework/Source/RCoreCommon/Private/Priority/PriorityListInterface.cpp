@@ -7,7 +7,6 @@
 bool IPriorityListInterface::AddPriorityItem(UObject* Item, int Priority)
 {
 	TMap<int, TWeakObjectPtr<UObject>>& PriorityItems = GetPriorityItems();
-	int& HighestPriority = GetHighestPriority();
 
 	if (!IsValid(Item) || Priority < 0)
 	{
@@ -44,7 +43,6 @@ bool IPriorityListInterface::AddPriorityItem(UObject* Item, int Priority)
 bool IPriorityListInterface::RemovePriorityItem(int Priority)
 {
 	TMap<int, TWeakObjectPtr<UObject>>& PriorityItems = GetPriorityItems();
-	int& HighestPriority = GetHighestPriority();
 
 	TWeakObjectPtr<UObject> RemovedItem;
 	if (!PriorityItems.RemoveAndCopyValue(Priority, RemovedItem))
@@ -90,10 +88,14 @@ void IPriorityListInterface::ClearPriorityItems()
 	GetPriorityItems().Empty();
 }
 
+int IPriorityListInterface::GetHighestPriority() const
+{
+	return HighestPriority;
+}
+
 void IPriorityListInterface::UpdateHighestPriority()
 {
 	TMap<int, TWeakObjectPtr<UObject>>& PriorityItems = GetPriorityItems();
-	int& HighestPriority = GetHighestPriority();
 
 	int NewPriority = TNumericLimits<int>::Lowest();
 	for (const TPair<int, TWeakObjectPtr<UObject>>& Kv : PriorityItems)

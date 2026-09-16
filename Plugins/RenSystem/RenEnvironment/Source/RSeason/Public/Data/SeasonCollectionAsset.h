@@ -52,13 +52,10 @@ public:
     int SeasonStartDay = 1;
 
     UPROPERTY(EditAnywhere)
-    int YearLength = 100;
-
-    UPROPERTY(EditAnywhere)
     TArray<FSeasonData> Seasons;
 
 
-    REN_API const USeasonAsset* GetSeasonByDay(int InDay, int InYear, float& OutAlpha) const;
+    REN_API const USeasonAsset* GetSeasonByDay(int InDay, int InYearLength, float& OutAlpha) const;
 
     // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;

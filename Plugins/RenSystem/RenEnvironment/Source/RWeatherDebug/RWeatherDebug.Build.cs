@@ -42,6 +42,7 @@ public class RWeatherDebug : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "Niagara",
                 "RWeather",
+                "RCoreLibrary",
             }
 			);
 		

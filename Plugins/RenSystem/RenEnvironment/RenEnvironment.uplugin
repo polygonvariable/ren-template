@@ -74,11 +74,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreFramework",
+			"Name": "RCoreWorldData",
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreClock",
+			"Name": "RCoreFramework",
 			"Enabled": true
 		},
 		{

@@ -17,16 +17,16 @@
 #include "Data/SeasonAsset.h"
 
 
-const USeasonAsset* USeasonCollectionAsset::GetSeasonByDay(int InDay, int InYear, float& OutAlpha) const
+const USeasonAsset* USeasonCollectionAsset::GetSeasonByDay(int InDay, int InYearLength, float& OutAlpha) const
 {
-    if (Seasons.Num() == 0 || InYear <= 0)
+    if (Seasons.Num() == 0 || InYearLength <= 0)
     {
         return nullptr;
     }
 
-    const int Day = (InDay - 1 + InYear) % InYear;
-    const int StartDay = (SeasonStartDay - 1 + InYear) % InYear;
-    const int RelativeDay = (Day - StartDay + InYear) % InYear;
+    const int Day = (InDay - 1 + InYearLength) % InYearLength;
+    const int StartDay = (SeasonStartDay - 1 + InYearLength) % InYearLength;
+    const int RelativeDay = (Day - StartDay + InYearLength) % InYearLength;
 
     int AccumulatedDays = 0;
     for (const FSeasonData& Season : Seasons)
@@ -38,7 +38,7 @@ const USeasonAsset* USeasonCollectionAsset::GetSeasonByDay(int InDay, int InYear
         {
             int SeasonDuration = Season.Duration;
             const USeasonAsset* SeasonAsset = Season.Asset;
-            if (!SeasonAsset || !SeasonAsset->TransitionCurve)
+            if (!IsValid(SeasonAsset) || !IsValid(SeasonAsset->TransitionCurve))
             {
                 return nullptr;
             }
@@ -68,12 +68,12 @@ FPrimaryAssetType USeasonCollectionAsset::GetPrimaryAssetType()
 #if WITH_EDITOR
 void USeasonCollectionAsset::SimulateSeason() const
 {
-    float Alpha = 0.0f;
-    const USeasonAsset* SeasonAsset = GetSeasonByDay(DebugCurrentDay, YearLength, Alpha);
-    if (IsValid(SeasonAsset))
-    {
-        SeasonAsset->EditorApplySeasonToWorld(Alpha);
-    }
+    //float Alpha = 0.0f;
+    //const USeasonAsset* SeasonAsset = GetSeasonByDay(DebugCurrentDay, YearLength, Alpha);
+    //if (IsValid(SeasonAsset))
+    //{
+    //    SeasonAsset->EditorApplySeasonToWorld(Alpha);
+    //}
 }
 
 void USeasonCollectionAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
@@ -107,11 +107,11 @@ EDataValidationResult USeasonCollectionAsset::IsDataValid(FDataValidationContext
             TotalYearDuration += Item.Duration;
         }
 
-        if (TotalYearDuration != YearLength)
-        {
-            Context.AddError(FText::FromString("Total season duration doesnt match year duration"));
-            return EDataValidationResult::Invalid;
-        }
+        //if (TotalYearDuration != YearLength)
+        //{
+        //    Context.AddError(FText::FromString("Total season duration doesnt match year duration"));
+        //    return EDataValidationResult::Invalid;
+        //}
     }
 
     return Result;
