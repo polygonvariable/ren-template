@@ -23,7 +23,7 @@ void UAvatarCollectionUI::InitializeCollection()
 	StorageManager = AvatarSubsystem->GetStorageManager();
 	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		StorageManager->OnStorageUpdated.AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
+		StorageManager->GetOnStorageUpdated().AddUObject(this, &UAvatarCollectionUI::RefreshEntries);
 	}
 }
 
@@ -53,7 +53,7 @@ void UAvatarCollectionUI::NativeDestruct()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

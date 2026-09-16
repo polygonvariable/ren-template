@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "RCoreStorage.h"
+#include "RCoreGamedataStorage.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreStorageModule"
+#define LOCTEXT_NAMESPACE "FRCoreGamedataStorageModule"
 
-void FRCoreStorageModule::StartupModule()
+void FRCoreGamedataStorageModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreStorageModule::ShutdownModule()
+void FRCoreGamedataStorageModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreStorageModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreStorageModule, RCoreStorage)
+IMPLEMENT_MODULE(FRCoreGamedataStorageModule, RCoreGamedataStorage)
 

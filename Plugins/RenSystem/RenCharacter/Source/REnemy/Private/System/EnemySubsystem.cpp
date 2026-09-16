@@ -5,7 +5,7 @@
 
 // Project Headers
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Core/EnemySettings.h"
@@ -40,7 +40,7 @@ void UEnemySubsystem::HandleOnPreGameInitialized()
 		Definition.StorageClass = Settings->StorageClass;
 		Definition.ManagerClass = Settings->StorageManagerClass;
 
-		StorageProvider->LoadStorage(Definition, FTaskCallback());
+		StorageProvider->LoadStorage(Definition, FOnStorageLoaded());
 	}
 }
 

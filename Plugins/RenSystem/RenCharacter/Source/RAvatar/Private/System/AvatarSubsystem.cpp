@@ -8,10 +8,11 @@
 #include "Data/AvatarAsset.h"
 #include "Data/AvatarStorage.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
+#include "Util/SubsystemUtil.h"
 
 
 UAvatarStorageManager* UAvatarSubsystem::GetStorageManager() const
@@ -42,7 +43,7 @@ FName UAvatarSubsystem::GetPrimaryCollectionId() const
 
 void UAvatarSubsystem::HandleOnPreGameInitialized()
 {
-	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const UAvatarSettings* Settings = UAvatarSettings::Get();
@@ -52,7 +53,7 @@ void UAvatarSubsystem::HandleOnPreGameInitialized()
 		Definition.StorageClass = Settings->StorageClass;
 		Definition.ManagerClass = Settings->StorageManagerClass;
 
-		StorageProvider->LoadStorage(Definition, FTaskCallback());
+		StorageProvider->LoadStorage(Definition, FOnStorageLoaded());
 	}
 }
 

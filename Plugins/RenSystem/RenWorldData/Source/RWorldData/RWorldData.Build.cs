@@ -27,7 +27,7 @@ public class RWorldData : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreWorldDataClock",
+				"RCoreWorlddataClock",
                 "RCoreSettings",
             }
 			);
@@ -41,7 +41,7 @@ public class RWorldData : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCoreLibrary",
                 "RCoreSettings",
             }

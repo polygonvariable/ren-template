@@ -43,8 +43,3 @@ void UEnemyStorageManager::SetStorage(UObject* Storage)
 	LocalStorage = Cast<UEnemyStorage>(Storage);
 }
 
-FGameEventDelegate& UEnemyStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

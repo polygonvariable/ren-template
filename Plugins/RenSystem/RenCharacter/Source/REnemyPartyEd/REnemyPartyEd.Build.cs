@@ -39,7 +39,7 @@ public class REnemyPartyEd : ModuleRules
                 "RCoreAsset",
                 "RCoreAssetInstance",
                 "RCoreAssetManager",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",

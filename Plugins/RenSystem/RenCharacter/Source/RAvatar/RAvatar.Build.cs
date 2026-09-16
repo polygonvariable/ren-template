@@ -32,7 +32,7 @@ public class RAvatar : ModuleRules
                 "GameplayTags",
                 "RCoreCommon",
                 "RCoreAscension",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCharacter",
                 "RCoreAssetInstance",
             }

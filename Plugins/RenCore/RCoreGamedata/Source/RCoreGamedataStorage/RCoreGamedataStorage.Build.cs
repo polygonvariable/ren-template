@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RCoreStorage : ModuleRules
+public class RCoreGamedataStorage : ModuleRules
 {
-	public RCoreStorage(ReadOnlyTargetRules Target) : base(Target)
+	public RCoreGamedataStorage(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,8 +27,6 @@ public class RCoreStorage : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreAuthAction",
-                "RCoreDelegate",
             }
 			);
 			
@@ -41,7 +39,6 @@ public class RCoreStorage : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreLibrary",
             }
             );
 		

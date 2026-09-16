@@ -80,7 +80,7 @@ void UEquipmentDashboardUI::NativeConstruct()
 	StorageManager = EquipmentSubsystem->GetStorageManager();
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.AddUObject(this, &UEquipmentDashboardUI::RefreshDetail);
+		StorageManager->GetOnStorageUpdated().AddUObject(this, &UEquipmentDashboardUI::RefreshDetail);
 	}
 
 	Super::NativeConstruct();
@@ -94,7 +94,7 @@ void UEquipmentDashboardUI::NativeDestruct()
 
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 	EquipmentSubsystem = nullptr;

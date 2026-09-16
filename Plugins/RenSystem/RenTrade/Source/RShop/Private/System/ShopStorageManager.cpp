@@ -58,8 +58,3 @@ void UShopStorageManager::SetStorage(UObject* Storage)
 	LocalStorage = Cast<UShopStorage>(Storage);
 }
 
-FGameEventDelegate& UShopStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

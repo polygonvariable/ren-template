@@ -103,7 +103,7 @@ void UEquipmentSlotUI::NativeConstruct()
 		StorageManager = EquipmentSubsystem->GetStorageManager();
 		if (IsValid(StorageManager))
 		{
-			StorageManager->OnStorageUpdated.AddUObject(this, &UEquipmentSlotUI::RefreshDetail);
+			StorageManager->GetOnStorageUpdated().AddUObject(this, &UEquipmentSlotUI::RefreshDetail);
 		}
 	}
 }
@@ -117,7 +117,7 @@ void UEquipmentSlotUI::NativeDestruct()
 
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

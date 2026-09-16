@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "1.0",
-	"FriendlyName": "Ren Core World Data",
+	"FriendlyName": "Ren Core Worlddata",
 	"Description": "",
 	"Category": "Ren Core",
 	"CreatedBy": "polygonvariable",
@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RCoreWorldDataClock",
+			"Name": "RCoreWorlddataClock",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

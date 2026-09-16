@@ -44,6 +44,7 @@ public class RCraftUI : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"RCoreAssetUI",
                 "RCoreLibrary",
+                "RCoreGamedataStorage",
             }
 			);
 		

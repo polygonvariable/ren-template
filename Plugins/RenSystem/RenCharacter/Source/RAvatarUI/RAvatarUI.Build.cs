@@ -45,6 +45,7 @@ public class RAvatarUI : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreAscensionUI",
+                "RCoreGamedataStorage",
             }
 			);
 		

@@ -44,7 +44,7 @@ public class RSeason : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreWorldDataClock",
+                "RCoreWorlddataClock",
                 "RCoreLibrary",
                 "RCoreAsset",
                 "RCoreAssetManager",

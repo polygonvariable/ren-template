@@ -42,7 +42,7 @@ void UCraftCollectionUI::NativeConstruct()
 		StorageManager = CraftSubsystem->GetStorageManager();
 		if (IsValid(StorageManager))
 		{
-			StorageManager->OnStorageUpdated.AddUObject(this, &UCraftCollectionUI::RefreshEntries);
+			StorageManager->GetOnStorageUpdated().AddUObject(this, &UCraftCollectionUI::RefreshEntries);
 		}
 	}
 
@@ -53,7 +53,7 @@ void UCraftCollectionUI::NativeDestruct()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 	CraftSubsystem = nullptr;

@@ -5,7 +5,7 @@
 // Project Headers
 #include "Core/Interface/AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "InventoryStorageManager.generated.h"
@@ -33,9 +33,6 @@ class UInventoryStorageManager : public UObject, public IStorageManager, public 
 	GENERATED_BODY()
 
 public:
-
-	FGameEventDelegate OnStorageUpdated;
-
 
 	REN_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FInventoryInstance*)> Callback);
 	REN_API bool UpdateInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId, TFunctionRef<void(FInventoryInstance*)> Callback);
@@ -71,7 +68,6 @@ public:
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
 	virtual void OnStorageLoaded(bool bIsNew) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 protected:

@@ -59,8 +59,3 @@ void UQuestStorageManager::SetStorage(UObject* Storage)
 	LocalStorage = Cast<UQuestStorage>(Storage);
 }
 
-FGameEventDelegate& UQuestStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

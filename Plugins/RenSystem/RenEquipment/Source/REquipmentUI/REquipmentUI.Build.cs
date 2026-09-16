@@ -49,6 +49,7 @@ public class REquipmentUI : ModuleRules
 				"RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
+                "RCoreGamedataStorage",
             }
 			);
 		

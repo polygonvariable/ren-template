@@ -107,8 +107,3 @@ void UCraftStorageManager::SetStorage(UObject* Storage)
 	LocalStorage = Cast<UCraftStorage>(Storage);
 }
 
-FGameEventDelegate& UCraftStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

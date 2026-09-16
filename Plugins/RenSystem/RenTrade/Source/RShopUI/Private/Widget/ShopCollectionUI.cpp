@@ -37,7 +37,7 @@ void UShopCollectionUI::NativeConstruct()
 		StorageManager = ShopSubsystem->GetStorageManager();
 		if (IsValid(StorageManager))
 		{
-			StorageManager->OnStorageUpdated.AddUObject(this, &UShopCollectionUI::RefreshEntries);
+			StorageManager->GetOnStorageUpdated().AddUObject(this, &UShopCollectionUI::RefreshEntries);
 		}
 	}
 
@@ -48,7 +48,7 @@ void UShopCollectionUI::NativeDestruct()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 	ShopSubsystem = nullptr;

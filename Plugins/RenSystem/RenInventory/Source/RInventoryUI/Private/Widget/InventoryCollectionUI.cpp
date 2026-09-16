@@ -22,7 +22,7 @@ void UInventoryCollectionUI::InitializeCollection()
 	StorageManager = InventorySubsystem->GetStorageManager(PrimarySourceId);
 	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		StorageManager->OnStorageUpdated.AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
+		StorageManager->GetOnStorageUpdated().AddUObject(this, &UInventoryCollectionUI::RefreshEntries);
 	}
 }
 
@@ -53,7 +53,7 @@ void UInventoryCollectionUI::NativeDestruct()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

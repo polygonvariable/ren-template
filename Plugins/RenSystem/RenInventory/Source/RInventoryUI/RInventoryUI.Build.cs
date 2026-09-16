@@ -49,6 +49,7 @@ public class RInventoryUI : ModuleRules
                 "RCoreFilter",
                 "RCoreAscension",
                 "RCoreAscensionUI",
+                "RCoreGamedataStorage",
             }
             );
 		

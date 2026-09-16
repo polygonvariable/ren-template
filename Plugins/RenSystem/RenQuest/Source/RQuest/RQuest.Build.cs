@@ -32,7 +32,7 @@ public class RQuest : ModuleRules
                 "UMG",
                 "RenEventflow",
 				"RCoreCommon",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
             }
 			);
 			

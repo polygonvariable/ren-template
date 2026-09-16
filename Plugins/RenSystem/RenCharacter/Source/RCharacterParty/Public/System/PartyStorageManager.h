@@ -5,7 +5,7 @@
 // Project Headers
 #include "Delegate/GameEventDelegate.h"
 #include "Core/Interface/AssetInstanceRelation.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "PartyStorageManager.generated.h"
@@ -28,9 +28,6 @@ class UPartyStorageManager : public UObject, public IStorageManager, public IAss
 
 public:
 
-	FGameEventDelegate OnStorageUpdated;
-
-
 	REN_API FVector GetPartyLocation(const FName& Level) const;
 	REN_API void SetPartyLocation(const FName& Level, const FVector& Location);
 
@@ -46,7 +43,6 @@ public:
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
 	virtual void OnStorageLoaded(bool bIsNew) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 	// ~ IAssetInstanceRelation

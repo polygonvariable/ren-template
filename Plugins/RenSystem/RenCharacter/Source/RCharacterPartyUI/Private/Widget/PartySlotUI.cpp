@@ -87,7 +87,7 @@ void UPartySlotUI::NativeConstruct()
 		StorageManager = PartySubsystem->GetStorageManager();
 		if (IsValid(StorageManager))
 		{
-			StorageManager->OnStorageUpdated.AddUObject(this, &UPartySlotUI::RefreshDetail);
+			StorageManager->GetOnStorageUpdated().AddUObject(this, &UPartySlotUI::RefreshDetail);
 			RefreshDetail();
 		}
 	}
@@ -102,7 +102,7 @@ void UPartySlotUI::NativeDestruct()
 
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RCoreWorldDataClock : ModuleRules
+public class RCoreWorlddataClock : ModuleRules
 {
-	public RCoreWorldDataClock(ReadOnlyTargetRules Target) : base(Target)
+	public RCoreWorlddataClock(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

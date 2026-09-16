@@ -29,7 +29,7 @@ public class RCraft : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "DeveloperSettings",
                 "RCoreAuthAction",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RTrade",
             }
 			);

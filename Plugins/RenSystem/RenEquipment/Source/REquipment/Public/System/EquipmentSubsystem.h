@@ -43,7 +43,7 @@ protected:
 
 	IStorageProvider* StorageProvider;
 
-	void HandleStorageLoaded(const FTaskResult& Result);
+	void HandleStorageLoaded(bool bSuccess);
 	void HandleOnPreGameInitialized();
 
 	// ~ UGameInstanceSubsystem

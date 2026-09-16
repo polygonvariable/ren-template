@@ -18,12 +18,13 @@
 #include "Data/TradeAssetCollection.h"
 #include "Core/Type/AssetRuleDefinition.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetGroup.h"
 #include "Subsystem/AuthActionSubsystem.h"
 #include "System/CraftStorageManager.h"
+#include "Util/SubsystemUtil.h"
 
 
 UCraftStorageManager* UCraftSubsystem::GetStorageManager()
@@ -190,7 +191,7 @@ void UCraftSubsystem::QueryStorageItems(const TMap<UCoreDataAsset*, FTradeAssetD
 
 void UCraftSubsystem::OnPreGameInitialized()
 {
-	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (!StorageProvider)
 	{
 		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
@@ -204,7 +205,7 @@ void UCraftSubsystem::OnPreGameInitialized()
 	Definition.StorageClass = Settings->StorageClass;
 	Definition.ManagerClass = Settings->StorageManagerClass;
 
-	StorageProvider->LoadStorage(Definition, FTaskCallback());
+	StorageProvider->LoadStorage(Definition, FOnStorageLoaded());
 }
 
 bool UCraftSubsystem::ShouldCreateSubsystem(UObject* Outer) const

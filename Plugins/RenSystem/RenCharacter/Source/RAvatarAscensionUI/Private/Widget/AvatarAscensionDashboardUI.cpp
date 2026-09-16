@@ -45,7 +45,7 @@ void UAvatarAscensionDashboardUI::InitializeDetail()
 	StorageManager = AvatarSubsystem->GetStorageManager();
 	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		StorageManager->OnStorageUpdated.AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
+		StorageManager->GetOnStorageUpdated().AddUObject(this, &UAvatarAscensionDashboardUI::RefreshDetail);
 	}
 }
 
@@ -232,7 +232,7 @@ void UAvatarAscensionDashboardUI::NativeDestruct()
 
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

@@ -47,7 +47,7 @@ public class REnvironment : ModuleRules
                 "SunPosition",
                 "RCoreLibrary",
                 "RCoreAssetManager",
-                "RCoreWorldDataClock",
+                "RCoreWorlddataClock",
             }
 			);
 		

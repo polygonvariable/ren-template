@@ -5,14 +5,11 @@
 // Engine Headers
 #include "UObject/Interface.h"
 
-// Plugin Headers
-#include "Delegate/GameEventDelegate.h"
-
 // Generated Headers
 #include "StorageManager.generated.h"
 
-// Module Macros
-#define REN_API RCORESTORAGE_API
+// Delegate Declarations
+DECLARE_MULTICAST_DELEGATE(FOnStorageUpdated);
 
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
@@ -24,7 +21,7 @@ class UStorageManager : public UInterface
 /**
  * 
  */
-class REN_API IStorageManager
+class RCOREGAMEDATASTORAGE_API IStorageManager
 {
 
 	GENERATED_BODY()
@@ -41,17 +38,18 @@ public:
 
 	virtual void SetStorage(UObject* InStorage) = 0;
 
-	virtual void LoadRemoteData(TSharedPtr<FJsonObject>& JsonObject) {};
 	virtual void OnStorageLoaded(bool bIsNew) {};
-
 	virtual void OnBeginUnload() {};
 	virtual void OnAfterUnload() {};
 
-	virtual FGameEventDelegate& GetOnStorageUpdated() = 0;
+	FOnStorageUpdated& GetOnStorageUpdated()
+	{
+		return OnStorageUpdated;
+	}
+
+protected:
+
+	FOnStorageUpdated OnStorageUpdated;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

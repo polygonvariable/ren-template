@@ -5,7 +5,7 @@
 // Project Headers
 #include "Core/Interface/AssetInstanceRelation.h"
 #include "Delegate/GameEventDelegate.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "EquipmentStorageManager.generated.h"
@@ -31,9 +31,6 @@ class UEquipmentStorageManager : public UObject, public IStorageManager, public 
 
 public:
 
-	FGameEventDelegate OnStorageUpdated;
-
-
 	REN_API void GetEquipmentByOwnerId(const FGuid& InOwnerInstanceId, TArray<FEquipmentInitializationData>& OutInitializationData) const;
 	REN_API void GetEquipmentIdsByOwnerId(const FGuid& InOwnerInstanceId, bool bInNegate, TArray<FGuid>& OutEquipmentInstanceIds) const;
 
@@ -49,7 +46,6 @@ public:
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
 	virtual void OnStorageLoaded(bool bIsNew) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 protected:

@@ -94,7 +94,7 @@ void AAvatarCharacter::InitializeCharacter()
 				if (FoundInstance)
 				{
 					AvatarInstance = *FoundInstance;
-					StorageManager->OnStorageUpdated.AddUObject(this, &AAvatarCharacter::RefreshCharacter);
+					StorageManager->GetOnStorageUpdated().AddUObject(this, &AAvatarCharacter::RefreshCharacter);
 				}
 			}
 		}
@@ -107,7 +107,7 @@ void AAvatarCharacter::DeinitializeCharacter()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 	AvatarInstance.Reset();

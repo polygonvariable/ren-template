@@ -218,11 +218,6 @@ void UEquipmentStorageManager::OnStorageLoaded(bool bIsNew)
 	}
 }
 
-FGameEventDelegate& UEquipmentStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-
 
 bool UEquipmentStorageManager::HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const
 {

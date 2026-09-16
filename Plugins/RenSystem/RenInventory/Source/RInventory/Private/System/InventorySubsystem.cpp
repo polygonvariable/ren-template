@@ -6,12 +6,13 @@
 // Project Headers
 #include "Data/InventoryAsset.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Core/InventorySettings.h"
 #include "Data/InventoryStorage.h"
 #include "System/InventoryStorageManager.h"
+#include "Util/SubsystemUtil.h"
 
 
 UInventoryStorageManager* UInventorySubsystem::GetStorageManager(const FName& InventoryId) const
@@ -40,7 +41,7 @@ FName UInventorySubsystem::GetPrimaryCollectionId() const
 
 void UInventorySubsystem::HandleOnPreGameInitialized()
 {
-	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const UInventorySettings* Settings = UInventorySettings::Get();
@@ -50,7 +51,7 @@ void UInventorySubsystem::HandleOnPreGameInitialized()
 		StorageDefinition.StorageClass = Settings->StorageClass;
 		StorageDefinition.ManagerClass = Settings->StorageManagerClass;
 
-		StorageProvider->LoadStorage(StorageDefinition, FTaskCallback());
+		StorageProvider->LoadStorage(StorageDefinition, FOnStorageLoaded());
 	}
 }
 

@@ -35,7 +35,7 @@ public class REnemy : ModuleRules
                 "RCoreAsset",
                 "RCoreAssetInstance",
                 "RCoreAssetManager",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",

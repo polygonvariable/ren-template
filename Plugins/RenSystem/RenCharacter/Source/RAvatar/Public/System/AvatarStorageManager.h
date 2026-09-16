@@ -6,7 +6,7 @@
 #include "Delegate/GameEventDelegate.h"
 #include "Core/Interface/AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "AvatarStorageManager.generated.h"
@@ -34,9 +34,6 @@ class UAvatarStorageManager : public UObject, public IStorageManager, public IAs
 
 public:
 
-	FGameEventDelegate OnStorageUpdated;
-
-
 	REN_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
 	REN_API const FAvatarInstance* GetInstanceById(const FGuid& InstanceId) const;
 
@@ -58,7 +55,6 @@ public:
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
 	virtual void OnStorageLoaded(bool bIsNew) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 protected:

@@ -42,7 +42,7 @@ public class RenCounter : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"RCoreLibrary",
                 "RCoreDelegate",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
             }
 			);
 		

@@ -188,11 +188,6 @@ void UPartyStorageManager::OnStorageLoaded(bool bIsNew)
 	}
 }
 
-FGameEventDelegate& UPartyStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-
 bool UPartyStorageManager::HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const
 {
 	if (!IsValid(LocalStorage))

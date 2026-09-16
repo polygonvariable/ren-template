@@ -52,7 +52,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreStorage",
+			"Name": "RCoreGamedata",
 			"Enabled": true
 		}
 	]

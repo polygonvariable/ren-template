@@ -43,6 +43,7 @@ public class RShopUI : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"RCoreAssetUI",
                 "RCoreLibrary",
+                "RCoreGamedataStorage",
                 "RTrade",
                 "RShop",
             }

@@ -3,8 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Delegate/GameEventDelegate.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "QuestStorageManager.generated.h"
@@ -35,15 +34,12 @@ public:
 	// ~ UStorageManager
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 protected:
 
 	UPROPERTY()
 	TObjectPtr<UQuestStorage> LocalStorage = nullptr;
-
-	FGameEventDelegate OnStorageUpdated;
 
 };
 

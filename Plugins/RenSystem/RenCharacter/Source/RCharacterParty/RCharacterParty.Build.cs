@@ -35,7 +35,7 @@ public class RCharacterParty : ModuleRules
                 "RCoreAsset",
                 "RCoreAssetInstance",
                 "RCoreAssetManager",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",

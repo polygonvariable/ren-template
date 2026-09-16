@@ -16,12 +16,13 @@
 #include "Data/TradeAssetCollection.h"
 #include "Core/Type/AssetRuleDefinition.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetGroup.h"
 #include "Subsystem/AuthActionSubsystem.h"
 #include "System/ShopStorageManager.h"
+#include "Util/SubsystemUtil.h"
 
 
 UShopStorageManager* UShopSubsystem::GetStorageManager()
@@ -117,7 +118,7 @@ void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collectio
 
 void UShopSubsystem::OnPreGameInitialized()
 {
-	IStorageProvider* StorageInterface = IStorageProvider::Get(GetGameInstance());
+	IStorageProvider* StorageInterface = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (!StorageInterface)
 	{
 		LOG_ERROR(LogShop, TEXT("Storage subsystem not found"));
@@ -131,7 +132,7 @@ void UShopSubsystem::OnPreGameInitialized()
 	Definition.StorageClass = Settings->StorageClass;
 	Definition.ManagerClass = Settings->StorageManagerClass;
 
-	StorageInterface->LoadStorage(Definition, FTaskCallback());
+	StorageInterface->LoadStorage(Definition, FOnStorageLoaded());
 }
 
 bool UShopSubsystem::ShouldCreateSubsystem(UObject* Outer) const

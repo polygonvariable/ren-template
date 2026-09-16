@@ -33,7 +33,7 @@ public class RInventory : ModuleRules
                 "RCoreAsset",
 				"RCoreAssetManager",
                 "RCoreAssetInstance",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RCoreCommon",
             }
 			);

@@ -48,6 +48,7 @@ public class RCharacterPartyUI : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreAsset",
+                "RCoreGamedataStorage",
                 "RCoreDelegate",
                 "RCoreAscensionUI",
                 "RCoreAssetManager",

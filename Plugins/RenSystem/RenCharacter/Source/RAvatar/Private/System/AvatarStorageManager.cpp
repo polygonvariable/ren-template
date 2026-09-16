@@ -324,8 +324,3 @@ void UAvatarStorageManager::OnStorageLoaded(bool bIsNew)
 	}
 }
 
-FGameEventDelegate& UAvatarStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

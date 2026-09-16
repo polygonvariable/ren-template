@@ -7,7 +7,7 @@
 #include "Asset/RewardAsset.h"
 #include "Auth/AAGiveReward.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Settings/RewardSettings.h"
@@ -15,6 +15,7 @@
 #include "Storage/RewardStorageManager.h"
 #include "Subsystem/AuthActionSubsystem.h"
 #include "Subsystem/BroadcastSubsystem.h"
+#include "Util/SubsystemUtil.h"
 
 
 URewardStorageManager* URewardSubsystem::GetStorageManager() const
@@ -47,7 +48,7 @@ void URewardSubsystem::HandleRewardInvoke(const FInstancedStruct& Payload)
 	Action->StartAction();
 }
 
-void URewardSubsystem::HandleStorageLoaded(const FTaskResult& Result)
+void URewardSubsystem::HandleStorageLoaded(bool bSuccess)
 {
 	const URewardSettings* Settings = URewardSettings::Get();
 
@@ -61,7 +62,7 @@ void URewardSubsystem::HandleStorageLoaded(const FTaskResult& Result)
 
 void URewardSubsystem::HandleGameInitialized()
 {
-	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const URewardSettings* Settings = URewardSettings::Get();
@@ -71,7 +72,7 @@ void URewardSubsystem::HandleGameInitialized()
 		StorageDefinition.StorageClass = Settings->StorageClass;
 		StorageDefinition.ManagerClass = Settings->StorageManagerClass;
 
-		StorageProvider->LoadStorage(StorageDefinition, FTaskCallback::CreateUObject(this, &URewardSubsystem::HandleStorageLoaded));
+		StorageProvider->LoadStorage(StorageDefinition, FOnStorageLoaded::CreateUObject(this, &URewardSubsystem::HandleStorageLoaded));
 	}
 }
 

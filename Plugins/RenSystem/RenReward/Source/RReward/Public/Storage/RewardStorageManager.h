@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Interface/AssetInstanceCollection.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "RewardStorageManager.generated.h"
@@ -39,12 +39,7 @@ public:
 	// ~ UStorageManager
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
-
-protected:
-
-	FGameEventDelegate OnStorageUpdated;
 
 private:
 

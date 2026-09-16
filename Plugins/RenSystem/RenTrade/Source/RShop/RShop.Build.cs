@@ -29,7 +29,7 @@ public class RShop : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "DeveloperSettings",
                 "RCoreAuthAction",
-                "RCoreStorage",
+                "RCoreGamedataStorage",
                 "RTrade",
             }
 			);
@@ -45,7 +45,7 @@ public class RShop : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "RCoreAsset",
-				"RCoreAssetManager",
+                "RCoreAssetManager",
                 "RCoreAssetInstance",
                 "RCoreLibrary",
             }

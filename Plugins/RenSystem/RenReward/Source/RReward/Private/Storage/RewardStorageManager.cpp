@@ -40,8 +40,3 @@ void URewardStorageManager::SetStorage(UObject* InStorage)
 	LocalStorage = Cast<URewardStorage>(InStorage);
 }
 
-FGameEventDelegate& URewardStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

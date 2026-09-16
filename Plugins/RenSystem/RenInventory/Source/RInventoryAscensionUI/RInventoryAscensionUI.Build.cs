@@ -46,6 +46,7 @@ public class RInventoryAscensionUI : ModuleRules
                 "RCoreDelegate",
                 "RCoreFilter",
                 "RCoreLibrary",
+                "RCoreGamedataStorage",
                 "RInventory",
                 "RInventoryUI",
                 "RInventoryAscension",

@@ -70,7 +70,7 @@ void UCraftDetailUI::NativeConstruct()
 		StorageManager = CraftSubsystem->GetStorageManager();
 		if (IsValid(StorageManager))
 		{
-			StorageManager->OnStorageUpdated.AddUObject(this, &UCraftDetailUI::RefreshDetail);
+			StorageManager->GetOnStorageUpdated().AddUObject(this, &UCraftDetailUI::RefreshDetail);
 		}
 	}
 
@@ -81,7 +81,7 @@ void UCraftDetailUI::NativeDestruct()
 {
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

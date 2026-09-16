@@ -781,8 +781,3 @@ void UInventoryStorageManager::OnStorageLoaded(bool bIsNew)
 	}
 }
 
-FGameEventDelegate& UInventoryStorageManager::GetOnStorageUpdated()
-{
-	return OnStorageUpdated;
-}
-

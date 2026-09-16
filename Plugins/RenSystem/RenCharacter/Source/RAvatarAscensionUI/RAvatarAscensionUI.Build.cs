@@ -49,6 +49,7 @@ public class RAvatarAscensionUI : ModuleRules
                 "RAvatar",
                 "RAvatarUI",
                 "RAvatarAscension",
+				"RCoreGamedataStorage",
             }
 			);
 		

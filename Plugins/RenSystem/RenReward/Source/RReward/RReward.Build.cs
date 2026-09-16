@@ -30,7 +30,7 @@ public class RReward : ModuleRules
 				"DeveloperSettings",
 				"GameplayTags",
 				"RCoreAuthAction",
-				"RCoreStorage",
+				"RCoreGamedataStorage",
 				"RCoreAsset",
 				"RCoreAssetInstance",
                 "RCoreAssetManager",

@@ -48,7 +48,7 @@ void UInventoryAscensionDashboardUI::InitializeDetail()
 	StorageManager = InventorySubsystem->GetStorageManager(PrimarySourceId);
 	if (IsValid(StorageManager) && bAutoRefresh)
 	{
-		StorageManager->OnStorageUpdated.AddUObject(this, &UInventoryAscensionDashboardUI::RefreshDetail);
+		StorageManager->GetOnStorageUpdated().AddUObject(this, &UInventoryAscensionDashboardUI::RefreshDetail);
 	}
 }
 
@@ -238,7 +238,7 @@ void UInventoryAscensionDashboardUI::NativeDestruct()
 
 	if (IsValid(StorageManager))
 	{
-		StorageManager->OnStorageUpdated.RemoveAll(this);
+		StorageManager->GetOnStorageUpdated().RemoveAll(this);
 	}
 	StorageManager = nullptr;
 

@@ -3,8 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Delegate/GameEventDelegate.h"
-#include "Interface/StorageManager.h"
+#include "Core/StorageManager.h"
 
 // Generated Headers
 #include "CraftStorageManager.generated.h"
@@ -29,9 +28,6 @@ class UCraftStorageManager : public UObject, public IStorageManager
 
 public:
 
-	FGameEventDelegate OnStorageUpdated;
-
-
 	REN_API const FCraftInstance* GetItem(const FTradeKey& TradeKey) const;
 	REN_API bool AddItem(const FTradeKey& TradeKey, FTimespan BatchProcessingTime);
 	REN_API void ResetItems();
@@ -40,7 +36,6 @@ public:
 	// ~ UStorageManager
 	virtual UObject* GetStorage() const override;
 	virtual void SetStorage(UObject* Storage) override;
-	virtual FGameEventDelegate& GetOnStorageUpdated() override;
 	// ~ End of UStorageManager
 
 protected:

@@ -10,13 +10,14 @@
 #include "Core/Interface/AssetInstanceRelation.h"
 #include "Data/EquipmentStorage.h"
 #include "Delegate/GameLifecycleDelegate.h"
-#include "Interface/StorageManager.h"
-#include "Interface/StorageProvider.h"
+#include "Core/StorageManager.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/AuthActionSubsystem.h"
 #include "System/AssetInstanceRelationSubsystem.h"
 #include "System/EquipmentStorageManager.h"
+#include "Util/SubsystemUtil.h"
 
 
 void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerInstanceId) const
@@ -82,9 +83,9 @@ bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, c
 	return Action->StartAction();
 }
 
-void UEquipmentSubsystem::HandleStorageLoaded(const FTaskResult& Result)
+void UEquipmentSubsystem::HandleStorageLoaded(bool bSuccess)
 {
-	if (Result.State == ETaskState::Completed)
+	if (bSuccess)
 	{
 		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 
@@ -104,7 +105,7 @@ void UEquipmentSubsystem::HandleStorageLoaded(const FTaskResult& Result)
 
 void UEquipmentSubsystem::HandleOnPreGameInitialized()
 {
-	StorageProvider = IStorageProvider::Get(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
@@ -114,7 +115,7 @@ void UEquipmentSubsystem::HandleOnPreGameInitialized()
 		Definition.StorageClass = Settings->StorageClass;
 		Definition.ManagerClass = Settings->StorageManagerClass;
 
-		StorageProvider->LoadStorage(Definition, FTaskCallback::CreateUObject(this, &UEquipmentSubsystem::HandleStorageLoaded));
+		StorageProvider->LoadStorage(Definition, FOnStorageLoaded::CreateUObject(this, &UEquipmentSubsystem::HandleStorageLoaded));
 	}
 }
 
