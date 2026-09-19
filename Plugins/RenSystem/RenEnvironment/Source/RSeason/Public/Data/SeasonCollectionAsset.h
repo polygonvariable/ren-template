@@ -13,7 +13,6 @@
 
 // Forward Declarations
 class UCurveFloat;
-class FObjectPreSaveContext;
 class USeasonAsset;
 
 
@@ -63,25 +62,8 @@ public:
 
 #if WITH_EDITOR
     // ~ UPrimaryDataAsset
-    virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
     // ~ End of UPrimaryDataAsset
-#endif
-
-protected:
-
-#if WITH_EDITORONLY_DATA
-    UPROPERTY(Transient, VisibleAnywhere, Category = "Debug")
-    int DebugCurrentDay = 1;
-
-    UPROPERTY(Transient, VisibleAnywhere, Category = "Debug")
-    FString DebugSeasonName = TEXT_EMPTY;
-
-    UPROPERTY(Transient, VisibleAnywhere, Category = "Debug")
-    float DebugSeasonWeight = 0.0f;
-
-    UFUNCTION(CallInEditor, Category = "Debug")
-    void SimulateSeason() const;
 #endif
 
 public:

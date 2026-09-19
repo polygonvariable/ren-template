@@ -14,6 +14,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "MaterialLibrary.h"
+#include "MaterialSurfaceProperty.h"
 #include "System/EnvironmentSubsystem.h"
 #include "Util/SubsystemUtil.h"
 
@@ -45,12 +46,12 @@ void USeasonController::Deinitialize()
 }
 
 
-bool USeasonController::AddSeason(USeasonCollectionAsset* SeasonCollection, int Priority)
+bool USeasonController::AddSeasonCollection(USeasonCollectionAsset* SeasonCollection, int Priority)
 {
 	return AddPriorityItem(SeasonCollection, Priority);
 }
 
-bool USeasonController::RemoveSeason(int Priority)
+bool USeasonController::RemoveSeasonCollection(int Priority)
 {
 	return RemovePriorityItem(Priority);
 }
@@ -82,6 +83,12 @@ const TMap<int, TWeakObjectPtr<UObject>>& USeasonController::GetEditorSeasonColl
 
 void USeasonController::HandleOnDayChanged(int Day)
 {
+	if (!IsValid(CurrentCollection) || !IsValid(MPCInstance))
+	{
+		LOG_ERROR(LogSeason, TEXT("Season collection asset, mpc is invalid"));
+		return;
+	}
+
 	float Alpha = 0.0f;
 	const USeasonAsset* Season = CurrentCollection->GetSeasonByDay(Day, YearLength, Alpha);
 
@@ -105,13 +112,18 @@ TMap<int, TWeakObjectPtr<UObject>>& USeasonController::GetPriorityItems()
 void USeasonController::OnPriorityItemChanged(UObject* Item)
 {
 	USeasonCollectionAsset* Collection = Cast<USeasonCollectionAsset>(Item);
-	if (!IsValid(MPCInstance) || !IsValid(Collection) || Collection == CurrentCollection)
+	if (!IsValid(Collection) || Collection == CurrentCollection)
 	{
 		LOG_ERROR(LogSeason, TEXT("MPC, SeasonAsset is invalid or already active"));
 		return;
 	}
 
 	CurrentCollection = Collection;
+
+	if (ClockManager)
+	{
+		HandleOnDayChanged(ClockManager->GetCurrentDay());
+	}
 }
 
 void USeasonController::OnPriorityItemRemoved(UObject* Item, bool bReplaced)

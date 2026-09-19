@@ -4,20 +4,33 @@
 #include "Clock/ClockSubsystem.h"
 
 // Project Headers
+#include "Clock/ClockStorage.h"
+#include "Clock/ClockStorageManager.h"
 #include "Clock/ClockWorldConfig.h"
+#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Util/SubsystemUtil.h"
 #include "WorldFragmentSettings.h"
 
 
-bool UClockSubsystem::GetSmoothNormalizedTime(float& Time) const
+float UClockSubsystem::GetNormalizedTime() const
 {
-	return 0.0f;
+	float CurrentTime = GetWorld()->GetTimeSeconds();
+	float ElapsedSinceTick = CurrentTime - LastTickAt;
+	float Time = GetCurrentTime() + ElapsedSinceTick;
+
+	if (Time >= DayLength)
+	{
+		Time -= DayLength;
+	}
+
+	return FMath::Clamp(Time / DayLength, 0.0f, 1.0f);
 }
 
 bool UClockSubsystem::IsClockActive() const
 {
-	return GetWorld()->GetTimerManager().IsTimerActive(ClockHandle);
+	return GetWorld()->GetTimerManager().IsTimerActive(ClockTimer);
 }
 
 bool UClockSubsystem::GetDayLength(int& Length) const
@@ -40,19 +53,20 @@ bool UClockSubsystem::GetYearLength(int& Length) const
 	return true;
 }
 
+
 int UClockSubsystem::GetCurrentTime() const
 {
-	return CurrentTime;
+	return ClockInstance.Time;
 }
 
 int UClockSubsystem::GetCurrentDay() const
 {
-	return CurrentDay;
+	return ClockInstance.Day;
 }
 
 int UClockSubsystem::GetCurrentYear() const
 {
-	return CurrentYear;
+	return ClockInstance.Year;
 }
 
 
@@ -61,38 +75,48 @@ void UClockSubsystem::CreateClockTimer()
 	float TickTime = FMath::Clamp(ClockConfig->TickInterval, 0.05f, 10.0f);
 
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	TimerManager.SetTimer(ClockHandle, this, &UClockSubsystem::HandleOnClockTick, TickTime, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
-	
-	ClockStateChanged.Broadcast(true);
+	TimerManager.SetTimer(ClockTimer, this, &UClockSubsystem::HandleOnClockTick, TickTime, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
 }
 
 void UClockSubsystem::RemoveClockTimer()
 {
-	ClockStateChanged.Broadcast(false);
-
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-	TimerManager.ClearTimer(ClockHandle);
-	ClockHandle.Invalidate();
+	TimerManager.ClearTimer(ClockTimer);
+	ClockTimer.Invalidate();
 }
+
 
 void UClockSubsystem::HandleOnClockTick()
 {
-	CurrentTime++;
-	if (CurrentTime > ClockConfig->DayLength)
+	int PreviousDay = ClockInstance.Day;
+
+	ClockInstance.AddSeconds(1, DayLength, YearLength);
+
+	if (PreviousDay != ClockInstance.Day)
 	{
-		CurrentTime = 0;
-		CurrentDay++;
-
-		if (CurrentDay > ClockConfig->YearLength)
-		{
-			CurrentDay = 1;
-			CurrentYear++;
-		}
-
-		ClockDayChanged.Broadcast(CurrentDay);
+		ClockDayChanged.Broadcast(ClockInstance.Day);
 	}
 
-	ClockTimeChanged.Broadcast(CurrentTime);
+	LastTickAt = GetWorld()->GetTimeSeconds();
+	ClockTimeChanged.Broadcast(ClockInstance.Time);
+}
+
+void UClockSubsystem::HandleOnStorageLoaded(UObject* InManager)
+{
+	UClockStorageManager* StorageManager = Cast<UClockStorageManager>(InManager);
+	if (IsValid(StorageManager))
+	{
+		FClockInstance Instance = StorageManager->GetClockInstance(GetWorld()->GetFName());
+		if (Instance > ClockInstance)
+		{
+			ClockInstance = Instance;
+		}
+
+		ClockInstance.Clamp(DayLength, YearLength);
+		ClockStorageManager = TWeakObjectPtr<UClockStorageManager>(StorageManager);
+
+		CreateClockTimer();
+	}
 }
 
 
@@ -114,29 +138,56 @@ bool UClockSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 void UClockSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	LOG_WARNING(LogTemp, TEXT("ClockSubsystem Initialized"));
+	LOG_WARNING(LogClock, TEXT("ClockSubsystem Initialized"));
 }
 
 void UClockSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 {
-	LOG_WARNING(LogTemp, TEXT("ClockSubsystem OnWorldComponentsUpdated"));
+	LOG_WARNING(LogClock, TEXT("ClockSubsystem OnWorldComponentsUpdated"));
 
 	ClockConfig = AWorldFragmentSettings::GetConfigByClass<UClockWorldConfig>(&InWorld);
-	if (!IsValid(ClockConfig) || !ClockConfig->bEnabled)
-	{
-		LOG_ERROR(LogWeather, TEXT("Clock config is invalid or disabled"));
-		return;
-	}
+	check(ClockConfig);
+	check(ClockConfig->bEnabled);
 
-	CreateClockTimer();
+	DayLength = ClockConfig->DayLength;
+	YearLength = ClockConfig->YearLength;
+
+	ClockInstance = ClockConfig->DefaultClock;
+	ClockInstance.Clamp(DayLength, YearLength);
+
+	if (!ClockConfig->bIsTransient)
+	{
+		IStorageProvider* StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(InWorld.GetGameInstance());
+		if (StorageProvider)
+		{
+			FStorageDefinition Definition;
+			Definition.StorageId = GetFName();
+			Definition.StorageClass = UClockStorage::StaticClass();
+			Definition.ManagerClass = UClockStorageManager::StaticClass();
+
+			StorageProvider->LoadStorage(Definition, FOnStorageLoaded::CreateUObject(this, &UClockSubsystem::HandleOnStorageLoaded));
+		}
+	}
+	else
+	{
+		CreateClockTimer();
+	}
 }
 
 void UClockSubsystem::OnWorldEndPlay(UWorld& InWorld)
 {
+	UClockStorageManager* StorageManager = ClockStorageManager.Get();
+	if (IsValid(StorageManager))
+	{
+		ClockInstance.Clamp(DayLength, YearLength);
+		StorageManager->SetClockInstance(GetWorld()->GetFName(), ClockInstance);
+	}
+	ClockStorageManager.Reset();
+
 	ClockConfig = nullptr;
 	RemoveClockTimer();
 
-	LOG_WARNING(LogTemp, TEXT("ClockSubsystem OnWorldEndPlay"));
+	LOG_WARNING(LogClock, TEXT("ClockSubsystem OnWorldEndPlay"));
 }
 
 UClockSubsystem* UClockSubsystem::Get(UWorld* World)

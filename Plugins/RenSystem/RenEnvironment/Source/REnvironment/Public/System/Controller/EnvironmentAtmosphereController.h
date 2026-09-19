@@ -34,9 +34,12 @@ public:
 protected:
 
 	TWeakObjectPtr<USkyAtmosphereComponent> SkyAtmosphereComponent;
-	float CurrentMieScattering = 0.0f;
-	float TargetMieScattering = 0.0f;
 
+	float CurrentMieScattering = 0.0f;
+	float CurrentMieAnisotropy = 0.0f;
+
+	float TargetMieScattering = 0.0f;
+	float TargetMieAnisotropy = 0.0f;
 
 	// ~ UEnvironmentStackedController
 	virtual void OnPriorityItemChanged(UObject* Item) override;

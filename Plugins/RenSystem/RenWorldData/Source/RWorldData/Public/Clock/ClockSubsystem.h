@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
+#include "Clock/ClockInstance.h"
 #include "ClockManagerInterface.h"
 
 // Generated Headers
@@ -13,6 +14,7 @@
 
 // Forward Declaration
 class UClockWorldConfig;
+class UClockStorageManager;
 
 
 /**
@@ -27,7 +29,7 @@ class UClockSubsystem : public UWorldSubsystem, public IClockManagerInterface
 public:
 
 	// ~ IClockManagerInterface
-	virtual bool GetSmoothNormalizedTime(float& Time) const override;
+	virtual float GetNormalizedTime() const override;
 	virtual bool IsClockActive() const override;
 	virtual bool GetDayLength(int& Length) const override;
 	virtual bool GetYearLength(int& Length) const override;
@@ -47,19 +49,27 @@ public:
 protected:
 
 	UPROPERTY()
+	TWeakObjectPtr<UClockStorageManager> ClockStorageManager;
+
+	UPROPERTY()
 	TObjectPtr<const UClockWorldConfig> ClockConfig;
 
-	FTimerHandle ClockHandle;
+	int DayLength = 1;
+	int YearLength = 1;
 
-	int CurrentTime = 1;
-	int CurrentDay = 1;
-	int CurrentYear = 1;
+	FTimerHandle ClockTimer;
+	FClockInstance ClockInstance;
+
+	float LastTickAt = 0;
 
 
 	void CreateClockTimer();
 	void RemoveClockTimer();
-	void HandleOnClockTick();
 
+	// ~ Binding
+	void HandleOnClockTick();
+	void HandleOnStorageLoaded(UObject* InManager);
+	// ~ End of Binding
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;

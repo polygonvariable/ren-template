@@ -41,7 +41,7 @@ protected:
 
 
 	void HandleRewardInvoke(const FInstancedStruct& Payload);
-	void HandleStorageLoaded(bool bSuccess);
+	void HandleStorageLoaded(UObject* Manager);
 	void HandleGameInitialized();
 
 	// ~ UGameInstanceSubsystem

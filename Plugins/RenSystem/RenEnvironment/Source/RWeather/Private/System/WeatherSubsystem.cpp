@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Actor/WeatherEffectManagerActor.h"
+#include "Actor/WeatherEffectManager.h"
 #include "Core/AssetManagerUtil.h"
 #include "Core/EnvironmentSettings.h"
 #include "Core/WeatherSettings.h"
@@ -79,6 +79,7 @@ bool UWeatherSubsystem::CreateWeatherController(UClass* ControllerClass, UMateri
 	}
 
 	WeatherController->Initialize(GetWorld()->GetParameterCollectionInstance(MPC));
+	OnControllerCreated.Broadcast();
 	return true;
 }
 
@@ -104,7 +105,7 @@ bool UWeatherSubsystem::CreateWeatherManager(UClass* ManagerClass)
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	EffectManager = GetWorld()->SpawnActor<AWeatherEffectManagerActor>(ManagerClass, SpawnParameters);
+	EffectManager = GetWorld()->SpawnActor<AWeatherEffectManager>(ManagerClass, SpawnParameters);
 
 	return IsValid(EffectManager);
 }

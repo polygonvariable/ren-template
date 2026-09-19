@@ -11,7 +11,7 @@
 
 // Project Headers
 #if WITH_EDITOR
-#include "Actor/WeatherEffectManagerActor.h"
+#include "Actor/WeatherEffectManager.h"
 #include "System/WeatherController.h"
 #endif
 

@@ -12,7 +12,7 @@
 #include "StorageProvider.generated.h"
 
 // Delegate Declarations
-DECLARE_DELEGATE_OneParam(FOnStorageLoaded, bool /* bSuccess */);
+DECLARE_DELEGATE_OneParam(FOnStorageLoaded, UObject* /* StorageManager */);
 
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))

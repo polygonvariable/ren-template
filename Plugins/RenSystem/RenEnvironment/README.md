@@ -17,9 +17,14 @@
 - [Vladeta Kisin - Unreal Engine 5 How To Fix Foliage Flickering / Noise](https://youtu.be/CqxkOcX9KtA?si=v0fsnNYaWI_XeLY3)
 - [chriszuko - Niagara Grid 2D Feels Like a Superpower!](https://youtu.be/3fW5xjiDm-A?si=S7uXrEYcO32F87W1)
 - [Ben Cloward - Water Ripples Shader - UE4 Materials 101 - Episode 23](https://youtu.be/r68DnTMeFFQ?si=N2OrZUhdiG5HpyTp)
+- [Ben Cloward - Underwater Post-Process Effect - Shader Graph Basics - Episode 52](https://www.youtube.com/watch?v=BNldzmlSvCA)
 - [underscore - UE4 Tutorial: Cloud Shadows](https://youtu.be/R2Q_2Ilh5yQ?si=96CoXwqLYdAzFKuD)
 - [WorldofLevelDesign - UE5: Create Realistic & Customizable Pool or Still Water Material](https://youtu.be/eVT_rwCjRZU?si=qfScQ-ZJp3OeDr5c)
 
 ### Documentation
 - [Epic Games - Scalability Reference](https://dev.epicgames.com/documentation/unreal-engine/scalability-reference-for-unreal-engine)
 - [Epic Games - Impostor Baker Plugin](https://dev.epicgames.com/documentation/unreal-engine/impostor-baker-plugin-in-unreal-engine)
+
+
+### Assets
+- [aesqe - rain_04_vague_background_thundering](https://freesound.org/people/aesqe/sounds/39890/)

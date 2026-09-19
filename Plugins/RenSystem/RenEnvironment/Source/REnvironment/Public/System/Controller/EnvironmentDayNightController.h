@@ -11,7 +11,6 @@
 
 // Forward Declarations
 class UOrbitalLightComponent;
-class IClockProviderInterface;
 class IClockManagerInterface;
 
 
@@ -26,10 +25,6 @@ class UEnvironmentDayNightController : public UEnvironmentDiscreteController
 
 public:
 
-	FName SunComponentTag = TEXT("Environment.Sun");
-	FName MoonComponentTag = TEXT("Environment.Moon");
-
-
 	// ~ UEnvironmentDiscreteController
 	virtual void Initialize(AActor* Actor) override;
 	virtual void Deinitialize() override;
@@ -43,13 +38,12 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UOrbitalLightComponent> MoonComponent;
 
-	TWeakInterfacePtr<IClockManagerInterface> ClockManagerInterface;
-	FTimerHandle DayTimerHandle;
+	IClockManagerInterface* ClockManager;
 
 
-	void StartDayTimer();
-	void StopDayTimer();
-	void HandleDayTimerTick();
+	// ~ Binding
+	void HandleOnTimeChanged(int Time);
+	// ~ End of Binding
 
 };
 

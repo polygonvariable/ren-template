@@ -23,10 +23,6 @@ class AWorldFragmentSettings : public AWorldSettings
 	
 public:
 
-	UPROPERTY(EditDefaultsOnly, Category = "World Configs")
-	TArray<TObjectPtr<UWorldConfigAsset>> Configs;
-
-
 	RCORESETTINGS_API const UWorldConfigAsset* FindConfigByClass(TSubclassOf<UWorldConfigAsset> InClass) const;
 
 	template<typename T>
@@ -34,6 +30,11 @@ public:
 	{
 		return Cast<T>(FindConfigByClass(T::StaticClass()));
 	}
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category = "World Configs")
+	TArray<TObjectPtr<UWorldConfigAsset>> Configs;
 
 public:
 
@@ -47,6 +48,6 @@ public:
 		}
 		return Settings->FindConfigByClass<T>();
 	}
-	
+
 };
 

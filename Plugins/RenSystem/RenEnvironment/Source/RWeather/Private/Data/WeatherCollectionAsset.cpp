@@ -6,8 +6,8 @@
 // Engine Headers
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
-#include "UObject/ObjectSaveContext.h"
 #endif
+#include "UObject/ObjectSaveContext.h"
 
 // Project Headers
 #include "Data/WeatherAsset.h"
@@ -29,17 +29,30 @@ UWeatherAsset* UWeatherCollectionAsset::GetRandomWeather() const
     return nullptr;
 }
 
-#if WITH_EDITOR
 void UWeatherCollectionAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
-    Super::PreSave(ObjectSaveContext);
-
+#if WITH_EDITOR
     TotalWeight = 0;
     for (const FWeightedWeatherId& Item : Weathers)
     {
         TotalWeight += Item.Weight;
     }
+#endif
+
+    Super::PreSave(ObjectSaveContext);
 }
+
+FPrimaryAssetId UWeatherCollectionAsset::GetPrimaryAssetId() const
+{
+    return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
+}
+
+FPrimaryAssetType UWeatherCollectionAsset::GetPrimaryAssetType()
+{
+    return FPrimaryAssetType(TEXT("Weather.Collection"));
+}
+
+#if WITH_EDITOR
 EDataValidationResult UWeatherCollectionAsset::IsDataValid(FDataValidationContext& Context) const
 {
     EDataValidationResult Result = Super::IsDataValid(Context);
@@ -65,14 +78,4 @@ EDataValidationResult UWeatherCollectionAsset::IsDataValid(FDataValidationContex
     return Result;
 }
 #endif
-
-FPrimaryAssetId UWeatherCollectionAsset::GetPrimaryAssetId() const
-{
-    return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
-}
-
-FPrimaryAssetType UWeatherCollectionAsset::GetPrimaryAssetType()
-{
-    return FPrimaryAssetType(TEXT("Weather.Collection"));
-}
 

@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RWorldDataDebug : ModuleRules
+public class RWorlddataDebug : ModuleRules
 {
-	public RWorldDataDebug(ReadOnlyTargetRules Target) : base(Target)
+	public RWorlddataDebug(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -40,7 +40,7 @@ public class RWorldDataDebug : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RWorldData",
+                "RWorlddata",
                 "RCoreLibrary",
             }
 			);

@@ -43,7 +43,7 @@ protected:
 
 	IStorageProvider* StorageProvider;
 
-	void HandleStorageLoaded(bool bSuccess);
+	void HandleStorageLoaded(UObject* Manager);
 	void HandleOnPreGameInitialized();
 
 	// ~ UGameInstanceSubsystem

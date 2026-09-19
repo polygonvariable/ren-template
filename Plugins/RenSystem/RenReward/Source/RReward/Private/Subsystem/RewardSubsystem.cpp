@@ -48,7 +48,7 @@ void URewardSubsystem::HandleRewardInvoke(const FInstancedStruct& Payload)
 	Action->StartAction();
 }
 
-void URewardSubsystem::HandleStorageLoaded(bool bSuccess)
+void URewardSubsystem::HandleStorageLoaded(UObject* Manager)
 {
 	const URewardSettings* Settings = URewardSettings::Get();
 

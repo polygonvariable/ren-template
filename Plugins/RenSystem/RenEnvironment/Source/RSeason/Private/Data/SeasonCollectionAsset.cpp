@@ -6,14 +6,9 @@
 // Engine Headers
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
-#include "UObject/ObjectSaveContext.h"
 #endif
 
 // Project Headers
-#if WITH_EDITOR
-#include "Log/LogMacro.h"
-#include "MaterialLibrary.h"
-#endif
 #include "Data/SeasonAsset.h"
 
 
@@ -66,25 +61,6 @@ FPrimaryAssetType USeasonCollectionAsset::GetPrimaryAssetType()
 }
 
 #if WITH_EDITOR
-void USeasonCollectionAsset::SimulateSeason() const
-{
-    //float Alpha = 0.0f;
-    //const USeasonAsset* SeasonAsset = GetSeasonByDay(DebugCurrentDay, YearLength, Alpha);
-    //if (IsValid(SeasonAsset))
-    //{
-    //    SeasonAsset->EditorApplySeasonToWorld(Alpha);
-    //}
-}
-
-void USeasonCollectionAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
-{
-    Super::PreSave(ObjectSaveContext);
-
-    DebugCurrentDay = 1;
-    DebugSeasonName = TEXT_EMPTY;
-    DebugSeasonWeight = 0.0f;
-}
-
 EDataValidationResult USeasonCollectionAsset::IsDataValid(FDataValidationContext& Context) const
 {
     EDataValidationResult Result = Super::IsDataValid(Context);
@@ -106,12 +82,6 @@ EDataValidationResult USeasonCollectionAsset::IsDataValid(FDataValidationContext
             }
             TotalYearDuration += Item.Duration;
         }
-
-        //if (TotalYearDuration != YearLength)
-        //{
-        //    Context.AddError(FText::FromString("Total season duration doesnt match year duration"));
-        //    return EDataValidationResult::Invalid;
-        //}
     }
 
     return Result;

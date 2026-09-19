@@ -83,16 +83,16 @@ bool UEquipmentSubsystem::TryRemoveEquipmentSlot(const FGuid& OwnerInstanceId, c
 	return Action->StartAction();
 }
 
-void UEquipmentSubsystem::HandleStorageLoaded(bool bSuccess)
+void UEquipmentSubsystem::HandleStorageLoaded(UObject* Manager)
 {
-	if (bSuccess)
+	if (IsValid(Manager))
 	{
 		const UEquipmentSettings* Settings = UEquipmentSettings::Get();
 
 		const FPrimaryAssetType& EquipmentType = Settings->EquipmentType;
 		const FPrimaryAssetType& OwnerType = Settings->OwnerType;
 
-		IAssetInstanceRelation* Relation = Cast<IAssetInstanceRelation>(GetStorageManager());
+		IAssetInstanceRelation* Relation = Cast<IAssetInstanceRelation>(Manager);
 		UAssetInstanceRelationSubsystem* RelationSubsystem = UAssetInstanceRelationSubsystem::Get(GetGameInstance());
 
 		if (IsValid(RelationSubsystem))

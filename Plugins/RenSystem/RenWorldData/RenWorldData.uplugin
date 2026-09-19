@@ -16,12 +16,12 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "RWorldData",
+			"Name": "RWorlddata",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RWorldDataDebug",
+			"Name": "RWorlddataDebug",
 			"Type": "DeveloperTool",
 			"LoadingPhase": "Default"
 		}

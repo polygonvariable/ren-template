@@ -132,9 +132,14 @@ AEnvironmentActor::AEnvironmentActor()
 			SunLight->bUseRayTracedDistanceFieldShadows = false;
 
 			SunLight->bEnableLightShaftOcclusion = true;
+			SunLight->OcclusionMaskDarkness = 0.5f;
+			SunLight->OcclusionDepthRange = 25000.0f;
+
 			SunLight->bEnableLightShaftBloom = true;
-			SunLight->BloomThreshold = 1.0f;
-			SunLight->BloomMaxBrightness = 2.5f;
+			SunLight->BloomScale = 0.5f;
+			SunLight->BloomThreshold = 2.0f;
+			SunLight->BloomMaxBrightness = 0.25f;
+
 			SunLight->FarShadowCascadeCount = 0;
 
 			SunLight->EnabledStartTime = 7.25f;
@@ -161,10 +166,13 @@ AEnvironmentActor::AEnvironmentActor()
 			MoonLight->bUseRayTracedDistanceFieldShadows = false;
 
 			MoonLight->bEnableLightShaftOcclusion = true;
+			MoonLight->OcclusionMaskDarkness = 0.5f;
+			MoonLight->OcclusionDepthRange = 25000.0f;
+
 			MoonLight->bEnableLightShaftBloom = true;
-			MoonLight->BloomThreshold = 1.0f;
-			MoonLight->BloomMaxBrightness = 2.5f;
-			MoonLight->FarShadowCascadeCount = 0;
+			MoonLight->BloomScale = 0.5f;
+			MoonLight->BloomThreshold = 2.0f;
+			MoonLight->BloomMaxBrightness = 0.25f;
 
 			MoonLight->EnabledStartTime = 19.25f;
 			MoonLight->EnabledEndTime = 8.25f;

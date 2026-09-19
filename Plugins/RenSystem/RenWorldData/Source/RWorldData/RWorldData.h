@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRWorldDataModule : public IModuleInterface
+class FRWorlddataModule : public IModuleInterface
 {
 public:
 

@@ -12,7 +12,7 @@
 
 // Project Headers
 #include "Actor/WeatherEffectActor.h"
-#include "Actor/WeatherEffectManagerActor.h"
+#include "Actor/WeatherEffectManager.h"
 #include "Data/WeatherAsset.h"
 #include "MiscLibrary.h"
 #include "System/WeatherController.h"
@@ -33,21 +33,21 @@ void FWeatherDebugWidget::DisableWidget()
 }
 
 
-void FWeatherDebugWidget::Draw_WeatherManager(AWeatherEffectManagerActor* Manager)
+void FWeatherDebugWidget::Draw_WeatherManager(AWeatherEffectManager* Manager)
 {
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
 		SlateIM::BeginHorizontalStack();
 		{
-			SlateIM::Text(TEXT("Weather Manager:"));
+			SlateIM::Text(TEXT("Manager:"));
 			SlateIM::Text(Manager->GetFName().ToString(), FColor::Cyan);
 		}
 		SlateIM::EndHorizontalStack();
 	}
 }
 
-void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor* Manager)
+void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManager* Manager)
 {
 	const TArray<TObjectPtr<AWeatherEffectActor>>& Effects = Manager->GetEditorWeatherEffects();
 
@@ -56,7 +56,7 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor*
 		SlateIM::HAlign(HAlign_Fill);
 		SlateIM::BeginHorizontalStack();
 		{
-			SlateIM::Text(TEXT("Weather Effects:"));
+			SlateIM::Text(TEXT("Effects:"));
 			SlateIM::Text(FString::FromInt(Effects.Num()), FColor::Cyan);
 		}
 		SlateIM::EndHorizontalStack();
@@ -65,13 +65,13 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor*
 			SlateIM::BeginTableHeader();
 			{
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListEffect_Actor"), TEXT("Actor"));
+				SlateIM::AddTableColumn(TEXT("Effect_Actor"), TEXT("Actor"));
 
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListEffect_Asset"), TEXT("Asset"));
+				SlateIM::AddTableColumn(TEXT("Effect_Asset"), TEXT("Asset"));
 
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListEffect_State"), TEXT("State"));
+				SlateIM::AddTableColumn(TEXT("Effect_State"), TEXT("State"));
 			}
 			SlateIM::EndTableHeader();
 
@@ -82,21 +82,16 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor*
 					SlateIM::NextTableCell();
 					SlateIM::Text(IsValid(Item) ? Item->GetFName().ToString() : TEXT("Invalid Actor"));
 
-					UNiagaraSystem* System = Item->GetNiagaraSystem();
 					SlateIM::NextTableCell();
-					SlateIM::Text(IsValid(System) ? Item->GetFName().ToString() : TEXT("Invalid Niagara"));
+					SlateIM::Text(IsValid(Item) ? Item->EffectPath.ToString() : TEXT("Invalid Asset"));
 
 					FString State = "Inactive";
-					UNiagaraComponent* Component = Item->GetEditorNiagaraComponent();
+					UActorComponent* Component = Item->GetEditorEffectComponent();
 					if (IsValid(Component))
 					{
 						if (Component->IsActive())
 						{
 							State = TEXT("Active");
-						}
-						else if (Component->IsPaused())
-						{
-							State = TEXT("Paused");
 						}
 					}
 					SlateIM::NextTableCell();
@@ -109,7 +104,7 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffects(AWeatherEffectManagerActor*
 	}
 }
 
-void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManagerActor* Manager)
+void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManager* Manager)
 {
 	const TMap<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& Effects = Manager->GetEditorWeatherEffectHandles();
 
@@ -118,7 +113,7 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManager
 		SlateIM::HAlign(HAlign_Fill);
 		SlateIM::BeginHorizontalStack();
 		{
-			SlateIM::Text(TEXT("Weather Effects Handles:"));
+			SlateIM::Text(TEXT("Effect Handles:"));
 			SlateIM::Text(FString::FromInt(Effects.Num()), FColor::Cyan);
 		}
 		SlateIM::EndHorizontalStack();
@@ -127,10 +122,10 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManager
 			SlateIM::BeginTableHeader();
 			{
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListEffectHandle_Asset"), TEXT("Asset"));
+				SlateIM::AddTableColumn(TEXT("EffectHandle_Asset"), TEXT("Asset"));
 
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListEffectHandle_Item"), TEXT("Handle"));
+				SlateIM::AddTableColumn(TEXT("EffectHandle_Handle"), TEXT("Handle"));
 			}
 			SlateIM::EndTableHeader();
 
@@ -151,25 +146,24 @@ void FWeatherDebugWidget::Draw_WeatherManagerEffectHandles(AWeatherEffectManager
 	}
 }
 
-
 void FWeatherDebugWidget::Draw_WeatherControllerActive(UWeatherController* Controller)
 {
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
-		SlateIM::Text(TEXT("Weather Active:"));
+		SlateIM::Text(TEXT("Active:"));
 		SlateIM::BeginTable();
 		{
 			SlateIM::BeginTableHeader();
 			{
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_CurrentPriority"), TEXT("Priority"));
+				SlateIM::AddTableColumn(TEXT("Weather_Priority"), TEXT("Priority"));
 
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_CurrentAsset"), TEXT("Weather"));
+				SlateIM::AddTableColumn(TEXT("Weather_Name"), TEXT("Name"));
 
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_CurrentTransition"), TEXT("Transition"));
+				SlateIM::AddTableColumn(TEXT("Weather_Transition"), TEXT("Transition"));
 			}
 			SlateIM::EndTableHeader();
 
@@ -197,15 +191,20 @@ void FWeatherDebugWidget::Draw_WeatherControllerList(UWeatherController* Control
 	if (SlateIM::NextTableCell())
 	{
 		SlateIM::HAlign(HAlign_Fill);
-		SlateIM::Text(TEXT("Weather List: (" + FString::FromInt(Weathers.Num()) + ")"));
+		SlateIM::BeginHorizontalStack();
+		{
+			SlateIM::Text(TEXT("List:"));
+			SlateIM::Text(FString::FromInt(Weathers.Num()), FColor::Cyan);
+		}
+		SlateIM::EndHorizontalStack();
 		SlateIM::BeginTable();
 		{
 			SlateIM::BeginTableHeader();
 			{
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListPriority"), TEXT("Priority"));
+				SlateIM::AddTableColumn(TEXT("Weather_Priority"), TEXT("Priority"));
 				SlateIM::InitialTableColumnWidth(150.0f);
-				SlateIM::AddTableColumn(TEXT("Weather_ListAsset"), TEXT("Weather"));
+				SlateIM::AddTableColumn(TEXT("Weather_Asset"), TEXT("Asset"));
 			}
 			SlateIM::EndTableHeader();
 
@@ -231,14 +230,14 @@ void FWeatherDebugWidget::Draw_WeatherControllerList(UWeatherController* Control
 
 void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 {
-	AWeatherEffectManagerActor* Manager = GetWeatherManager();
+	AWeatherEffectManager* Manager = GetWeatherManager();
 	UWeatherController* Controller = GetController();
 
 	SlateIM::FWindowParams WindowParams;
-	WindowParams.WindowSize = FVector2f(150.0f * 2, 250.0f * 1.5);
+	WindowParams.WindowSize = FVector2f(150.0f * 3, 250.0f * 1.5);
 	WindowParams.bAlwaysOnTop = true;
 
-	if (SlateIM::BeginWindowRoot(TEXT("WeatherWindow"), WindowParams))
+	if (SlateIM::BeginWindowRoot(TEXT("Weather_Window"), WindowParams))
 	{
 		SlateIM::BeginTable();
 		SlateIM::AddTableColumn(TEXT("Weather_Debug"), TEXT("Weather Debugger:"));
@@ -255,7 +254,7 @@ void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 			{
 				SlateIM::BeginHorizontalStack();
 				{
-					SlateIM::Text(TEXT("Weather Manager:"));
+					SlateIM::Text(TEXT("Manager:"));
 					SlateIM::Text(TEXT("Invalid"), FColor::Red);
 				}
 				SlateIM::EndHorizontalStack();
@@ -273,7 +272,7 @@ void FWeatherDebugWidget::DrawWidget(float DeltaTime)
 			{
 				SlateIM::BeginHorizontalStack();
 				{
-					SlateIM::Text(TEXT("Weather Controller:"));
+					SlateIM::Text(TEXT("Controller:"));
 					SlateIM::Text(TEXT("Invalid"), FColor::Red);
 				}
 				SlateIM::EndHorizontalStack();
@@ -304,7 +303,7 @@ UWeatherController* FWeatherDebugWidget::GetController()
 	return nullptr;
 }
 
-AWeatherEffectManagerActor* FWeatherDebugWidget::GetWeatherManager()
+AWeatherEffectManager* FWeatherDebugWidget::GetWeatherManager()
 {
 	if (WeatherManager.IsValid())
 	{
@@ -314,9 +313,9 @@ AWeatherEffectManagerActor* FWeatherDebugWidget::GetWeatherManager()
 	UWorld* World = FMiscLibrary::GetCurrentWorld();
 	if (IsValid(World))
 	{
-		for (TActorIterator<AWeatherEffectManagerActor> ActorItr(World); ActorItr; ++ActorItr)
+		for (TActorIterator<AWeatherEffectManager> ActorItr(World); ActorItr; ++ActorItr)
 		{
-			WeatherManager = TWeakObjectPtr<AWeatherEffectManagerActor>(*ActorItr);
+			WeatherManager = TWeakObjectPtr<AWeatherEffectManager>(*ActorItr);
 		}
 	}
 

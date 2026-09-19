@@ -33,6 +33,37 @@ void FClockDebugWidget::DrawWidget(float DeltaTime)
 		{
 			if (SlateIM::NextTableCell())
 			{
+				SlateIM::Text(TEXT("Definition:"));
+				SlateIM::BeginTable();
+				{
+					SlateIM::BeginTableHeader();
+					{
+						SlateIM::InitialTableColumnWidth(100.0f);
+						SlateIM::AddTableColumn(TEXT("Clock_Time"), TEXT("Day Length"));
+						SlateIM::InitialTableColumnWidth(100.0f);
+						SlateIM::AddTableColumn(TEXT("Clock_Day"), TEXT("Year Length"));
+					}
+					SlateIM::EndTableHeader();
+					SlateIM::BeginTableBody();
+					{
+						int DayLength = 1;
+						Subsystem->GetDayLength(DayLength);
+						SlateIM::NextTableCell();
+						SlateIM::Text(FString::FromInt(DayLength), FColor::Cyan);
+
+						int YearLength = 1;
+						Subsystem->GetYearLength(YearLength);
+						SlateIM::NextTableCell();
+						SlateIM::Text(FString::FromInt(YearLength), FColor::Cyan);
+					}
+					SlateIM::EndTableBody();
+				}
+				SlateIM::EndTable();
+			}
+
+			if (SlateIM::NextTableCell())
+			{
+				SlateIM::Text(TEXT("Runtime:"));
 				SlateIM::BeginTable();
 				{
 					SlateIM::BeginTableHeader();

@@ -109,7 +109,7 @@ void UWeatherController::StartTransition()
 {
 	ClearTransition();
 
-	PRINT_INFO(LogWeather, 5.0f, TEXT("Weather transition started"));
+	PRINT_INFO(LogWeather, 1.0f, TEXT("Weather transition started"));
 
 	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	TimerManager.SetTimer(TimerHandle, this, &UWeatherController::HandleOnTransitionTick, _TransitionRate, FTimerManagerTimerParameters{ .bLoop = true, .bMaxOncePerFrame = true });
@@ -117,7 +117,7 @@ void UWeatherController::StartTransition()
 
 void UWeatherController::ClearTransition()
 {
-	PRINT_INFO(LogWeather, 5.0f, TEXT("Weather transition stopped"));
+	PRINT_INFO(LogWeather, 1.0f, TEXT("Weather transition stopped"));
 
 	_ElapsedTime = 0.0f;
 

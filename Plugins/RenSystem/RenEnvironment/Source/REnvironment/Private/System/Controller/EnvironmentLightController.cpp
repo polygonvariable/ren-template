@@ -63,6 +63,13 @@ void UEnvironmentLightController::OnPriorityItemChanged(UObject* Item)
 	CurrentSunColor = Sun->LightColor;
 	CurrentMoonColor = Moon->LightColor;
 
+	CurrentSunRadius = Sun->LightSourceAngle;
+	CurrentMoonRadius = Moon->LightSourceAngle;
+
+
+	TargetSunRadius = Profile->SunRadius;
+	TargetMoonRadius = Profile->MoonRadius;
+
 	TargetSunIntensity = Profile->SunIntensity;
 	TargetMoonIntensity = Profile->MoonIntensity;
 
@@ -83,18 +90,13 @@ void UEnvironmentLightController::OnTransitionChanged(float Alpha)
 		return;
 	}
 
-	float NewSunIntensity = FMath::Lerp(CurrentSunIntensity, TargetSunIntensity, Alpha);
-	float NewMoonIntensity = FMath::Lerp(CurrentMoonIntensity, TargetMoonIntensity, Alpha);
+	Sun->SetLightSourceAngle(FMath::Lerp(CurrentSunRadius, TargetSunRadius, Alpha));
+	Moon->SetLightSourceAngle(FMath::Lerp(CurrentMoonRadius, TargetMoonRadius, Alpha));
 
-	FVector NewSunColor = FMath::Lerp(FVector(CurrentSunColor), FVector(TargetSunColor), Alpha);
-	FVector NewMoonColor = FMath::Lerp(FVector(CurrentMoonColor), FVector(TargetMoonColor), Alpha);
+	Sun->SetIntensity(FMath::Lerp(CurrentSunIntensity, TargetSunIntensity, Alpha));
+	Moon->SetIntensity(FMath::Lerp(CurrentMoonIntensity, TargetMoonIntensity, Alpha));
 
-	Sun->Intensity = NewSunIntensity;
-	Moon->Intensity = NewMoonIntensity;
-
-	Sun->LightColor = FLinearColor(NewSunColor).ToFColor(false);
-	Moon->LightColor = FLinearColor(NewSunColor).ToFColor(false);
-
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("EnvironmentLight Alpha: %f"), Alpha);
+	Sun->SetLightColor(FMath::Lerp(CurrentSunColor, TargetSunColor, Alpha));
+	Moon->SetLightColor(FMath::Lerp(CurrentMoonColor, TargetMoonColor, Alpha));
 }
 

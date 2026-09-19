@@ -25,10 +25,10 @@ public:
     EEnvironmentProfileType ProfileType;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
-    float TransitionRate = 0.15f;
+    float TransitionRate = 0.2f;
 
     UPROPERTY(EditDefaultsOnly, meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
-    float TransitionDuration = 5.0f;
+    float TransitionDuration = 4.0f;
 
     UPROPERTY(EditDefaultsOnly)
     TObjectPtr<UCurveFloat> TransitionCurve;
@@ -82,17 +82,23 @@ public:
     UEnvironmentLightProfileAsset();
 
     UPROPERTY(EditDefaultsOnly)
-    float SunIntensity = 20.0f;
+    float SunIntensity = 10.0f;
 
     UPROPERTY(EditDefaultsOnly)
-    FColor SunColor = FColor::White;
+    FLinearColor SunColor = FColor::White;
+
+    UPROPERTY(EditDefaultsOnly)
+    float SunRadius = 4.0f;
 
     UPROPERTY(EditDefaultsOnly)
     float MoonIntensity = 5.0f;
 
     UPROPERTY(EditDefaultsOnly)
-    FColor MoonColor = FColor::FromHex("#4B6F91");
- 
+    FLinearColor MoonColor = FColor::FromHex("#4B6F91");
+
+    UPROPERTY(EditDefaultsOnly)
+    float MoonRadius = 0.0f;
+
 };
 
 
@@ -111,6 +117,9 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     float MieScatteringScale = 0.003996f;
+
+    UPROPERTY(EditDefaultsOnly)
+    float MieAnisotropy = 0.8f;
 
 };
 

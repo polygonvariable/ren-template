@@ -28,7 +28,9 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Weather.Collection"))
 	FPrimaryAssetId WeatherCollectiontId;
 
+	UPROPERTY()
 	TObjectPtr<UWeatherSubsystem> WeatherSubsystem;
+
 	TSharedPtr<FStreamableHandle> AssetHandle;
 
 

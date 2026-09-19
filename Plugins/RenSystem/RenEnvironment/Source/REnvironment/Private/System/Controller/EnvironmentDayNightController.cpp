@@ -3,51 +3,12 @@
 // Parent Header
 #include "System/Controller/EnvironmentDayNightController.h"
 
-// Engine Headers
-#include "EngineUtils.h"
-
 // Project Headers
 #include "ClockManagerInterface.h"
+#include "Component/OrbitalLightComponent.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Util/SubsystemUtil.h"
-#include "RCoreLibrary/Private/Util/TimerUtil.inl"
-#include "Component/OrbitalLightComponent.h"
-
-
-
-void UEnvironmentDayNightController::StartDayTimer()
-{
-	if (!SunComponent.IsValid() || !MoonComponent.IsValid())
-	{
-		LOG_ERROR(LogEnvironment, TEXT("Sun or Moon not found"));
-		return;
-	}
-
-	bool bResult = TimerUtil::StartTimer(DayTimerHandle, this, &UEnvironmentDayNightController::HandleDayTimerTick, 0.1f);
-	if (!bResult)
-	{
-		LOG_ERROR(LogEnvironment, TEXT("Failed to create timer or timer is already running"));
-	}
-}
-
-void UEnvironmentDayNightController::StopDayTimer()
-{
-	if (!TimerUtil::PauseTimer(DayTimerHandle, this))
-	{
-		LOG_ERROR(LogEnvironment, TEXT("Failed to pause timer"));
-	}
-}
-
-void UEnvironmentDayNightController::HandleDayTimerTick()
-{
-	//float NormalizedTime = ClockManagerInterface->GetSmoothNormalizedTime();
-	//float RealTime = NormalizedTime * 24.0f;
-
-	//SunComponent->SetTimeOfDay(RealTime);
-	//MoonComponent->SetTimeOfDay(RealTime);
-}
-
 
 
 void UEnvironmentDayNightController::Initialize(AActor* Actor)
@@ -58,43 +19,46 @@ void UEnvironmentDayNightController::Initialize(AActor* Actor)
 		return;
 	}
 
-	IClockManagerInterface* ClockManager = SubsystemUtil::GetSubsystemInterface<UWorld, UWorldSubsystem, IClockManagerInterface>(GetWorld());
+	SunComponent = Actor->FindComponentByTag<UOrbitalLightComponent>(TEXT("Environment.Sun"));
+	MoonComponent = Actor->FindComponentByTag<UOrbitalLightComponent>(TEXT("Environment.Moon"));
 
-	SunComponent = Actor->GetComponentByClass<UOrbitalLightComponent>();
-	MoonComponent = Actor->GetComponentByClass<UOrbitalLightComponent>();
-
-	if (!ClockManager || !SunComponent.IsValid() || !MoonComponent.IsValid())
+	if (!SunComponent.IsValid() || !MoonComponent.IsValid())
 	{
-		LOG_ERROR(LogEnvironment, TEXT("ClockManager, Sun, Moon is invalid"));
+		LOG_ERROR(LogEnvironment, TEXT("Sun, moon component is invalid"));
 		return;
 	}
 
-	//FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
-	//ClockDelegate.OnClockStarted.AddUObject(this, &UEnvironmentDayNightController::StartDayTimer);
-	//ClockDelegate.OnClockStopped.AddUObject(this, &UEnvironmentDayNightController::StopDayTimer);
-
-	//if (ClockManager->IsClockActive())
-	//{
-	//	StartDayTimer();
-	//}
-
-	ClockManagerInterface = TWeakInterfacePtr<IClockManagerInterface>(ClockManager);
+	ClockManager = FSubsystemLibrary::GetSubsystemInterface<IClockManagerInterface>(GetWorld());
+	if (ClockManager)
+	{
+		ClockManager->OnClockTimeChanged().AddUObject(this, &UEnvironmentDayNightController::HandleOnTimeChanged);
+	}
 }
 
 void UEnvironmentDayNightController::Deinitialize()
 {
-	IClockManagerInterface* ClockManager = ClockManagerInterface.Get();
 	if (ClockManager)
 	{
-		//FClockDelegates& ClockDelegate = ClockManager->GetClockDelegates();
-		//ClockDelegate.OnClockStarted.RemoveAll(this);
-		//ClockDelegate.OnClockStopped.RemoveAll(this);
+		ClockManager->OnClockTimeChanged().RemoveAll(this);
 	}
-	ClockManagerInterface.Reset();
-
-	TimerUtil::ClearTimer(DayTimerHandle, this);
+	ClockManager = nullptr;
 
 	SunComponent.Reset();
 	MoonComponent.Reset();
+}
+
+void UEnvironmentDayNightController::HandleOnTimeChanged(int Time)
+{
+	UOrbitalLightComponent* Sun = SunComponent.Get();
+	UOrbitalLightComponent* Moon = MoonComponent.Get();
+
+	if (IsValid(Sun) && IsValid(Moon))
+	{
+		float NormalizedTime = ClockManager->GetNormalizedTime();
+		float RealTime = NormalizedTime * 24.0f;
+
+		SunComponent->SetTimeOfDay(RealTime);
+		MoonComponent->SetTimeOfDay(RealTime);
+	}
 }
 

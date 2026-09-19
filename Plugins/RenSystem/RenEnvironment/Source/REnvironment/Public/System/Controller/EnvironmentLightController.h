@@ -40,17 +40,23 @@ protected:
 	TWeakObjectPtr<UDirectionalLightComponent> SunComponent;
 	TWeakObjectPtr<UDirectionalLightComponent> MoonComponent;
 
+	float CurrentSunRadius = 0.0f;
+	float TargetSunRadius = 0.0f;
+
 	float CurrentSunIntensity = 0.0f;
-	FColor CurrentSunColor = FColor::White;
+	float TargetSunIntensity = 0.0f;
+
+	FLinearColor CurrentSunColor = FColor::White;
+	FLinearColor TargetSunColor = FColor::White;
+
+	float CurrentMoonRadius = 0.0f;
+	float TargetMoonRadius = 0.0f;
 
 	float CurrentMoonIntensity = 0.0f;
-	FColor CurrentMoonColor = FColor::White;
-
-	float TargetSunIntensity = 0.0f;
-	FColor TargetSunColor = FColor::White;
-
 	float TargetMoonIntensity = 0.0f;
-	FColor TargetMoonColor = FColor::White;
+
+	FLinearColor CurrentMoonColor = FColor::White;
+	FLinearColor TargetMoonColor = FColor::White;
 
 
 	// ~ UEnvironmentStackedController

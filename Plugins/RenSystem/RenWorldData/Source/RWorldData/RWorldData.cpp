@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "RWorldData.h"
+#include "RWorlddata.h"
 
-#define LOCTEXT_NAMESPACE "FRWorldDataModule"
+#define LOCTEXT_NAMESPACE "FRWorlddataModule"
 
-void FRWorldDataModule::StartupModule()
+void FRWorlddataModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRWorldDataModule::ShutdownModule()
+void FRWorlddataModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRWorldDataModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRWorldDataModule, RWorldData)
+IMPLEMENT_MODULE(FRWorlddataModule, RWorlddata)
 

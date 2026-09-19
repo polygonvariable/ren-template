@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RWorldData : ModuleRules
+public class RWorlddata : ModuleRules
 {
-	public RWorldData(ReadOnlyTargetRules Target) : base(Target)
+	public RWorlddata(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

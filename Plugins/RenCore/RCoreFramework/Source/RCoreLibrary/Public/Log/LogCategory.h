@@ -76,6 +76,7 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEventflowEngine, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogEventflowTask, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogQuestObjective, Log, All);
 
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogClock, Log, All);
 
 
 // Module Macros

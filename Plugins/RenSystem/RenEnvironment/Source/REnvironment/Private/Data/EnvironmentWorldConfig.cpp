@@ -47,7 +47,7 @@ EDataValidationResult UEnvironmentWorldConfig::IsDataValid(FDataValidationContex
             }
         }
 
-        if (ProfilePriority <= 0)
+        if (DefaultProfiles.Num() > 0 && ProfilePriority <= 0)
         {
             Context.AddError(FText::FromString("Invalid environment profile priority"));
             return EDataValidationResult::Invalid;

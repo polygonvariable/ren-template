@@ -9,7 +9,6 @@
 #include "ClockManagerInterface.generated.h"
 
 // Delegate Declarations
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnClockStateChanged, bool /* Active */);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnClockTimeChanged, int /* Time */);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnClockDayChanged, int /* Day */);
 
@@ -30,7 +29,7 @@ class RCOREWORLDDATACLOCK_API IClockManagerInterface
 
 public:
 
-	virtual bool GetSmoothNormalizedTime(float& Time) const = 0;
+	virtual float GetNormalizedTime() const = 0;
 	virtual bool IsClockActive() const = 0;
 	virtual bool GetDayLength(int& Length) const = 0;
 	virtual bool GetYearLength(int& Length) const = 0;
@@ -39,13 +38,11 @@ public:
 	virtual int GetCurrentDay() const = 0;
 	virtual int GetCurrentYear() const = 0;
 
-	FOnClockStateChanged& OnClockStateChanged() { return ClockStateChanged; };
 	FOnClockTimeChanged& OnClockTimeChanged() { return ClockTimeChanged; };
 	FOnClockDayChanged& OnClockDayChanged() { return ClockDayChanged; };
 
 protected:
 
-    FOnClockStateChanged ClockStateChanged;
     FOnClockTimeChanged ClockTimeChanged;
     FOnClockDayChanged ClockDayChanged;
 

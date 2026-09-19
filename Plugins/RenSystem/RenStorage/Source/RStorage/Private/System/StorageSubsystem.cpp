@@ -29,7 +29,7 @@ void UStorageSubsystem::LoadStorage(const FStorageDefinition& Definition, FOnSto
 {
 	if (!StorageCache || !Definition.IsValid())
 	{
-		Callback.ExecuteIfBound(false);
+		Callback.ExecuteIfBound(nullptr);
 		return;
 	}
 
@@ -39,7 +39,7 @@ void UStorageSubsystem::LoadStorage(const FStorageDefinition& Definition, FOnSto
 	if (!Manager || !IsValid(Storage))
 	{
 		LOG_ERROR(LogStorage, TEXT("Failed to create storage manager or storage object"));
-		Callback.ExecuteIfBound(false);
+		Callback.ExecuteIfBound(nullptr);
 		return;
 	}
 
@@ -51,7 +51,7 @@ void UStorageSubsystem::LoadStorage(const FStorageDefinition& Definition, FOnSto
 
 	ManagerCollection.Add(Definition.StorageId, ManagerObject);
 
-	Callback.ExecuteIfBound(true);
+	Callback.ExecuteIfBound(ManagerObject);
 }
 
 void UStorageSubsystem::SaveStorage(const FName& StorageId)

@@ -8,20 +8,19 @@
 // Generated Headers
 #include "WeatherEffectActor.generated.h"
 
-// Module Macros
-#define REN_API RWEATHER_API
-
 // Forward Declarations
 class USceneComponent;
 class UNiagaraComponent;
+class UAudioComponent;
 class UNiagaraSystem;
 class UArrowComponent;
+class UWeatherAsset;
 
 
 /**
  *
  */
-UCLASS()
+UCLASS(NotBlueprintable, NotPlaceable)
 class AWeatherEffectActor : public AActor
 {
 
@@ -31,20 +30,16 @@ public:
 
 	AWeatherEffectActor();
 
-    void SetNiagaraSystem(UNiagaraSystem* Asset);
-    REN_API UNiagaraSystem* GetNiagaraSystem() const;
+    FSoftObjectPath EffectPath;
 
-    void ActivateEffect();
-    void DeactivateEffect();
+    virtual bool InitializeEffect();
+    virtual void DeinitializeEffect();
+
+    virtual void ActivateEffect();
+    virtual void DeactivateEffect();
 
 #if UE_BUILD_DEVELOPMENT
-    REN_API UNiagaraComponent* GetEditorNiagaraComponent();
-#endif
-
-#if WITH_EDITOR
-    // ~ AActor
-    virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
-    // ~ End of AActor
+    virtual UActorComponent* GetEditorEffectComponent() const;
 #endif
 
 protected:
@@ -52,19 +47,16 @@ protected:
     UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
     TObjectPtr<USceneComponent> SceneComponent;
 
-    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
-    TObjectPtr<UNiagaraComponent> NiagaraComponent;
-
 #if WITH_EDITORONLY_DATA
-    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    UPROPERTY(VisibleDefaultsOnly)
     TObjectPtr<UArrowComponent> ArrowComponent;
 #endif
 
     FTimerHandle FollowTimer;
 
 
-    void CreateFollowTimer();
-    void RemoveFollowTimer();
+    void CreateFollow();
+    void RemoveFollow();
 
     // ~ Binding
     void HandleOnTimerTick();
@@ -77,6 +69,64 @@ protected:
 };
 
 
-// Module Macros
-#undef REN_API
+/**
+ *
+ */
+UCLASS(NotBlueprintable, NotPlaceable)
+class AWeatherEffectParticle : public AWeatherEffectActor
+{
+
+    GENERATED_BODY()
+
+public:
+
+    AWeatherEffectParticle();
+
+    // ~ AWeatherEffectActor
+    virtual bool InitializeEffect() override;
+    virtual void ActivateEffect() override;
+    virtual void DeactivateEffect() override;
+    // ~ End of AWeatherEffectActor
+
+#if UE_BUILD_DEVELOPMENT
+    virtual UActorComponent* GetEditorEffectComponent() const;
+#endif
+
+protected:
+
+    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    TObjectPtr<UNiagaraComponent> NiagaraComponent;
+
+};
+
+
+/**
+ *
+ */
+UCLASS(NotBlueprintable, NotPlaceable)
+class AWeatherEffectAudio : public AWeatherEffectActor
+{
+
+    GENERATED_BODY()
+
+public:
+
+    AWeatherEffectAudio();
+
+    // ~ AWeatherEffectActor
+    virtual bool InitializeEffect() override;
+    virtual void ActivateEffect() override;
+    virtual void DeactivateEffect() override;
+    // ~ End of AWeatherEffectActor
+
+#if UE_BUILD_DEVELOPMENT
+    virtual UActorComponent* GetEditorEffectComponent() const;
+#endif
+
+protected:
+
+    UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
+    TObjectPtr<UAudioComponent> AudioComponent;
+
+};
 

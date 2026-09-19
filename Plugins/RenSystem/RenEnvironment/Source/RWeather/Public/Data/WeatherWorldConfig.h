@@ -10,7 +10,7 @@
 
 class UMaterialParameterCollection;
 class UWeatherController;
-class AWeatherEffectManagerActor;
+class AWeatherEffectManager;
 
 
 /**
@@ -27,7 +27,7 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     bool bEnabled = true;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowedTypes = "Environment.Weather"))
+    UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (AllowedTypes = "Weather"))
     FPrimaryAssetId DefaultWeather;
 
     UPROPERTY(EditDefaultsOnly, Category = "Default")
@@ -40,7 +40,7 @@ public:
     TSubclassOf<UWeatherController> WeatherController;
 
     UPROPERTY(EditDefaultsOnly, Category = "Controller")
-    TSubclassOf<AWeatherEffectManagerActor> EffectManager;
+    TSubclassOf<AWeatherEffectManager> EffectManager;
 
     UPROPERTY(EditDefaultsOnly, Category = "Weather")
     float RefreshDuration = 5.0f;

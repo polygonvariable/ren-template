@@ -119,6 +119,7 @@ void AWeatherRegionActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
     {
         WeatherSubsystem->OnWeatherRefreshed.RemoveAll(this);
     }
+    WeatherSubsystem = nullptr;
 
     RemoveWeather();
 

@@ -3,14 +3,10 @@
 #pragma once
 
 // Project Headers
-#include "MaterialSurfaceProperty.h"
 #include "Priority/PriorityListInterface.h"
 
 // Generated Headers
 #include "SeasonController.generated.h"
-
-// Module Macros
-#define REN_API RSEASON_API
 
 // Forward Declarations
 class UMaterialParameterCollectionInstance;
@@ -34,14 +30,14 @@ public:
 	void Initialize(UMaterialParameterCollectionInstance* InMPCInstance);
 	void Deinitialize();
 
-	bool AddSeason(USeasonCollectionAsset* SeasonCollection, int Priority);
-	bool RemoveSeason(int Priority);
+	bool AddSeasonCollection(USeasonCollectionAsset* SeasonCollection, int Priority);
+	bool RemoveSeasonCollection(int Priority);
 
 #if UE_BUILD_DEVELOPMENT
-	REN_API int GetEditorYearLength() const;
-	REN_API int GetEditorCurrentDay() const;
-	REN_API const USeasonCollectionAsset* GetEditorCurrentSeasonCollection() const;
-	REN_API const TMap<int, TWeakObjectPtr<UObject>>& GetEditorSeasonCollectionList() const;
+	RSEASON_API int GetEditorYearLength() const;
+	RSEASON_API int GetEditorCurrentDay() const;
+	RSEASON_API const USeasonCollectionAsset* GetEditorCurrentSeasonCollection() const;
+	RSEASON_API const TMap<int, TWeakObjectPtr<UObject>>& GetEditorSeasonCollectionList() const;
 #endif
 
 protected:
@@ -77,8 +73,4 @@ private:
 	TMap<int, TWeakObjectPtr<UObject>> _SeasonItems;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

@@ -4,19 +4,38 @@
 #include "Data/WeatherAsset.h"
 
 // Engine Headers
+#include "UObject/ObjectSaveContext.h"
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
 #endif
 
 // Project Headers
-#include "Data/EnvironmentProfileAsset.h"
 #if WITH_EDITOR
 #include "Core/WeatherSettings.h"
+#include "Data/EnvironmentProfileAsset.h"
 #include "Data/WeatherWorldConfig.h"
 #include "MaterialLibrary.h"
 #include "WorldFragmentSettings.h"
 #endif
 
+
+void UWeatherAsset::PreSave(FObjectPreSaveContext ObjectSaveContext)
+{
+#if WITH_EDITOR
+    WeatherEffects.Empty();
+
+    for (const TSoftObjectPtr<UNiagaraSystem>& Asset : NiagaraAssets)
+    {
+        WeatherEffects.Add(Asset.ToSoftObjectPath());
+    }
+    for (const TSoftObjectPtr<USoundBase>& Asset : SoundAssets)
+    {
+        WeatherEffects.Add(Asset.ToSoftObjectPath());
+    }
+#endif
+
+    Super::PreSave(ObjectSaveContext);
+}
 
 FPrimaryAssetId UWeatherAsset::GetPrimaryAssetId() const
 {
@@ -43,9 +62,9 @@ void UWeatherAsset::ApplySurfaceToWorld()
 
         const UWeatherSettings* Settings = UWeatherSettings::Get();
         const UWeatherWorldConfig* WorldConfig = WorldSettings->FindConfigByClass<UWeatherWorldConfig>();
-        if (!IsValid(WorldConfig))
+        if (!IsValid(WorldConfig) || !IsValid(Settings))
         {
-            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Unable to get weather world config")));
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("Unable to get weather world config or settings")));
             return;
         }
 
@@ -64,11 +83,20 @@ EDataValidationResult UWeatherAsset::IsDataValid(FDataValidationContext& Context
 {
     EDataValidationResult Result = Super::IsDataValid(Context);
 
-    for (const TSoftObjectPtr<UNiagaraSystem>& Item : NiagaraSystems)
+    for (const TSoftObjectPtr<UNiagaraSystem>& Asset : NiagaraAssets)
     {
-        if (Item.IsNull())
+        if (Asset.IsNull())
         {
-            Context.AddError(FText::FromString("Invalid niagara system in list"));
+            Context.AddError(FText::FromString("Invalid niagara asset in list"));
+            return EDataValidationResult::Invalid;
+        }
+    }
+
+    for (const TSoftObjectPtr<USoundBase>& Asset : SoundAssets)
+    {
+        if (Asset.IsNull())
+        {
+            Context.AddError(FText::FromString("Invalid sound asset in list"));
             return EDataValidationResult::Invalid;
         }
     }
@@ -113,6 +141,6 @@ EDataValidationResult UWeatherAsset::IsDataValid(FDataValidationContext& Context
 
 FPrimaryAssetType UWeatherAsset::GetPrimaryAssetType()
 {
-    return FPrimaryAssetType(TEXT("Environment.Weather"));
+    return FPrimaryAssetType(TEXT("Weather"));
 }
 

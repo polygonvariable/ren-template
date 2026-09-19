@@ -98,6 +98,10 @@
 		{
 			"Name": "TextureGraph",
 			"Enabled": true
+		},
+		{
+			"Name": "ImpostorBaker",
+			"Enabled": true
 		}
 	]
 }

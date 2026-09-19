@@ -36,23 +36,25 @@ public:
 
     UWeatherAsset* GetRandomWeather() const;
 
-#if WITH_EDITOR
     // ~ UPrimaryDataAsset
     virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
-    virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
-    // ~ End of UPrimaryDataAsset
-#endif
-
-    // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
-    static FPrimaryAssetType GetPrimaryAssetType();
+#if WITH_EDITOR
+    // ~ UPrimaryDataAsset
+    virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+    // ~ End of UPrimaryDataAsset
+#endif
 
 protected:
 
     UPROPERTY(VisibleAnywhere)
     int TotalWeight = 0;
+
+public:
+
+    static FPrimaryAssetType GetPrimaryAssetType();
 
 };
 

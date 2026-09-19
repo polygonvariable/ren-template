@@ -10,6 +10,7 @@
 
 // Forward Declarations
 class UWeatherSubsystem;
+class AWeatherEffectActor;
 
 
 /**
@@ -28,6 +29,9 @@ public:
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Subsystem")
 	TSubclassOf<UWeatherSubsystem> SubsystemClass;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Effect")
+	TMap<UClass*, TSubclassOf<AWeatherEffectActor>> EffectActors;
 
 	/*
 	 * RGB	- Color added

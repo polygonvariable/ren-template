@@ -12,6 +12,7 @@
 #include "WeatherAsset.generated.h"
 
 // Forward Declarations
+class FObjectPreSaveContext;
 class AWeatherEffectActor;
 class UNiagaraSystem;
 class UEnvironmentProfileAsset;
@@ -34,8 +35,8 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
     FMaterialSurfaceProperty SurfaceProperty;
 
-    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
-    TArray<TSoftObjectPtr<UNiagaraSystem>> NiagaraSystems;
+    UPROPERTY(VisibleDefaultsOnly, Category = "Weather Effect")
+    TArray<FSoftObjectPath> WeatherEffects;
 
     UPROPERTY(EditDefaultsOnly, Category = "Environment")
     TArray<TObjectPtr<UEnvironmentProfileAsset>> EnvironmentProfiles;
@@ -44,21 +45,17 @@ public:
     int ProfilePriority = 0;
 
     UPROPERTY(EditDefaultsOnly, Category = "Transition", meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
-    float TransitionRate = 0.5f;
+    float TransitionRate = 0.2f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Transition", meta = (UIMin = "0.05", ClampMin = "0.05", UIMax = "30", ClampMax = "30"))
-    float TransitionDuration = 5.0f;
+    float TransitionDuration = 4.0f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Transition")
     TObjectPtr<UCurveFloat> TransitionCurve;
 
 
-#if WITH_EDITORONLY_DATA
-    UFUNCTION(Category = "Debug", CallInEditor)
-    void ApplySurfaceToWorld();
-#endif
-
     // ~ UPrimaryDataAsset
+    virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
     // ~ End of UPrimaryDataAsset
 
@@ -66,6 +63,19 @@ public:
     // ~ UPrimaryDataAsset
     virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
     // ~ End of UPrimaryDataAsset
+#endif
+
+protected:
+
+#if WITH_EDITORONLY_DATA
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
+    TArray<TSoftObjectPtr<UNiagaraSystem>> NiagaraAssets;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Weather Effect")
+    TArray<TSoftObjectPtr<USoundBase>> SoundAssets;
+
+    UFUNCTION(Category = "Debug", CallInEditor)
+    void ApplySurfaceToWorld();
 #endif
 
 public:

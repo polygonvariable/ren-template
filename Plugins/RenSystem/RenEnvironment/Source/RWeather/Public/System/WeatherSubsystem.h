@@ -33,6 +33,9 @@ class UWeatherSubsystem : public UWorldSubsystem
 
 public:
 
+	DECLARE_MULTICAST_DELEGATE(FOnWeatherControllerCreated);
+	FOnWeatherControllerCreated OnControllerCreated;
+
 	FOnWeatherRefreshed OnWeatherRefreshed;
 
 

@@ -48,7 +48,10 @@ void UEnvironmentAtmosphereController::OnPriorityItemChanged(UObject* Item)
 	}
 
 	CurrentMieScattering = SkyAtmosphere->MieScatteringScale;
+	CurrentMieAnisotropy = SkyAtmosphere->MieAnisotropy;
+
 	TargetMieScattering = Profile->MieScatteringScale;
+	TargetMieAnisotropy = Profile->MieAnisotropy;
 
 	StartTransition();
 }
@@ -62,10 +65,7 @@ void UEnvironmentAtmosphereController::OnTransitionChanged(float Alpha)
 		return;
 	}
 
-	float NewMieScattering = FMath::Lerp(CurrentMieScattering, TargetMieScattering, Alpha);
-
-	SkyAtmosphere->SetMieScatteringScale(NewMieScattering);
-
-	PRINT_INFO(LogEnvironment, 5.0f, TEXT("EnvironmentAtmosphere Alpha: %f"), Alpha);
+	SkyAtmosphere->SetMieScatteringScale(FMath::Lerp(CurrentMieScattering, TargetMieScattering, Alpha));
+	SkyAtmosphere->SetMieAnisotropy(FMath::Lerp(CurrentMieAnisotropy, TargetMieAnisotropy, Alpha));
 }
 

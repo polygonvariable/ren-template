@@ -7,7 +7,7 @@
 
 // Forward Declaration
 class UWeatherController;
-class AWeatherEffectManagerActor;
+class AWeatherEffectManager;
 
 
 /*
@@ -29,15 +29,15 @@ public:
 protected:
 
     TWeakObjectPtr<UWeatherController> WeatherController;
-    TWeakObjectPtr<AWeatherEffectManagerActor> WeatherManager;
+    TWeakObjectPtr<AWeatherEffectManager> WeatherManager;
 
 
     UWeatherController* GetController();
-    AWeatherEffectManagerActor* GetWeatherManager();
+    AWeatherEffectManager* GetWeatherManager();
 
-    void Draw_WeatherManager(AWeatherEffectManagerActor* Manager);
-    void Draw_WeatherManagerEffects(AWeatherEffectManagerActor* Manager);
-    void Draw_WeatherManagerEffectHandles(AWeatherEffectManagerActor* Manager);
+    void Draw_WeatherManager(AWeatherEffectManager* Manager);
+    void Draw_WeatherManagerEffects(AWeatherEffectManager* Manager);
+    void Draw_WeatherManagerEffectHandles(AWeatherEffectManager* Manager);
 
     void Draw_WeatherControllerActive(UWeatherController* Controller);
     void Draw_WeatherControllerList(UWeatherController* Controller);

@@ -57,23 +57,22 @@ void USeasonSubsystem::HandleOnSeasonLoaded()
 {
 	FAssetManagerUtil::CancelHandle(AssetHandle);
 
-	const USeasonWorldConfig* Config = USeasonWorldConfig::Get(GetWorld());
-	if (!IsValid(Config) || !Config->bEnabled)
+	if (!IsValid(SeasonConfig))
 	{
 		LOG_ERROR(LogSeason, TEXT("Season world config is invalid or disabled"));
 		return;
 	}
 
-	if (!CreateSeasonController(Config->SeasonController, Config->SeasonMPC))
+	if (!CreateSeasonController(SeasonConfig->SeasonController, SeasonConfig->SeasonMPC))
 	{
 		LOG_ERROR(LogSeason, TEXT("Failed to create SeasonController"));
 		return;
 	}
 
-	USeasonCollectionAsset* CollectionAsset = AssetManager->GetPrimaryAssetObject<USeasonCollectionAsset>(Config->DefaultSeason);
+	USeasonCollectionAsset* CollectionAsset = AssetManager->GetPrimaryAssetObject<USeasonCollectionAsset>(SeasonConfig->DefaultSeason);
 	if (IsValid(CollectionAsset))
 	{
-		SeasonController->AddSeason(CollectionAsset, Config->DefaultPriority);
+		SeasonController->AddSeasonCollection(CollectionAsset, SeasonConfig->DefaultPriority);
 	}
 }
 
@@ -115,9 +114,9 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
-	const FPrimaryAssetId Weather = SeasonConfig->DefaultSeason;
+	const FPrimaryAssetId Season = SeasonConfig->DefaultSeason;
 
-	AssetHandle = AssetManager->LoadPrimaryAsset(Weather, Bundles, FStreamableDelegate::CreateUObject(this, &USeasonSubsystem::HandleOnSeasonLoaded));
+	AssetHandle = AssetManager->LoadPrimaryAsset(Season, Bundles, FStreamableDelegate::CreateUObject(this, &USeasonSubsystem::HandleOnSeasonLoaded));
 }
 
 void USeasonSubsystem::OnWorldEndPlay(UWorld& InWorld)
