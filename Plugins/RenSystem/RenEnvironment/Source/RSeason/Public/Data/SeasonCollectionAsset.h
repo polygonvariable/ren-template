@@ -8,9 +8,6 @@
 // Generated Headers
 #include "SeasonCollectionAsset.generated.h"
 
-// Module Macros
-#define REN_API RSEASON_API
-
 // Forward Declarations
 class UCurveFloat;
 class USeasonAsset;
@@ -54,7 +51,7 @@ public:
     TArray<FSeasonData> Seasons;
 
 
-    REN_API const USeasonAsset* GetSeasonByDay(int InDay, int InYearLength, float& OutAlpha) const;
+    RSEASON_API const USeasonAsset* GetSeasonByDay(int InDay, int InYearLength, float& OutAlpha) const;
 
     // ~ UPrimaryDataAsset
     virtual FPrimaryAssetId GetPrimaryAssetId() const override;
@@ -71,8 +68,4 @@ public:
     static FPrimaryAssetType GetPrimaryAssetType();
 
 };
-
-
-// Module Macros
-#undef REN_API
 

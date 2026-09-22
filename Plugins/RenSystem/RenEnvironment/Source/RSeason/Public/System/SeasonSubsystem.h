@@ -8,9 +8,6 @@
 // Generated Headers
 #include "SeasonSubsystem.generated.h"
 
-// Module Macros
-#define REN_API RSEASON_API
-
 // Forward Declarations
 class UAssetManager;
 class USeasonController;
@@ -29,7 +26,7 @@ class USeasonSubsystem : public UWorldSubsystem
 
 public:
 
-	REN_API USeasonController* GetSeasonController() const;
+	RSEASON_API USeasonController* GetSeasonController() const;
 
 	// ~ UWorldSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -65,11 +62,7 @@ protected:
 
 public:
 
-	static REN_API USeasonSubsystem* Get(UWorld* World);
+	static RSEASON_API USeasonSubsystem* Get(UWorld* World);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

@@ -6,8 +6,12 @@
 #include "GameplayTagAssetInterface.h"
 #include "StructUtils/InstancedStruct.h"
 
+// Project Headers
+#include "Core/Type/ComponentDefinition.h"
+
 // Generated Headers
 #include "CharacterInitializationData.generated.h"
+
 
 /*
  *
@@ -20,14 +24,20 @@ struct FCharacterInitializationData
 
 public:
 
-	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Asset.Character"))
+	FCharacterInitializationData() {};
+	FCharacterInitializationData(FPrimaryAssetId InAssetId) : AssetId(InAssetId) {};
+
+	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Character"))
 	FPrimaryAssetId AssetId;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (Categories = "Data.Attribute"))
 	TMap<FGameplayTag, float> Attributes;
 
 	UPROPERTY(EditAnywhere)
 	TMap<FGameplayTag, FInstancedStruct> Metadata;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FComponentDefinition> Components;
 
 	bool IsValid() const
 	{

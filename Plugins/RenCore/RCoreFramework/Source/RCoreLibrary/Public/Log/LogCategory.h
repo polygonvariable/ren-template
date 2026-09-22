@@ -65,6 +65,7 @@ REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatar, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogAvatarAscension, Log, All);
 REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacterParty, Log, All);
+REN_API DECLARE_LOG_CATEGORY_EXTERN(LogCharacterSpawner, Log, All);
 // ~ End of Avatar Categories
 
 // ~ Equipment Categories

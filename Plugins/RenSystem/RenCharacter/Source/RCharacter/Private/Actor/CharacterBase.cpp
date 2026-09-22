@@ -8,6 +8,7 @@
 #include "CharacterTrajectoryComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayEffect.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Project Headers
@@ -15,6 +16,7 @@
 #include "Core/CharacterSettings.h"
 #include "Data/AscensionFragment.h"
 #include "Data/CharacterAsset.h"
+#include "Data/CharacterTemplateAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
@@ -68,6 +70,7 @@ void ACharacterBase::InitializeCharacter()
 {
 	InitializeAttributes();
 	InitializeTags();
+	InitializeComponents();
 }
 
 void ACharacterBase::DeinitializeCharacter()
@@ -77,7 +80,7 @@ void ACharacterBase::DeinitializeCharacter()
 	{
 		MovementComponent->SetMovementMode(MOVE_None);
 	}
-
+	
 	CharacterAsset = nullptr;
 }
 
@@ -105,13 +108,59 @@ void ACharacterBase::CallOnCharacterRevived()
 
 
 
+void ACharacterBase::InitializeComponents()
+{
+	TArray<FComponentDefinition>& Components = CharacterData.Components;
+	if (Components.Num() > 0)
+	{
+		RegisterComponents(Components);
+	}
+	else
+	{
+		UCharacterTemplateAsset* TemplateAsset = CharacterAsset->CharacterTemplate.Get();
+		if (IsValid(TemplateAsset))
+		{
+			RegisterComponents(TemplateAsset->Components);
+		}
+	}
+}
+
+void ACharacterBase::RegisterComponents(TArray<FComponentDefinition>& Components)
+{
+	for (FComponentDefinition& Definition : Components)
+	{
+		if (!Definition.IsValid())
+		{
+			continue;
+		}
+
+		FComponentTemplateData* InstanceData = Definition.Data.GetMutablePtr<FComponentTemplateData>();
+		if (!InstanceData)
+		{
+			continue;
+		}
+
+		UActorComponent* NewComponent = NewObject<UActorComponent>(this, Definition.Component);
+		if (IsValid(NewComponent))
+		{
+			NewComponent->RegisterComponent();
+
+			InstanceData->AttachToParent(NewComponent, this);
+			InstanceData->ApplyToInstance(NewComponent);
+
+			AddInstanceComponent(NewComponent);
+		}
+	}
+}
+
+
+
 void ACharacterBase::InitializeAttributes()
 {
-	_CharacterAttributes = CharacterData.Attributes;
+	CharacterAttributes = CharacterData.Attributes;
 
 	AddDefaultAttributes();
 	AddRuntimeAttributes();
-	ApplyAttributes();
 }
 
 void ACharacterBase::RefreshAttributes()
@@ -129,13 +178,13 @@ void ACharacterBase::AddDefaultAttributes()
 
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
 
-	_CharacterAttributes.Add(Settings->DataMaxHealthTag, CharacterAsset->Health);
+	CharacterAttributes.Add(Settings->DataMaxHealthTag, CharacterAsset->Health);
 
-	_CharacterAttributes.Add(Settings->DataPhysicalDamageTag, CharacterAsset->PhysicalDamage);
-	_CharacterAttributes.Add(Settings->DataPhysicalDefenseTag, CharacterAsset->PhysicalDefense);
+	CharacterAttributes.Add(Settings->DataPhysicalDamageTag, CharacterAsset->PhysicalDamage);
+	CharacterAttributes.Add(Settings->DataPhysicalDefenseTag, CharacterAsset->PhysicalDefense);
 
-	_CharacterAttributes.Add(Settings->DataElementalDamageTag, CharacterAsset->ElementalDamage);
-	_CharacterAttributes.Add(Settings->DataElementalDefenseTag, CharacterAsset->ElementalDefense);
+	CharacterAttributes.Add(Settings->DataElementalDamageTag, CharacterAsset->ElementalDamage);
+	CharacterAttributes.Add(Settings->DataElementalDefenseTag, CharacterAsset->ElementalDefense);
 }
 
 void ACharacterBase::AddRuntimeAttributes()
@@ -144,8 +193,14 @@ void ACharacterBase::AddRuntimeAttributes()
 
 void ACharacterBase::ApplyAttributes()
 {
+	if (!IsValid(CharacterAsset))
+	{
+		return;
+	}
+
+	const UCharacterTemplateAsset* TemplateAsset = CharacterAsset->CharacterTemplate.Get();
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	if (!IsValid(ASC))
+	if (!IsValid(TemplateAsset) || !IsValid(TemplateAsset->InitialAttributeEffect) || !IsValid(ASC))
 	{
 		return;
 	}
@@ -153,13 +208,19 @@ void ACharacterBase::ApplyAttributes()
 	FGameplayEffectContextHandle Context = ASC->MakeEffectContext();
 	Context.AddSourceObject(this);
 
-	FGameplayEffectSpecHandle Spec = ASC->MakeOutgoingSpec(InitialAttributeEffectClass, GetCharacterLevel(), Context);
+	FGameplayEffectSpecHandle Spec = ASC->MakeOutgoingSpec(TemplateAsset->InitialAttributeEffect, GetCharacterLevel(), Context);
 	if (Spec.IsValid())
 	{
-		Spec.Data->SetByCallerTagMagnitudes = _CharacterAttributes;
+		Spec.Data->SetByCallerTagMagnitudes = CharacterAttributes;
 		ASC->ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
 	}
 }
+
+
+
+
+
+
 
 void ACharacterBase::OnCharacterInitialized_Implementation()
 {
@@ -168,30 +229,33 @@ void ACharacterBase::OnCharacterInitialized_Implementation()
 int ACharacterBase::GetCharacterLevel() const
 {
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
-	const FGameplayTag& LevelTag = Settings->DataLevelTag;
-	const float* Level = _CharacterAttributes.Find(LevelTag);
+	const float* Level = CharacterAttributes.Find(Settings->DataLevelTag);
 	if (!Level || !IsValid(CharacterAsset))
 	{
-		return _CharacterLevel;
+		return CharacterLevel;
 	}
 
-	const UAscensionFragment* _AscensionFragment = CharacterAsset->FindFragmentByClass<UAscensionFragment>();
-	if (!IsValid(_AscensionFragment))
+	const UAscensionFragment* Fragment = CharacterAsset->FindFragmentByClass<UAscensionFragment>();
+	if (!IsValid(Fragment))
 	{
-		return _CharacterLevel;
+		return CharacterLevel;
 	}
 
-	return FMath::Clamp(*Level, 1.0f, _AscensionFragment->GetMaxLevel());
+	return FMath::Clamp(static_cast<int>(*Level), 1, Fragment->GetMaxLevel());
 }
 
 void ACharacterBase::SetCharacterLevel(int Level)
 {
-	_CharacterLevel = Level;
+	const UAscensionFragment* Fragment = CharacterAsset->FindFragmentByClass<UAscensionFragment>();
+	if (IsValid(Fragment))
+	{
+		CharacterLevel = FMath::Clamp(Level, 1, Fragment->GetMaxLevel());
+	}
 }
 
 TMap<FGameplayTag, float>& ACharacterBase::GetCharacterAttributes()
 {
-	return _CharacterAttributes;
+	return CharacterAttributes;
 }
 
 
@@ -228,7 +292,6 @@ UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
 }
-
 
 void ACharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
@@ -278,15 +341,22 @@ void ACharacterBase::GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& O
 	}
 }
 
+
+
+
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ApplyAttributes();
 }
 
 void ACharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 }
+
+
 
 
 void ACharacterBase::DirectionalMove_Implementation(const FVector& Direction)

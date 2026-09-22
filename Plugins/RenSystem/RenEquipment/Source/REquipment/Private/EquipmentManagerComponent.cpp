@@ -8,7 +8,6 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "EquipmentActor.h"
 #include "Core/AssetManagerUtil.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AssetInstanceContextProvider.h"
@@ -16,6 +15,7 @@
 #include "Data/CoreDataAsset.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
+#include "EquipmentActor.h"
 #include "Interface/SpawnContextProvider.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
@@ -37,9 +37,6 @@ UEquipmentManagerComponent::UEquipmentManagerComponent(const FObjectInitializer&
 
 void UEquipmentManagerComponent::InitializeManager()
 {
-	AssetManager = UAssetManager::GetIfInitialized();
-	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
-
 	//ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
 	//if (SpawnContext)
 	//{
@@ -183,7 +180,12 @@ UEquipmentController* UEquipmentManagerComponent::GetActiveController() const
 
 void UEquipmentManagerComponent::BeginPlay()
 {
+	AssetManager = UAssetManager::GetIfInitialized();
+	ActorFreelist = UActorFreelistSubsystem::Get(GetWorld());
+
 	Super::BeginPlay();
+
+	InitializeManager();
 }
 
 void UEquipmentManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)

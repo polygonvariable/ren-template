@@ -58,6 +58,7 @@ DEFINE_LOG_CATEGORY(LogCharacter);
 DEFINE_LOG_CATEGORY(LogAvatar);
 DEFINE_LOG_CATEGORY(LogAvatarAscension);
 DEFINE_LOG_CATEGORY(LogCharacterParty);
+DEFINE_LOG_CATEGORY(LogCharacterSpawner);
 // ~ End of Avatar Categories
 
 // ~ Equipment Categories

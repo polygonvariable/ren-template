@@ -24,10 +24,10 @@ public:
 	FEquipmentSlotId(FGameplayTag InSlotTag, int InId) : SlotTag(InSlotTag), Id(InId) {};
 
 
-	UPROPERTY(EditAnywhere, meta = (Categories = "Equipment.Category"))
+	UPROPERTY(EditAnywhere, SaveGame, meta = (Categories = "Equipment.Category"))
 	FGameplayTag SlotTag;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, SaveGame)
 	int Id = 10;
 	
 

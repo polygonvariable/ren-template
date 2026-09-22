@@ -9,6 +9,9 @@
 // Generated Headers
 #include "CharacterSettings.generated.h"
 
+// Forward Declarations
+class UGameplayEffect;
+
 
 /**
  *
@@ -21,10 +24,8 @@ class UCharacterSettings : public UDeveloperSettings
 
 public:
 
-	UCharacterSettings(const FObjectInitializer& ObjectInitializer)
-	{
-		CategoryName = TEXT("Ren Project");
-	}
+	UCharacterSettings(const FObjectInitializer& ObjectInitializer);
+
 
 	UPROPERTY(Config, EditDefaultsOnly, Category = "Asset")
 	TArray<FName> CharacterBundles;
@@ -36,27 +37,27 @@ public:
 	FGameplayTag DeadStateTag;
 
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataHealthTag;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataMaxHealthTag;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Level Tags")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Level Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataLevelTag;
 
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataPhysicalDamageTag;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags")
-	FGameplayTag DataElementalDamageTag;
-
-
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags")
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataPhysicalDefenseTag;
 
-	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags")
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Damage Tags", meta = (Categories = "Data.Attribute"))
+	FGameplayTag DataElementalDamageTag;
+
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Defense Tags", meta = (Categories = "Data.Attribute"))
 	FGameplayTag DataElementalDefenseTag;
 
 
@@ -64,10 +65,7 @@ public:
 	FGameplayTag StateDeadTag;
 
 
-	static const UCharacterSettings* Get()
-	{
-		return GetDefault<UCharacterSettings>();
-	}
+	static RCHARACTER_API const UCharacterSettings* Get();
 
 };
 

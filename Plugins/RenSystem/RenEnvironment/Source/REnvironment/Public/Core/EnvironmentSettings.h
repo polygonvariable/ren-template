@@ -8,9 +8,6 @@
 // Generated Headers
 #include "EnvironmentSettings.generated.h"
 
-// Module Macros
-#define REN_API RENVIRONMENT_API
-
 // Forward Declaration
 class UEnvironmentSubsystem;
 
@@ -37,11 +34,7 @@ public:
 
 public:
 
-	REN_API static const UEnvironmentSettings* Get();
+	static RENVIRONMENT_API const UEnvironmentSettings* Get();
 
 };
-
-
-// Module Macros
-#undef REN_API
 

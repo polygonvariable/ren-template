@@ -9,7 +9,6 @@ AEquipmentActor::AEquipmentActor(const FObjectInitializer& ObjectInitializer)
 	PrimaryActorTick.bCanEverTick = false;
 	bReplicates = true;
 	SetActorEnableCollision(false);
-	SetActorTickEnabled(false);
 	SetActorHiddenInGame(true);
 	SetCanBeDamaged(false);
 }

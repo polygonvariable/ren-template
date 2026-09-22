@@ -19,8 +19,8 @@ UEquipmentSettings::UEquipmentSettings(const FObjectInitializer& ObjectInitializ
 
 	SubsystemClass = UEquipmentSubsystem::StaticClass();
 
-	EquipmentType = TEXT("Asset.Inventory");
-	OwnerType = TEXT("Asset.Character");
+	EquipmentType = TEXT("Inventory");
+	OwnerType = TEXT("Character");
 
 	EquipmentBundles.Add(TEXT("Equipment"));
 

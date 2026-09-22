@@ -34,6 +34,7 @@ public class RCharacter : ModuleRules
                 "RCoreAscension",
                 "RCoreAsset",
                 "RCoreAssetInstance",
+                "RCoreGamedataComponent",
             }
 			);
 			

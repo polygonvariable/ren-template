@@ -8,12 +8,10 @@
 // Generated Headers
 #include "CharacterAsset.generated.h"
 
-// Module Macros
-#define REN_API RCHARACTER_API
-
 // Forward Declarations
 class UGameplayAbility;
 class ACharacterBase;
+class UCharacterTemplateAsset;
 
 
 /**
@@ -51,14 +49,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Ability"))
 	TArray<TSoftClassPtr<UGameplayAbility>> CharacterAbilities;
 
+	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Character"))
+	TSoftObjectPtr<UCharacterTemplateAsset> CharacterTemplate;
+
 
 	// ~ UPrimaryDataAsset
-	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	RCHARACTER_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
 public:
 
-	REN_API static FPrimaryAssetType GetPrimaryAssetType();
+	static RCHARACTER_API FPrimaryAssetType GetPrimaryAssetType();
 
 };
 
@@ -70,7 +71,4 @@ class UEnemyCharacterAsset : public UCharacterAsset
 	GENERATED_BODY()
 
 };
-
-// Module Macros
-#undef REN_API
 

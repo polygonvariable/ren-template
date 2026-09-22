@@ -14,9 +14,6 @@
 // Generated Headers
 #include "EnvironmentWorldConfig.generated.h"
 
-// Module Macros
-#define REN_API RENVIRONMENT_API
-
 // Forward Declarations
 class UPriorityList;
 class UEnvironmentProfileAsset;
@@ -57,8 +54,4 @@ public:
 #endif
 
 };
-
-
-// Module Macros
-#undef REN_API
 

@@ -20,6 +20,6 @@ FPrimaryAssetId UCharacterAsset::GetPrimaryAssetId() const
 
 FPrimaryAssetType UCharacterAsset::GetPrimaryAssetType()
 {
-	return TEXT("Asset.Character");
+	return TEXT("Character");
 }
 

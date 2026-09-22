@@ -36,6 +36,7 @@ public class REquipment : ModuleRules
                 "RCoreGamedataStorage",
 				"RCoreAuthAction",
                 "RCoreAssetInstance",
+				"RCoreGamedataComponent",
             }
 			);
 			

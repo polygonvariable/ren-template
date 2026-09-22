@@ -74,6 +74,10 @@
 			"Enabled": true
 		},
 		{
+			"Name": "RCoreGamedata",
+			"Enabled": true
+		},
+		{
 			"Name": "RCoreWorlddata",
 			"Enabled": true
 		},

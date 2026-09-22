@@ -25,6 +25,25 @@ public:
 
 	UEnvironmentBrushComponent();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bLineTrace = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanDraw = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D BrushSize = FVector2D(4.0f, 4.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BrushDensity = 1.0f;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDrawDebug = false;
+#endif
+
+
 	void RegisterBrush();
 	void UnregisterBrush();
 
@@ -49,23 +68,6 @@ protected:
 
 	UPROPERTY()
 	bool bIsCharacter = false;
-
-#if WITH_EDITORONLY_DATA
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bDrawDebug = false;
-#endif
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bLineTrace = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCanDraw = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FVector2D BrushSize = FVector2D(4.0f, 4.0f);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float BrushDensity = 1.0f;
 
 
 	bool IsNearGround() const;

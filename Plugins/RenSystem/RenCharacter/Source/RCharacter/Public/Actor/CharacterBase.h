@@ -99,8 +99,6 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> InitialAttributeEffectClass;
 
 
 	virtual void RefreshCharacter();
@@ -112,12 +110,15 @@ protected:
 	void CallOnCharacterRevived();
 
 
-	virtual void InitializeAttributes();
-	virtual void RefreshAttributes();
+	void InitializeComponents();
+	void RegisterComponents(TArray<FComponentDefinition>& Components);
 
+
+	void InitializeAttributes();
+	void RefreshAttributes();
 	virtual void AddDefaultAttributes();
 	virtual void AddRuntimeAttributes();
-	virtual void ApplyAttributes();
+	void ApplyAttributes();
 
 
 	virtual void InitializeTags();
@@ -147,11 +148,12 @@ protected:
 
 private:
 
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	int _CharacterLevel = 1;
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
-	TMap<FGameplayTag, float> _CharacterAttributes;
+	int CharacterLevel = 1;
+
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TMap<FGameplayTag, float> CharacterAttributes;
 
 };
 

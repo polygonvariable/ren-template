@@ -6,7 +6,7 @@
 
 FPrimaryAssetType UInventoryAsset::GetPrimaryAssetType()
 {
-	return TEXT("Asset.Inventory");
+	return TEXT("Inventory");
 }
 
 FPrimaryAssetId UInventoryAsset::GetPrimaryAssetId() const

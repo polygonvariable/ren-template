@@ -31,6 +31,7 @@ public class REnvironmentPaint : ModuleRules
                 "RCoreAsset",
                 "RCoreAssetManager",
                 "RCoreSettings",
+				"RCoreGamedataComponent",
             }
 			);
 			

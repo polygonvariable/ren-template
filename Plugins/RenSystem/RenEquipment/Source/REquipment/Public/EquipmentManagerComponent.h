@@ -42,6 +42,10 @@ public:
 
 	UEquipmentManagerComponent(const FObjectInitializer& ObjectInitializer);
 
+
+	UPROPERTY(EditAnywhere)
+	EDataSource SourceType = EDataSource::Static;
+
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
 	TArray<FEquipmentInitializationData> EquipmentSpawnData;
 
@@ -50,17 +54,14 @@ public:
 	FOnEquipmentManagerEvent OnEquipmentUpdate;
 	FOnEquipmentManagerEvent OnEquipmentChanged;
 
-	UFUNCTION(BlueprintCallable)
-	void InitializeManager();
 
-	UFUNCTION(BlueprintCallable)
+	void InitializeManager();
 	void DeinitializeManager();
 
 	UFUNCTION(BlueprintCallable)
 	REN_API void ActivateEquipmentById(FGameplayTag SlotTag, int Id);
 	REN_API void ActivateEquipmentById(const FEquipmentSlotId& SlotId);
 	REN_API UEquipmentController* GetEquipmentControllerByTag(const FEquipmentSlotId& SlotId) const;
-
 	REN_API UEquipmentController* GetActiveController() const;
 
 	// ~ UActorComponent
@@ -80,9 +81,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TObjectPtr<UEquipmentStateController> CurrentController = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	EDataSource SourceType = EDataSource::Static;
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	TArray<TObjectPtr<UEquipmentController>> EquipmentControllers;

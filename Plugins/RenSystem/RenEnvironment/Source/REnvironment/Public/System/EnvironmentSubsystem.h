@@ -11,9 +11,6 @@
 // Generated Headers
 #include "EnvironmentSubsystem.generated.h"
 
-// Module Macros
-#define REN_API RENVIRONMENT_API
-
 // Forward Declarations
 class UAssetManager;
 class UEnvironmentDiscreteController;
@@ -34,9 +31,9 @@ class UEnvironmentSubsystem : public UWorldSubsystem
 
 public:
 
-	REN_API bool AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
-	REN_API bool RemoveProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
-	REN_API bool RemoveProfile(EEnvironmentProfileType ProfileType, int Priority);
+	RENVIRONMENT_API bool AddProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	RENVIRONMENT_API bool RemoveProfile(UEnvironmentProfileAsset* ProfileAsset, int Priority);
+	RENVIRONMENT_API bool RemoveProfile(EEnvironmentProfileType ProfileType, int Priority);
 
 	// ~ UWorldSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -82,11 +79,7 @@ protected:
 
 public:
 
-	static REN_API UEnvironmentSubsystem* Get(UWorld* World);
+	static RENVIRONMENT_API UEnvironmentSubsystem* Get(UWorld* World);
 
 };
-
-
-// Module Macros
-#undef REN_API
 
