@@ -112,9 +112,9 @@ void UGameplayModeSubsystem::SetGameplayModeByTag(FGameplayTagContainer Tags)
 		const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
 		if (FoundHandle)
 		{
-			FoundHandle->Key.Broadcast(Tag, false);
+			FoundHandle->Key.Broadcast(false);
 		}
-		OnGameplayModeTagChanged.Broadcast(Tag, false);
+		OnGameplayModeTagsChanged.Broadcast(Tag, false);
 	}
 
 	for (const FGameplayTag& Tag : Added)
@@ -122,9 +122,9 @@ void UGameplayModeSubsystem::SetGameplayModeByTag(FGameplayTagContainer Tags)
 		const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
 		if (FoundHandle)
 		{
-			FoundHandle->Key.Broadcast(Tag, true);
+			FoundHandle->Key.Broadcast(true);
 		}
-		OnGameplayModeTagChanged.Broadcast(Tag, true);
+		OnGameplayModeTagsChanged.Broadcast(Tag, true);
 	}
 }
 
@@ -144,9 +144,9 @@ void UGameplayModeSubsystem::AddGameplayMode(FGameplayTagContainer Tags)
 			const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
 			if (FoundHandle)
 			{
-				FoundHandle->Key.Broadcast(Tag, true);
+				FoundHandle->Key.Broadcast(true);
 			}
-			OnGameplayModeTagChanged.Broadcast(Tag, true);
+			OnGameplayModeTagsChanged.Broadcast(Tag, true);
 		}
 	}
 }
@@ -162,9 +162,9 @@ void UGameplayModeSubsystem::RempoveGameplayMode(FGameplayTagContainer Tags)
 				const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
 				if (FoundHandle)
 				{
-					FoundHandle->Key.Broadcast(Tag, false);
+					FoundHandle->Key.Broadcast(false);
 				}
-				OnGameplayModeTagChanged.Broadcast(Tag, false);
+				OnGameplayModeTagsChanged.Broadcast(Tag, false);
 			}
 		}
 	}

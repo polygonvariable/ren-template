@@ -74,3 +74,4 @@ private:
 	TSharedPtr<FStreamableHandle> AssetHandle;
 
 };
+

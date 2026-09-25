@@ -27,7 +27,7 @@ class UAvatarSpawnerComponent : public UCharacterSpawnerComponent
 public:
 
 	UPROPERTY(EditAnywhere, meta = (Categories = "Gameplay"))
-	FGameplayTag GameplayModeTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Possess.Character"));
+	FGameplayTag CharacterPossessTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Possess.Character"));
 
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
 	TArray<FCharacterInitializationData> CharacterData;
@@ -57,7 +57,7 @@ protected:
 	void UnPossessCharacter();
 
 	// ~ Binding
-	void HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded);
+	void HandleOnCharacterPossessTagChanged(bool bAdded);
 	void HandleOnCharacterOrderUpdated();
 	// ~ End of Binding
 

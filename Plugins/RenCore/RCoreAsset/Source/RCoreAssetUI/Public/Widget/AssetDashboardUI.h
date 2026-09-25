@@ -30,6 +30,7 @@ public:
 	// ~ IAssetWidget
 	REN_API virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
 	REN_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
+	REN_API virtual void CloseWidget() override;
 	// ~ End of IAssetWidget
 
 protected:
@@ -39,6 +40,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidgetOptional))
 	TObjectPtr<UOverlay> LoaderOverlay = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool bHideOnClose = true;
 
 
 	UFUNCTION(BlueprintNativeEvent)

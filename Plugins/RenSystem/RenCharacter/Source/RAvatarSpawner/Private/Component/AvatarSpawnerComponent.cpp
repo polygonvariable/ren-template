@@ -53,11 +53,11 @@ void UAvatarSpawnerComponent::BeginPlay()
 	GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
 	if (GameplayMode)
 	{
-		if (GameplayMode->GetGameplayModeTags().HasTagExact(GameplayModeTag))
+		if (GameplayMode->HasTagExact(CharacterPossessTag))
 		{
 			CreateCharacters();
 		}
-		GameplayMode->RegisterTagNotify(GameplayModeTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &UAvatarSpawnerComponent::HandleOnGameplayModeTagChanged));
+		GameplayMode->RegisterTagNotify(CharacterPossessTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &UAvatarSpawnerComponent::HandleOnCharacterPossessTagChanged));
 	}
 }
 
@@ -67,7 +67,7 @@ void UAvatarSpawnerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	if (GameplayMode)
 	{
-		GameplayMode->UnregisterTagNotify(GameplayModeTag, this);
+		GameplayMode->UnregisterTagNotify(CharacterPossessTag, this);
 	}
 	GameplayMode = nullptr;
 
@@ -112,7 +112,7 @@ void UAvatarSpawnerComponent::HandleOnCharacterOrderUpdated()
 	CreateCharacters();
 }
 
-void UAvatarSpawnerComponent::HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded)
+void UAvatarSpawnerComponent::HandleOnCharacterPossessTagChanged(bool bAdded)
 {
 	if (bAdded)
 	{

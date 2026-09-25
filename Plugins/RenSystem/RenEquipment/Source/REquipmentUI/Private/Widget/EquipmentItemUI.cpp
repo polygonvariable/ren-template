@@ -35,10 +35,12 @@ void UEquipmentItemUI::RegisterEquipmentComponent(AActor* Target)
 			return;
 		}
 
+		_EquipmentComponent = TWeakObjectPtr<UEquipmentManagerComponent>(Component);
+
+		RegisterEquipmentController();
+
 		Component->OnEquipmentReset.AddUObject(this, &UEquipmentItemUI::UnregisterEquipmentController);
 		Component->OnEquipmentUpdate.AddUObject(this, &UEquipmentItemUI::RegisterEquipmentController);
-
-		_EquipmentComponent = TWeakObjectPtr<UEquipmentManagerComponent>(Component);
 	}
 }
 
@@ -55,6 +57,8 @@ void UEquipmentItemUI::UnregisterEquipmentComponent()
 
 void UEquipmentItemUI::RegisterEquipmentController()
 {
+	UnregisterEquipmentController();
+
 	UEquipmentManagerComponent* Component = GetEquipmentComponent();
 	if (!IsValid(Component))
 	{
@@ -109,6 +113,12 @@ void UEquipmentItemUI::RegisterPlayer()
 		return;
 	}
 
+	APawn* ExistingPawn = Controller->GetPawn();
+	if (IsValid(ExistingPawn))
+	{
+		OnPlayerRegistered(ExistingPawn);
+	}
+
 	TWeakObjectPtr<UEquipmentItemUI> WeakThis(this);
 	Controller->GetOnNewPawnNotifier().AddWeakLambda(this,
 		[WeakThis](APawn* NewPawn)
@@ -120,12 +130,6 @@ void UEquipmentItemUI::RegisterPlayer()
 			}
 		}
 	);
-
-	APawn* ExistingPawn = Controller->GetPawn();
-	if (IsValid(ExistingPawn))
-	{
-		OnPlayerRegistered(ExistingPawn);
-	}
 }
 
 void UEquipmentItemUI::UnregisterPlayer()
@@ -155,7 +159,6 @@ void UEquipmentItemUI::OnPlayerUnregistered()
 	UnregisterEquipmentComponent();
 	UnregisterEquipmentController();
 }
-
 
 
 void UEquipmentItemUI::NativePreConstruct()

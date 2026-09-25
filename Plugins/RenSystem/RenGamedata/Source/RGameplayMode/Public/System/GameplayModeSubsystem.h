@@ -18,8 +18,6 @@
 class UGameplayModeAsset;
 
 
-
-
 /**
  * 
  */
@@ -34,6 +32,7 @@ public:
 
 
 	virtual const FGameplayTagContainer& GetGameplayModeTags() const;
+
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) override;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) override;
 
@@ -53,8 +52,8 @@ public:
 	// ~ IGameplayModeProvider
 	virtual void SetGameplayMode(UPrimaryDataAsset* Asset) override;
 	virtual void SetGameplayModeByTag(FGameplayTagContainer Tags) override;
-	virtual void AddGameplayMode(FGameplayTagContainer Tags);
-	virtual void RempoveGameplayMode(FGameplayTagContainer Tags);
+	virtual void AddGameplayMode(FGameplayTagContainer Tags) override;
+	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) override;
 	// ~ End of IGameplayModeProvider
 	
 	// ~ UWorldSubsystem

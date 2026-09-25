@@ -47,6 +47,18 @@ void UAssetDashboardUI::InitializeEntryDetail(const UAssetEntry* Entry)
 	//}
 }
 
+void UAssetDashboardUI::CloseWidget()
+{
+	if (bHideOnClose)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		RemoveFromParent();
+	}
+}
+
 void UAssetDashboardUI::GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets)
 {
 

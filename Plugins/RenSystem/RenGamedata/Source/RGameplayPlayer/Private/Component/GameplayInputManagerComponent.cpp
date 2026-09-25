@@ -39,7 +39,7 @@ void UGameplayInputManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayR
 
 	if (GameplayMode)
 	{
-		GameplayMode->GetOnGameplayModeTagChanged().RemoveAll(this);
+		GameplayMode->GetOnGameplayModeTagsChanged().RemoveAll(this);
 	}
 	GameplayMode = nullptr;
 
@@ -87,10 +87,10 @@ void UGameplayInputManagerComponent::HandleOnInputAssetLoaded()
 		}
 	}
 
-	GameplayMode->GetOnGameplayModeTagChanged().AddUObject(this, &UGameplayInputManagerComponent::HandleOnGameplayModeTagChanged);
+	GameplayMode->GetOnGameplayModeTagsChanged().AddUObject(this, &UGameplayInputManagerComponent::HandleOnGameplayModeTagsChanged);
 }
 
-void UGameplayInputManagerComponent::HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded)
+void UGameplayInputManagerComponent::HandleOnGameplayModeTagsChanged(FGameplayTag Tag, bool bAdded)
 {
 	if (!IsValid(InputAsset))
 	{

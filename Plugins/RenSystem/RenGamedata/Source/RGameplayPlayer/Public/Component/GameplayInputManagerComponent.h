@@ -92,7 +92,7 @@ protected:
 
 	// ~ Binding
 	void HandleOnInputAssetLoaded();
-	void HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded);
+	void HandleOnGameplayModeTagsChanged(FGameplayTag Tag, bool bAdded);
 	// ~ End of Binding
 
 private:
