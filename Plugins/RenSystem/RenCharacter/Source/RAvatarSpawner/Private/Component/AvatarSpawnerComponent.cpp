@@ -11,8 +11,10 @@
 
 // Project Headers
 #include "Actor/AvatarCharacter.h"
+#include "Core/GameplayModeProvider.h"
 #include "System/PartyStorageManager.h"
 #include "System/PartySubsystem.h"
+#include "Util/SubsystemUtil.h"
 
 
 void UAvatarSpawnerComponent::InitializeComponent()
@@ -24,7 +26,7 @@ void UAvatarSpawnerComponent::InitializeComponent()
 		PartySubsystem = UPartySubsystem::Get(GetWorld());
 		if (IsValid(PartySubsystem))
 		{
-			PartySubsystem->OnPartyUpdated.AddUObject(this, &UAvatarSpawnerComponent::HandleOnCharactersUpdated);
+			PartySubsystem->OnPartyUpdated.AddUObject(this, &UAvatarSpawnerComponent::HandleOnCharacterOrderUpdated);
 			StorageManager = PartySubsystem->GetStorageManager();
 		}
 	}
@@ -41,6 +43,35 @@ void UAvatarSpawnerComponent::UninitializeComponent()
 	StorageManager = nullptr;
 
 	Super::UninitializeComponent();
+}
+
+
+void UAvatarSpawnerComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
+	if (GameplayMode)
+	{
+		if (GameplayMode->GetGameplayModeTags().HasTagExact(GameplayModeTag))
+		{
+			CreateCharacters();
+		}
+		GameplayMode->RegisterTagNotify(GameplayModeTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &UAvatarSpawnerComponent::HandleOnGameplayModeTagChanged));
+	}
+}
+
+void UAvatarSpawnerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	RemoveCharacters();
+
+	if (GameplayMode)
+	{
+		GameplayMode->UnregisterTagNotify(GameplayModeTag, this);
+	}
+	GameplayMode = nullptr;
+
+	Super::EndPlay(EndPlayReason);
 }
 
 
@@ -75,12 +106,32 @@ void UAvatarSpawnerComponent::UnPossessCharacter()
 }
 
 
-void UAvatarSpawnerComponent::HandleOnCharactersUpdated()
+void UAvatarSpawnerComponent::HandleOnCharacterOrderUpdated()
 {
 	RemoveCharacters();
 	CreateCharacters();
 }
 
+void UAvatarSpawnerComponent::HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded)
+{
+	if (bAdded)
+	{
+		if (SpawnedCharacters.Num() == 0)
+		{
+			CreateCharacters();
+		}
+		else
+		{
+			ShowCharacters();
+			PossessCharacter();
+		}
+	}
+	else
+	{
+		HideCharacters();
+		UnPossessCharacter();
+	}
+}
 
 void UAvatarSpawnerComponent::OnSpawnStarted()
 {

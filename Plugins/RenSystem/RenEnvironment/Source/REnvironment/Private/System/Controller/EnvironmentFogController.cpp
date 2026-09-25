@@ -35,11 +35,11 @@ void UEnvironmentFogController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentFogController::OnPriorityItemChanged(UObject* Item)
+void UEnvironmentFogController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	Super::OnPriorityItemChanged(Item);
+	Super::OnPriorityItemChanged(PreviousItem, NewItem);
 
-	UEnvironmentFogProfileAsset* Profile = Cast<UEnvironmentFogProfileAsset>(Item);
+	UEnvironmentFogProfileAsset* Profile = Cast<UEnvironmentFogProfileAsset>(NewItem);
 	UExponentialHeightFogComponent* ExponentialHeightFog = ExponentialHeightFogComponent.Get();
 	if (!IsValid(Profile) || !IsValid(ExponentialHeightFog))
 	{

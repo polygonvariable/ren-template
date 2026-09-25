@@ -41,23 +41,17 @@ void UCharacterSpawnerComponent::UninitializeComponent()
 	Super::UninitializeComponent();
 }
 
-void UCharacterSpawnerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	CreateCharacters();
-}
-
-void UCharacterSpawnerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	RemoveCharacters();
-
-	Super::EndPlay(EndPlayReason);
-}
-
 
 void UCharacterSpawnerComponent::CreateCharacters()
 {
+	FAssetManagerUtil::CancelHandle(SpawnHandle);
+
+	if (SpawnedCharacters.Num() > 0)
+	{
+		LOG_ERROR(LogCharacterSpawner, TEXT("Characters are already spawned"));
+		return;
+	}
+
 	TArray<FCharacterInitializationData> CharacterData;
 	GetCharacterData(CharacterData);
 
@@ -75,7 +69,9 @@ void UCharacterSpawnerComponent::CreateCharacters()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(SpawnHandle);
+#if WITH_EDITOR
+	AsyncStartTime = FPlatformTime::Cycles64();
+#endif
 
 	const UCharacterSpawnerSettings* Settings = UCharacterSpawnerSettings::Get();
 	const TArray<FName>& AssetBundles = Settings->CharacterBundles;
@@ -90,6 +86,8 @@ void UCharacterSpawnerComponent::CreateCharacters()
 
 void UCharacterSpawnerComponent::RemoveCharacters()
 {
+	FAssetManagerUtil::CancelHandle(SpawnHandle);
+
 	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : SpawnedCharacters)
 	{
 		UnregisterCharacter(Kv.Key);
@@ -98,8 +96,43 @@ void UCharacterSpawnerComponent::RemoveCharacters()
 }
 
 
+void UCharacterSpawnerComponent::ShowCharacters()
+{
+	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : SpawnedCharacters)
+	{
+		ACharacterBase* Character = Kv.Value.Get();
+		if (IsValid(Character))
+		{
+			Character->SetActorHiddenInGame(false);
+		}
+	}
+}
+
+void UCharacterSpawnerComponent::HideCharacters()
+{
+	FAssetManagerUtil::CancelHandle(SpawnHandle);
+
+	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : SpawnedCharacters)
+	{
+		ACharacterBase* Character = Kv.Value.Get();
+		if (IsValid(Character))
+		{
+			Character->SetActorHiddenInGame(true);
+		}
+	}
+}
+
+
 void UCharacterSpawnerComponent::HandleOnCharactersLoaded(TArray<FCharacterInitializationData> CharacterData)
 {
+#if WITH_EDITOR
+	const uint64 AsyncEndTime = FPlatformTime::Cycles64();
+	const double AsyncTimeElapsed = FPlatformTime::ToMilliseconds64(AsyncEndTime - AsyncStartTime);
+	PRINT_WARNING(LogCharacterSpawner, 10.0f, TEXT("Character load time: %.4f ms"), AsyncTimeElapsed);
+
+	const uint64 SpawnStartTime = FPlatformTime::Cycles64();
+#endif
+
 	FAssetManagerUtil::ReleaseHandle(SpawnHandle);
 
 	OnSpawnStarted();
@@ -110,14 +143,17 @@ void UCharacterSpawnerComponent::HandleOnCharactersLoaded(TArray<FCharacterIniti
 	}
 
 	OnSpawnFinished();
+
+#if WITH_EDITOR
+	const uint64 SpawnEndTime = FPlatformTime::Cycles64();
+	const double SpawnTimeElapsed = FPlatformTime::ToMilliseconds64(SpawnEndTime - SpawnStartTime);
+	PRINT_WARNING(LogCharacterSpawner, 10.0f, TEXT("Character spawn time: %.4f ms"), SpawnTimeElapsed);
+	PRINT_WARNING(LogCharacterSpawner, 10.0f, TEXT("Character creation time: %.4f ms"), SpawnTimeElapsed + AsyncTimeElapsed);
+#endif
 }
 
 void UCharacterSpawnerComponent::SpawnCharacter(FCharacterInitializationData& Data)
 {
-#if WITH_EDITOR
-	const uint64 StartTime = FPlatformTime::Cycles64();
-#endif
-
 	const UCharacterAsset* Asset = AssetManager->GetPrimaryAssetObject<UCharacterAsset>(Data.AssetId);
 	if (!IsValid(Asset))
 	{
@@ -144,12 +180,6 @@ void UCharacterSpawnerComponent::SpawnCharacter(FCharacterInitializationData& Da
 
 	PreRegisterCharacter(Data.AssetId, Character);
 	RegisterCharacter(Data.AssetId, Character);
-
-#if WITH_EDITOR
-	const uint64 EndTime = FPlatformTime::Cycles64();
-	const double TimeElapsed = FPlatformTime::ToMilliseconds64(EndTime - StartTime);
-	LOG_WARNING(LogCharacterSpawner, TEXT("Character creation took: %.4f ms"), TimeElapsed);
-#endif
 }
 
 

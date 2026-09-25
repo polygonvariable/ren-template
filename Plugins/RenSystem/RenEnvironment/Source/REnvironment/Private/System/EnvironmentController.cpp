@@ -43,9 +43,9 @@ TMap<int, TWeakObjectPtr<UObject>>& UEnvironmentStackedController::GetPriorityIt
 	return _ControllerItems;
 }
 
-void UEnvironmentStackedController::OnPriorityItemChanged(UObject* Item)
+void UEnvironmentStackedController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	const UEnvironmentProfileAsset* Profile = Cast<UEnvironmentProfileAsset>(Item);
+	const UEnvironmentProfileAsset* Profile = Cast<UEnvironmentProfileAsset>(NewItem);
 	if (IsValid(Profile))
 	{
 		_TransitionRate = FMath::Max(0.05f, Profile->TransitionRate);

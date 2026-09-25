@@ -12,6 +12,7 @@
 // Forward Declarations
 class UPartySubsystem;
 class UPartyStorageManager;
+class IGameplayModeProvider;
 
 
 /**
@@ -25,6 +26,9 @@ class UAvatarSpawnerComponent : public UCharacterSpawnerComponent
 
 public:
 
+	UPROPERTY(EditAnywhere, meta = (Categories = "Gameplay"))
+	FGameplayTag GameplayModeTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Possess.Character"));
+
 	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
 	TArray<FCharacterInitializationData> CharacterData;
 
@@ -32,9 +36,14 @@ public:
 	// ~ UActorComponent
 	virtual void InitializeComponent() override;
 	virtual void UninitializeComponent() override;
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// ~ End of UActorComponent
 
 protected:
+
+	IGameplayModeProvider* GameplayMode;
 
 	UPROPERTY()
 	TObjectPtr<UPartySubsystem> PartySubsystem;
@@ -48,7 +57,8 @@ protected:
 	void UnPossessCharacter();
 
 	// ~ Binding
-	void HandleOnCharactersUpdated();
+	void HandleOnGameplayModeTagChanged(FGameplayTag Tag, bool bAdded);
+	void HandleOnCharacterOrderUpdated();
 	// ~ End of Binding
 
 	// ~ UCharacterSpawnerComponent

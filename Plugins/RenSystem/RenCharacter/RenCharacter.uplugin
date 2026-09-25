@@ -51,6 +51,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RAvatarInput",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RAvatarSpawner",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -77,6 +82,10 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
 		{
 			"Name": "MotionTrajectory",
 			"Enabled": true

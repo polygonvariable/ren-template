@@ -6,6 +6,7 @@
 #include "Actor/CharacterBase.h"
 #include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
+#include "Data/Asset/MetadataAsset.h"
 
 // Generated Headers
 #include "AvatarCharacter.generated.h"
@@ -34,11 +35,23 @@ public:
 	TObjectPtr<USpringArmComponent> SpringArm;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	TObjectPtr<USpringArmComponent> WeaponSocket01;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	TObjectPtr<USpringArmComponent> WeaponSocket02;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(EditAnywhere)
 	EDataSource SourceType = EDataSource::Static;
 
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
+	RAVATAR_API void CameraPan(FVector2D Axis);
+
+	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
+	RAVATAR_API void CameraZoom(float Delta, float Multiplier = 5.0f);
 
 	// ~ IAssetInstanceContextProvider
 	virtual FGuid GetAssetInstanceId() const override;
@@ -74,13 +87,6 @@ protected:
 	virtual void RefreshCharacter() override;
 	virtual void AddRuntimeAttributes() override;
 	// ~ End of ACharacterBase
-
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void CameraPan(FVector2D Axis);
-
-	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
-	void CameraZoom(float Delta, float Multiplier = 5.0f);
 
 };
 

@@ -109,9 +109,9 @@ TMap<int, TWeakObjectPtr<UObject>>& USeasonController::GetPriorityItems()
 	return _SeasonItems;
 }
 
-void USeasonController::OnPriorityItemChanged(UObject* Item)
+void USeasonController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	USeasonCollectionAsset* Collection = Cast<USeasonCollectionAsset>(Item);
+	USeasonCollectionAsset* Collection = Cast<USeasonCollectionAsset>(NewItem);
 	if (!IsValid(Collection) || Collection == CurrentCollection)
 	{
 		LOG_ERROR(LogSeason, TEXT("MPC, SeasonAsset is invalid or already active"));

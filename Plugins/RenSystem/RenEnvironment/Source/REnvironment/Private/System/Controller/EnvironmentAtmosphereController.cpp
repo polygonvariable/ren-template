@@ -35,11 +35,11 @@ void UEnvironmentAtmosphereController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentAtmosphereController::OnPriorityItemChanged(UObject* Item)
+void UEnvironmentAtmosphereController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	Super::OnPriorityItemChanged(Item);
+	Super::OnPriorityItemChanged(PreviousItem, NewItem);
 
-	UEnvironmentAtmosphereProfileAsset* Profile = Cast<UEnvironmentAtmosphereProfileAsset>(Item);
+	UEnvironmentAtmosphereProfileAsset* Profile = Cast<UEnvironmentAtmosphereProfileAsset>(NewItem);
 	USkyAtmosphereComponent* SkyAtmosphere = SkyAtmosphereComponent.Get();
 	if (!IsValid(Profile)|| !IsValid(SkyAtmosphere))
 	{

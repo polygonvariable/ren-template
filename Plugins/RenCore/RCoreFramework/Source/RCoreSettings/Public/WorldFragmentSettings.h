@@ -31,6 +31,12 @@ public:
 		return Cast<T>(FindConfigByClass(T::StaticClass()));
 	}
 
+#if WITH_EDITOR
+	// ~ AWorldSettings
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+	// ~ End of AWorldSettings
+#endif
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "World Configs")

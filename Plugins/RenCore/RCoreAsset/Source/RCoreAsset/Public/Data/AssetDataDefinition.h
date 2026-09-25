@@ -5,9 +5,6 @@
 // Generated Headers
 #include "AssetDataDefinition.generated.h"
 
-// Module Macros
-#define REN_API RCOREASSET_API
-
 
 /**
  * 
@@ -20,18 +17,18 @@ class UAssetDataDefinition : public UObject
 
 public:
 
-#if WITH_EDITORONLY_DATA
-	REN_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData) {};
+#if WITH_EDITOR
+	// ~ UObject
+	RCOREASSET_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData) {};
+	// ~ End of UObject
 #endif
 
-	REN_API static const UAssetDataDefinition* Get()
+public:
+
+	static const UAssetDataDefinition* Get()
 	{
 		return Cast<UAssetDataDefinition>(StaticClass()->GetDefaultObject());
 	}
 
 };
-
-
-// Module Macros
-#undef REN_API
 

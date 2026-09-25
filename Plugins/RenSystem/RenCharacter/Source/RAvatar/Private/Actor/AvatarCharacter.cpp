@@ -4,9 +4,14 @@
 #include "Actor/AvatarCharacter.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Engine/AssetManager.h"
+#include "EnhancedInputComponent.h"
 
 // Project Headers
 #include "Core/AvatarSettings.h"
@@ -16,6 +21,8 @@
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
+#include "Util/SubsystemUtil.h"
+#include "Core/AssetManagerUtil.h"
 
 
 AAvatarCharacter::AAvatarCharacter() : Super()
@@ -36,6 +43,32 @@ AAvatarCharacter::AAvatarCharacter() : Super()
 		{
 			Camera->SetupAttachment(SpringArm);
 		}
+	}
+
+	WeaponSocket01 = CreateDefaultSubobject<USpringArmComponent>(TEXT("Weapon01"));
+	if (IsValid(WeaponSocket01))
+	{
+		WeaponSocket01->SetupAttachment(GetMesh(), TEXT("thigh_out_lSocket"));
+		WeaponSocket01->TargetArmLength = 2.0f;
+		WeaponSocket01->bEnableCameraLag = true;
+		WeaponSocket01->bEnableCameraRotationLag = true;
+		WeaponSocket01->bDrawDebugLagMarkers = true;
+		WeaponSocket01->CameraLagSpeed = 35.0f;
+		WeaponSocket01->CameraRotationLagSpeed = 15.0f;
+		WeaponSocket01->ComponentTags.Add(TEXT("Weapon01"));
+	}
+
+	WeaponSocket02 = CreateDefaultSubobject<USpringArmComponent>(TEXT("Weapon02"));
+	if (IsValid(WeaponSocket02))
+	{
+		WeaponSocket02->SetupAttachment(GetMesh(), TEXT("thigh_out_rSocket"));
+		WeaponSocket02->TargetArmLength = 2.0f;
+		WeaponSocket02->bEnableCameraLag = true;
+		WeaponSocket02->bEnableCameraRotationLag = true;
+		WeaponSocket02->bDrawDebugLagMarkers = true;
+		WeaponSocket02->CameraLagSpeed = 35.0f;
+		WeaponSocket02->CameraRotationLagSpeed = 15.0f;
+		WeaponSocket02->ComponentTags.Add(TEXT("Weapon02"));
 	}
 	
 	bUseControllerRotationYaw = false;
@@ -58,8 +91,6 @@ void AAvatarCharacter::CameraZoom(float Delta, float Multiplier)
 }
 
 
-
-
 FGuid AAvatarCharacter::GetAssetInstanceId() const
 {
 	return AvatarInstance.AvatarId;
@@ -79,6 +110,7 @@ EDataSource AAvatarCharacter::GetSpawnSource() const
 {
 	return SourceType;
 }
+
 
 void AAvatarCharacter::InitializeCharacter()
 {

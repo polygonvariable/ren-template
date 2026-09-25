@@ -8,9 +8,6 @@
 // Generated Headers
 #include "MetadataAsset.generated.h"
 
-// Module Macros
-#define REN_API RCOREASSET_API
-
 
 /**
  * 
@@ -21,15 +18,5 @@ class UMetadataAsset : public UCoreDataAsset
 
 	GENERATED_BODY()
 
-public:
-
-	// ~ UPrimaryDataAsset
-	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-	// ~ End of UPrimaryDataAsset
-
 };
-
-
-// Module Macros
-#undef REN_API
 

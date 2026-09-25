@@ -44,5 +44,13 @@ public:
 		return AssetId.IsValid();
 	}
 
+	void Reset()
+	{
+		AssetId = FPrimaryAssetId();
+		Attributes.Empty();
+		Metadata.Empty();
+		Components.Empty();
+	}
+
 };
 

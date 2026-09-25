@@ -28,6 +28,7 @@ public class RAvatarSpawner : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
+                "GameplayTags",
                 "RCoreAssetInstance",
                 "RCoreGamedataStorage",
                 "RCoreAuthAction",
@@ -48,6 +49,7 @@ public class RAvatarSpawner : ModuleRules
                 "RCoreDelegate",
                 "RCoreLibrary",
                 "RAvatar",
+                "RCoreGameplayMode",
             }
 			);
 		

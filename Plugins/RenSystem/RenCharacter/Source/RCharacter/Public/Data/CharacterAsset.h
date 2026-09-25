@@ -9,6 +9,8 @@
 #include "CharacterAsset.generated.h"
 
 // Forward Declarations
+class USkeletalMesh;
+class UAnimBlueprint;
 class UGameplayAbility;
 class ACharacterBase;
 class UCharacterTemplateAsset;
@@ -25,37 +27,49 @@ class UCharacterAsset : public UInstanceableDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, Category = "Presentation", meta = (AssetBundles = "Character"))
+	TSoftObjectPtr<USkeletalMesh> SkeletonMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Presentation", meta = (AssetBundles = "Character"))
+	TSoftObjectPtr<UAnimBlueprint> AnimBlueprint;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stats", AssetRegistrySearchable)
 	int Health = 500;
 
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	int PhysicalDamage = 60;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	int PhysicalDefense = 70;
 
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	int ElementalDamage = 40;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	int ElementalDefense = 50;
 
 
-	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Character"))
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay", meta = (AssetBundles = "Character"))
 	TSoftClassPtr<ACharacterBase> CharacterClass;
 
-	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Ability"))
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay", meta = (AssetBundles = "Ability"))
 	TArray<TSoftClassPtr<UGameplayAbility>> CharacterAbilities;
 
-	UPROPERTY(EditDefaultsOnly, meta = (AssetBundles = "Character"))
+	UPROPERTY(EditDefaultsOnly, Category = "Template", meta = (AssetBundles = "Character"))
 	TSoftObjectPtr<UCharacterTemplateAsset> CharacterTemplate;
 
 
 	// ~ UPrimaryDataAsset
 	RCHARACTER_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
+
+#if WITH_EDITOR
+	// ~ UPrimaryDataAsset
+	RCHARACTER_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UPrimaryDataAsset
+#endif
 
 public:
 

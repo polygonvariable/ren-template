@@ -166,9 +166,9 @@ TMap<int, TWeakObjectPtr<UObject>>& UWeatherController::GetPriorityItems()
 	return _WeatherItems;
 }
 
-void UWeatherController::OnPriorityItemChanged(UObject* Item)
+void UWeatherController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(Item);
+	UWeatherAsset* WeatherAsset = Cast<UWeatherAsset>(NewItem);
 	if (!IsValid(MPCInstance) || !IsValid(WeatherAsset) || WeatherAsset == CurrentWeather)
 	{
 		LOG_ERROR(LogWeather, TEXT("MPC, WeatherAsset is invalid or already active"));

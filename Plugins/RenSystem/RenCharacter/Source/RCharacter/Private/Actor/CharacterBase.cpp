@@ -30,6 +30,13 @@ ACharacterBase::ACharacterBase() : Super()
 		Capsule->SetCapsuleRadius(35.0f);
 	}
 
+	USkeletalMeshComponent* SkeletonMesh = GetMesh();
+	if (IsValid(SkeletonMesh))
+	{
+		SkeletonMesh->bAllowClothActors = false;
+		SkeletonMesh->ComponentTags.Add(TEXT("Mesh"));
+	}
+
 	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
 	if (IsValid(MovementComponent))
 	{
@@ -51,8 +58,61 @@ ACharacterBase::ACharacterBase() : Super()
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("Ability System"));
 	CharacterTrajectoryComponent = CreateDefaultSubobject<UCharacterTrajectoryComponent>(TEXT("Character Trajectory"));
 
+	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 }
+
+
+
+
+
+void ACharacterBase::InitializeCharacter()
+{
+	SetSkeletonMesh();
+	InitializeAttributes();
+	InitializeComponents();
+}
+
+void ACharacterBase::DeinitializeCharacter()
+{
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	if (IsValid(MovementComponent))
+	{
+		MovementComponent->SetMovementMode(MOVE_None);
+	}
+	
+	CharacterAsset = nullptr;
+	CharacterData.Reset();
+	
+	CharacterLevel = 1;
+	CharacterAttributes.Empty();
+	RuntimeComponents.Empty();
+}
+
+void ACharacterBase::RefreshCharacter()
+{
+	RefreshAttributes();
+}
+
+
+
+
+
+void ACharacterBase::SetSkeletonMesh()
+{
+	USkeletalMeshComponent* SkeletonMesh = GetMesh();
+	check(SkeletonMesh);
+
+	SkeletonMesh->SetSkeletalMesh(CharacterAsset->SkeletonMesh.Get());
+	UAnimBlueprint* AnimBlueprint = CharacterAsset->AnimBlueprint.Get();
+	if (IsValid(AnimBlueprint))
+	{
+		SkeletonMesh->SetAnimInstanceClass(AnimBlueprint->GeneratedClass);
+	}
+}
+
+
+
 
 
 bool ACharacterBase::IsAlive() const
@@ -66,33 +126,6 @@ bool ACharacterBase::IsAlive() const
 	return !ASC->HasMatchingGameplayTag(Settings->StateDeadTag);
 }
 
-void ACharacterBase::InitializeCharacter()
-{
-	InitializeAttributes();
-	InitializeTags();
-	InitializeComponents();
-}
-
-void ACharacterBase::DeinitializeCharacter()
-{
-	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
-	if (IsValid(MovementComponent))
-	{
-		MovementComponent->SetMovementMode(MOVE_None);
-	}
-	
-	CharacterAsset = nullptr;
-}
-
-UCharacterTrajectoryComponent* ACharacterBase::GetTrajectoryComponent() const
-{
-	return CharacterTrajectoryComponent;
-}
-
-void ACharacterBase::RefreshCharacter()
-{
-	RefreshAttributes();
-}
 
 void ACharacterBase::CallOnCharacterDied()
 {
@@ -103,6 +136,9 @@ void ACharacterBase::CallOnCharacterRevived()
 {
 	OnCharacterRevived.Broadcast();
 }
+
+
+
 
 
 
@@ -127,6 +163,8 @@ void ACharacterBase::InitializeComponents()
 
 void ACharacterBase::RegisterComponents(TArray<FComponentDefinition>& Components)
 {
+	RuntimeComponents.Reserve(Components.Num());
+
 	for (FComponentDefinition& Definition : Components)
 	{
 		if (!Definition.IsValid())
@@ -149,9 +187,24 @@ void ACharacterBase::RegisterComponents(TArray<FComponentDefinition>& Components
 			InstanceData->ApplyToInstance(NewComponent);
 
 			AddInstanceComponent(NewComponent);
+
+			RuntimeComponents.Add(NewComponent);
 		}
 	}
 }
+
+void ACharacterBase::ActivateComponents()
+{
+	for (UActorComponent* Component : RuntimeComponents)
+	{
+		if (IsValid(Component))
+		{
+			Component->Activate();
+		}
+	}
+	RuntimeComponents.Empty();
+}
+
 
 
 
@@ -222,10 +275,6 @@ void ACharacterBase::ApplyAttributes()
 
 
 
-void ACharacterBase::OnCharacterInitialized_Implementation()
-{
-}
-
 int ACharacterBase::GetCharacterLevel() const
 {
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
@@ -262,25 +311,14 @@ TMap<FGameplayTag, float>& ACharacterBase::GetCharacterAttributes()
 
 
 
-void ACharacterBase::InitializeTags()
+
+
+
+
+UCharacterTrajectoryComponent* ACharacterBase::GetTrajectoryComponent() const
 {
-
+	return CharacterTrajectoryComponent;
 }
-
-
-void ACharacterBase::RegisterLifeStateEvent()
-{
-
-}
-
-void ACharacterBase::UnregisterLifeStateEvent()
-{
-
-}
-
-
-
-
 
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -348,7 +386,12 @@ void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	check(ASC);
+
+	ASC->InitAbilityActorInfo(this, this);
 	ApplyAttributes();
+	ActivateComponents();
 }
 
 void ACharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -357,9 +400,23 @@ void ACharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 }
 
 
+void ACharacterBase::OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode)
+{
+	Super::OnMovementModeChanged(PrevMovementMode, PreviousCustomMode);
+
+	const UCharacterSettings* Settings = UCharacterSettings::Get();
+	UCharacterMovementComponent* MovementComponent = GetCharacterMovement();
+	check(MovementComponent);
+
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	ASC->RemoveLooseGameplayTag(Settings->ConvertMovementModeToTag(PrevMovementMode));
+	ASC->AddLooseGameplayTag(Settings->ConvertMovementModeToTag(MovementComponent->MovementMode));
+}
 
 
-void ACharacterBase::DirectionalMove_Implementation(const FVector& Direction)
+
+
+void ACharacterBase::DirectionalMove(const FVector& Direction)
 {
 	FRotator Rotation = GetControlRotation();
 	FVector RightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, Rotation.Yaw, Rotation.Roll));

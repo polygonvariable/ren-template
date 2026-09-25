@@ -24,6 +24,11 @@
 			"Name": "RCoreGamedataStorage",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RCoreGameplayMode",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

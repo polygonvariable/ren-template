@@ -7,17 +7,25 @@
 bool IPriorityListInterface::AddPriorityItem(UObject* Item, int Priority)
 {
 	TMap<int, TWeakObjectPtr<UObject>>& PriorityItems = GetPriorityItems();
-
 	if (!IsValid(Item) || Priority < 0)
 	{
 		return false;
 	}
-	
+
+	UObject* PreviousItem = nullptr;
+	if (HighestPriority >= 0)
+	{
+		TWeakObjectPtr<UObject>* FoundHighestItem = PriorityItems.Find(HighestPriority);
+		if (FoundHighestItem)
+		{
+			PreviousItem = FoundHighestItem->Get();
+		}
+	}
+
 	TWeakObjectPtr<UObject>* FoundItem = PriorityItems.Find(Priority);
 	if (FoundItem)
 	{
-		TWeakObjectPtr<UObject> WeakItem = FoundItem->Get();
-		UObject* Object = WeakItem.Get();
+		UObject* Object = FoundItem->Get();
 		if (IsValid(Object))
 		{
 			if (Object == Item)
@@ -34,7 +42,7 @@ bool IPriorityListInterface::AddPriorityItem(UObject* Item, int Priority)
 	if (Priority >= HighestPriority)
 	{
 		HighestPriority = Priority;
-		OnPriorityItemChanged(Item);
+		OnPriorityItemChanged(PreviousItem, Item);
 	}
 
 	return true;
@@ -50,14 +58,11 @@ bool IPriorityListInterface::RemovePriorityItem(int Priority)
 		return false;
 	}
 
-	UObject* Item = RemovedItem.Get();
-	if (IsValid(Item))
-	{
-		OnPriorityItemRemoved(Item, false);
-	}
-
 	if (Priority == HighestPriority)
 	{
+		UObject* Item = RemovedItem.Get();
+		OnPriorityItemRemoved(Item, false);
+
 		if (PriorityItems.Num() == 0)
 		{
 			HighestPriority = -1;
@@ -70,11 +75,10 @@ bool IPriorityListInterface::RemovePriorityItem(int Priority)
 			TWeakObjectPtr<UObject>* FoundItem = PriorityItems.Find(HighestPriority);
 			if (FoundItem)
 			{
-				TWeakObjectPtr<UObject> WeakItem = FoundItem->Get();
-				UObject* NewItem = WeakItem.Get();
+				UObject* NewItem = FoundItem->Get();
 				if (IsValid(NewItem))
 				{
-					OnPriorityItemChanged(NewItem);
+					OnPriorityItemChanged(Item, NewItem);
 				}
 			}
 		}
@@ -85,7 +89,9 @@ bool IPriorityListInterface::RemovePriorityItem(int Priority)
 
 void IPriorityListInterface::ClearPriorityItems()
 {
+	HighestPriority = -1;
 	GetPriorityItems().Empty();
+	OnPriorityItemCleared();
 }
 
 int IPriorityListInterface::GetHighestPriority() const

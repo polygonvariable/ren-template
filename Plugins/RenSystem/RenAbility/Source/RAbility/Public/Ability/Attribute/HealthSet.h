@@ -70,7 +70,7 @@ public:
 
 protected:
 
-	bool bIsDead = false;
+	bool bIsDead = true;
 
 	void UpdateHealthState();
 	void UpdateHealth(float Value, float Multiplier);

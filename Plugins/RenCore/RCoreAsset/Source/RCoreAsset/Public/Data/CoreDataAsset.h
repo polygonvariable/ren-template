@@ -8,9 +8,6 @@
 // Generated Headers
 #include "CoreDataAsset.generated.h"
 
-// Module Macros
-#define REN_API RCOREASSET_API
-
 // Forward Declarations
 class UAssetFragment;
 
@@ -26,20 +23,20 @@ class UCoreDataAsset : public UPrimaryDataAsset
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, AssetRegistrySearchable, Category = "Asset Detail")
 	FText DisplayName = FText::GetEmpty();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Asset Detail")
 	FText Description = FText::GetEmpty();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Asset Detail")
 	TSoftObjectPtr<UTexture2D> Icon = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Instanced, Category = "Fragments")
 	TArray<TObjectPtr<UAssetFragment>> Fragments;
 
 
-	REN_API const UAssetFragment* FindFragmentByClass(TSubclassOf<UAssetFragment> InClass) const;
+	RCOREASSET_API const UAssetFragment* FindFragmentByClass(TSubclassOf<UAssetFragment> InClass) const;
 
 	template<typename T>
 	const T* FindFragmentByClass() const
@@ -49,13 +46,22 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	// ~ UPrimaryDataAsset
-	REN_API virtual void UpdateAssetBundleData() override;
+	RCOREASSET_API virtual void UpdateAssetBundleData() override;
 	// ~ End of UPrimaryDataAsset
 #endif
 
+public:
+
+	template<typename T>
+	static const T* GetFragmentByClass(UPrimaryDataAsset* Asset)
+	{
+		UCoreDataAsset* CoreAsset = Cast<UCoreDataAsset>(Asset);
+		if (!IsValid(CoreAsset))
+		{
+			return nullptr;
+		}
+		return CoreAsset->FindFragmentByClass<T>();
+	}
+
 };
-
-
-// Module Macros
-#undef REN_API
 

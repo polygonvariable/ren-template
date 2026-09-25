@@ -3,6 +3,11 @@
 // Parent Header
 #include "WorldFragmentSettings.h"
 
+// Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
+
 // Project Headers
 #include "WorldConfigAsset.h"
 
@@ -18,4 +23,29 @@ const UWorldConfigAsset* AWorldFragmentSettings::FindConfigByClass(TSubclassOf<U
 	}
 	return nullptr;
 }
+
+#if WITH_EDITOR
+EDataValidationResult AWorldFragmentSettings::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+	for (UWorldConfigAsset* Config : Configs)
+	{
+		if (!IsValid(Config))
+		{
+			Context.AddError(FText::FromString("Invalid world config item in list"));
+			return EDataValidationResult::Invalid;
+		}
+
+		EDataValidationResult ConfigResult = Config->IsDataValid(Context);
+		if (ConfigResult == EDataValidationResult::Invalid)
+		{
+			Context.AddError(FText::FromString("Invalid world config asset"));
+			return EDataValidationResult::Invalid;
+		}
+	}
+
+	return Result;
+}
+#endif
 

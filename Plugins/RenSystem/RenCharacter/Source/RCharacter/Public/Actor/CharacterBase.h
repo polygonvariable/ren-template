@@ -18,6 +18,7 @@
 #define REN_API RCHARACTER_API
 
 // Forward Declarations
+class UActorComponent;
 class UCharacterTrajectoryComponent;
 class UAbilitySystemComponent;
 class UCharacterAsset;
@@ -39,7 +40,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<const UCharacterAsset>  CharacterAsset;
+	TObjectPtr<const UCharacterAsset> CharacterAsset;
 
 	UPROPERTY(EditAnywhere)
 	FCharacterInitializationData CharacterData;
@@ -54,10 +55,10 @@ public:
 
 
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Character")
 	TObjectPtr<UCharacterTrajectoryComponent> CharacterTrajectoryComponent;
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Default")
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Character")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 
@@ -71,6 +72,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual UCharacterTrajectoryComponent* GetTrajectoryComponent() const;
+
+	UFUNCTION(BlueprintCallable)
+	void DirectionalMove(const FVector& Direction);
 
 
 	// ~ ACharacter
@@ -97,8 +101,10 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// ~ End of ACharacter
 
+	// ~ ACharacter
+	virtual void OnMovementModeChanged(EMovementMode PrevMovementMode, uint8 PreviousCustomMode) override;
+	// ~ End of ACharacter
 protected:
-
 
 
 	virtual void RefreshCharacter();
@@ -112,7 +118,10 @@ protected:
 
 	void InitializeComponents();
 	void RegisterComponents(TArray<FComponentDefinition>& Components);
+	void ActivateComponents();
 
+
+	void SetSkeletonMesh();
 
 	void InitializeAttributes();
 	void RefreshAttributes();
@@ -121,16 +130,6 @@ protected:
 	void ApplyAttributes();
 
 
-	virtual void InitializeTags();
-
-
-	virtual void RegisterLifeStateEvent();
-	virtual void UnregisterLifeStateEvent();
-
-
-	UFUNCTION(BlueprintNativeEvent)
-	void OnCharacterInitialized();
-	virtual void OnCharacterInitialized_Implementation();
 
 
 	UFUNCTION(BlueprintCallable)
@@ -139,15 +138,14 @@ protected:
 
 	TMap<FGameplayTag, float>& GetCharacterAttributes();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, meta = (ForceAsFunction, BlueprintProtected))
-	void DirectionalMove(const FVector& Direction);
-	virtual void DirectionalMove_Implementation(const FVector& Direction);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsMoving(float Threshold = 0.1f) const;
 
 private:
 
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
+	TArray<UActorComponent*> RuntimeComponents;
 
 	UPROPERTY(VisibleAnywhere, AdvancedDisplay)
 	int CharacterLevel = 1;

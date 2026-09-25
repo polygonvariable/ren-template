@@ -4,6 +4,9 @@
 #include "Data/CharacterAsset.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
@@ -23,3 +26,34 @@ FPrimaryAssetType UCharacterAsset::GetPrimaryAssetType()
 	return TEXT("Character");
 }
 
+
+EDataValidationResult UCharacterAsset::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+    if (SkeletonMesh.IsNull())
+    {
+        Context.AddError(FText::FromString("Skeleton mesh is invalid"));
+        return EDataValidationResult::Invalid;
+    }
+
+    if (AnimBlueprint.IsNull())
+    {
+        Context.AddError(FText::FromString("Animation blueprint is invalid"));
+        return EDataValidationResult::Invalid;
+    }
+
+    if (CharacterClass.IsNull())
+    {
+        Context.AddError(FText::FromString("Character class is invalid"));
+        return EDataValidationResult::Invalid;
+    }
+
+    if (CharacterTemplate.IsNull())
+    {
+        Context.AddError(FText::FromString("Character template is invalid"));
+        return EDataValidationResult::Invalid;
+    }
+
+    return Result;
+}

@@ -42,7 +42,7 @@ protected:
 	float TargetMieAnisotropy = 0.0f;
 
 	// ~ UEnvironmentStackedController
-	virtual void OnPriorityItemChanged(UObject* Item) override;
+	virtual void OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem) override;
 	virtual void OnTransitionChanged(float Alpha) override;
 	// ~ End of UEnvironmentStackedController
 

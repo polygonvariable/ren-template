@@ -43,13 +43,13 @@ void UEnvironmentLightController::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UEnvironmentLightController::OnPriorityItemChanged(UObject* Item)
+void UEnvironmentLightController::OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem)
 {
-	Super::OnPriorityItemChanged(Item);
+	Super::OnPriorityItemChanged(PreviousItem, NewItem);
 
 	UDirectionalLightComponent* Sun = SunComponent.Get();
 	UDirectionalLightComponent* Moon = MoonComponent.Get();
-	UEnvironmentLightProfileAsset* Profile = Cast<UEnvironmentLightProfileAsset>(Item);
+	UEnvironmentLightProfileAsset* Profile = Cast<UEnvironmentLightProfileAsset>(NewItem);
 
 	if (!IsValid(Sun) || !IsValid(Moon) || !IsValid(Profile))
 	{

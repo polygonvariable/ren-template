@@ -8,9 +8,6 @@
 // Generated Headers
 #include "PriorityListInterface.generated.h"
 
-// Module Macros
-#define REN_API RCORECOMMON_API
-
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UPriorityListInterface : public UInterface
@@ -21,7 +18,7 @@ class UPriorityListInterface : public UInterface
 /**
  *
  */
-class REN_API IPriorityListInterface
+class RCORECOMMON_API IPriorityListInterface
 {
 
 	GENERATED_BODY()
@@ -34,7 +31,7 @@ protected:
 
 	virtual void OnPriorityItemAdded(UObject* Item) {};
 	virtual void OnPriorityItemRemoved(UObject* Item, bool bReplaced) {};
-	virtual void OnPriorityItemChanged(UObject* Item) {};
+	virtual void OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem) {};
 	virtual void OnPriorityItemCleared() {};
 
 	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() = 0;
@@ -47,7 +44,4 @@ private:
 	void UpdateHighestPriority();
 
 };
-
-// Module Macros
-#undef REN_API
 

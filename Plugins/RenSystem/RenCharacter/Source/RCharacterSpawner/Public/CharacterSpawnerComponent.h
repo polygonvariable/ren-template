@@ -36,12 +36,12 @@ public:
 	RCHARACTERSPAWNER_API void CreateCharacters();
 	RCHARACTERSPAWNER_API void RemoveCharacters();
 
+	RCHARACTERSPAWNER_API void ShowCharacters();
+	RCHARACTERSPAWNER_API void HideCharacters();
+
 	// ~ UActorComponent
 	RCHARACTERSPAWNER_API virtual void InitializeComponent() override;
 	RCHARACTERSPAWNER_API virtual void UninitializeComponent() override;
-
-	RCHARACTERSPAWNER_API virtual void BeginPlay() override;
-	RCHARACTERSPAWNER_API virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// ~ End of UActorComponent
 
 protected:
@@ -70,6 +70,10 @@ protected:
 	// ~ End of Binding
 
 private:
+
+#if WITH_EDITOR
+	uint64 AsyncStartTime;
+#endif
 
 	TSharedPtr<FStreamableHandle> SpawnHandle;
 

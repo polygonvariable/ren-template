@@ -13,7 +13,7 @@
 
 UEnvironmentBrushComponent::UEnvironmentBrushComponent()
 {
-	bAutoActivate = true;
+	bAutoActivate = false;
 	PrimaryComponentTick.bCanEverTick = false;
 }
 

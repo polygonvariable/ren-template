@@ -24,7 +24,7 @@ class UEquipmentController;
 struct FStreamableHandle;
 class UAnimInstance;
 class UEquipmentStateController;
-class UEquipmentInputMapping;
+class UEquipmentInputBindingAsset;
 class UEnhancedInputComponent;
 struct FInputActionValue;
 

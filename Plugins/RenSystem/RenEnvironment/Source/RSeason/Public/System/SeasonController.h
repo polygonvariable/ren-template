@@ -62,7 +62,7 @@ protected:
 
 	// ~ IPriorityListInterface
 	virtual TMap<int, TWeakObjectPtr<UObject>>& GetPriorityItems() override final;
-	virtual void OnPriorityItemChanged(UObject* Item) override;
+	virtual void OnPriorityItemChanged(UObject* PreviousItem, UObject* NewItem) override;
 	virtual void OnPriorityItemRemoved(UObject* Item, bool bReplaced) override;
 	virtual void OnPriorityItemCleared() override;
 	// ~ End of IPriorityListInterface

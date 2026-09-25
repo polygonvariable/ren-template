@@ -34,6 +34,10 @@
 		{
 			"Name": "RCoreFramework",
 			"Enabled": true
+		},
+		{
+			"Name": "RCoreGamedata",
+			"Enabled": true
 		}
 	]
 }

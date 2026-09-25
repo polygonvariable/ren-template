@@ -64,6 +64,11 @@ public:
 	UPROPERTY(Config, EditDefaultsOnly, Category = "State Tags")
 	FGameplayTag StateDeadTag;
 
+	UPROPERTY(Config, EditDefaultsOnly, Category = "Health")
+	FGameplayTagContainer MovementModeTags;
+
+
+	FGameplayTag ConvertMovementModeToTag(EMovementMode MovementMode) const;
 
 	static RCHARACTER_API const UCharacterSettings* Get();
 
