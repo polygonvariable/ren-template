@@ -5,13 +5,15 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
-// Project Headers
-#include "LuauFragment.h"
-
 // Generated Headers
 #include "LuauSubsystem.generated.h"
 
+// Forward Declaration
 struct lua_State;
+struct FLuauProperty;
+struct FLuauProperty_Table;
+struct FLuauProperties;
+
 
 /**
  * 
@@ -24,15 +26,15 @@ class ULuauSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	void CreateState();
 	lua_State* GetState() const;
+	void CreateState();
 	void CloseState();
 
 	UFUNCTION(BlueprintCallable)
 	bool CompileCode(const FString& InCode, TArray<uint8>& OutBytecode);
 
 	UFUNCTION(BlueprintCallable)
-	bool ExecuteBytecode(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauParameters& Input, const FLuauParameters& Output);
+	bool ExecuteBytecode(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output);
 
 protected:
 
@@ -45,6 +47,13 @@ protected:
 private:
 
 	lua_State* L = nullptr;
+
+
+	bool PushProperty(lua_State* State, const TInstancedStruct<FLuauProperty>& Property);
+	bool ReadProperty(lua_State* State, int StackIndex, TInstancedStruct<FLuauProperty>& OutProperty);
+
+	bool PushTable(lua_State* State, const FLuauProperty_Table& Table);
+	bool ReadTable(lua_State* State, int StackIndex, FLuauProperty_Table& OutTable);
 
 public:
 

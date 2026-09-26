@@ -4,15 +4,16 @@
 #include "LuauSourceCodeCustomization.h"
 
 // Engine Headers
+#include "DetailWidgetRow.h"
+#include "IDetailChildrenBuilder.h"
+#include "PropertyHandle.h"
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Text/STextBlock.h"
-#include "DetailWidgetRow.h"
-#include "PropertyHandle.h"
-#include "IDetailChildrenBuilder.h"
 
 // Project Headers
-#include "LuauFragment.h"
+#include "LuauLibrary.h"
+#include "LuauSourceCode.h"
 #include "LuauSyntaxHighlighter.h"
 
 
