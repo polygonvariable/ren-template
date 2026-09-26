@@ -15,7 +15,7 @@
 #include "Data/SeasonWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "RCoreSettings/Public/WorldFragmentSettings.h"
+#include "CWorldSettings/Public/WorldFragmentSettings.h"
 #include "System/SeasonController.h"
 
 

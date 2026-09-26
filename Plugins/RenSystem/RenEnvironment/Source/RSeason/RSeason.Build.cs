@@ -29,7 +29,7 @@ public class RSeason : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
                 "RCoreCommon",
-                "RCoreSettings",
+                "CWorldSettings",
                 "RCoreMaterial",
                 "REnvironment",
             }
@@ -44,10 +44,10 @@ public class RSeason : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreWorlddataClock",
+                "CWorlddataClock",
                 "RCoreLibrary",
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
             }
 			);
 

@@ -32,11 +32,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreGamedata",
+			"Name": "CoreGamedata",
 			"Enabled": true
 		},
 		{
-			"Name": "RenEventflow",
+			"Name": "CoreEventflow",
 			"Enabled": true
 		}
 	]

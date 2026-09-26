@@ -133,8 +133,6 @@ void UCharacterSpawnerComponent::HandleOnCharactersLoaded(TArray<FCharacterIniti
 	const uint64 SpawnStartTime = FPlatformTime::Cycles64();
 #endif
 
-	FAssetManagerUtil::ReleaseHandle(SpawnHandle);
-
 	OnSpawnStarted();
 
 	for (FCharacterInitializationData& Data : CharacterData)

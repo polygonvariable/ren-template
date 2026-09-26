@@ -30,10 +30,10 @@ public class RInventory : ModuleRules
 				"DeveloperSettings",
 				"GameplayTags",
                 "RCoreAscension",
-                "RCoreAsset",
-				"RCoreAssetManager",
-                "RCoreAssetInstance",
-                "RCoreGamedataStorage",
+                "CAsset",
+				"CAssetManager",
+                "CAssetInstance",
+                "CGamedataStorage",
                 "RCoreCommon",
             }
 			);
@@ -50,6 +50,7 @@ public class RInventory : ModuleRules
                 "RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
+                "CGameplayBase",
             }
             );
 		

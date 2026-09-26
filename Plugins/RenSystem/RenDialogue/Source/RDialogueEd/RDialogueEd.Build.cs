@@ -56,8 +56,8 @@ public class RDialogueEd : ModuleRules
                 "SourceControl",
                 "ApplicationCore",
 
-                "RenEventflow",
-                "RenEventflowEd",
+                "CEventflow",
+                "CEventflowEd",
                 "RDialogue",
             }
 			);

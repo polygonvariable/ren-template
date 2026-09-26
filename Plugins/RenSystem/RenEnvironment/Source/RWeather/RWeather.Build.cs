@@ -44,10 +44,10 @@ public class RWeather : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "Niagara",
-                "RCoreSettings",
+                "CWorldSettings",
                 "RCoreLibrary",
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
             }
 			);
 

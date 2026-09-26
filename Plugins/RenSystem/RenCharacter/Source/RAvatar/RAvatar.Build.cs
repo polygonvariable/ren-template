@@ -30,13 +30,13 @@ public class RAvatar : ModuleRules
                 "GameplayAbilities",
                 "DeveloperSettings",
                 "GameplayTags",
-                "RCoreAsset",
+                "CAsset",
                 "RCoreCommon",
                 "RCoreAscension",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
                 "RCharacter",
-                "RCoreAssetInstance",
-                "RCoreAssetManager",
+                "CAssetInstance",
+                "CAssetManager",
             }
 			);
 			
@@ -53,6 +53,7 @@ public class RAvatar : ModuleRules
                 "RCoreLibrary",
                 "RCoreDelegate",
                 "RCoreFilter",
+                "CGameplayBase",
             }
 			);
 		

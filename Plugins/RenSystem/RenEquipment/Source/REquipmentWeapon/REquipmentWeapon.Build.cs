@@ -49,7 +49,7 @@ public class REquipmentWeapon : ModuleRules
                 "EnhancedInput",
                 "GameplayTasks",
                 "RCoreLibrary",
-                "RCoreAssetManager",
+                "CAssetManager",
             }
 			);
 		

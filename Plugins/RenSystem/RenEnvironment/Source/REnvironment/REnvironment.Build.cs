@@ -30,8 +30,8 @@ public class REnvironment : ModuleRules
                 "Landscape",
                 "DeveloperSettings",
                 "RCoreCommon",
-                "RCoreAsset",
-                "RCoreSettings",
+                "CAsset",
+                "CWorldSettings",
             }
 			);
 			
@@ -46,8 +46,8 @@ public class REnvironment : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "SunPosition",
                 "RCoreLibrary",
-                "RCoreAssetManager",
-                "RCoreWorlddataClock",
+                "CAssetManager",
+                "CWorlddataClock",
             }
 			);
 		

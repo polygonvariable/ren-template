@@ -7,13 +7,6 @@
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
 #endif
-#include "StructUtils/InstancedStruct.h"
-
-// Project Headers
-#include "Core/Type/AscensionData.h"
-#include "Core/Type/AssetRuleDefinition.h"
-#include "Data/AssetCollection.h"
-#include "Data/AssetGroup.h"
 
 
 FPrimaryAssetId UCharacterAsset::GetPrimaryAssetId() const
@@ -26,7 +19,7 @@ FPrimaryAssetType UCharacterAsset::GetPrimaryAssetType()
 	return TEXT("Character");
 }
 
-
+#if WITH_EDITOR
 EDataValidationResult UCharacterAsset::IsDataValid(FDataValidationContext& Context) const
 {
 	EDataValidationResult Result = Super::IsDataValid(Context);
@@ -57,3 +50,5 @@ EDataValidationResult UCharacterAsset::IsDataValid(FDataValidationContext& Conte
 
     return Result;
 }
+#endif
+

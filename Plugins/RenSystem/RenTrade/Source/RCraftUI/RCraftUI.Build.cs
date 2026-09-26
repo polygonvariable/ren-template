@@ -42,9 +42,9 @@ public class RCraftUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreAssetUI",
+				"CAssetUI",
                 "RCoreLibrary",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
             }
 			);
 		

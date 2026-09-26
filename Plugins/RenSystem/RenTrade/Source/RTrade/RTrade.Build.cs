@@ -27,7 +27,7 @@ public class RTrade : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "RCoreAsset",
+                "CAsset",
             }
 			);
 			
@@ -41,8 +41,8 @@ public class RTrade : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreLibrary",
-                "RCoreAssetManager",
-                "RCoreAssetInstance",
+                "CAssetManager",
+                "CAssetInstance",
             }
 			);
 		

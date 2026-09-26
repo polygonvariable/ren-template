@@ -19,6 +19,8 @@ void URGameUserSettings::LoadSettings(bool bForceReload)
 	MaxFPSCVar = ConsoleManager.FindConsoleVariable(TEXT("t.MaxFPS"));
 	NaniteCVar = ConsoleManager.FindConsoleVariable(TEXT("r.Nanite"));
 	EnvironmentPaintCVar = ConsoleManager.FindConsoleVariable(TEXT("ren.Environment.Paint"));
+	ContactShadowCVar = ConsoleManager.FindConsoleVariable(TEXT("r.ContactShadows"));
+	LightFunctionCVar = ConsoleManager.FindConsoleVariable(TEXT("r.LightFunctionQuality"));
 
 	Super::LoadSettings(bForceReload);
 }
@@ -48,6 +50,8 @@ void URGameUserSettings::RegisterCVar()
 	BindCVarDelegate(MaxFPSCVar);
 	BindCVarDelegate(NaniteCVar);
 	BindCVarDelegate(EnvironmentPaintCVar);
+	BindCVarDelegate(ContactShadowCVar);
+	BindCVarDelegate(LightFunctionCVar);
 }
 
 void URGameUserSettings::UnregisterCVar()
@@ -58,6 +62,8 @@ void URGameUserSettings::UnregisterCVar()
 	ClearCVarDelegate(MaxFPSCVar);
 	ClearCVarDelegate(NaniteCVar);
 	ClearCVarDelegate(EnvironmentPaintCVar);
+	ClearCVarDelegate(ContactShadowCVar);
+	ClearCVarDelegate(LightFunctionCVar);
 }
 
 
@@ -91,6 +97,9 @@ void URGameUserSettings::UpdateCVarValues()
 
 	UpdateCVarValue(NaniteCVar, bNanite);
 	UpdateCVarValue(EnvironmentPaintCVar, bEnvironmentPaint);
+
+	UpdateCVarValue(ContactShadowCVar, bContactShadow);
+	UpdateCVarValue(LightFunctionCVar, bLightFunction, 0, 1);
 }
 
 void URGameUserSettings::UpdateSettingValues()
@@ -102,6 +111,9 @@ void URGameUserSettings::UpdateSettingValues()
 
 	UpdateSettingValue(NaniteCVar, bNanite);
 	UpdateSettingValue(EnvironmentPaintCVar, bEnvironmentPaint);
+
+	UpdateSettingValue(ContactShadowCVar, bContactShadow);
+	UpdateSettingValue(LightFunctionCVar, bLightFunction, 0, 1);
 }
 
 

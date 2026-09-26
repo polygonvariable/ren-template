@@ -28,9 +28,9 @@ public class RGameplayHUD : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"GameplayTags",
-                "RCoreAsset",
-				"RCoreGameplayMode",
-                "RCoreGamedataComponent",
+                "CAsset",
+				"CGameplayMode",
+                "CGamedataComponent",
             }
 			);
 			
@@ -46,7 +46,7 @@ public class RGameplayHUD : ModuleRules
                 "UMG",
                 "EnhancedInput",
                 "RCoreLibrary",
-                "RCoreAssetManager",
+                "CAssetManager",
             }
 			);
 		

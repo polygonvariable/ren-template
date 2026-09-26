@@ -28,7 +28,7 @@ public class RAvatarAscensionUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"RCoreAssetUI",
+				"CAssetUI",
             }
 			);
 			
@@ -41,7 +41,7 @@ public class RAvatarAscensionUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreAsset",
+                "CAsset",
                 "RCoreAscension",
                 "RCoreFilter",
                 "RCoreLibrary",
@@ -49,7 +49,7 @@ public class RAvatarAscensionUI : ModuleRules
                 "RAvatar",
                 "RAvatarUI",
                 "RAvatarAscension",
-				"RCoreGamedataStorage",
+				"CGamedataStorage",
             }
 			);
 		

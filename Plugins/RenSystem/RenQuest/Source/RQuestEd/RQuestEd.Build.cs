@@ -47,8 +47,8 @@ public class RQuestEd : ModuleRules
                 "ToolMenus",
                 "GraphEditor",
 
-                "RenEventflow",
-                "RenEventflowEd",
+                "CEventflow",
+                "CEventflowEd",
                 "RQuest",
             }
 			);

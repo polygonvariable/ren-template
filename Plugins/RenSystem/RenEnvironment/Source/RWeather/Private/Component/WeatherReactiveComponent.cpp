@@ -20,18 +20,25 @@
 UWeatherReactiveComponent::UWeatherReactiveComponent()
 {
 	PrimaryComponentTick.bStartWithTickEnabled = false;
+    bWantsInitializeComponent = true;
 }
 
 
-void UWeatherReactiveComponent::BeginPlay()
+void UWeatherReactiveComponent::InitializeComponent()
 {
+    Super::InitializeComponent();
+
     WeatherSubsystem = UWeatherSubsystem::Get(GetWorld());
     if (IsValid(WeatherSubsystem))
     {
+        if (IsValid(WeatherSubsystem->GetWeatherController()))
+        {
+            HandleOnControllerCreated();
+            return;
+        }
+
         WeatherSubsystem->OnControllerCreated.AddUObject(this, &UWeatherReactiveComponent::HandleOnControllerCreated);
     }
-
-    Super::BeginPlay();
 }
 
 void UWeatherReactiveComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -42,6 +49,7 @@ void UWeatherReactiveComponent::EndPlay(const EEndPlayReason::Type EndPlayReason
     {
         WeatherSubsystem->OnWeatherRefreshed.RemoveAll(this);
     }
+    WeatherSubsystem = nullptr;
 
     if (IsValid(WeatherController))
     {

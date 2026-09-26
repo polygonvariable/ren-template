@@ -28,7 +28,7 @@ public class RStorage : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
             }
 		);
 			

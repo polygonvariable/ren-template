@@ -33,7 +33,7 @@ public class RAbility : ModuleRules
                 "DeveloperSettings",
                 "RCoreCommon",
                 "RCoreTag",
-				"RCoreGamedataComponent",
+				"CGamedataComponent",
             }
 			);
 			

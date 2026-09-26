@@ -28,7 +28,7 @@ public class RTradeUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"RCoreAssetUI",
+				"CAssetUI",
 				"RTrade",
             }
 			);
@@ -42,10 +42,10 @@ public class RTradeUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreAsset",
+                "CAsset",
                 "RCoreFilter",
                 "RCoreLibrary",
-                "RCoreAssetManager",
+                "CAssetManager",
             }
 			);
 		

@@ -30,7 +30,7 @@ public:
     int AntiAliasingMethod = 5;
 
     UPROPERTY(Config)
-    int TonemapperSharpen = 0;
+    int TonemapperSharpen = 1;
 
     UPROPERTY(Config)
     bool bNanite = false;
@@ -38,6 +38,11 @@ public:
     UPROPERTY(Config)
     bool bEnvironmentPaint = false;
 
+    UPROPERTY(Config)
+    bool bContactShadow = true;
+
+    UPROPERTY(Config)
+    int bLightFunction = 1;
 
     void RegisterCVar();
     void UnregisterCVar();
@@ -56,6 +61,8 @@ protected:
     IConsoleVariable* MaxFPSCVar = nullptr;
     IConsoleVariable* NaniteCVar = nullptr;
     IConsoleVariable* EnvironmentPaintCVar = nullptr;
+    IConsoleVariable* ContactShadowCVar = nullptr;
+    IConsoleVariable* LightFunctionCVar = nullptr;
 
 
     void BindCVarDelegate(IConsoleVariable* Variable);

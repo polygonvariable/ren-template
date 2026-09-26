@@ -224,3 +224,29 @@ void USettingOption_SliderUI::NativeDestruct()
 	Super::NativeDestruct();
 }
 
+
+void USettingsDashboardUI::CloseWidget()
+{
+	if (bHideOnClose)
+	{
+		SetVisibility(ESlateVisibility::Collapsed);
+	}
+	else
+	{
+		RemoveFromParent();
+	}
+}
+
+void USettingsDashboardUI::NativeConstruct()
+{
+	if (IsValid(CloseButton)) CloseButton->OnClicked.AddDynamic(this, &USettingsDashboardUI::CloseWidget);
+
+	Super::NativeConstruct();
+}
+
+void USettingsDashboardUI::NativeDestruct()
+{
+	if (IsValid(CloseButton)) CloseButton->OnClicked.RemoveAll(this);
+
+	Super::NativeDestruct();
+}

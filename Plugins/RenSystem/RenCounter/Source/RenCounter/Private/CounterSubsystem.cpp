@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegate.h"
+// #include "GameLifecycleDelegate.h"
 
 #include "RCoreCounter/Public/CounterContainer.h"
 #include "RCoreCounter/Public/CounterProviderInterface.h"

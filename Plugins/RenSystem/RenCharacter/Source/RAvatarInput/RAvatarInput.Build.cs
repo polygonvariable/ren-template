@@ -27,7 +27,7 @@ public class RAvatarInput : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "RCoreAsset",
+                "CAsset",
             }
 			);
 			
@@ -41,7 +41,7 @@ public class RAvatarInput : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
-                "RCoreAssetManager",
+                "CAssetManager",
                 "RCharacter",
                 "RAvatar",
             }

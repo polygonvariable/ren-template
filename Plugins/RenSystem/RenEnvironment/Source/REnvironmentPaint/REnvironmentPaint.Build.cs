@@ -28,10 +28,10 @@ public class REnvironmentPaint : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"RCoreCommon",
-                "RCoreAsset",
-                "RCoreAssetManager",
-                "RCoreSettings",
-				"RCoreGamedataComponent",
+                "CAsset",
+                "CAssetManager",
+                "CWorldSettings",
+				"CGamedataComponent",
             }
 			);
 			

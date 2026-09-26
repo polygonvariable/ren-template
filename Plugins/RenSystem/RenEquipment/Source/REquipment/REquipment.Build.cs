@@ -33,10 +33,10 @@ public class REquipment : ModuleRules
                 "RCoreCommon",
 				"RCorePool",
                 "RCoreAscension",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
 				"RCoreAuthAction",
-                "RCoreAssetInstance",
-				"RCoreGamedataComponent",
+                "CAssetInstance",
+				"CGamedataComponent",
             }
 			);
 			
@@ -53,8 +53,9 @@ public class REquipment : ModuleRules
                 "RCoreLibrary",
                 "RCoreDelegate",
                 "RCoreFilter",
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
+                "CGameplayBase",
             }
 			);
 		

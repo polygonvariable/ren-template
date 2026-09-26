@@ -48,7 +48,7 @@ public class REquipmentSkill : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
                 "RCoreLibrary",
-                "RCoreAssetManager",
+                "CAssetManager",
             }
 			);
 		

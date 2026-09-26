@@ -7,7 +7,7 @@
 #include "Core/AvatarSettings.h"
 #include "Data/AvatarAsset.h"
 #include "Data/AvatarStorage.h"
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

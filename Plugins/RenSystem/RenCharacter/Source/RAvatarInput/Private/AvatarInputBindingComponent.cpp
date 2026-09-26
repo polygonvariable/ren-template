@@ -57,8 +57,8 @@ void UAvatarInputBindingComponent::EndPlay(const EEndPlayReason::Type EndPlayRea
 	}
 	PlayerController = nullptr;
 
-	FAssetManagerUtil::CancelHandle(AssetHandle);
 	InputBindingAsset = nullptr;
+	FAssetManagerUtil::CancelHandle(AssetHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -94,7 +94,6 @@ void UAvatarInputBindingComponent::HandleOnPawnChanged(APawn* OldPawn, APawn* Ne
 
 void UAvatarInputBindingComponent::HandleOnInputAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(AssetHandle);
 	InputBindingAsset = InputBinding.Get();
 
 	UEnhancedInputComponent* InputComponent = GetInputComponent();
@@ -170,7 +169,7 @@ void UAvatarInputBindingComponent::HandleOnSprint(const FInputActionValue& Value
 
 void UAvatarInputBindingComponent::HandleOnJump(const FInputActionValue& Value)
 {
-	if (IsValid(Character) && Value.GetValueType() == EInputActionValueType::Boolean)
+	if (IsValid(Character) && Character->CanJump() && Value.GetValueType() == EInputActionValueType::Boolean)
 	{
 		Character->Jump();
 	}

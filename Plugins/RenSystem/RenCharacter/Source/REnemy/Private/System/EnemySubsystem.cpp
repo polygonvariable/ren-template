@@ -4,7 +4,7 @@
 #include "System/EnemySubsystem.h"
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

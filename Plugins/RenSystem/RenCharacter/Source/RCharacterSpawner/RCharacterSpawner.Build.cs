@@ -32,14 +32,14 @@ public class RCharacterSpawner : ModuleRules
                 "GameplayTags",
 				"RCoreCommon",
                 "RCoreAscension",
-                "RCoreAsset",
-                "RCoreAssetInstance",
-                "RCoreAssetManager",
-                "RCoreGamedataStorage",
+                "CAsset",
+                "CAssetInstance",
+                "CAssetManager",
+                "CGamedataStorage",
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",
-                "RCoreGamedataComponent",
+                "CGamedataComponent",
             }
 			);
 			

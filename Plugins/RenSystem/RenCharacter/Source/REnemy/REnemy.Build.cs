@@ -32,10 +32,10 @@ public class REnemy : ModuleRules
                 "GameplayTags",
 				"RCoreCommon",
                 "RCoreAscension",
-                "RCoreAsset",
-                "RCoreAssetInstance",
-                "RCoreAssetManager",
-                "RCoreGamedataStorage",
+                "CAsset",
+                "CAssetInstance",
+                "CAssetManager",
+                "CGamedataStorage",
                 "RCoreAuthAction",
                 "RCharacter",
 				"RAvatar",
@@ -53,6 +53,7 @@ public class REnemy : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "RCoreLibrary",
+                "CGameplayBase",
             }
 			);
 		

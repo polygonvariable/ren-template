@@ -48,11 +48,11 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RCoreAsset",
+			"Name": "CoreAsset",
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreGamedata",
+			"Name": "CoreGamedata",
 			"Enabled": true
 		}
 	]

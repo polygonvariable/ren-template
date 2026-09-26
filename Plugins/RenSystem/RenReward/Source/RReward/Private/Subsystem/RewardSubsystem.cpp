@@ -6,7 +6,7 @@
 // Project Headers
 #include "Asset/RewardAsset.h"
 #include "Auth/AAGiveReward.h"
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

@@ -17,7 +17,7 @@
 #include "Data/TradeAsset.h"
 #include "Data/TradeAssetCollection.h"
 #include "Core/Type/AssetRuleDefinition.h"
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

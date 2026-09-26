@@ -29,7 +29,7 @@ public class REquipmentUI : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
 				"GameplayTags",
-                "RCoreAssetUI",
+                "CAssetUI",
                 "REquipment",
             }
 			);
@@ -44,12 +44,12 @@ public class REquipmentUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"GameplayAbilities",
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
 				"RCoreDelegate",
                 "RCoreLibrary",
                 "RCoreFilter",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
             }
 			);
 		

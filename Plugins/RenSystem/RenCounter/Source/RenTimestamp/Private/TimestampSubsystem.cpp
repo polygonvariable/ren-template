@@ -6,7 +6,7 @@
 // Engine Headers
 
 // Project Headers
-#include "Delegate/GameLifecycleDelegate.h"
+//#include "GameLifecycleDelegate.h"
 
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -96,7 +96,7 @@ ETimestampCooldownStatus UTimestampSubsystem::GetCooldownStatus(FName ContainerI
 
 void UTimestampSubsystem::HandleGameInitialized()
 {
-	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
+	//FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	CounterSubsystem = GetGameInstance()->GetSubsystem<UCounterSubsystem>();
 }
@@ -111,12 +111,12 @@ void UTimestampSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTimestamp, TEXT("Initialized"));
 
-	FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UTimestampSubsystem::HandleGameInitialized);
+	//FGameLifecycleDelegate::OnPreGameInitialized.AddUObject(this, &UTimestampSubsystem::HandleGameInitialized);
 }
 
 void UTimestampSubsystem::Deinitialize()
 {
-	FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
+	//FGameLifecycleDelegate::OnPreGameInitialized.RemoveAll(this);
 
 	CounterSubsystem.Reset();
 

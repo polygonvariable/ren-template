@@ -30,10 +30,10 @@ public class RReward : ModuleRules
 				"DeveloperSettings",
 				"GameplayTags",
 				"RCoreAuthAction",
-				"RCoreGamedataStorage",
-				"RCoreAsset",
-				"RCoreAssetInstance",
-                "RCoreAssetManager",
+				"CGamedataStorage",
+				"CAsset",
+				"CAssetInstance",
+                "CAssetManager",
             }
 		);
 			
@@ -49,6 +49,7 @@ public class RReward : ModuleRules
 				"RCoreBroadcast",
 				"RCoreDelegate",
                 "RCoreLibrary",
+                "CGameplayBase",
             }
 		);
 		

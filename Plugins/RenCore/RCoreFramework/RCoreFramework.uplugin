@@ -31,11 +31,6 @@
 			"LoadingPhase": "Default"
 		},
 		{
-			"Name": "RCoreGame",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
 			"Name": "RCoreLibrary",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -47,11 +42,6 @@
 		},
 		{
 			"Name": "RCorePool",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "RCoreSettings",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

@@ -43,7 +43,7 @@ public class REquipmentInput : ModuleRules
                 "EnhancedInput",
                 "GameplayAbilities",
                 "RCoreLibrary",
-                "RCoreAssetManager",
+                "CAssetManager",
             }
 			);
 		

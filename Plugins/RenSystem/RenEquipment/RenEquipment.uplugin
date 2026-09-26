@@ -61,7 +61,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAsset",
+			"Name": "CoreAsset",
 			"Enabled": true
 		},
 		{
@@ -73,7 +73,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreGamedata",
+			"Name": "CoreGamedata",
 			"Enabled": true
 		}
 	]

@@ -9,7 +9,7 @@
 #include "Core/PartySettings.h"
 #include "Core/StorageProvider.h"
 #include "Data/PartyStorage.h"
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/AuthActionSubsystem.h"

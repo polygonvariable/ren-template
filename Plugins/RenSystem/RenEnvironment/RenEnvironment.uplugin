@@ -74,11 +74,11 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreGamedata",
+			"Name": "CoreGamedata",
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreWorlddata",
+			"Name": "CoreWorlddata",
 			"Enabled": true
 		},
 		{
@@ -86,7 +86,7 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAsset",
+			"Name": "CoreAsset",
 			"Enabled": true
 		}
 	]

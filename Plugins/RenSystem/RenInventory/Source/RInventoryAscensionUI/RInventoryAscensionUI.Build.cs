@@ -28,7 +28,7 @@ public class RInventoryAscensionUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"RCoreAssetUI",
+				"CAssetUI",
             }
 			);
 			
@@ -41,12 +41,12 @@ public class RInventoryAscensionUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreAsset",
+                "CAsset",
                 "RCoreAscension",
                 "RCoreDelegate",
                 "RCoreFilter",
                 "RCoreLibrary",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
                 "RInventory",
                 "RInventoryUI",
                 "RInventoryAscension",

@@ -9,7 +9,7 @@
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AssetInstanceRelation.h"
 #include "Data/EquipmentStorage.h"
-#include "Delegate/GameLifecycleDelegate.h"
+#include "GameLifecycleDelegate.h"
 #include "Core/StorageManager.h"
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"

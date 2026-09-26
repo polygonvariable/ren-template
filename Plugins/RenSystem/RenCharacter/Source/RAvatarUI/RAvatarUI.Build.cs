@@ -28,7 +28,7 @@ public class RAvatarUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-                "RCoreAssetUI",
+                "CAssetUI",
                 "RAvatar",
             }
 			);
@@ -45,7 +45,7 @@ public class RAvatarUI : ModuleRules
                 "RCoreLibrary",
                 "RCoreFilter",
                 "RCoreAscensionUI",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
             }
 			);
 		

@@ -48,10 +48,9 @@ void UHUDInputBindingComponent::EndPlay(const EEndPlayReason::Type EndPlayReason
 		InputHandles.Empty();
 	}
 
-	FAssetManagerUtil::CancelHandle(AssetHandle);
 	InputBindingAsset = nullptr;
+	FAssetManagerUtil::CancelHandle(AssetHandle);
 
-	FAssetManagerUtil::CancelHandle(WidgetHandle);
 	for (TPair<FGuid, TObjectPtr<UUserWidget>>& Kv : WidgetCollection)
 	{
 		if (IsValid(Kv.Value))
@@ -60,6 +59,7 @@ void UHUDInputBindingComponent::EndPlay(const EEndPlayReason::Type EndPlayReason
 		}
 	}
 	WidgetCollection.Empty();
+	FAssetManagerUtil::CancelHandle(WidgetHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
@@ -101,9 +101,7 @@ UEnhancedInputComponent* UHUDInputBindingComponent::GetInputComponent() const
 
 void UHUDInputBindingComponent::HandleOnAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(AssetHandle);
 	InputBindingAsset = InputBinding.Get();
-
 	GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
 
 	UEnhancedInputComponent* InputComponent = GetInputComponent();
@@ -126,11 +124,11 @@ void UHUDInputBindingComponent::HandleOnAssetLoaded()
 
 void UHUDInputBindingComponent::HandleOnInputTriggered(const FInputActionValue& Value, FGuid InputId, FSoftObjectPath Widget)
 {
-	FAssetManagerUtil::CancelHandle(WidgetHandle);
-
 	TPair<FGuid, TObjectPtr<UUserWidget>>* FoundPair = WidgetCollection.FindByPredicate([InputId](const TPair<FGuid, TObjectPtr<UUserWidget>>& Kv) { return Kv.Key == InputId; });
 	if (!FoundPair)
 	{
+		FAssetManagerUtil::CancelHandle(WidgetHandle);
+
 		FStreamableManager& Manager = UAssetManager::GetStreamableManager();
 		WidgetHandle = Manager.RequestAsyncLoad(Widget, FStreamableDelegate::CreateUObject(this, &UHUDInputBindingComponent::HandleOnWidgetLoaded, InputId, Widget));
 		return;
@@ -145,8 +143,6 @@ void UHUDInputBindingComponent::HandleOnInputTriggered(const FInputActionValue& 
 
 void UHUDInputBindingComponent::HandleOnWidgetLoaded(FGuid InputId, FSoftObjectPath Widget)
 {
-	FAssetManagerUtil::ReleaseHandle(WidgetHandle);
-
 	UObject* WidgetObject = Widget.ResolveObject();
 	if (!IsValid(WidgetObject))
 	{
@@ -196,16 +192,16 @@ void UHUDInputBindingComponent::HandleOnWidgetVisibilityChanged(ESlateVisibility
 	}
 	else if (Visiblity == ESlateVisibility::Collapsed)
 	{
+		FGameplayTagContainer A;
+		A.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Mouse.Visible")));
+		GameplayMode->RempoveGameplayMode(A);
+
 		FGameplayTagContainer R;
 		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.HUD")));
 		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Character")));
 		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Camera")));
 		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.HUD.Visible")));
 		GameplayMode->AddGameplayMode(R);
-
-		FGameplayTagContainer A;
-		A.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Mouse.Visible")));
-		GameplayMode->RempoveGameplayMode(A);
 	}
 }
 

@@ -29,8 +29,8 @@ public class RGameplayMode : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"GameplayTags",
                 "RCoreCommon",
-                "RCoreGameplayMode",
-				"RCoreSettings",
+                "CGameplayMode",
+				"CWorldSettings",
             }
 			);
 			
@@ -43,8 +43,8 @@ public class RGameplayMode : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
                 "RCoreLibrary",
             }
 			);

@@ -32,9 +32,9 @@ public class RCharacter : ModuleRules
                 "GameplayTags",
 				"RCoreCommon",
                 "RCoreAscension",
-                "RCoreAsset",
-                "RCoreAssetInstance",
-                "RCoreGamedataComponent",
+                "CAsset",
+                "CAssetInstance",
+                "CGamedataComponent",
             }
 			);
 			

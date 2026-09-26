@@ -28,8 +28,8 @@ public class RGameplayPlayer : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"GameplayTags",
-				"RCoreGameplayMode",
-                "RCoreGamedataComponent",
+				"CGameplayMode",
+                "CGamedataComponent",
             }
 			);
 			
@@ -44,8 +44,8 @@ public class RGameplayPlayer : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
                 "RCoreLibrary",
-                "RCoreAsset",
-                "RCoreAssetManager",
+                "CAsset",
+                "CAssetManager",
             }
 			);
 		

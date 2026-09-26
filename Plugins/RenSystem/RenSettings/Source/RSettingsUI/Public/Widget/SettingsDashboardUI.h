@@ -214,5 +214,22 @@ class USettingsDashboardUI : public UUserWidget
 
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> CloseButton = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool bHideOnClose = true;
+
+
+	UFUNCTION()
+	void CloseWidget();
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
+
 };
 

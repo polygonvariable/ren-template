@@ -30,9 +30,9 @@ public class RQuest : ModuleRules
 				"DeveloperSettings",
 				"GameplayTags",
                 "UMG",
-                "RenEventflow",
+                "CEventflow",
 				"RCoreCommon",
-                "RCoreGamedataStorage",
+                "CGamedataStorage",
             }
 			);
 			

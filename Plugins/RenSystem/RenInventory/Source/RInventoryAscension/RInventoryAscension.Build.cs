@@ -41,9 +41,9 @@ public class RInventoryAscension : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreAsset",
-                "RCoreAssetManager",
-                "RCoreAssetInstance",
+                "CAsset",
+                "CAssetManager",
+                "CAssetInstance",
                 "RCoreLibrary",
                 "RInventory",
             }
