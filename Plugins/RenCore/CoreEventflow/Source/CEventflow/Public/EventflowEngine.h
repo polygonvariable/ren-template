@@ -10,9 +10,6 @@
 // Generated Headers
 #include "EventflowEngine.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOW_API
-
 // Forward Declarations
 class UAssetManager;
 class UEventflowAsset;
@@ -33,9 +30,9 @@ class UEventflowEngine : public UFiniteStateMachine
 
 public:
 
-	REN_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition);
+	CEVENTFLOW_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition);
 
-	REN_API UEventflowPrimaryTask* GetTask() const;
+	CEVENTFLOW_API UEventflowPrimaryTask* GetTask() const;
 
 	template<typename T>
 	T* GetTask()
@@ -43,7 +40,7 @@ public:
 		return Cast<T>(GetTask());
 	}
 
-	REN_API UEventflowAsset* GetAsset() const;
+	CEVENTFLOW_API UEventflowAsset* GetAsset() const;
 
 	template<typename T>
 	T* GetAsset()
@@ -52,39 +49,39 @@ public:
 	}
 
 	// ~ UObject
-	REN_API virtual UWorld* GetWorld() const override;
+	CEVENTFLOW_API virtual UWorld* GetWorld() const override;
 	// ~ End of UObject
 
 protected:
 
-	REN_API virtual void GetAssetBundle(TArray<FName>& OutBundle) const;
+	CEVENTFLOW_API virtual void GetAssetBundle(TArray<FName>& OutBundle) const;
 
-	REN_API const FEventflowNode* GetNode(const FGuid& NodeId) const;
-	REN_API const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
+	CEVENTFLOW_API const FEventflowNode* GetNode(const FGuid& NodeId) const;
+	CEVENTFLOW_API const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
 
-	REN_API void ReachNode(const FGuid& NodeId);
-	REN_API void ReachEntryNode();
-	REN_API void ReachNextNode(int Index = 0);
-	REN_API void ReachPreviousNode();
+	CEVENTFLOW_API void ReachNode(const FGuid& NodeId);
+	CEVENTFLOW_API void ReachEntryNode();
+	CEVENTFLOW_API void ReachNextNode(int Index = 0);
+	CEVENTFLOW_API void ReachPreviousNode();
 
-	REN_API void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
-	REN_API void RemoveTask();
+	CEVENTFLOW_API void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
+	CEVENTFLOW_API void RemoveTask();
 
 	// ~ Bindings
-	REN_API virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	CEVENTFLOW_API virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
-	REN_API virtual void OnInitialized(EFSMState PreviousState) override;
-	REN_API virtual void OnLoaded(EFSMState PreviousState) override;
-	REN_API virtual void OnReady(EFSMState PreviousState) override;
+	CEVENTFLOW_API virtual void OnInitialized(EFSMState PreviousState) override;
+	CEVENTFLOW_API virtual void OnLoaded(EFSMState PreviousState) override;
+	CEVENTFLOW_API virtual void OnReady(EFSMState PreviousState) override;
 
-	REN_API virtual void OnActive(EFSMState PreviousState) override;
-	REN_API virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
+	CEVENTFLOW_API virtual void OnActive(EFSMState PreviousState) override;
+	CEVENTFLOW_API virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
 
-	REN_API virtual void OnFinished(EFSMResult Result) override;
-	REN_API virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
-	REN_API virtual void OnReset() override;
+	CEVENTFLOW_API virtual void OnFinished(EFSMResult Result) override;
+	CEVENTFLOW_API virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
+	CEVENTFLOW_API virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
 
 private:
@@ -110,8 +107,4 @@ private:
 	TObjectPtr<UAssetManager> _AssetManager = nullptr;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

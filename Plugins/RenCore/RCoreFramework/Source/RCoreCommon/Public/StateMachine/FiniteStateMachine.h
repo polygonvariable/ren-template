@@ -8,15 +8,12 @@
 // Generated Headers
 #include "FiniteStateMachine.generated.h"
 
-// Module Macros
-#define REN_API RCORECOMMON_API
-
 
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI)
-class UFiniteStateMachine : public UObject
+UCLASS(Abstract)
+class RCORECOMMON_API UFiniteStateMachine : public UObject
 {
 
 	GENERATED_BODY()
@@ -28,42 +25,45 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Initialize();
+	void Initialize();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Load();
+	void Load();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Execute();
+	void Execute();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Finish(EFSMResult Result);
+	void Active();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Ready();
+	void Finish(EFSMResult Result);
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Restart();
+	void Ready();
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void Reset();
+	void Restart();
 
-	REN_API EFSMResult GetResult() const;
-	REN_API EFSMState GetState() const;
+	UFUNCTION(BlueprintCallable)
+	void Reset();
+
+	EFSMResult GetResult() const;
+	EFSMState GetState() const;
 
 protected:
 
 	// ~ Template
-	REN_API virtual void OnInitialized(EFSMState PreviousState);
-	REN_API virtual void OnLoaded(EFSMState PreviousState);
-	REN_API virtual void OnReady(EFSMState PreviousState);
+	virtual void OnInitialized(EFSMState PreviousState);
+	virtual void OnLoaded(EFSMState PreviousState);
+	virtual void OnReady(EFSMState PreviousState);
 
-	REN_API virtual void OnActive(EFSMState PreviousState);
-	REN_API virtual void OnEndActive(EFSMState NextState, EFSMResult Result);
+	virtual void OnActive(EFSMState PreviousState);
+	virtual void OnEndActive(EFSMState NextState, EFSMResult Result);
 
-	REN_API virtual void OnFinished(EFSMResult Result);
-	REN_API virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult);
-	REN_API virtual void OnReset();
+	virtual void OnFinished(EFSMResult Result);
+	virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult);
+	virtual void OnReset();
 	// ~ End of Template
 
 private:
@@ -76,12 +76,8 @@ private:
 	bool _bIsTransitioning = false;
 
 
-	REN_API bool CanTransitionTo(EFSMState NextState, EFSMResult Result) const;
-	REN_API bool SetState(EFSMState NextState, EFSMResult Result = EFSMResult::None);
+	bool CanTransitionTo(EFSMState NextState, EFSMResult Result) const;
+	bool SetState(EFSMState NextState, EFSMResult Result = EFSMResult::None);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

@@ -10,7 +10,9 @@
 
 // Forward Declarations
 class UEventflowNodeData;
-class UDialogueTask;
+class UDialogueTask_Default;
+class UDialogueTask_Branch;
+
 
 
 /*
@@ -26,13 +28,13 @@ public:
 
 	// ~ UEventflowEdGraphNode
 	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* Task) override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
 	// ~ End of UEventflowEdGraphNode
 
 protected:
 
-	UPROPERTY(EditAnywhere, Instanced)
-	TObjectPtr<UDialogueTask> PrimaryTask = nullptr;
+	UPROPERTY(EditAnywhere, Instanced, Category = "Task")
+	TObjectPtr<UDialogueTask_Default> Task;
 
 };
 
@@ -41,7 +43,7 @@ protected:
  *
  */
 UCLASS()
-class UDialogueEdBeginNode : public UDialogueEdNode_Base
+class UDialogueEdNode_Begin : public UDialogueEdNode_Base
 {
 
 	GENERATED_BODY()
@@ -62,7 +64,7 @@ public:
  *
  */
 UCLASS()
-class UDialogueEdEndNode : public UDialogueEdNode_Base
+class UDialogueEdNode_End : public UDialogueEdNode_Base
 {
 
 	GENERATED_BODY()
@@ -83,7 +85,7 @@ public:
  *
  */
 UCLASS()
-class UDialogueEdDialogNode : public UDialogueEdNode_Base
+class UDialogueEdNode_Dialogue : public UDialogueEdNode_Base
 {
 
 	GENERATED_BODY()
@@ -104,7 +106,7 @@ public:
  *
  */
 UCLASS()
-class UDialogueEdBranchNode : public UDialogueEdNode_Base
+class UDialogueEdNode_Branch : public UEventflowEdGraphNode
 {
 
 	GENERATED_BODY()
@@ -112,6 +114,8 @@ class UDialogueEdBranchNode : public UDialogueEdNode_Base
 public:
 
 	// ~ UEventflowEdGraphNode
+	virtual UEventflowPrimaryTask* GetTask() const override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
 	virtual TArray<FText> GetRuntimeOutputPins() const override;
 	// ~ End of UEventflowEdGraphNode
 
@@ -121,6 +125,11 @@ public:
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
+
+protected:
+
+	UPROPERTY(EditAnywhere, Instanced, Category = "Task")
+	TObjectPtr<UDialogueTask_Branch> Task;
 
 };
 

@@ -3,28 +3,79 @@
 // Parent Header
 #include "GameplayModeSubsystem.h"
 
+// Engine Headers
+#include "Engine/AssetManager.h"
+
 // Project Headers
+#include "Core/AssetManagerUtil.h"
+#include "GameplayModeSettings.h"
+#include "GameplayModeTagGroup.h"
 #include "GameplayModeWorldConfig.h"
-#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "WorldFragmentSettings.h"
 
 
-void UGameplayModeSubsystem::BP_SetGameplayModeByTag(FGameplayTagContainer Tags)
+void UGameplayModeSubsystem::BP_PushGameplayMode(FName Mode)
 {
-	SetGameplayModeByTag(Tags);
+	PushGameplayMode(Mode);
 }
 
-void UGameplayModeSubsystem::BP_AddGameplayMode(FGameplayTagContainer Tags)
+void UGameplayModeSubsystem::BP_PopGameplayMode(FName Mode)
 {
-	AddGameplayMode(Tags);
+	PopGameplayMode(Mode);
 }
 
-void UGameplayModeSubsystem::BP_RempoveGameplayMode(FGameplayTagContainer Tags)
+
+void UGameplayModeSubsystem::PushGameplayMode(FName Mode)
 {
-	RempoveGameplayMode(Tags);
+	if (!IsValid(GameplayModeTable))
+	{
+		return;
+	}
+
+	const FGameplayModeTagGroup* FoundRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(Mode, FString());
+	if (!FoundRow)
+	{
+		return;
+	}
+
+	GameplayModeStack.Push(Mode);
+
+	AddGameplayMode(FoundRow->ActivateTags);
+	RempoveGameplayMode(FoundRow->DeactivateTags);
 }
 
+void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
+{
+	if (!IsValid(GameplayModeTable) || GameplayModeStack.IsEmpty())
+	{
+		return;
+	}
+
+	FName LastMode = GameplayModeStack.Pop();
+	const FGameplayModeTagGroup* LastRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(LastMode, FString());
+	if (!LastRow)
+	{
+		return;
+	}
+
+	FGameplayTagContainer NewActiveTags;
+	FGameplayTagContainer LastActiveTags = LastRow->ActivateTags;
+
+	if (!GameplayModeStack.IsEmpty())
+	{
+		FName NewLast = GameplayModeStack.Last();
+		const FGameplayModeTagGroup* NewLastRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(NewLast, FString());
+		if (NewLastRow)
+		{
+			LastActiveTags.AppendTags(NewLastRow->DeactivateTags);
+			NewActiveTags.AppendTags(NewLastRow->ActivateTags);
+		}
+	}
+
+	AddGameplayMode(NewActiveTags);
+	RempoveGameplayMode(LastActiveTags);
+}
 
 void UGameplayModeSubsystem::RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback)
 {
@@ -65,72 +116,21 @@ void UGameplayModeSubsystem::UnregisterTagNotify(FGameplayTag Tag, UObject* Targ
 	LOG_WARNING(LogTemp, TEXT("GameplayMode tag callback removed: %s"), *Tag.ToString());
 }
 
-
 const FGameplayTagContainer& UGameplayModeSubsystem::GetGameplayModeTags() const
 {
 	return GameplayModeTag;
-}
-
-void UGameplayModeSubsystem::SetGameplayModeByTag(FGameplayTagContainer Tags)
-{
-	FGameplayTagContainer NewTags = Tags;
-	FGameplayTagContainer OldTags = GameplayModeTag;
-	
-	FGameplayTagContainer Removed = OldTags;
-	Removed.RemoveTags(NewTags);
-
-	FGameplayTagContainer Added = NewTags;
-	Added.RemoveTags(OldTags);
-
-	GameplayModeTag = NewTags;
-
-	if (!bCanBroadcast)
-	{
-		LOG_WARNING(LogTemp, TEXT("GameplayModeSubsystem broadcast is disabled"));
-		return;
-	}
-
-	for (const FGameplayTag& Tag : Removed)
-	{
-		const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
-		if (FoundHandle)
-		{
-			FoundHandle->Key.Broadcast(false);
-		}
-		OnGameplayModeTagsChanged.Broadcast(Tag, false);
-	}
-
-	for (const FGameplayTag& Tag : Added)
-	{
-		const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
-		if (FoundHandle)
-		{
-			FoundHandle->Key.Broadcast(true);
-		}
-		OnGameplayModeTagsChanged.Broadcast(Tag, true);
-	}
 }
 
 void UGameplayModeSubsystem::AddGameplayMode(FGameplayTagContainer Tags)
 {
 	for (const FGameplayTag& Tag : Tags)
 	{
-		if (!Tag.IsValid()|| GameplayModeTag.HasTagExact(Tag))
+		if (!Tag.IsValid() || GameplayModeTag.HasTagExact(Tag))
 		{
 			continue;
 		}
-
 		GameplayModeTag.AddTag(Tag);
-
-		if (bCanBroadcast)
-		{
-			const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
-			if (FoundHandle)
-			{
-				FoundHandle->Key.Broadcast(true);
-			}
-			OnGameplayModeTagsChanged.Broadcast(Tag, true);
-		}
+		BroadcastTagChange(Tag, true);
 	}
 }
 
@@ -142,20 +142,55 @@ void UGameplayModeSubsystem::RempoveGameplayMode(FGameplayTagContainer Tags)
 		{
 			continue;
 		}
-
 		if (GameplayModeTag.RemoveTag(Tag))
 		{
-			if (bCanBroadcast)
-			{
-				const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
-				if (FoundHandle)
-				{
-					FoundHandle->Key.Broadcast(false);
-				}
-				OnGameplayModeTagsChanged.Broadcast(Tag, false);
-			}
+			BroadcastTagChange(Tag, false);
 		}
 	}
+}
+
+
+void UGameplayModeSubsystem::BroadcastTagChange(FGameplayTag Tag, bool bAdded)
+{
+	if (bCanBroadcast)
+	{
+		const TPair<FOnGameplayModeTagChanged, int>* FoundHandle = Handles.Find(Tag);
+		if (FoundHandle)
+		{
+			FoundHandle->Key.Broadcast(bAdded);
+		}
+		OnGameplayModeTagsChanged.Broadcast(Tag, bAdded);
+	}
+}
+
+void UGameplayModeSubsystem::HandleOnGameplayModeTableLoaded()
+{
+	const UGameplayModeSettings* Settings = UGameplayModeSettings::Get();
+	GameplayModeTable = Settings->GameplayModeTable.Get();
+
+	if (!IsValid(GameplayModeTable))
+	{
+		return;
+	}
+
+	const UGameplayModeWorldConfig* ModeConfig = AWorldFragmentSettings::GetConfigByClass<UGameplayModeWorldConfig>(GetWorld());
+	checkf(IsValid(ModeConfig) && ModeConfig->bEnabled, TEXT("GameplayMode world config is invalid or disabled"));
+
+	const FGameplayModeTagGroup* FoundRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(ModeConfig->DefaultMode, FString());
+	if (!FoundRow)
+	{
+		return;
+	}
+
+	GameplayModeStack.Push(ModeConfig->DefaultMode);
+
+	if (HasCalledBeginPlay())
+	{
+		bCanBroadcast = true;
+	}
+
+	AddGameplayMode(FoundRow->ActivateTags);
+	RempoveGameplayMode(FoundRow->DeactivateTags);
 }
 
 
@@ -179,10 +214,10 @@ void UGameplayModeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("GameplayModeSubsystem Initialized"));
 	
-	const UGameplayModeWorldConfig* ModeConfig = AWorldFragmentSettings::GetConfigByClass<UGameplayModeWorldConfig>(GetWorld());
-	checkf(IsValid(ModeConfig) && ModeConfig->bEnabled, TEXT("GameplayMode world config is invalid or disabled"));
+	const UGameplayModeSettings* Settings = UGameplayModeSettings::Get();
 
-	SetGameplayModeByTag(ModeConfig->DefaultMode);
+	FStreamableManager& StreamableManager = UAssetManager::GetStreamableManager();
+	TableHandle = StreamableManager.RequestAsyncLoad(Settings->GameplayModeTable.ToSoftObjectPath(), FStreamableDelegate::CreateUObject(this, &UGameplayModeSubsystem::HandleOnGameplayModeTableLoaded));
 }
 
 void UGameplayModeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -195,6 +230,7 @@ void UGameplayModeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 void UGameplayModeSubsystem::Deinitialize()
 {
+	FAssetManagerUtil::CancelHandle(TableHandle);
 	bCanBroadcast = false;
 	
 	for (TPair<FGameplayTag, TPair<FOnGameplayModeTagChanged, int>>& Kv : Handles)
@@ -215,4 +251,12 @@ UGameplayModeSubsystem* UGameplayModeSubsystem::Get(UWorld* World)
 	}
 	return World->GetSubsystem<UGameplayModeSubsystem>();
 }
+
+
+#if UE_BUILD_DEVELOPMENT
+const TArray<FName>& UGameplayModeSubsystem::GetEditorGameplayModeStack() const
+{
+	return GameplayModeStack;
+}
+#endif
 

@@ -38,13 +38,15 @@ public:
 	virtual bool HasTagExact(FGameplayTag Tag) const
 	{
 		return GetGameplayModeTags().HasTagExact(Tag);
-	}
+	};
+
+	virtual void PushGameplayMode(FName Mode) = 0;
+	virtual void PopGameplayMode(FName Mode) = 0;
 
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) = 0;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) = 0;
 
 	virtual const FGameplayTagContainer& GetGameplayModeTags() const = 0;
-	virtual void SetGameplayModeByTag(FGameplayTagContainer Tags) = 0;
 
 	virtual void AddGameplayMode(FGameplayTagContainer Tags) = 0;
 	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) = 0;

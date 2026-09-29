@@ -7,8 +7,8 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "EventflowAsset.h"
 #include "Core/AssetManagerUtil.h"
+#include "EventflowAsset.h"
 #include "Library/PoolHelper.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -246,8 +246,6 @@ void UEventflowEngine::OnInitialized(EFSMState PreviousState)
 
 void UEventflowEngine::OnLoaded(EFSMState PreviousState)
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
-
 	_Asset = _AssetManager->GetPrimaryAssetObject<UEventflowAsset>(_AssetId);
 	if (!IsValid(_Asset))
 	{

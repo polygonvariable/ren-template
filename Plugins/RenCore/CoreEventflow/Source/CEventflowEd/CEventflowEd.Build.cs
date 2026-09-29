@@ -28,6 +28,7 @@ public class CEventflowEd : ModuleRules
                 "Core",
 				// ... add other public dependencies that you statically link with here ...
                 "RCoreCommon",
+                "CLuau",
             }
             );
 
@@ -46,7 +47,6 @@ public class CEventflowEd : ModuleRules
                 "EditorScriptingUtilities",
                 "ToolMenus",
                 "GraphEditor",
-
                 "CEventflow",
             }
             );

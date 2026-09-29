@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-#include "GameplayTagContainer.h"
-
 // Project Headers
 #include "WorldConfigAsset.h"
 
@@ -26,8 +23,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Mode")
 	bool bEnabled = true;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Default", meta = (Categories = "Gameplay"))
-	FGameplayTagContainer DefaultMode;
+	UPROPERTY(EditDefaultsOnly, Category = "Default", Meta = (GetOptions = "GameplayModeSettings.GetGameplayModeTableRows"))
+	FName DefaultMode;
 
 
 #if WITH_EDITOR

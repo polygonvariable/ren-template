@@ -81,6 +81,7 @@ void UEventflowEdGraph::SerializeTask(UEventflowAsset* GraphAsset, FEventflowNod
 	NodeDefinition.Task->SubTasks.Empty();
 	NodeDefinition.Task->TaskTransitions = EdNode->TaskTransitions;
 	NodeDefinition.Task->SubTaskConditions = EdNode->SubTaskConditions;
+	NodeDefinition.Task->LuauCode = EdNode->LuauCode;
 
 	TArray<UEventflowSubTask*> TemplateSubTasks = EdNode->GetSubTasks();
 	for (UEventflowSubTask* Task : TemplateSubTasks)
@@ -169,6 +170,7 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNode& Nod
 	EdNode->SetSubTasks(NodeDefinition.Task->SubTasks);
 	EdNode->TaskTransitions = NodeDefinition.Task->TaskTransitions;
 	EdNode->SubTaskConditions = NodeDefinition.Task->SubTaskConditions;
+	EdNode->LuauCode = NodeDefinition.Task->LuauCode;
 
 	EdNode->AllocateDefaultPins();
 

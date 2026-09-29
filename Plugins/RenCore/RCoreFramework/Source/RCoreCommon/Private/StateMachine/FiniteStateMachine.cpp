@@ -29,6 +29,11 @@ void UFiniteStateMachine::Execute()
 	SetState(EFSMState::Active);
 }
 
+void UFiniteStateMachine::Active()
+{
+	SetState(EFSMState::Active);
+}
+
 void UFiniteStateMachine::Finish(EFSMResult Result)
 {
 	if (Result == EFSMResult::None)

@@ -4,103 +4,63 @@
 #include "DialogueEngine.h"
 
 // Project Headers
-#include "DialogueNodeData.h"
-#include "DialogueWidget.h"
 #include "DialogueAsset.h"
-#include "Type/EventflowGraphData.h"
-#include "Type/EventflowTransition.h"
+#include "DialogueSettings.h"
+#include "GameplayModeProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
+#include "Task/EventflowPrimaryTask.h"
+#include "Util/SubsystemUtil.h"
 
 
-
-IDialogueProvider* UDialogueEngine::GetDialogue() const
+void UDialogueEngine::SkipDialogue()
 {
-	return Cast<IDialogueProvider>(DialogueWidget);
+	Finish(EFSMResult::Success);
 }
 
-//bool UDialogueEngine::Initialization()
-//{
-//	if (!Super::Initialization())
-//	{
-//		return false;
-//	}
-//
-//	UDialogueAsset* Asset = Cast<UDialogueAsset>(CurrentAsset);
-//
-//	UWorld* World = GetWorld();
-//	DialogueWidget = CreateWidget<UDialogueWidget>(World, Asset->DialogueWidgetClass);
-//	DialogueWidget->AddToViewport();
-//
-//	return true;
-//}
-//
-//void UDialogueEngine::Deinitialization()
-//{
-//	Super::Deinitialization();
-//
-//	DialogueWidget->RemoveFromParent();
-//	DialogueWidget = nullptr;
-//}
-
-
-
-
-
-//void UDialogueTask::CopyFromAsset(const UEventflowTask* Template)
-//{
-//	const UDialogueTask* DialogueTemplate = Cast<UDialogueTask>(Template);
-//	if (IsValid(DialogueTemplate))
-//	{
-//		DialogueData = DialogueTemplate->DialogueData;
-//	}
-//}
-
-//TArray<FText> UDialogueTask::GetRuntimeOutputs() const
-//{
-//	return DialogueData.Options;
-//}
-
-IDialogueProvider* UDialogueTask::GetDialogue() const
+void UDialogueEngine::NextDialogue(int Index)
 {
-	UDialogueEngine* DialogueEngine = GetOwningEngine<UDialogueEngine>();
-	if (!IsValid(DialogueEngine))
+	UEventflowPrimaryTask* CurrentTask = GetTask();
+	if (CurrentTask)
 	{
-		return nullptr;
+		CurrentTask->SetTransitionIndex(Index);
+		CurrentTask->Finish(EFSMResult::Success);
 	}
-	return Cast<IDialogueProvider>(DialogueEngine->GetDialogue());
 }
 
-void UDialogueTask::HandleDialogueCompleted(int NextIndex)
+
+void UDialogueEngine::OnReady(EFSMState PreviousState)
 {
-	//FinishTask(EEventflowTaskState::Completed, NextIndex);
+	UDialogueAsset* Asset = Cast<UDialogueAsset>(GetAsset());
+	if (!IsValid(Asset))
+	{
+		LOG_ERROR(LogEventflowEngine, TEXT("Failed to get dialogue asset"));
+		Finish(EFSMResult::Aborted);
+		return;
+	}
+
+	IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
+	if (GameplayMode)
+	{
+		GameplayMode->PushGameplayMode(UDialogueSettings::Get()->DialogueMode);
+	}
+
+	Active();
 }
 
-//void UDialogueTask::Initialization()
-//{
-//	IDialogueProvider* Dialogue = GetDialogue();
-//	if (!Dialogue)
-//	{
-//		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
-//		return;
-//	}
-//
-//	Dialogue->GetOnDialogueCompleted().BindUObject(this, &UDialogueTask::HandleDialogueCompleted);
-//
-//	//FInstancedStruct Data = CurrentNode->NodeData;
-//	//Dialogue->InitializeDialogue(Data.GetPtr<FDialogueData>());
-//	Dialogue->InitializeDialogue(&DialogueData);
-//}
-//
-//void UDialogueTask::Deinitialization()
-//{
-//	IDialogueProvider* Dialogue = GetDialogue();
-//	if (!Dialogue)
-//	{
-//		LOG_ERROR(LogTemp, TEXT("Dialogue is invalid"));
-//		return;
-//	}
-//	
-//	Dialogue->GetOnDialogueCompleted().Unbind();
-//	Dialogue->ClearDialogue();
-//}
+void UDialogueEngine::OnReset()
+{
+	IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
+	if (GameplayMode)
+	{
+		GameplayMode->PopGameplayMode(UDialogueSettings::Get()->DialogueMode);
+	}
+
+	Super::OnReset();
+}
+
+void UDialogueEngine::HandleOnDialogueSkipped()
+{
+	Finish(EFSMResult::Success);
+}
+

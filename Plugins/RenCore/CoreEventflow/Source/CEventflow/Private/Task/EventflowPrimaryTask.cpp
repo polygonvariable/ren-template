@@ -4,10 +4,10 @@
 #include "Task/EventflowPrimaryTask.h"
 
 // Project Headers
-#include "Type/EventflowGraphData.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/EventflowSubTask.h"
+#include "Type/EventflowGraphData.h"
 
 
 void UEventflowPrimaryTask::InitializeData(const FGuid& NodeId, const FEventflowNode* Node)

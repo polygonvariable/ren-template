@@ -6,6 +6,7 @@
 #include "EdGraph/EdGraphNode.h"
 
 // Project Headers
+#include "LuauSourceCode.h"
 #include "Type/EventflowCondition.h"
 #include "Type/EventflowTransition.h"
 
@@ -36,6 +37,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Sub Task Condition")
 	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
+
+	UPROPERTY(EditAnywhere, Category = "Task Condition")
+	FLuauSourceCode LuauCode;
 
 
 	virtual UEventflowPrimaryTask* GetTask() const;

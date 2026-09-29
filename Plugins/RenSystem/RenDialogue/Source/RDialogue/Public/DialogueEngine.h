@@ -3,17 +3,11 @@
 #pragma once
 
 // Project Headers
+#include "DialogueData.h"
 #include "EventflowEngine.h"
-#include "Task/EventflowPrimaryTask.h"
-
-#include "DialogueNodeData.h"
 
 // Generated Headers
 #include "DialogueEngine.generated.h"
-
-// Forward Declarations
-class IDialogueProvider;
-class UDialogueWidget;
 
 
 /**
@@ -27,52 +21,30 @@ class UDialogueEngine : public UEventflowEngine
 
 public:
 
-	IDialogueProvider* GetDialogue() const;
+
+	DECLARE_DELEGATE_TwoParams(FOnDialogueContentUpdated, const FDialogueData& /* Dialogue */, const FDialogueSpeaker& /* Speaker */);
+	FOnDialogueContentUpdated OnDialogueContentUpdated;
+
+	DECLARE_DELEGATE_OneParam(FOnDialogueOptionsUpdated, const TArray<FText>& /* Options */);
+	FOnDialogueOptionsUpdated OnDialogueOptionsUpdated;
+
+	DECLARE_DELEGATE(FOnDialogueRemoved);
+	FOnDialogueRemoved OnDialogueRemoved;
+
+
+	RDIALOGUE_API void SkipDialogue();
+	RDIALOGUE_API void NextDialogue(int Index);
 
 protected:
 
-	UPROPERTY()
-	TObjectPtr<UDialogueWidget> DialogueWidget = nullptr;
-
+	// ~ Binding
+	void HandleOnDialogueSkipped();
+	// ~ End of Binding
 
 	// ~ UEventflowEngine
-	//virtual bool Initialization() override;
-	//virtual void Deinitialization() override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnReset() override;
 	// ~ End of UEventflowEngine
 
 };
 
-
-/**
- *
- */
-UCLASS(MinimalAPI, meta = (DisplayName = "Dialogue"))
-class UDialogueTask : public UEventflowPrimaryTask
-{
-
-	GENERATED_BODY()
-
-public:
-	
-	// ~ UEventflowTask
-	//virtual void CopyFromAsset(const UEventflowTask* Template) override;
-	// ~ End of UEventflowTask
-
-protected:
-
-	UPROPERTY(EditAnywhere)
-	FDialogueData DialogueData;
-
-
-	IDialogueProvider* GetDialogue() const;
-
-	// ~ Binding
-	void HandleDialogueCompleted(int NextIndex);
-	// ~ End of Binding
-
-	// ~ UEventflowTask
-	//virtual void Initialization() override;
-	//virtual void Deinitialization() override;
-	// ~ End of UEventflowTask
-
-};

@@ -4,6 +4,7 @@
 
 // Project Headers
 #include "EventflowTask.h"
+#include "LuauSourceCode.h"
 #include "Type/EventflowCondition.h"
 #include "Type/EventflowTransition.h"
 
@@ -38,10 +39,15 @@ public:
 	UPROPERTY()
 	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
 
+	UPROPERTY()
+	FLuauSourceCode LuauCode;
+
 
 	REN_API void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
 
 	REN_API int GetTransitionIndex(EFSMResult Result) const;
+	REN_API void SetTransitionIndex(int Index);
+
 	REN_API EEventflowTransitionType GetTransitionType(EFSMResult Result) const;
 	REN_API const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
 
@@ -59,7 +65,6 @@ public:
 
 protected:
 
-	REN_API void SetTransitionIndex(int Index);
 
 	REN_API UEventflowSubTask* GetSubTask(const FName& TaskName) const;
 	void CreateSubTasks();

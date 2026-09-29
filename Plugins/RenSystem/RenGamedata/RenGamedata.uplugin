@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RGameplayModeDebug",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RGameplayPlayer",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
@@ -32,6 +37,10 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "SlateIM",
+			"Enabled": true
+		},
 		{
 			"Name": "EnhancedInput",
 			"Enabled": true

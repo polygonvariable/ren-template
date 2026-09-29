@@ -11,7 +11,7 @@
 
 // Project Headers
 #include "Actor/AvatarCharacter.h"
-#include "Core/GameplayModeProvider.h"
+#include "GameplayModeProvider.h"
 #include "System/PartyStorageManager.h"
 #include "System/PartySubsystem.h"
 #include "Util/SubsystemUtil.h"

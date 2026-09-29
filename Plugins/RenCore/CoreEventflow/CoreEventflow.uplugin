@@ -28,6 +28,10 @@
 	],
 	"Plugins": [
 		{
+			"Name": "SlateIM",
+			"Enabled": true
+		},
+		{
 			"Name": "RCoreFramework",
 			"Enabled": true
 		},

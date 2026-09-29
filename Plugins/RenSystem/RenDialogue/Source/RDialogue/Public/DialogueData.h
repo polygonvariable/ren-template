@@ -3,7 +3,27 @@
 #pragma once
 
 // Generated Headers
-#include "DialogueNodeData.generated.h"
+#include "DialogueData.generated.h"
+
+
+/**
+ *
+ */
+USTRUCT()
+struct FDialogueSpeaker
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FText Name;
+
+	UPROPERTY(EditAnywhere, meta = (AssetBundles = "Dialogue"))
+	TSoftObjectPtr<UTexture2D> Image;
+
+};
 
 
 /**
@@ -17,20 +37,11 @@ struct FDialogueData
 
 public:
 
-	UPROPERTY(EditAnywhere)
-	FText Speaker;
-
-	UPROPERTY(EditAnywhere, meta = (AssetBundles = "Dialogue"))
-	TSoftObjectPtr<UTexture2D> SpeakerImage;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (MultiLine = true))
 	FText Content;
 
 	UPROPERTY(EditAnywhere, meta = (AssetBundles = "Dialogue"))
 	TSoftObjectPtr<USoundBase> Audio;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FText> Options;
 
 };
 

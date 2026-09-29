@@ -21,14 +21,36 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RDialogueUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RDialogueEd",
 			"Type": "Editor",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RDialogueDebug",
+			"Type": "DeveloperTool",
 			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
 		{
+			"Name": "SlateIM",
+			"Enabled": true
+		},
+		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
 			"Name": "RCoreFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "CoreGamedata",
 			"Enabled": true
 		},
 		{

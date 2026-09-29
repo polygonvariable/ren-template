@@ -27,6 +27,7 @@ public class RDialogue : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"DeveloperSettings",
 				"UMG",
                 "CEventflow",
                 "RCoreCommon",
@@ -43,7 +44,7 @@ public class RDialogue : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreLibrary",
-				//"RCorePool",
+                "CGameplayMode",
             }
 			);
 		

@@ -4,7 +4,7 @@
 #include "GameplayPlayerController.h"
 
 // Project Headers
-#include "Core/GameplayModeProvider.h"
+#include "GameplayModeProvider.h"
 #include "Util/SubsystemUtil.h"
 
 

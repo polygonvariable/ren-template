@@ -6,15 +6,15 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "Core/GameplayModeProvider.h"
-#include "Data/Asset/MetadataAsset.h"
-#include "WorldConfigAsset.h"
+#include "GameplayModeProvider.h"
 
 // Generated Headers
 #include "GameplayModeSubsystem.generated.h"
 
 // Forward Declaration
+class UDataTable;
 class UGameplayModeAsset;
+struct FStreamableHandle;
 
 
 /**
@@ -28,23 +28,18 @@ class UGameplayModeSubsystem : public UWorldSubsystem, public IGameplayModeProvi
 
 public:
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Set Gameplay Mode By Tag", Categories = "Gameplay"))
-	void BP_SetGameplayModeByTag(FGameplayTagContainer Tags);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Push Gameplay Mode"))
+	void BP_PushGameplayMode(FName Mode);
 
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Add Gameplay Mode", Categories = "Gameplay"))
-	void BP_AddGameplayMode(FGameplayTagContainer Tags);
-
-	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Remove Gameplay Mode", Categories = "Gameplay"))
-	void BP_RempoveGameplayMode(FGameplayTagContainer Tags);
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "Pop Gameplay Mode"))
+	void BP_PopGameplayMode(FName Mode);
 
 	// ~ IGameplayModeProvider
+	virtual void PushGameplayMode(FName Mode) override;
+	virtual void PopGameplayMode(FName Mode) override;
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) override;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) override;
-
-	virtual const FGameplayTagContainer& GetGameplayModeTags() const;
-	virtual void SetGameplayModeByTag(FGameplayTagContainer Tags) override;
-	virtual void AddGameplayMode(FGameplayTagContainer Tags) override;
-	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) override;
+	RGAMEPLAYMODE_API virtual const FGameplayTagContainer& GetGameplayModeTags() const;
 	// ~ End of IGameplayModeProvider
 	
 	// ~ UWorldSubsystem
@@ -54,12 +49,36 @@ public:
 	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
 
+#if UE_BUILD_DEVELOPMENT
+	RGAMEPLAYMODE_API const TArray<FName>& GetEditorGameplayModeStack() const;
+#endif
+
 protected:
 
-	bool bCanBroadcast = false;
-	TMap<FGameplayTag, TPair<FOnGameplayModeTagChanged, int>> Handles;
 	FGameplayTagContainer GameplayModeTag;
 
+	TArray<FName> GameplayModeStack;
+
+	bool bCanBroadcast = false;
+
+	TMap<FGameplayTag, TPair<FOnGameplayModeTagChanged, int>> Handles;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> GameplayModeTable;
+
+	TSharedPtr<FStreamableHandle> TableHandle;
+
+
+	void BroadcastTagChange(FGameplayTag Tag, bool bAdded);
+
+	// ~ IGameplayModeProvider
+	virtual void AddGameplayMode(FGameplayTagContainer Tags) override;
+	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) override;
+	// ~ End of IGameplayModeProvider
+
+	// ~ Binding
+	void HandleOnGameplayModeTableLoaded();
+	// ~ End of Binding
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
@@ -67,7 +86,7 @@ protected:
 
 public:
 
-	static UGameplayModeSubsystem* Get(UWorld* World);
+	static RGAMEPLAYMODE_API UGameplayModeSubsystem* Get(UWorld* World);
 
 };
 

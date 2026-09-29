@@ -7,6 +7,7 @@
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
 #endif
+#include "GameplayModeSettings.h"
 
 
 #if WITH_EDITOR
@@ -16,7 +17,7 @@ EDataValidationResult UGameplayModeWorldConfig::IsDataValid(FDataValidationConte
 
 	if (bEnabled)
 	{
-		if (DefaultMode.IsEmpty())
+		if (DefaultMode.IsNone())
 		{
 			Context.AddError(FText::FromString("Default gameplay mode is empty"));
 			return EDataValidationResult::Invalid;

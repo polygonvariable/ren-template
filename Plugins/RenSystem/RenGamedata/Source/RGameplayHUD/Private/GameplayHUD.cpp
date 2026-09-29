@@ -14,7 +14,7 @@
 
 // Project Headers
 #include "Core/AssetManagerUtil.h"
-#include "Core/GameplayModeProvider.h"
+#include "GameplayModeProvider.h"
 #include "Util/SubsystemUtil.h"
 
 
