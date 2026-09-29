@@ -30,14 +30,14 @@ class UDialogueAsset : public UEventflowAsset
 
 public:
 
-	UPROPERTY(EditAnywhere, meta = (MultiLine = true))
+	UPROPERTY(EditAnywhere, Category = "Dialogue", meta = (MultiLine = true))
 	FText Summary;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UUserWidget> DialogueWidget;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	TArray<FDialogueSpeaker> Speakers;
+
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	TSubclassOf<UUserWidget> DialogueWidget;
 
 
 	// ~ UPrimaryDataAsset

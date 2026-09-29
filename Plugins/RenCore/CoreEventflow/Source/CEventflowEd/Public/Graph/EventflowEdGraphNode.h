@@ -32,13 +32,13 @@ class REN_API UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Task Transition")
+	UPROPERTY()
 	TArray<FEventflowTransition> TaskTransitions;
 
-	UPROPERTY(EditAnywhere, Category = "Sub Task Condition")
+	UPROPERTY()
 	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
 
-	UPROPERTY(EditAnywhere, Category = "Task Condition")
+	UPROPERTY()
 	FLuauSourceCode LuauCode;
 
 

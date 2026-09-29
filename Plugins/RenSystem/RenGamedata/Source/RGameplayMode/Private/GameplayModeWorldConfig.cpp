@@ -7,7 +7,6 @@
 #if WITH_EDITOR
 #include "Misc/DataValidation.h"
 #endif
-#include "GameplayModeSettings.h"
 
 
 #if WITH_EDITOR

@@ -26,6 +26,8 @@ class UDialogueEdNode_Base : public UEventflowEdGraphNode
 
 public:
 
+	UDialogueEdNode_Base();
+
 	// ~ UEventflowEdGraphNode
 	virtual UEventflowPrimaryTask* GetTask() const override;
 	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
@@ -112,6 +114,8 @@ class UDialogueEdNode_Branch : public UEventflowEdGraphNode
 	GENERATED_BODY()
 
 public:
+
+	UDialogueEdNode_Branch();
 
 	// ~ UEventflowEdGraphNode
 	virtual UEventflowPrimaryTask* GetTask() const override;

@@ -26,9 +26,11 @@ class UDialogueSubsystem : public UWorldSubsystem
 
 public:
 
-	DECLARE_DELEGATE_TwoParams(FOnDialogueChanged, FPrimaryAssetId /* AssetId */, UDialogueEngine* /* Engine */);
-	FOnDialogueChanged OnDialogueAdded;
-	FOnDialogueChanged OnDialogueRemoved;
+	DECLARE_DELEGATE_TwoParams(FOnDialogueAdded, FPrimaryAssetId /* AssetId */, UDialogueEngine* /* Engine */);
+	FOnDialogueAdded OnDialogueAdded;
+
+	DECLARE_DELEGATE_OneParam(FOnDialogueRemoved, FPrimaryAssetId /* AssetId */);
+	FOnDialogueRemoved OnDialogueRemoved;
 
 
 	UFUNCTION(BlueprintCallable)
@@ -44,6 +46,8 @@ protected:
 	UPROPERTY()
 	TMap<FPrimaryAssetId, TObjectPtr<UDialogueEngine>> Dialogues;
 
+
+	UDialogueEngine* GetDialogueEngine(FPrimaryAssetId AssetId) const;
 
 	// ~ Binding
 	void HandleOnEngineStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId);

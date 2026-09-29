@@ -4,10 +4,10 @@
 
 #define LOCTEXT_NAMESPACE "FRDialogueDebugModule"
 
-static bool LValue_RSeasonDebug = false;
-static FAutoConsoleVariableRef CVarRSeasonDebug(
+static bool LValue_RDialogueDebug = false;
+static FAutoConsoleVariableRef CVarRDialogueDebug(
 	TEXT("ren.Dialogue.Debug"),
-	LValue_RSeasonDebug,
+	LValue_RDialogueDebug,
 	TEXT("Enable dialogue debug"),
 	ECVF_Default
 );

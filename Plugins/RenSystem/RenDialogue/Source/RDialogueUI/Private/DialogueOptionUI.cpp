@@ -4,14 +4,13 @@
 #include "DialogueOptionUI.h"
 
 // Engine Headers
-#if WITH_EDITOR
-#endif
 #include "Components/Button.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 
 // Project Headers
 #include "Library/PoolHelper.h"
+#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
@@ -75,7 +74,7 @@ void UDialogueOptionCollectionUI::SetOptions(const TArray<FText>& Options)
 {
 	if (!IsValid(OptionUIClass))
 	{
-		LOG_ERROR(LogTemp, TEXT("OptionWidgetClass is invalid"));
+		LOG_ERROR(LogDialogue, TEXT("OptionWidgetClass is invalid"));
 		return;
 	}
 

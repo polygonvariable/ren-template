@@ -11,6 +11,7 @@
 #include "Log/LogMacro.h"
 #include "Task/EventflowPrimaryTask.h"
 #include "Util/SubsystemUtil.h"
+#include "DialogueSubsystem.h"
 
 
 void UDialogueEngine::SkipDialogue()
@@ -28,13 +29,12 @@ void UDialogueEngine::NextDialogue(int Index)
 	}
 }
 
-
 void UDialogueEngine::OnReady(EFSMState PreviousState)
 {
 	UDialogueAsset* Asset = Cast<UDialogueAsset>(GetAsset());
 	if (!IsValid(Asset))
 	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to get dialogue asset"));
+		LOG_ERROR(LogDialogue, TEXT("Failed to get dialogue asset"));
 		Finish(EFSMResult::Aborted);
 		return;
 	}
@@ -44,8 +44,6 @@ void UDialogueEngine::OnReady(EFSMState PreviousState)
 	{
 		GameplayMode->PushGameplayMode(UDialogueSettings::Get()->DialogueMode);
 	}
-
-	Active();
 }
 
 void UDialogueEngine::OnReset()
@@ -57,10 +55,5 @@ void UDialogueEngine::OnReset()
 	}
 
 	Super::OnReset();
-}
-
-void UDialogueEngine::HandleOnDialogueSkipped()
-{
-	Finish(EFSMResult::Success);
 }
 

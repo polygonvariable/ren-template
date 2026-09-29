@@ -14,6 +14,7 @@
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
 #include "EventflowTask.h"
+#include "Task/EventflowPrimaryTask.h"
 
 
 void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit)
@@ -125,7 +126,8 @@ void FEventflowEdApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Sel
 		UEventflowEdGraphNode* GraphNode = Cast<UEventflowEdGraphNode>(Node);
 		if (IsValid(GraphNode))
 		{
-			ObjectsToEdit.Add(GraphNode);
+			ObjectsToEdit.Add(GraphNode->GetTask());
+			//ObjectsToEdit.Add(GraphNode);
 			break;
 		}
 	}

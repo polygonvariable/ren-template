@@ -11,6 +11,7 @@
 #include "GameplayModeSettings.h"
 #include "GameplayModeTagGroup.h"
 #include "GameplayModeWorldConfig.h"
+#include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "WorldFragmentSettings.h"
 
@@ -52,6 +53,11 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 		return;
 	}
 
+	if (!GameplayModeStack.Last().IsEqual(Mode))
+	{
+		return;
+	}
+
 	FName LastMode = GameplayModeStack.Pop();
 	const FGameplayModeTagGroup* LastRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(LastMode, FString());
 	if (!LastRow)
@@ -88,7 +94,7 @@ void UGameplayModeSubsystem::RegisterTagNotify(FGameplayTag Tag, FOnGameplayMode
 	Pair.Key.Add(Callback);
 	Pair.Value++;
 
-	LOG_WARNING(LogTemp, TEXT("GameplayMode tag callback added: %s"), *Tag.ToString());
+	LOG_WARNING(LogGameplayMode, TEXT("GameplayMode tag callback added: %s"), *Tag.ToString());
 }
 
 void UGameplayModeSubsystem::UnregisterTagNotify(FGameplayTag Tag, UObject* Target)
@@ -109,11 +115,11 @@ void UGameplayModeSubsystem::UnregisterTagNotify(FGameplayTag Tag, UObject* Targ
 			Pair->Key.Clear();
 			Handles.Remove(Tag);
 
-			LOG_WARNING(LogTemp, TEXT("GameplayMode tag callback cleared"));
+			LOG_WARNING(LogGameplayMode, TEXT("GameplayMode tag callback cleared"));
 		}
 	}
 
-	LOG_WARNING(LogTemp, TEXT("GameplayMode tag callback removed: %s"), *Tag.ToString());
+	LOG_WARNING(LogGameplayMode, TEXT("GameplayMode tag callback removed: %s"), *Tag.ToString());
 }
 
 const FGameplayTagContainer& UGameplayModeSubsystem::GetGameplayModeTags() const
@@ -212,7 +218,7 @@ bool UGameplayModeSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 void UGameplayModeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
-	LOG_WARNING(LogTemp, TEXT("GameplayModeSubsystem Initialized"));
+	LOG_WARNING(LogGameplayMode, TEXT("GameplayModeSubsystem Initialized"));
 	
 	const UGameplayModeSettings* Settings = UGameplayModeSettings::Get();
 
@@ -223,7 +229,7 @@ void UGameplayModeSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void UGameplayModeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-	LOG_WARNING(LogTemp, TEXT("GameplayModeSubsystem OnWorldBeginPlay"));
+	LOG_WARNING(LogGameplayMode, TEXT("GameplayModeSubsystem OnWorldBeginPlay"));
 
 	bCanBroadcast = true;
 }
@@ -239,7 +245,7 @@ void UGameplayModeSubsystem::Deinitialize()
 	}
 	Handles.Empty();
 
-	LOG_WARNING(LogTemp, TEXT("GameplayModeSubsystem Deinitialized"));
+	LOG_WARNING(LogGameplayMode, TEXT("GameplayModeSubsystem Deinitialized"));
 	Super::Deinitialize();
 }
 

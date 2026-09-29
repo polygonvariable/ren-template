@@ -10,6 +10,11 @@
 #include "Graph/EventflowEdGraphSchema.h"
 
 
+UDialogueEdNode_Base::UDialogueEdNode_Base()
+{
+	//Task = CreateDefaultSubobject<UDialogueTask_Default>(TEXT("Task"));
+}
+
 UEventflowPrimaryTask* UDialogueEdNode_Base::GetTask() const
 {
 	return Task;
@@ -17,7 +22,14 @@ UEventflowPrimaryTask* UDialogueEdNode_Base::GetTask() const
 
 void UDialogueEdNode_Base::SetTask(UEventflowPrimaryTask* InTask)
 {
-	Task = Cast<UDialogueTask_Default>(InTask);
+	if (InTask)
+	{
+		Task = Cast<UDialogueTask_Default>(InTask);
+	}
+	else
+	{
+		Task = NewObject<UDialogueTask_Default>(this, TEXT("Task"));
+	}
 }
 
 
@@ -98,6 +110,11 @@ void UDialogueEdNode_Dialogue::AllocateDefaultPins()
 
 
 
+UDialogueEdNode_Branch::UDialogueEdNode_Branch()
+{
+	//Task = CreateDefaultSubobject<UDialogueTask_Branch>(TEXT("Task"));
+}
+
 UEventflowPrimaryTask* UDialogueEdNode_Branch::GetTask() const
 {
 	return Task;
@@ -105,7 +122,14 @@ UEventflowPrimaryTask* UDialogueEdNode_Branch::GetTask() const
 
 void UDialogueEdNode_Branch::SetTask(UEventflowPrimaryTask* InTask)
 {
-	Task = Cast<UDialogueTask_Branch>(InTask);
+	if (InTask)
+	{
+		Task = Cast<UDialogueTask_Branch>(InTask);
+	}
+	else
+	{
+		Task = NewObject<UDialogueTask_Branch>(this, TEXT("Task"));
+	}
 }
 
 TArray<FText> UDialogueEdNode_Branch::GetRuntimeOutputPins() const

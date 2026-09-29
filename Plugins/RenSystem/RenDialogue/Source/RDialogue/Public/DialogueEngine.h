@@ -21,7 +21,6 @@ class UDialogueEngine : public UEventflowEngine
 
 public:
 
-
 	DECLARE_DELEGATE_TwoParams(FOnDialogueContentUpdated, const FDialogueData& /* Dialogue */, const FDialogueSpeaker& /* Speaker */);
 	FOnDialogueContentUpdated OnDialogueContentUpdated;
 
@@ -36,10 +35,6 @@ public:
 	RDIALOGUE_API void NextDialogue(int Index);
 
 protected:
-
-	// ~ Binding
-	void HandleOnDialogueSkipped();
-	// ~ End of Binding
 
 	// ~ UEventflowEngine
 	virtual void OnReady(EFSMState PreviousState) override;

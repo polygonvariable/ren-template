@@ -8,7 +8,6 @@
 // Forward Declarations
 class UDialogueEngine;
 class UDialogueUI;
-class UDialogueAsset;
 
 
 /**
@@ -40,7 +39,7 @@ protected:
 
 	// ~ Binding
 	void HandleOnDialogueAdded(FPrimaryAssetId AssetId, UDialogueEngine* Engine);
-	void HandleOnDialogueRemoved(FPrimaryAssetId AssetId, UDialogueEngine* Engine);
+	void HandleOnDialogueRemoved(FPrimaryAssetId AssetId);
 	// ~ End of Binding
 
 };

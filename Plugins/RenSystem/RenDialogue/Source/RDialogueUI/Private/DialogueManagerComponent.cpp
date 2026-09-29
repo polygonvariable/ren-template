@@ -72,26 +72,22 @@ void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, U
 {
 	if (WidgetCollection.Contains(AssetId))
 	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Widget already exists with id"));
-		return;
-	}
-
-	APlayerController* PlayerController = GetPlayerController();
-	if (!IsValid(PlayerController))
-	{
+		LOG_ERROR(LogDialogue, TEXT("Widget already exists with id"));
 		return;
 	}
 
 	const UDialogueAsset* Asset = Engine->GetAsset<UDialogueAsset>();
-	if (!IsValid(Asset) || !IsValid(Asset->DialogueWidget))
+	APlayerController* PlayerController = GetPlayerController();
+	if (!IsValid(PlayerController) || !IsValid(Asset) || !IsValid(Asset->DialogueWidget))
 	{
+		LOG_ERROR(LogDialogue, TEXT("Player controller, asset or widget class is invalid"));
 		return;
 	}
 
 	UDialogueUI* Widget = CreateWidget<UDialogueUI>(PlayerController, Asset->DialogueWidget);
 	if (!IsValid(Widget))
 	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to create dialogue widget"));
+		LOG_ERROR(LogDialogue, TEXT("Failed to create dialogue widget"));
 		return;
 	}
 
@@ -100,7 +96,7 @@ void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, U
 	Widget->AddToViewport();
 }
 
-void UDialogueManagerComponent::HandleOnDialogueRemoved(FPrimaryAssetId AssetId, UDialogueEngine* Engine)
+void UDialogueManagerComponent::HandleOnDialogueRemoved(FPrimaryAssetId AssetId)
 {
 	TObjectPtr<UDialogueUI>* FoundWidget = WidgetCollection.Find(AssetId);
 	if (FoundWidget)
