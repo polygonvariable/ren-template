@@ -33,7 +33,7 @@ public class REquipment : ModuleRules
                 "CFramework",
 				"CPool",
                 "RCoreAscension",
-				"CGamedata",
+				"CGamedataSpawn",
                 "CGamedataStorage",
 				"CAuthAction",
                 "CAssetInstance",

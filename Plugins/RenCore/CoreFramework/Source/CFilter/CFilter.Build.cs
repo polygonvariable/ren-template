@@ -27,7 +27,8 @@ public class CFilter : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-			}
+				"CFramework",
+            }
 			);
 			
 		
@@ -39,7 +40,6 @@ public class CFilter : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"CFramework",
             }
 			);
 		

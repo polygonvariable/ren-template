@@ -2,17 +2,14 @@
 
 #pragma once
 
-// Engine Headers
-#include "UObject/ObjectSaveContext.h"
-
 // Project Headers
 #include "Type/EventflowGraphData.h"
 
 // Generated Headers
 #include "EventflowAsset.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOW_API
+// Forward Declaration
+class FObjectPreSaveRootContext;
 
 
 /**
@@ -39,36 +36,28 @@ public:
 
 
 	// ~ UPrimaryDataAsset
-	REN_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+	CEVENTFLOW_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
 
 #if WITH_EDITORONLY_DATA
-
 	// ~ UPrimaryDataAsset
-	REN_API virtual void Serialize(FArchive& Ar) override;
-	REN_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
-	REN_API virtual void UpdateAssetBundleData() override;
+	CEVENTFLOW_API virtual void Serialize(FArchive& Ar) override;
+	CEVENTFLOW_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	CEVENTFLOW_API virtual void UpdateAssetBundleData() override;
 	// ~ End of UPrimaryDataAsset
-
 #endif
 
 protected:
 
 #if WITH_EDITOR
-
 	// ~ UObject
-	REN_API virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	CEVENTFLOW_API virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
 	// ~ End of UObject
-
 #endif
 
 public:
 
-	static REN_API FPrimaryAssetType GetPrimaryAssetType();
+	static CEVENTFLOW_API FPrimaryAssetType GetPrimaryAssetType();
 
 };
-
-
-// Module Macros
-#undef REN_API
 

@@ -4,25 +4,16 @@
 #include "Actor/AvatarCharacter.h"
 
 // Engine Headers
-#if WITH_EDITOR
-#include "Misc/DataValidation.h"
-#endif
-#include "AbilitySystemComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Engine/AssetManager.h"
-#include "EnhancedInputComponent.h"
 
 // Project Headers
-#include "Core/AvatarSettings.h"
 #include "Core/CharacterSettings.h"
 #include "Data/CharacterAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
-#include "SubsystemLibrary.h"
-#include "Core/AssetManagerLibrary.h"
 
 
 AAvatarCharacter::AAvatarCharacter() : Super()

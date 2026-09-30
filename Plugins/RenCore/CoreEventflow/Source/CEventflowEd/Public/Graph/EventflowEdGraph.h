@@ -8,9 +8,6 @@
 // Generated Headers
 #include "EventflowEdGraph.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOWED_API
-
 // Forward Declarations
 class UEventflowAsset;
 class UEventflowEdGraphNode;
@@ -45,8 +42,4 @@ protected:
 	void RenderNodePinLink(const TMap<FGuid, FEventflowPinRelation>& PinRelation, TMap<FGuid, UEdGraphPin*>& PinCollection);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

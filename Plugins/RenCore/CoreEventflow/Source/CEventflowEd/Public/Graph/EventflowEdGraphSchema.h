@@ -5,15 +5,12 @@
 // Generated Headers
 #include "EventflowEdGraphSchema.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOWED_API
-
 
 /*
  * 
  */
 UCLASS()
-class REN_API UEventflowEdGraphSchema : public UEdGraphSchema
+class CEVENTFLOWED_API UEventflowEdGraphSchema : public UEdGraphSchema
 {
 
 	GENERATED_BODY()
@@ -37,8 +34,4 @@ public:
 	static const FName PC_Wildcard;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

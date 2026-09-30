@@ -13,9 +13,6 @@
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOWED_API
-
 // Forward Declarations
 class UEventflowPrimaryTask;
 class UEventflowSubTask;
@@ -25,7 +22,7 @@ class UEventflowSubTask;
  *
  */
 UCLASS()
-class REN_API UEventflowEdGraphNode : public UEdGraphNode
+class CEVENTFLOWED_API UEventflowEdGraphNode : public UEdGraphNode
 {
 
 	GENERATED_BODY()
@@ -68,8 +65,4 @@ protected:
 	void FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

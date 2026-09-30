@@ -3,16 +3,13 @@
 #pragma once
 
 // Project Headers
-#include "Delegate/GameEventDelegate.h"
 #include "Core/Interface/AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/StorageManager.h"
+#include "Delegate/GameEventDelegate.h"
 
 // Generated Headers
 #include "AvatarStorageManager.generated.h"
-
-// Module Macros
-#define REN_API RAVATAR_API
 
 // Forward Declarations
 class UAvatarStorage;
@@ -34,11 +31,11 @@ class UAvatarStorageManager : public UObject, public IStorageManager, public IAs
 
 public:
 
-	REN_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
-	REN_API const FAvatarInstance* GetInstanceById(const FGuid& InstanceId) const;
+	RAVATAR_API const FAvatarInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
+	RAVATAR_API const FAvatarInstance* GetInstanceById(const FGuid& InstanceId) const;
 
-	REN_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback);
-	REN_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems);
+	RAVATAR_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback);
+	RAVATAR_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems);
 
 	// ~ IAssetInstanceCollection
 	virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
@@ -71,8 +68,4 @@ protected:
 	bool RemoveInstance_Internal(const FPrimaryAssetId& AssetId);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

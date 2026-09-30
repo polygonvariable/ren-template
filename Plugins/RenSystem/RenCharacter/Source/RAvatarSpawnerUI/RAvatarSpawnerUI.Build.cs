@@ -29,11 +29,6 @@ public class RAvatarSpawnerUI : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
                 "CAssetUI",
-                "RCharacter",
-                "RAvatar",
-                "RAvatarUI",
-                "RCharacterSpawner",
-                "RAvatarSpawner",
             }
 			);
 			
@@ -46,13 +41,10 @@ public class RAvatarSpawnerUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "CLibrary",
-                "CFilter",
                 "CAsset",
                 "CGamedataStorage",
                 "RCoreDelegate",
-                "RCoreAscensionUI",
-                "CAssetManager",
+                "RAvatarSpawner",
             }
 			);
 		

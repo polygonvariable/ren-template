@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Module Macros
-#define REN_API RCHARACTER_API
-
 
 /**
  *
@@ -12,17 +9,13 @@
 namespace FCharacterPrimaryAsset
 {
 
-	REN_API FPrimaryAssetType GetAssetType();
-	REN_API FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
+	RCHARACTER_API FPrimaryAssetType GetAssetType();
+	RCHARACTER_API FPrimaryAssetId GetPrimaryAssetId(const FName& AssetName);
 
-	REN_API bool IsValid(const FPrimaryAssetId& AssetId);
+	RCHARACTER_API bool IsValid(const FPrimaryAssetId& AssetId);
 
-	REN_API bool GetDisplayName(const FAssetData& AssetData, FText& DisplayName);
-	REN_API bool GetHealth(const FAssetData& AssetData, int& Health);
+	RCHARACTER_API bool GetDisplayName(const FAssetData& AssetData, FText& DisplayName);
+	RCHARACTER_API bool GetHealth(const FAssetData& AssetData, int& Health);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

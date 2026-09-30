@@ -30,21 +30,6 @@ public class REnemyPartyEd : ModuleRules
 				"UnrealEd",
                 "Slate",
                 "SlateCore",
-                "EditorFramework",
-                "DeveloperSettings",
-                "GameplayAbilities",
-                "GameplayTags",
-				"CFramework",
-                "RCoreAscension",
-                "CAsset",
-                "CAssetInstance",
-                "CAssetManager",
-                "CGamedataStorage",
-                "CAuthAction",
-                "RCharacter",
-				"RAvatar",
-                "REnemy",
-                "REnemyParty",
             }
 			);
 			
@@ -54,11 +39,10 @@ public class REnemyPartyEd : ModuleRules
 			{
 				"CoreUObject",
 				"Engine",
-				"Slate",
-				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreDelegate",
-                "CLibrary",
+                "EditorFramework",
+                "REnemy",
+                "REnemyParty",
             }
 			);
 		

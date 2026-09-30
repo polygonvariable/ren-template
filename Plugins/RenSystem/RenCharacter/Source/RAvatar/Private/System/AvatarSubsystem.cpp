@@ -5,14 +5,14 @@
 
 // Project Headers
 #include "Core/AvatarSettings.h"
+#include "Core/StorageProvider.h"
 #include "Data/AvatarAsset.h"
 #include "Data/AvatarStorage.h"
 #include "GameLifecycleDelegate.h"
-#include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "System/AvatarStorageManager.h"
 #include "SubsystemLibrary.h"
+#include "System/AvatarStorageManager.h"
 
 
 UAvatarStorageManager* UAvatarSubsystem::GetStorageManager() const

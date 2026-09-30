@@ -5,9 +5,6 @@
 // Engine Headers
 #include "WorkflowOrientedApp/WorkflowCentricApplication.h"
 
-// Module Macros
-#define REN_API CEVENTFLOWED_API
-
 // Forward Declarations
 class UEventflowAsset;
 class UEventflowEdGraph;
@@ -18,7 +15,7 @@ class UEventflowEdGraphSchema;
 /*
  * 
  */
-class REN_API FEventflowEdApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
+class CEVENTFLOWED_API FEventflowEdApp : public FWorkflowCentricApplication, public FEditorUndoClient, public FNotifyHook
 {
 
 public:
@@ -75,8 +72,4 @@ protected:
 	// ~ End of FAssetEditorToolkit
 
 };
-
-
-// Module Macros
-#undef REN_API
 

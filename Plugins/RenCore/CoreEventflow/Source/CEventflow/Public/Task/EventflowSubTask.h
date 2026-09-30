@@ -8,9 +8,6 @@
 // Generated Headers
 #include "EventflowSubTask.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOW_API
-
 
 /**
  *
@@ -27,12 +24,8 @@ public:
 	FName TaskName;
 
 	// ~ UEventflowTask
-	REN_API virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	CEVENTFLOW_API virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
 
 };
-
-
-// Module Macros
-#undef REN_API
 

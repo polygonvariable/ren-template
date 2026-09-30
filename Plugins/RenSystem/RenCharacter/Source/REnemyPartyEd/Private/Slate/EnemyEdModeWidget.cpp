@@ -5,10 +5,10 @@
 
 // Engine Headers
 #include "EditorModeManager.h"
-#include "Selection.h"
 #include "GameFramework/Actor.h"
 #include "IDetailsView.h"
 #include "PropertyEditorModule.h"
+#include "Selection.h"
 
 // Project Headers
 #include "Component/EnemyManagerComponent.h"

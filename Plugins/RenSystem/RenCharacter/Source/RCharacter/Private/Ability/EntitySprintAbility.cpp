@@ -8,9 +8,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
 
-// Project Headers
-
-
 
 UCharacterMovementComponent* UEntitySprintAbility::GetCharacterMovement() const
 {

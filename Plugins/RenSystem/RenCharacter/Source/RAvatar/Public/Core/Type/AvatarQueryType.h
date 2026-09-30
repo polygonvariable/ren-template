@@ -3,9 +3,9 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/AvatarSortType.h"
-#include "Core/Type/AssetQuerySource.h"
 #include "Core/QueryType.h"
+#include "Core/Type/AssetQuerySource.h"
+#include "Core/Type/AvatarSortType.h"
 
 // Generated Headers
 #include "AvatarQueryType.generated.h"

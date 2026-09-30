@@ -11,9 +11,6 @@
 // Generated Headers
 #include "AvatarSubsystem.generated.h"
 
-// Module Macros
-#define REN_API RAVATAR_API
-
 // Forward Declarations
 class IStorageProvider;
 class UAvatarStorageManager;
@@ -30,7 +27,7 @@ class UAvatarSubsystem : public UGameInstanceSubsystem, public IAssetInstanceCol
 
 public:
 
-	REN_API UAvatarStorageManager* GetStorageManager() const;
+	RAVATAR_API UAvatarStorageManager* GetStorageManager() const;
 
 	// ~ IAssetInstanceCollectionProvider
 	virtual IAssetInstanceCollection* GetInstanceCollection(const FName& CollectionId) const override;
@@ -53,12 +50,8 @@ protected:
 
 public:
 
-	static REN_API UAvatarSubsystem* Get(UWorld* World);
-	static REN_API UAvatarSubsystem* Get(UGameInstance* GameInstance);
+	static RAVATAR_API UAvatarSubsystem* Get(UWorld* World);
+	static RAVATAR_API UAvatarSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

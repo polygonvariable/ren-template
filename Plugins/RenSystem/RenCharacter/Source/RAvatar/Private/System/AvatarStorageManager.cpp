@@ -9,11 +9,11 @@
 // Project Headers
 #include "Core/AvatarSettings.h"
 #include "Core/CharacterPrimaryAsset.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Core/Type/AvatarQueryType.h"
 #include "Core/Type/AvatarSortType.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AvatarStorage.h"
-#include "Core/Type/AssetFilterProperty.h"
 #include "FilterContext.h"
 #include "FilterCriterion.h"
 #include "Log/LogCategory.h"

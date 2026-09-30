@@ -29,10 +29,9 @@ public class RAvatarSpawner : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
                 "GameplayTags",
+                "CAuthAction",
                 "CAssetInstance",
                 "CGamedataStorage",
-				"CGamedata",
-                "CAuthAction",
                 "RCharacter",
                 "RCharacterSpawner",
             }
@@ -49,9 +48,9 @@ public class RAvatarSpawner : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "CLibrary",
-                "RAvatar",
                 "CGameplayMode",
                 "CGameplayBase",
+                "RAvatar",
             }
 			);
 		

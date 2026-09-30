@@ -11,9 +11,6 @@
 // Generated Headers
 #include "EventflowPrimaryTask.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOW_API
-
 // Forward Declarations
 class UEventflowSubTask;
 struct FEventflowNode;
@@ -43,22 +40,22 @@ public:
 	FLuauSourceCode LuauCode;
 
 
-	REN_API void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
+	CEVENTFLOW_API void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
 
-	REN_API int GetTransitionIndex(EFSMResult Result) const;
-	REN_API void SetTransitionIndex(int Index);
+	CEVENTFLOW_API int GetTransitionIndex(EFSMResult Result) const;
+	CEVENTFLOW_API void SetTransitionIndex(int Index);
 
-	REN_API EEventflowTransitionType GetTransitionType(EFSMResult Result) const;
-	REN_API const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
+	CEVENTFLOW_API EEventflowTransitionType GetTransitionType(EFSMResult Result) const;
+	CEVENTFLOW_API const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
 
 	// ~ UEventflowTask
-	REN_API virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	CEVENTFLOW_API virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
 	
 #if WITH_EDITOR
 
 	// ~ UEventflowTask
-	REN_API virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
+	CEVENTFLOW_API virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
 	// ~ End of UEventflowTask
 
 #endif
@@ -66,17 +63,17 @@ public:
 protected:
 
 
-	REN_API UEventflowSubTask* GetSubTask(const FName& TaskName) const;
+	CEVENTFLOW_API UEventflowSubTask* GetSubTask(const FName& TaskName) const;
 	void CreateSubTasks();
 	void RemoveSubTasks();
 
 	// ~ Bindings
-	REN_API virtual void HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	CEVENTFLOW_API virtual void HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
-	REN_API virtual void OnInitialized(EFSMState PreviousState) override;
-	REN_API virtual void OnReset() override;
+	CEVENTFLOW_API virtual void OnInitialized(EFSMState PreviousState) override;
+	CEVENTFLOW_API virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
 
 private:
@@ -91,8 +88,4 @@ private:
 	TArray<TObjectPtr<UEventflowSubTask>> _ActiveSubTasks;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

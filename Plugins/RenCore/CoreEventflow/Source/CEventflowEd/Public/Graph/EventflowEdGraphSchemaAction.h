@@ -8,9 +8,6 @@
 // Generated Headers
 #include "EventflowEdGraphSchemaAction.generated.h"
 
-// Module Macros
-#define REN_API CEVENTFLOWED_API
-
 // Forward Declarations
 class UEventflowEdGraphNode;
 
@@ -38,8 +35,4 @@ protected:
 	TSubclassOf<UEventflowEdGraphNode> NodeClass = nullptr;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

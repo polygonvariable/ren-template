@@ -35,7 +35,7 @@ public class REnemy : ModuleRules
                 "CAsset",
                 "CAssetInstance",
                 "CAssetManager",
-                "CGamedata",
+                "CGamedataSpawn",
                 "CGamedataStorage",
                 "CAuthAction",
                 "RCharacter",

@@ -5,17 +5,14 @@
 // Engine Headers
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
+#include "GameplayTagAssetInterface.h"
 
 // Project Headers
-#include "Core/Type/AssetQuerySource.h"
 #include "Core/Type/CharacterInitializationData.h"
 #include "SpawnContextProvider.h"
 
 // Generated Headers
 #include "CharacterBase.generated.h"
-
-// Module Macros
-#define REN_API RCHARACTER_API
 
 // Forward Declarations
 class UActorComponent;
@@ -29,7 +26,7 @@ class UGameplayEffect;
  *
  */
 UCLASS(Abstract)
-class REN_API ACharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public ISpawnContextProvider
+class RCHARACTER_API ACharacterBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public ISpawnContextProvider
 {
 
 	GENERATED_BODY()
@@ -150,8 +147,4 @@ private:
 	TMap<FGameplayTag, float> CharacterAttributes;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

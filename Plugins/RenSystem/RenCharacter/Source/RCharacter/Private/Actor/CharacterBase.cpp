@@ -12,13 +12,10 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Project Headers
-#include "Core/AscensionLibrary.h"
 #include "Core/CharacterSettings.h"
 #include "Data/AscensionFragment.h"
 #include "Data/CharacterAsset.h"
 #include "Data/CharacterTemplateAsset.h"
-#include "Log/LogCategory.h"
-#include "Log/LogMacro.h"
 
 
 ACharacterBase::ACharacterBase() : Super()

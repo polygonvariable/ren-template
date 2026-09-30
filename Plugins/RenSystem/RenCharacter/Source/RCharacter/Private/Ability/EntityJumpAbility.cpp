@@ -7,9 +7,6 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemComponent.h"
 
-// Project Headers
-
-
 
 void UEntityJumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

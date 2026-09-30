@@ -6,7 +6,6 @@
 #include "Actor/CharacterBase.h"
 #include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
-#include "Data/Asset/MetadataAsset.h"
 
 // Generated Headers
 #include "AvatarCharacter.generated.h"

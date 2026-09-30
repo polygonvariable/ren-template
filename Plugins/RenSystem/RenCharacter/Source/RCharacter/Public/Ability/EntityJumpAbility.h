@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-#include "CoreMinimal.h"
-
 // Project Headers
 #include "Abilities/GameplayAbility.h"
 

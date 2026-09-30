@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AvatarAscensionSubsystem.generated.h"
 
-// Module Macros
-#define REN_API RAVATARASCENSION_API
-
 
 /**
  *
@@ -23,8 +20,8 @@ class UAvatarAscensionSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	REN_API bool TryAddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId);
-	REN_API bool TryAddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId);
+	RAVATARASCENSION_API bool TryAddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId);
+	RAVATARASCENSION_API bool TryAddRankPoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId);
 
 protected:
 
@@ -36,12 +33,8 @@ protected:
 
 public:
 
-	REN_API static UAvatarAscensionSubsystem* Get(UWorld* World);
-	REN_API static UAvatarAscensionSubsystem* Get(UGameInstance* GameInstance);
+	RAVATARASCENSION_API static UAvatarAscensionSubsystem* Get(UWorld* World);
+	RAVATARASCENSION_API static UAvatarAscensionSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

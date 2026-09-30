@@ -3,7 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "GameplayTagAssetInterface.h"
+#include "GameplayTagContainer.h"
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers

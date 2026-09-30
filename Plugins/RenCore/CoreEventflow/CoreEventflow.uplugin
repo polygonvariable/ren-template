@@ -28,10 +28,6 @@
 	],
 	"Plugins": [
 		{
-			"Name": "SlateIM",
-			"Enabled": true
-		},
-		{
 			"Name": "CoreFramework",
 			"Enabled": true
 		},

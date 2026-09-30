@@ -5,6 +5,7 @@
 
 #if WITH_EDITOR
 // Engine Headers
+#include "UObject/ObjectSaveContext.h"
 #include "Misc/DataValidation.h"
 
 // Project Headers

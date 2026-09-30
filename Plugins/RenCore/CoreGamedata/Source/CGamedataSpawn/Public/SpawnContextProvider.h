@@ -24,7 +24,7 @@ class USpawnContextProvider : public UInterface
 /**
  * 
  */
-class CGAMEDATA_API ISpawnContextProvider
+class CGAMEDATASPAWN_API ISpawnContextProvider
 {
 
 	GENERATED_BODY()

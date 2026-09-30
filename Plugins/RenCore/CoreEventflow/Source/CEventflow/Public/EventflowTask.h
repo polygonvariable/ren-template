@@ -4,13 +4,9 @@
 
 // Project Headers
 #include "StateMachine/FiniteStateMachine.h"
-#include "LuauLibrary.h"
 
 // Generated Headers
 #include "EventflowTask.generated.h"
-
-// Module Macros
-#define REN_API CEVENTFLOW_API
 
 // Forward Declarations
 class UEventflowEngine;
@@ -27,25 +23,25 @@ class UEventflowTask : public UFiniteStateMachine
 
 public:
 
-	REN_API virtual void CopyFromAsset(const UEventflowTask* Template);
+	CEVENTFLOW_API virtual void CopyFromAsset(const UEventflowTask* Template);
 
 	// ~ UObject
-	REN_API virtual UWorld* GetWorld() const override;
+	CEVENTFLOW_API virtual UWorld* GetWorld() const override;
 	// ~ End of UObject
 
 #if WITH_EDITOR
 
-	REN_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData);
+	CEVENTFLOW_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData);
 
 	// ~ UObject
-	REN_API virtual bool ImplementsGetWorld() const override;
+	CEVENTFLOW_API virtual bool ImplementsGetWorld() const override;
 	// ~ End of UObject
 
 #endif
 
 protected:
 
-	REN_API UEventflowEngine* GetOwningEngine() const;
+	CEVENTFLOW_API UEventflowEngine* GetOwningEngine() const;
 
 	template<class T>
 	T* GetOwningEngine() const
@@ -54,8 +50,4 @@ protected:
 	}
 
 };
-
-
-// Module Macros
-#undef REN_API
 

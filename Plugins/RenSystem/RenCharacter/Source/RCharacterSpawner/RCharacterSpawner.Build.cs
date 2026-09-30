@@ -28,19 +28,8 @@ public class RCharacterSpawner : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "GameplayAbilities",
-                "GameplayTags",
-				"CFramework",
-                "RCoreAscension",
-                "CAsset",
-                "CAssetInstance",
-                "CAssetManager",
-				"CGamedata",
-                "CGamedataStorage",
-                "CAuthAction",
+                "CGamedataSpawn",
                 "RCharacter",
-				"RAvatar",
-                "CGamedataComponent",
             }
 			);
 			
@@ -53,7 +42,9 @@ public class RCharacterSpawner : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreDelegate",
+                "GameplayAbilities",
+                "GameplayTags",
+                "CAssetManager",
                 "CLibrary",
             }
 			);

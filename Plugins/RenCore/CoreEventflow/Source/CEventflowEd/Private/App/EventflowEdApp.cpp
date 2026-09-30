@@ -10,10 +10,10 @@
 // Project Headers
 #include "App/EventflowEdAppMode.h"
 #include "EventflowAsset.h"
+#include "EventflowTask.h"
 #include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "EventflowTask.h"
 #include "Task/EventflowPrimaryTask.h"
 
 

@@ -4,8 +4,7 @@
 
 
 /**
- * TODO:
- * Rename to Data Query Source
+ * 
  */
 UENUM(BlueprintType)
 enum class ESpawnDataSource : uint8
