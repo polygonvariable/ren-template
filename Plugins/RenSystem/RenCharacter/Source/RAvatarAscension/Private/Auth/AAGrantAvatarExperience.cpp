@@ -7,13 +7,12 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AscensionLibrary.h"
+#include "AscensionFragment.h"
+#include "AscensionLibrary.h"
 #include "Core/AssetInstanceLibrary.h"
 #include "Core/AssetManagerLibrary.h"
 #include "Core/Type/AssetDetail.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
-#include "Data/AscensionAsset.h"
-#include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
 #include "Data/FragmentedDataAsset.h"
@@ -176,12 +175,12 @@ void UAAGrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& As
 
 void UAAGrantAvatarExperience::Step_HandleOnBreakdownAssetLoaded(FPrimaryAssetId AssetId, int Quantity)
 {
-	FAssetManagerLibrary::ReleaseHandle(_BreakdownHandle);
+	// FAssetManagerLibrary::ReleaseHandle(_BreakdownHandle);
 
-	const UExperiencePointAsset* PointAsset = AssetManager->GetPrimaryAssetObject<UExperiencePointAsset>(AssetId);
+	// const UExperiencePointAsset* PointAsset = AssetManager->GetPrimaryAssetObject<UExperiencePointAsset>(AssetId);
 
-	Points = PointAsset->GetPoints(Quantity);
-	Step_RemoveMaterial();
+	// Points = PointAsset->GetPoints(Quantity);
+	// Step_RemoveMaterial();
 }
 
 void UAAGrantAvatarExperience::Step_RemoveMaterial()

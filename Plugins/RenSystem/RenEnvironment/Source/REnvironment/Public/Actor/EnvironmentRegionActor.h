@@ -12,7 +12,6 @@
 #include "EnvironmentRegionActor.generated.h"
 
 // Forward Declarations
-class UAssetManager;
 class UPrimitiveComponent;
 class UEnvironmentSubsystem;
 struct FStreamableHandle;

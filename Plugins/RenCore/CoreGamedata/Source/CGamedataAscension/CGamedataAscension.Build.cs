@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RCoreAscension : ModuleRules
+public class CGamedataAscension : ModuleRules
 {
-	public RCoreAscension(ReadOnlyTargetRules Target) : base(Target)
+	public CGamedataAscension(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		

@@ -27,11 +27,10 @@ public class REnvironment : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "Landscape",
                 "DeveloperSettings",
-                "CFramework",
-				"CWorlddataRegion",
+                "CDataManager",
                 "CAsset",
+                "CWorlddataRegion",
                 "CWorldSettings",
             }
 			);

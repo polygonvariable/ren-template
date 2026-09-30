@@ -41,7 +41,7 @@ public class RDialogueDebug : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "CLibrary",
-                "CFramework",
+                "CDataManager",
                 "CEventflow",
                 "RDialogue",
             }

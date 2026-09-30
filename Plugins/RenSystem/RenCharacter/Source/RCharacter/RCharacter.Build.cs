@@ -47,7 +47,7 @@ public class RCharacter : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"MotionTrajectory",
                 "CLibrary",
-                "RCoreAscension",
+                "CGamedataAscension",
             }
 			);
 		

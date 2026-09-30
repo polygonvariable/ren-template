@@ -42,7 +42,7 @@ public class RInventoryAscensionUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "CAsset",
-                "RCoreAscension",
+                "CGamedataAscension",
                 "RCoreDelegate",
                 "CFilter",
                 "CLibrary",

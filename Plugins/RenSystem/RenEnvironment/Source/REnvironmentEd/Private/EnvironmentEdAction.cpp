@@ -3,8 +3,6 @@
 // Parent Header
 #include "EnvironmentEdAction.h"
 
-// Engine Headers
-
 // Project Headers
 #include "Data/EnvironmentWorldConfig.h"
 #include "Data/EnvironmentProfileAsset.h"

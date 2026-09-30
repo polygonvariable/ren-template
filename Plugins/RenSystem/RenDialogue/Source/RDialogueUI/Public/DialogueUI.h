@@ -44,6 +44,12 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere)
+	FKey NextKey;
+
+	UPROPERTY(EditAnywhere)
+	FKey SkipKey;
+
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> SpeakerName = nullptr;
 
@@ -96,6 +102,7 @@ protected:
 	// ~ End of Binding
 
 	// ~ UUserWidget
+	FReply NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent) override;
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	// ~ End of UUserWidget

@@ -8,12 +8,12 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Core/AscensionLibrary.h"
+#include "AscensionLibrary.h"
 #include "Core/Type/AssetDetail.h"
 #include "Core/Type/AssetFilterProperty.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Criterion/FilterCriterion_Leaf.h"
-#include "Data/AscensionFragment.h"
+#include "AscensionFragment.h"
 #include "Data/AssetCollection.h"
 #include "Data/FragmentedDataAsset.h"
 #include "Delegate/GameUIDelegate.h"

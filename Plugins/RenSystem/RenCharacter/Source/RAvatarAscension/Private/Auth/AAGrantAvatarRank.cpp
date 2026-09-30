@@ -7,11 +7,11 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AscensionLibrary.h"
+#include "AscensionLibrary.h"
 #include "Core/AssetInstanceLibrary.h"
 #include "Core/AssetManagerLibrary.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
-#include "Data/AscensionFragment.h"
+#include "AscensionFragment.h"
 #include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
 #include "Data/FragmentedDataAsset.h"

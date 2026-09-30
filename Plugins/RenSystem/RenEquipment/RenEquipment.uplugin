@@ -69,10 +69,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAscension",
-			"Enabled": true
-		},
-		{
 			"Name": "CoreGamedata",
 			"Enabled": true
 		}

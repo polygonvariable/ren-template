@@ -51,10 +51,6 @@
 			"Enabled": true
 		},
 		{
-			"Name": "RCoreAscension",
-			"Enabled": true
-		},
-		{
 			"Name": "CoreFramework",
 			"Enabled": true
 		}

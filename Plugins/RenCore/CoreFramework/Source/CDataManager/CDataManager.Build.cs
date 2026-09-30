@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RCoreAscensionUI : ModuleRules
+public class CDataManager : ModuleRules
 {
-	public RCoreAscensionUI(ReadOnlyTargetRules Target) : base(Target)
+	public CDataManager(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,7 +27,6 @@ public class RCoreAscensionUI : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "UMG",
 			}
 			);
 			
@@ -40,7 +39,7 @@ public class RCoreAscensionUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreAscension",
+				"CLibrary",
             }
 			);
 		

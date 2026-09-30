@@ -29,7 +29,7 @@ public class CEventflowEd : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"AssetTools",
                 "UnrealEd",
-                "CFramework",
+                "CDataManager",
                 "CLuau",
                 "CEventflow",
             }

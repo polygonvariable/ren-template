@@ -14,7 +14,6 @@
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
-#include "Widget/AscensionDetailUI.h"
 #include "Widget/AvatarEntry.h"
 
 
@@ -84,8 +83,6 @@ void UAvatarDetailUI::SetCustomDetails(const FAvatarInstance* Instance)
 	{
 		return;
 	}
-
-	AscensionDetail->InitializeDetail(Instance->Ascension);
 }
 
 void UAvatarDetailUI::NativeDestruct()

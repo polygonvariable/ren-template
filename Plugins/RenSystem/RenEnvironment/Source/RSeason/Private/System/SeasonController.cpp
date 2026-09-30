@@ -15,14 +15,12 @@
 #include "Log/LogMacro.h"
 #include "MaterialLibrary.h"
 #include "MaterialSurfaceProperty.h"
-#include "System/EnvironmentSubsystem.h"
 #include "SubsystemLibrary.h"
 
 
 void USeasonController::Initialize(UMaterialParameterCollectionInstance* InMPCInstance)
 {
 	MPCInstance = InMPCInstance;
-	EnvironmentSubsystem = UEnvironmentSubsystem::Get(GetWorld());
 
 	ClockManager = FSubsystemLibrary::GetSubsystemInterface<IClockManagerInterface>(GetWorld());
 	if (ClockManager)
@@ -42,7 +40,6 @@ void USeasonController::Deinitialize()
 
 	MPCInstance = nullptr;
 	CurrentCollection = nullptr;
-	EnvironmentSubsystem = nullptr;
 }
 
 

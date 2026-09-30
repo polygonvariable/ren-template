@@ -8,15 +8,12 @@
 #endif
 
 // Project Headers
-#include "Data/Asset/MetadataAsset.h"
 #include "WorldConfigAsset.h"
 
 // Generated Headers
 #include "EnvironmentWorldConfig.generated.h"
 
 // Forward Declarations
-class UPriorityList;
-class UEnvironmentProfileAsset;
 class UEnvironmentStackedController;
 class UEnvironmentDiscreteController;
 

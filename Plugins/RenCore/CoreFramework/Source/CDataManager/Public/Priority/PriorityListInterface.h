@@ -18,7 +18,7 @@ class UPriorityListInterface : public UInterface
 /**
  *
  */
-class CFRAMEWORK_API IPriorityListInterface
+class CDATAMANAGER_API IPriorityListInterface
 {
 
 	GENERATED_BODY()

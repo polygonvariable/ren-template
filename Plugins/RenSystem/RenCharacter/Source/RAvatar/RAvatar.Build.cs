@@ -28,11 +28,11 @@ public class RAvatar : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "DeveloperSettings",
-                "CFramework",
+                "CDataManager",
                 "CGamedataSpawn",
                 "CGamedataStorage",
                 "CAssetInstance",
-                "RCoreAscension",
+                "CGamedataAscension",
                 "RCharacter",
             }
 			);

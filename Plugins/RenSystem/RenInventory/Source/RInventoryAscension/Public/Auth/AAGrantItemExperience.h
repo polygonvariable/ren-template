@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/AscensionData.h"
+#include "AscensionData.h"
 #include "AuthAction.h"
 
 // Generated Headers

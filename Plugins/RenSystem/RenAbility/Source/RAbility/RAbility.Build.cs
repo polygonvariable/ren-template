@@ -31,7 +31,7 @@ public class RAbility : ModuleRules
 				"Engine",
                 "UMG",
                 "DeveloperSettings",
-                "CFramework",
+                "CDataManager",
 				"CGamedataComponent",
             }
 			);

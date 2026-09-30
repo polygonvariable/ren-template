@@ -1,15 +1,15 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "CFramework.h"
+#include "CDataManager.h"
 
-#define LOCTEXT_NAMESPACE "FCFrameworkModule"
+#define LOCTEXT_NAMESPACE "FCDataManagerModule"
 
-void FCFrameworkModule::StartupModule()
+void FCDataManagerModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FCFrameworkModule::ShutdownModule()
+void FCDataManagerModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FCFrameworkModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FCFrameworkModule, CFramework)
+IMPLEMENT_MODULE(FCDataManagerModule, CDataManager)
 

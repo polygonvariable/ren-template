@@ -46,9 +46,5 @@ public:
     // ~ End of UPrimaryDataAsset
 #endif
 
-public:
-
-    static const USeasonWorldConfig* Get(UWorld* World);
-
 };
 

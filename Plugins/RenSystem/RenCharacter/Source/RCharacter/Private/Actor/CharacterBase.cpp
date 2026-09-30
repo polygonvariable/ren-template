@@ -13,7 +13,7 @@
 
 // Project Headers
 #include "Core/CharacterSettings.h"
-#include "Data/AscensionFragment.h"
+#include "AscensionFragment.h"
 #include "Data/CharacterAsset.h"
 #include "Data/CharacterTemplateAsset.h"
 

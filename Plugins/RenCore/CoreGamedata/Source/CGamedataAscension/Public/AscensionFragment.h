@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AscensionFragment.generated.h"
 
-// Module Macros
-#define REN_API RCOREASCENSION_API
-
 // Forward Declarations
 class UAssetGroup;
 class UAssetCollection;
@@ -47,16 +44,12 @@ public:
 	TObjectPtr<UAssetGroup> RankUpAssets = nullptr;
 
 
-	REN_API virtual int GetExperienceInterval(int Level) const;
-	REN_API virtual int GetLevelInterval(int Rank) const;
-	REN_API virtual int GetMaxLevel() const;
-	REN_API virtual int GetMaxRank() const;
-	REN_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const;
-	REN_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const;
+	CGAMEDATAASCENSION_API virtual int GetExperienceInterval(int Level) const;
+	CGAMEDATAASCENSION_API virtual int GetLevelInterval(int Rank) const;
+	CGAMEDATAASCENSION_API virtual int GetMaxLevel() const;
+	CGAMEDATAASCENSION_API virtual int GetMaxRank() const;
+	CGAMEDATAASCENSION_API virtual const UAssetCollection* GetExperienceAssets(const FAscensionData& Ascension) const;
+	CGAMEDATAASCENSION_API virtual const UAssetCollection* GetRankAssets(const FAscensionData& Ascension) const;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

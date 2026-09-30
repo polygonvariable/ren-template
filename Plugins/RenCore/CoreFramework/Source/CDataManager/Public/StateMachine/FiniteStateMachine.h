@@ -13,7 +13,7 @@
  *
  */
 UCLASS(Abstract)
-class CFRAMEWORK_API UFiniteStateMachine : public UObject
+class CDATAMANAGER_API UFiniteStateMachine : public UObject
 {
 
 	GENERATED_BODY()

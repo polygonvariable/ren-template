@@ -210,6 +210,21 @@ void UDialogueUI::HandleOnOptionClicked(int Index)
 }
 
 
+FReply UDialogueUI::NativeOnKeyDown(const FGeometry& InGeometry, const FKeyEvent& InKeyEvent)
+{
+	//if (InKeyEvent.GetKey() == NextKey)
+	//{
+	//	HandleOnNextClicked();
+	//	return FReply::Handled();
+	//}
+	//else if (InKeyEvent.GetKey() == SkipKey)
+	//{
+	//	HandleOnSkipClicked();
+	//	return FReply::Handled();
+	//}
+	return FReply::Unhandled();
+}
+
 void UDialogueUI::NativeConstruct()
 {
 	DialoguePrompt->SetVisibility(ESlateVisibility::Collapsed);

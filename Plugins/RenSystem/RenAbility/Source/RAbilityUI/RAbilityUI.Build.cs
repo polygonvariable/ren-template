@@ -30,7 +30,7 @@ public class RAbilityUI : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "UMG",
-                "CFramework",
+                "CDataManager",
             }
 			);
 			

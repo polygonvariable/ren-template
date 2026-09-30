@@ -2,8 +2,6 @@
 
 #pragma once
 
-// Engine Headers
-
 // Project Headers
 #include "Widget/AssetDetailUI.h"
 
@@ -11,7 +9,6 @@
 #include "InventoryDetailUI.generated.h"
 
 // Forward Declarations
-class UAscensionDetailUI;
 class UInventoryStorageManager;
 class UInventorySubsystem;
 class UFragmentedDataAsset;
@@ -44,10 +41,7 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UTextBlock> ItemQuantity = nullptr;
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
-
-
+	
 	virtual void SetCustomDetails(const FInventoryInstance* Item, int Quantity);
 
 	// ~ UAssetDetailUI

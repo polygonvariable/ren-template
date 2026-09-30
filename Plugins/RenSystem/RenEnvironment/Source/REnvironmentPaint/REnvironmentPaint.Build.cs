@@ -27,9 +27,7 @@ public class REnvironmentPaint : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"CFramework",
-                "CAsset",
-                "CAssetManager",
+                "Niagara",
                 "CWorldSettings",
 				"CGamedataComponent",
             }
@@ -44,8 +42,8 @@ public class REnvironmentPaint : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "Niagara",
                 "CLibrary",
+                "CAssetManager",
             }
 			);
 		

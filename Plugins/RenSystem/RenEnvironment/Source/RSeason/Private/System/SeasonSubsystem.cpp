@@ -8,6 +8,7 @@
 #include "Materials/MaterialParameterCollection.h"
 
 // Project Headers
+#include "CWorldSettings/Public/WorldFragmentSettings.h"
 #include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Core/SeasonSettings.h"
@@ -15,7 +16,6 @@
 #include "Data/SeasonWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "CWorldSettings/Public/WorldFragmentSettings.h"
 #include "System/SeasonController.h"
 
 
@@ -55,8 +55,6 @@ void USeasonSubsystem::RemoveSeasonController()
 
 void USeasonSubsystem::HandleOnSeasonLoaded()
 {
-	FAssetManagerLibrary::CancelHandle(AssetHandle);
-
 	if (!IsValid(SeasonConfig))
 	{
 		LOG_ERROR(LogSeason, TEXT("Season world config is invalid or disabled"));

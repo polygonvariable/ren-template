@@ -139,8 +139,6 @@ void UWeatherSubsystem::HandleOnWeatherTimerTick()
 
 void UWeatherSubsystem::HandleOnWeatherLoaded()
 {
-	FAssetManagerLibrary::CancelHandle(WeatherHandle);
-	
 	if (!CreateWeatherController(WeatherConfig->WeatherController, WeatherConfig->WeatherMPC))
 	{
 		LOG_ERROR(LogWeather, TEXT("Failed to create weather controller"));

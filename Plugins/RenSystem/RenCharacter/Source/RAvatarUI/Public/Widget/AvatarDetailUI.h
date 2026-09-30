@@ -9,7 +9,6 @@
 #include "AvatarDetailUI.generated.h"
 
 // Forward Declarations
-class UAscensionDetailUI;
 class UAvatarStorageManager;
 class UFragmentedDataAsset;
 struct FAvatarInstance;
@@ -32,9 +31,6 @@ public:
 	// ~ End of UAssetDetailUI
 
 protected:
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UAscensionDetailUI> AscensionDetail = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;

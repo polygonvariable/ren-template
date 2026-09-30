@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRCoreAscensionUIModule : public IModuleInterface
+class FCGamedataAscensionModule : public IModuleInterface
 {
 public:
 

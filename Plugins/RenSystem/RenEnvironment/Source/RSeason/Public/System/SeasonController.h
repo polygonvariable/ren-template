@@ -12,7 +12,6 @@
 class UMaterialParameterCollectionInstance;
 class USeasonCollectionAsset;
 class USeasonAsset;
-class UEnvironmentSubsystem;
 class IClockManagerInterface;
 
 
@@ -46,9 +45,6 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UMaterialParameterCollectionInstance>  MPCInstance;
-
-	UPROPERTY()
-	TObjectPtr<UEnvironmentSubsystem> EnvironmentSubsystem;
 
 	UPROPERTY()
 	TObjectPtr<USeasonCollectionAsset> CurrentCollection;

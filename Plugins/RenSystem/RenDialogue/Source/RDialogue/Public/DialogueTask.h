@@ -21,10 +21,10 @@ class UDialogueTask_Base : public UEventflowPrimaryTask
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FDialogueSpeaker Speaker;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FDialogueData Dialogue;
 
 
@@ -70,7 +70,7 @@ class UDialogueTask_Branch : public UDialogueTask_Base
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Dialogue Options")
 	TArray<FText> Options;
 
 	// ~ UEventflowTask

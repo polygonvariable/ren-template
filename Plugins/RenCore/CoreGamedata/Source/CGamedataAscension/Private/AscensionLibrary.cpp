@@ -1,11 +1,11 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "Core/AscensionLibrary.h"
+#include "AscensionLibrary.h"
 
 // Project Headers
-#include "Core/Type/AscensionData.h"
-#include "Core/AscensionSettings.h"
+#include "AscensionData.h"
+#include "AscensionSettings.h"
 
 
 int FAscensionLibrary::ClampLevel(int Level)
@@ -94,3 +94,4 @@ int FAscensionLibrary::GetMaxLevelForRank(int Rank, int LevelPerRank, int MaxLev
     const int32 CalculatedMax = Rank * LevelPerRank;
     return FMath::Min(CalculatedMax, MaxLevel);
 }
+

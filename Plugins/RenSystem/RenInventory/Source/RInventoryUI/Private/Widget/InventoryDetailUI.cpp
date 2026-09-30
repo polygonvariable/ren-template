@@ -12,7 +12,6 @@
 #include "Core/Type/Runtime/InventoryInstance.h"
 #include "System/InventoryStorageManager.h"
 #include "System/InventorySubsystem.h"
-#include "Widget/AscensionDetailUI.h"
 #include "Widget/InventoryEntry.h"
 
 
@@ -87,7 +86,6 @@ void UInventoryDetailUI::SetCustomDetails(const FInventoryInstance* Item, int Qu
 	ActiveItemId = Item->ItemId;
 
 	ItemQuantity->SetText(FText::AsNumber(Quantity));
-	AscensionDetail->InitializeDetail(Item->Ascension);
 }
 
 void UInventoryDetailUI::NativeDestruct()

@@ -44,7 +44,6 @@ public class RAvatarUI : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "CLibrary",
                 "CFilter",
-                "RCoreAscensionUI",
                 "CGamedataStorage",
             }
 			);

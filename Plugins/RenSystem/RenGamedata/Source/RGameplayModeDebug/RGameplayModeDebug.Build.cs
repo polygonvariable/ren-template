@@ -42,7 +42,7 @@ public class RGameplayModeDebug : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"GameplayTags",
                 "CLibrary",
-                "CFramework",
+                "CDataManager",
                 "CAsset",
                 "RGameplayMode",
             }

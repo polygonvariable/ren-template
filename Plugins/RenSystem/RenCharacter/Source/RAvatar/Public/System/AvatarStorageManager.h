@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Interface/AscensionInstanceProvider.h"
+#include "AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/StorageManager.h"
 #include "Delegate/GameEventDelegate.h"

@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AscensionInstanceProvider.generated.h"
 
-// Module Macros
-#define REN_API RCOREASCENSION_API
-
 // Forward Declarations
 struct FAscensionData;
 
@@ -24,7 +21,7 @@ class UAscensionInstanceProvider : public UInterface
 /**
  *
  */
-class REN_API IAscensionInstanceProvider
+class CGAMEDATAASCENSION_API IAscensionInstanceProvider
 {
 
 	GENERATED_BODY()
@@ -34,8 +31,4 @@ public:
 	virtual const FAscensionData* GetAscensionInstance(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const = 0;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

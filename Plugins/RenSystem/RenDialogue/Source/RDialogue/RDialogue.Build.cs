@@ -30,7 +30,7 @@ public class RDialogue : ModuleRules
 				"DeveloperSettings",
 				"UMG",
                 "CEventflow",
-                "CFramework",
+                "CDataManager",
             }
 			);
 			

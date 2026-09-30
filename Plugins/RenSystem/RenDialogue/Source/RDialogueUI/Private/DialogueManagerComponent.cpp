@@ -93,6 +93,7 @@ void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, U
 
 	WidgetCollection.Add(AssetId, Widget);
 	Widget->InitializeDialogue(Asset, Engine);
+	Widget->SetFocus();
 	Widget->AddToViewport();
 }
 

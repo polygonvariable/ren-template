@@ -31,7 +31,7 @@ public class RQuest : ModuleRules
 				"GameplayTags",
                 "UMG",
                 "CEventflow",
-				"CFramework",
+				"CDataManager",
                 "CGamedataStorage",
             }
 			);

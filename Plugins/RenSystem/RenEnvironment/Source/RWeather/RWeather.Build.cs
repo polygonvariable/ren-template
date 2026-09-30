@@ -28,10 +28,10 @@ public class RWeather : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "CFramework",
-				"CWorlddataRegion",
+                "CDataManager",
                 "CMaterial",
-                "REnvironment",
+                "CWorlddataRegion",
+                "CWorldSettings",
             }
 			);
 			
@@ -45,10 +45,9 @@ public class RWeather : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "Niagara",
-                "CWorldSettings",
                 "CLibrary",
-                "CAsset",
                 "CAssetManager",
+                "REnvironment",
             }
 			);
 

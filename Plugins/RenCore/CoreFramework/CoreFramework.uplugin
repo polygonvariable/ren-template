@@ -16,7 +16,7 @@
 	"Installed": false,
 	"Modules": [
 		{
-			"Name": "CFramework",
+			"Name": "CDataManager",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		},

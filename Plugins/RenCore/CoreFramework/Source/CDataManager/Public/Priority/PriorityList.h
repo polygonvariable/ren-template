@@ -44,7 +44,7 @@ public:
  * 
  */
 UCLASS()
-class CFRAMEWORK_API UPriorityList : public UObject
+class CDATAMANAGER_API UPriorityList : public UObject
 {
 
 	GENERATED_BODY()

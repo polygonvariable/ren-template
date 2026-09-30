@@ -197,8 +197,6 @@ void UEnvironmentSubsystem::RegisterDefaultProfiles(const UEnvironmentWorldConfi
 
 void UEnvironmentSubsystem::HandleOnEnvironmentLoaded()
 {
-	FAssetManagerLibrary::ReleaseHandle(ProfileHandle);
-
 	if (!IsValid(WorldConfig))
 	{
 		LOG_ERROR(LogEnvironment, TEXT("EnvironmentFragment is invalid"));

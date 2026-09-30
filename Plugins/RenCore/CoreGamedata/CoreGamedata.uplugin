@@ -37,5 +37,9 @@
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "CoreAsset",
+			"Enabled": true
+		}
 	]
 }

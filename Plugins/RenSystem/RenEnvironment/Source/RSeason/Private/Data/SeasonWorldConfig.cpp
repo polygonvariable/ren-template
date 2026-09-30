@@ -13,7 +13,6 @@
 #if WITH_EDITOR
 #include "System/SeasonController.h"
 #endif
-#include "WorldFragmentSettings.h"
 
 
 #if WITH_EDITOR
@@ -51,14 +50,4 @@ EDataValidationResult USeasonWorldConfig::IsDataValid(FDataValidationContext& Co
     return Result;
 }
 #endif
-
-const USeasonWorldConfig* USeasonWorldConfig::Get(UWorld* World)
-{
-    AWorldFragmentSettings* WorldSettings = Cast<AWorldFragmentSettings>(World->GetWorldSettings());
-    if (!IsValid(WorldSettings))
-    {
-        return nullptr;
-    }
-    return WorldSettings->FindConfigByClass<USeasonWorldConfig>();
-}
 

@@ -27,7 +27,7 @@ public class CEventflow : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"CFramework",
+				"CDataManager",
                 "CAsset",
                 "CPool",
                 "CLuau"

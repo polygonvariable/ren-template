@@ -29,12 +29,12 @@ public class RInventory : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
 				"GameplayTags",
-                "RCoreAscension",
+                "CGamedataAscension",
                 "CAsset",
 				"CAssetManager",
                 "CAssetInstance",
                 "CGamedataStorage",
-                "CFramework",
+                "CDataManager",
             }
 			);
 			

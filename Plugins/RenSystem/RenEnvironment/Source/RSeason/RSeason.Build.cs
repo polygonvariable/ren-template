@@ -28,10 +28,9 @@ public class RSeason : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "CFramework",
+                "CDataManager",
                 "CWorldSettings",
                 "CMaterial",
-                "REnvironment",
             }
 			);
 			
@@ -46,8 +45,8 @@ public class RSeason : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "CWorlddataClock",
                 "CLibrary",
-                "CAsset",
                 "CAssetManager",
+                "REnvironment",
             }
 			);
 

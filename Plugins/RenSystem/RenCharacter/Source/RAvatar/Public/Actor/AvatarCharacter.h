@@ -79,7 +79,7 @@ protected:
 	float CameraMinZoom = 100.0f;
 
 	UPROPERTY(EditAnywhere)
-	float CameraMaxZoom = 400.0f;
+	float CameraMaxZoom = 1500.0f;
 
 
 	// ~ ACharacterBase
