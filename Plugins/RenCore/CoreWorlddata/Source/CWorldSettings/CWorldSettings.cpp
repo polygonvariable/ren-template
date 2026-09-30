@@ -2,14 +2,14 @@
 
 #include "CWorldSettings.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreSettingsModule"
+#define LOCTEXT_NAMESPACE "FCWorldSettingsModule"
 
-void FRCoreSettingsModule::StartupModule()
+void FCWorldSettingsModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreSettingsModule::ShutdownModule()
+void FCWorldSettingsModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreSettingsModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreSettingsModule, CWorldSettings)
+IMPLEMENT_MODULE(FCWorldSettingsModule, CWorldSettings)
 

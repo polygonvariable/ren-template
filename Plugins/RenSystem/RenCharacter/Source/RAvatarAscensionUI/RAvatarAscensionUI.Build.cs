@@ -43,8 +43,8 @@ public class RAvatarAscensionUI : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "CAsset",
                 "RCoreAscension",
-                "RCoreFilter",
-                "RCoreLibrary",
+                "CFilter",
+                "CLibrary",
                 "RCoreDelegate",
                 "RAvatar",
                 "RAvatarUI",

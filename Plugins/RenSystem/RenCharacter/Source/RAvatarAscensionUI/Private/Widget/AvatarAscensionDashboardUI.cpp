@@ -14,9 +14,9 @@
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Delegate/GameUIDelegate.h"
-#include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Criterion/FilterCriterion_Leaf.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/AvatarAscensionSubsystem.h"
@@ -162,7 +162,7 @@ TArray<UWidget*> UAvatarAscensionDashboardUI::GetLockingControls_Implementation(
 	return Widgets;
 }
 
-void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	AvatarDetail->InitializeAssetDetail(Asset);
 

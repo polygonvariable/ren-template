@@ -9,7 +9,7 @@
 // Project Headers
 #include "Core/Type/AssetFilterProperty.h"
 #include "Delegate/GameUIDelegate.h"
-#include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Criterion/FilterCriterion_Leaf.h"
 #include "System/EquipmentStorageManager.h"
 #include "System/EquipmentSubsystem.h"
 #include "Widget/AssetCollectionUI.h"
@@ -37,7 +37,7 @@ void UEquipmentDashboardUI::ApplyEquipmentToOwner()
 	}
 }
 
-void UEquipmentDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UEquipmentDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	OwnerDetail->InitializeAssetDetail(Asset);
 }

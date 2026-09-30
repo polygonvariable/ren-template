@@ -28,7 +28,7 @@
 	],
 	"Plugins": [
 		{
-			"Name": "RCoreFramework",
+			"Name": "CoreFramework",
 			"Enabled": true
 		}
 	]

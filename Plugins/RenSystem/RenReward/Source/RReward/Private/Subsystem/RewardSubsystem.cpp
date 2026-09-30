@@ -13,9 +13,9 @@
 #include "Settings/RewardSettings.h"
 #include "Storage/RewardStorage.h"
 #include "Storage/RewardStorageManager.h"
-#include "Subsystem/AuthActionSubsystem.h"
-#include "Subsystem/BroadcastSubsystem.h"
-#include "Util/SubsystemUtil.h"
+#include "AuthActionSubsystem.h"
+#include "BroadcastSubsystem.h"
+#include "SubsystemLibrary.h"
 
 
 URewardStorageManager* URewardSubsystem::GetStorageManager() const

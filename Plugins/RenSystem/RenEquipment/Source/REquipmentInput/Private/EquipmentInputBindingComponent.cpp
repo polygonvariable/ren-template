@@ -10,7 +10,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/EquipmentInputBindingAsset.h"
 #include "System/Input/EquipmentActionInput.h"
 #include "System/Input/EquipmentActivationInput.h"
@@ -32,7 +32,7 @@ void UEquipmentInputBindingComponent::BeginPlay()
 
 void UEquipmentInputBindingComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
     UnregisterInput();
 
 	Super::EndPlay(EndPlayReason);
@@ -58,7 +58,7 @@ EDataValidationResult UEquipmentInputBindingComponent::IsDataValid(FDataValidati
 
 void UEquipmentInputBindingComponent::LoadAndRegisterInput()
 {
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	FStreamableManager& Manager = UAssetManager::GetStreamableManager();
 	AssetHandle = Manager.RequestAsyncLoad(InputBindings, FStreamableDelegate::CreateUObject(this, &UEquipmentInputBindingComponent::HandleOnInputLoaded));
@@ -66,7 +66,7 @@ void UEquipmentInputBindingComponent::LoadAndRegisterInput()
 
 void UEquipmentInputBindingComponent::HandleOnInputLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(AssetHandle);
 
 	UnregisterInput();
 	RegisterInput();

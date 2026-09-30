@@ -10,13 +10,13 @@
 // Project Headers
 #include "Actor/EnemyCharacter.h"
 #include "Data/CharacterAsset.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Core/CharacterSettings.h"
 #include "Core/EnemySettings.h"
 #include "System/EnemyStorageManager.h"
-#include "Subsystem/BroadcastSubsystem.h"
+#include "BroadcastSubsystem.h"
 #include "System/EnemySubsystem.h"
 
 
@@ -42,7 +42,7 @@ void UEnemyManagerComponent::BeginPlay()
 
 void UEnemyManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(_SpawnHandle);
 	CleanupEnemies();
 
 	AssetManager = nullptr;
@@ -93,7 +93,7 @@ void UEnemyManagerComponent::TrySpawnEnemies()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(_SpawnHandle);
 
 	const UCharacterSettings* Settings = UCharacterSettings::Get();
 	const TArray<FName>& AssetBundles = Settings->CharacterBundles;
@@ -103,7 +103,7 @@ void UEnemyManagerComponent::TrySpawnEnemies()
 
 void UEnemyManagerComponent::SpawnEnemies()
 {
-	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
+	FAssetManagerLibrary::ReleaseHandle(_SpawnHandle);
 
 	for (const FEnemySpawnData& Data : SpawnData)
 	{

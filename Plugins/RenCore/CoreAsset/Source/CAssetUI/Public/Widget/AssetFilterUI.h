@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetFilterUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UTextBlock;
 class UButton;
@@ -18,9 +15,7 @@ class UAssetCollectionUI;
 class UFilterCriterion;
 
 
-
 /**
- *
  *
  */
 USTRUCT(BlueprintType)
@@ -40,9 +35,7 @@ public:
 };
 
 
-
 /**
- *
  *
  */
 UCLASS(Abstract, MinimalAPI)
@@ -61,9 +54,9 @@ public:
 
 
 	// ~ UUserWidget
-	REN_API virtual void NativePreConstruct() override;
-	REN_API virtual void NativeConstruct() override;
-	REN_API virtual void NativeDestruct() override;
+	CASSETUI_API virtual void NativePreConstruct() override;
+	CASSETUI_API virtual void NativeConstruct() override;
+	CASSETUI_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 protected:
@@ -83,7 +76,6 @@ protected:
 
 /**
  *
- * 
  */
 UCLASS(Abstract, MinimalAPI)
 class UAssetFilterCollectionUI : public UUserWidget
@@ -102,10 +94,10 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	REN_API void SetTargetCollectionUI(UAssetCollectionUI* InCollectionUI);
+	CASSETUI_API void SetTargetCollectionUI(UAssetCollectionUI* InCollectionUI);
 
 	// ~ UUserWidget
-	REN_API virtual void NativePreConstruct() override;
+	CASSETUI_API virtual void NativePreConstruct() override;
 	// ~ End of UUserWidget
 
 protected:
@@ -128,8 +120,4 @@ private:
 	TWeakObjectPtr<UAssetCollectionUI> _AssetCollection = nullptr;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

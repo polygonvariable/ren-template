@@ -3,13 +3,13 @@
 #pragma once
 
 // Project Headers
-#include "Control/AssetFilterSlot.h"
+#include "Widget/Control/AssetFilterSlot.h"
 
 // Generated Headers
 #include "InventoryFilterSlot.generated.h"
 
 // Forward Declarations
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class UAssetEntry;
 
 
@@ -27,7 +27,7 @@ class UInventoryFilterSlot : public UAssetFilterSlot
 public:
 
 	// ~ IAssetWidget
-	virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
+	virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
 	// ~ End of IAssetWidget
 

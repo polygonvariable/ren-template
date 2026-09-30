@@ -12,7 +12,7 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UAvatarStorageManager* UAvatarSubsystem::GetStorageManager() const

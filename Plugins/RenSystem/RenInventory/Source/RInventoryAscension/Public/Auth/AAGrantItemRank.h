@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 
 // Generated Headers
 #include "AAGrantItemRank.generated.h"
@@ -11,7 +11,6 @@
 // Forward Declarations
 class UInventoryAsset;
 class UInventoryStorageManager;
-class URAssetManager;
 struct FStreamableHandle;
 
 

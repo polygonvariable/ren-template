@@ -2,9 +2,6 @@
 
 #pragma once
 
-// Project Headers
-#include "Definition/QueryType.h"
-
 // Generated Headers
 #include "InventorySortType.generated.h"
 

@@ -20,9 +20,9 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetGroup.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 #include "System/ShopStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UShopStorageManager* UShopSubsystem::GetStorageManager()
@@ -59,7 +59,7 @@ bool UShopSubsystem::TryPurchaseItem(const FPrimaryAssetId& ShopAssetId, const F
 }
 
 
-const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UFragmentedDataAsset* Asset, const FInstancedStruct& Context) const
 {
 	const UShopFragment* ShopFragment = Asset->FindFragmentByClass<UShopFragment>();
 	if (!IsValid(ShopFragment))
@@ -69,7 +69,7 @@ const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAss
 	return ShopFragment->GetPurchaseCost(Context);
 }
 
-const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const
+const UAssetCollection* UShopSubsystem::GetMaterialCollection(const UFragmentedDataAsset* Asset, const FGuid& CollectionId) const
 {
 	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
 }
@@ -96,11 +96,11 @@ void UShopSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collectio
 	}
 
 	FPrimaryAssetId ShopAssetId = Asset->GetPrimaryAssetId();
-	const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList = AssetCollection->GetAssetList();
+	const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList = AssetCollection->GetAssetList();
 
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
 	{
-		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
+		const UFragmentedDataAsset* ItemDataAsset = AssetKv.Key;
 		FTradeAssetDetail ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);

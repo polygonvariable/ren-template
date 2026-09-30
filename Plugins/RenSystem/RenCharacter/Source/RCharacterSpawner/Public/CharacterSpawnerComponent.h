@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Type/CharacterInitializationData.h"
-#include "Definition/QueryType.h"
+#include "SpawnDataSource.h"
 
 // Generated Headers
 #include "CharacterSpawnerComponent.generated.h"
@@ -30,7 +30,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere)
-	EDataSource SourceType = EDataSource::Static;
+	ESpawnDataSource SpawnSource = ESpawnDataSource::Static;
 
 
 	RCHARACTERSPAWNER_API void CreateCharacters();

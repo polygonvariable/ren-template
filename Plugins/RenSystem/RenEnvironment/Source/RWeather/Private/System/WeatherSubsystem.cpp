@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Actor/WeatherEffectManager.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Core/WeatherSettings.h"
 #include "Data/WeatherAsset.h"
@@ -139,7 +139,7 @@ void UWeatherSubsystem::HandleOnWeatherTimerTick()
 
 void UWeatherSubsystem::HandleOnWeatherLoaded()
 {
-	FAssetManagerUtil::CancelHandle(WeatherHandle);
+	FAssetManagerLibrary::CancelHandle(WeatherHandle);
 	
 	if (!CreateWeatherController(WeatherConfig->WeatherController, WeatherConfig->WeatherMPC))
 	{
@@ -199,7 +199,7 @@ void UWeatherSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(WeatherHandle);
+	FAssetManagerLibrary::CancelHandle(WeatherHandle);
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
@@ -214,7 +214,7 @@ void UWeatherSubsystem::OnWorldEndPlay(UWorld& InWorld)
 	RemoveWeatherController();
 	RemoveWeatherManager();
 
-	FAssetManagerUtil::CancelHandle(WeatherHandle);
+	FAssetManagerLibrary::CancelHandle(WeatherHandle);
 	AssetManager = nullptr;
 	WeatherConfig = nullptr;
 

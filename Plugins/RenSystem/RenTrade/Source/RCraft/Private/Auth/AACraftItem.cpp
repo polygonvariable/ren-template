@@ -8,7 +8,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Core/Type/Runtime/CraftInstance.h"
 #include "Core/Type/Runtime/TradeKey.h"
 #include "Data/CraftFragment.h"
@@ -18,8 +18,8 @@
 #include "Core/Type/AssetRuleDefinition.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/Interface/AssetInstanceCollectionProvider.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/AssetCollection.h"
 #include "Data/AssetGroup.h"
 #include "System/CraftStorageManager.h"
@@ -34,7 +34,7 @@ void UAACraftItem::OnStarted()
 
 void UAACraftItem::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAACraftItem::OnCleanup()
@@ -58,7 +58,7 @@ void UAACraftItem::Step_LoadAsset()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	TArray<FPrimaryAssetId> Assets;
 	Assets.Add(CraftAssetId);
@@ -70,7 +70,7 @@ void UAACraftItem::Step_LoadAsset()
 void UAACraftItem::Step_HandleOnAssetsLoaded()
 {
 	TradeAsset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(CraftAssetId);
-	TargetAsset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(TargetAssetId);
+	TargetAsset = AssetManager->GetPrimaryAssetObject<UFragmentedDataAsset>(TargetAssetId);
 
 	Step_CheckTargetAsset();
 }
@@ -140,7 +140,7 @@ void UAACraftItem::Step_CheckMaterialAsset()
 
 void UAACraftItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialAssetType);
+	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
@@ -212,7 +212,7 @@ void UAACraftItem::Step_CheckCraftQuota(TMap<FPrimaryAssetId, int>&& MaterialAss
 
 void UAACraftItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get target transaction interface"));

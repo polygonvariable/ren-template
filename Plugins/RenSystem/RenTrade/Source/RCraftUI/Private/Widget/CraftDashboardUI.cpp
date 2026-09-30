@@ -27,7 +27,7 @@ void UCraftBuildDashboardUI::HandleCraft()
 	CraftSubsystem->TryCraftItem(TradeAssetId, TradeCollectionId, TargetAssetId);
 }
 
-const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
+const UAssetCollection* UCraftBuildDashboardUI::GetTradeMaterialCollection(const UFragmentedDataAsset* Asset) const
 {
 	if (!IsValid(CraftSubsystem))
 	{

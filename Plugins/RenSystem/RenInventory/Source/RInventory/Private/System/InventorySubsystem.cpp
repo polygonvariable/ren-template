@@ -12,7 +12,7 @@
 #include "Core/InventorySettings.h"
 #include "Data/InventoryStorage.h"
 #include "System/InventoryStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UInventoryStorageManager* UInventorySubsystem::GetStorageManager(const FName& InventoryId) const

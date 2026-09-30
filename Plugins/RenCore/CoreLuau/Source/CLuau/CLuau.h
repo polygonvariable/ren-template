@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRCoreLuauModule : public IModuleInterface
+class FCLuauModule : public IModuleInterface
 {
 public:
 

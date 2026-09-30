@@ -8,11 +8,8 @@
 // Generated Headers
 #include "AssetCollection.generated.h"
 
-// Module Macros
-#define REN_API CASSET_API
-
 // Forward Declarations
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FAssetDetail;
 
 
@@ -27,14 +24,14 @@ class UAssetCollection : public UObject
 
 public:
 
-	REN_API const FGuid& GetCollectionId() const;
-	REN_API const FPrimaryAssetType& GetCollectionType() const;
+	CASSET_API const FGuid& GetCollectionId() const;
+	CASSET_API const FPrimaryAssetType& GetCollectionType() const;
 
-	REN_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
-	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const;
-	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const;
-	REN_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const;
-	REN_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const;
+	CASSET_API virtual bool GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const;
+	CASSET_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const;
+	CASSET_API virtual void GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const;
+	CASSET_API virtual void GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const;
+	CASSET_API virtual void GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const;
 
 protected:
 
@@ -45,8 +42,4 @@ protected:
 	FPrimaryAssetType AssetType;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

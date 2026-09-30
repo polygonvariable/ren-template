@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Header
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Data/WeatherCollectionAsset.h"
 #include "Log/LogCategory.h"
@@ -23,7 +23,7 @@ void AWeatherRegionActor::LoadWeather()
         return;
     }
 
-    FAssetManagerUtil::CancelHandle(AssetHandle);
+    FAssetManagerLibrary::CancelHandle(AssetHandle);
 
     const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
     const TArray<FName>& Bundle = Settings->EnvironmentBundles;
@@ -45,7 +45,7 @@ void AWeatherRegionActor::AddWeather()
 
 void AWeatherRegionActor::RemoveWeather()
 {
-    FAssetManagerUtil::CancelHandle(AssetHandle);
+    FAssetManagerLibrary::CancelHandle(AssetHandle);
 
     const UWeatherCollectionAsset* WeatherWeight = GetWeatherWeight();
     if (!IsValid(WeatherSubsystem) || !IsValid(WeatherWeight))
@@ -78,7 +78,7 @@ void AWeatherRegionActor::HandleOnWeatherRefreshed()
 
 void AWeatherRegionActor::HandleOnWeatherLoaded()
 {
-    FAssetManagerUtil::CancelHandle(AssetHandle);
+    FAssetManagerLibrary::CancelHandle(AssetHandle);
     AddWeather();
 }
 

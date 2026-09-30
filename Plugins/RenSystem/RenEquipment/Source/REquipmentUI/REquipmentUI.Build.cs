@@ -47,8 +47,8 @@ public class REquipmentUI : ModuleRules
                 "CAsset",
                 "CAssetManager",
 				"RCoreDelegate",
-                "RCoreLibrary",
-                "RCoreFilter",
+                "CLibrary",
+                "CFilter",
                 "CGamedataStorage",
             }
 			);

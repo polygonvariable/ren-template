@@ -43,8 +43,8 @@ public class RTradeUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "CAsset",
-                "RCoreFilter",
-                "RCoreLibrary",
+                "CFilter",
+                "CLibrary",
                 "CAssetManager",
             }
 			);

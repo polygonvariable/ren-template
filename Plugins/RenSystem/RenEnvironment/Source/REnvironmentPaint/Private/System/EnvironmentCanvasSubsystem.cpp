@@ -16,7 +16,7 @@
 
 // Project Headers
 #include "Component/EnvironmentBrushComponent.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/EnvironmentPaintWorldConfig.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
@@ -439,7 +439,7 @@ void UEnvironmentCanvasSubsystem::OnWorldEndPlay(UWorld& InWorld)
 
 	bIsDrawing = false;
 	bInitializedSuccessfully = false;
-	FAssetManagerUtil::CancelHandle(StreamHandle);
+	FAssetManagerLibrary::CancelHandle(StreamHandle);
 
 	DeinitializeNiagara();
 	DeinitializeController();

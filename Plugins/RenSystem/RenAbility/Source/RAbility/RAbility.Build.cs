@@ -31,8 +31,7 @@ public class RAbility : ModuleRules
 				"Engine",
                 "UMG",
                 "DeveloperSettings",
-                "RCoreCommon",
-                "RCoreTag",
+                "CFramework",
 				"CGamedataComponent",
             }
 			);
@@ -49,7 +48,7 @@ public class RAbility : ModuleRules
 				"GameplayAbilities",
 				"GameplayTags",
 				"GameplayTasks",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

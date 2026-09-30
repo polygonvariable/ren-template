@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetInstanceRelationSubsystem.generated.h"
 
-// Module Macros
-#define REN_API CASSETINSTANCE_API
-
 // Forward Declarations
 class IAssetInstanceRelation;
 
@@ -26,10 +23,10 @@ class UAssetInstanceRelationSubsystem : public UGameInstanceSubsystem
 
 public:
 
-	REN_API void RegisterRelation(const FPrimaryAssetType& AssetType, IAssetInstanceRelation* Relation);
-	REN_API void UnregisterRelation(const FPrimaryAssetType& AssetType, IAssetInstanceRelation* Relation);
+	CASSETINSTANCE_API void RegisterRelation(const FPrimaryAssetType& AssetType, IAssetInstanceRelation* Relation);
+	CASSETINSTANCE_API void UnregisterRelation(const FPrimaryAssetType& AssetType, IAssetInstanceRelation* Relation);
 
-	REN_API bool HasAnyLinkedRelation(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const;
+	CASSETINSTANCE_API bool HasAnyLinkedRelation(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const;
 
 protected:
 
@@ -43,12 +40,8 @@ protected:
 
 public:
 
-	static REN_API UAssetInstanceRelationSubsystem* Get(UWorld* World);
-	static REN_API UAssetInstanceRelationSubsystem* Get(UGameInstance* GameInstance);
+	static CASSETINSTANCE_API UAssetInstanceRelationSubsystem* Get(UWorld* World);
+	static CASSETINSTANCE_API UAssetInstanceRelationSubsystem* Get(UGameInstance* GameInstance);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

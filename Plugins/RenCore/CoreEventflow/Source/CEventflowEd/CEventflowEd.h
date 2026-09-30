@@ -7,7 +7,7 @@
 
 struct FEventflowEdPanelPinFactory;
 
-class FRenEventflowEditorModule : public IModuleInterface
+class FCEventflowEdModule : public IModuleInterface
 {
 public:
 

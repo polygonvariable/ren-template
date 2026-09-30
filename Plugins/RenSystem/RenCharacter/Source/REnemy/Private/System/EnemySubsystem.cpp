@@ -11,7 +11,7 @@
 #include "Core/EnemySettings.h"
 #include "Data/EnemyStorage.h"
 #include "System/EnemyStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UEnemyStorageManager* UEnemySubsystem::GetStorageManager()
@@ -30,7 +30,7 @@ UEnemyStorageManager* UEnemySubsystem::GetStorageManager()
 
 void UEnemySubsystem::HandleOnPreGameInitialized()
 {
-	StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const UEnemySettings* Settings = UEnemySettings::Get();

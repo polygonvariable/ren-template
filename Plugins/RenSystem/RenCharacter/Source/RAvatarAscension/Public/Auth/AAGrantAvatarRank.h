@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 #include "Core/Type/AscensionData.h"
 
 // Generated Headers
@@ -12,7 +12,6 @@
 // Forward Declarations
 class UAvatarAsset;
 class UAvatarStorageManager;
-class URAssetManager;
 class IAscensionProvider;
 struct FStreamableHandle;
 

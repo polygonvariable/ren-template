@@ -15,7 +15,7 @@
 class UAssetCollection;
 class UShopStorageManager;
 class UTradeAsset;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class IStorageProvider;
 struct FTradeAssetDetail;
 struct FInstancedStruct;
@@ -36,8 +36,8 @@ public:
 
 	REN_API bool TryPurchaseItem(const FPrimaryAssetId& ShopAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId);
 
-	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
-	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UFragmentedDataAsset* Asset, const FInstancedStruct& Context) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UFragmentedDataAsset* Asset, const FGuid& CollectionId) const;
 
 	REN_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&)> Callback);
 

@@ -11,9 +11,6 @@
 // Generated Headers
 #include "AssetInstanceCollection.generated.h"
 
-// Module Macros
-#define REN_API CASSETINSTANCE_API
-
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceCollection : public UInterface
@@ -25,7 +22,7 @@ class UAssetInstanceCollection : public UInterface
  * Asset instance is basically items created from asset.
  * like inventory item created from inventory asset
  */
-class REN_API IAssetInstanceCollection
+class CASSETINSTANCE_API IAssetInstanceCollection
 {
 
 	GENERATED_BODY()
@@ -48,8 +45,4 @@ public:
 	virtual FGameEventDelegate& GetOnAssetInstanceCollectionUpdated() = 0;
 	
 };
-
-
-// Module Macros
-#undef REN_API
 

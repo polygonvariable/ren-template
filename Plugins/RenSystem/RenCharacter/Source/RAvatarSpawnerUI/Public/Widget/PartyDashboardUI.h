@@ -13,7 +13,7 @@ class UButton;
 class UAssetCollectionUI;
 class UAssetDetailUI;
 class UAssetEntry;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 
 
 /**

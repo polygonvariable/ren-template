@@ -2,14 +2,14 @@
 
 #include "CEventflow.h"
 
-#define LOCTEXT_NAMESPACE "FRenEventflowModule"
+#define LOCTEXT_NAMESPACE "FCEventflowModule"
 
-void FRenEventflowModule::StartupModule()
+void FCEventflowModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRenEventflowModule::ShutdownModule()
+void FCEventflowModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRenEventflowModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRenEventflowModule, CEventflow)
+IMPLEMENT_MODULE(FCEventflowModule, CEventflow)
 

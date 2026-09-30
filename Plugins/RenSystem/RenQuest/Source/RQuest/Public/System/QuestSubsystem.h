@@ -3,7 +3,7 @@
 #pragma once
 
 // Engine Headers
-#include "Definition/StateMachine.h"
+#include "StateMachine/FiniteStateMachineType.h"
 #include "Subsystems/WorldSubsystem.h"
 
 // Generated Headers

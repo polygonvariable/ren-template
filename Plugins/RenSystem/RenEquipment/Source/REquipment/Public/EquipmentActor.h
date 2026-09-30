@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 
 // Project Headers
-#include "Interface/IActorLinkedNode.h"
+#include "Core/IActorLinkedNode.h"
 
 // Generated Headers
 #include "EquipmentActor.generated.h"

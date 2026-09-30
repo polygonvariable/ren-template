@@ -13,7 +13,7 @@
 // Forward Declarations
 class UTextBlock;
 class UAssetEntry;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 
 
 
@@ -36,7 +36,7 @@ protected:
 
 
 	// ~ UInventoryUI
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UInventoryUI
 

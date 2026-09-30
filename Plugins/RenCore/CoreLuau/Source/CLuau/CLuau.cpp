@@ -2,14 +2,14 @@
 
 #include "CLuau.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreLuauModule"
+#define LOCTEXT_NAMESPACE "FCLuauModule"
 
-void FRCoreLuauModule::StartupModule()
+void FCLuauModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreLuauModule::ShutdownModule()
+void FCLuauModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreLuauModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreLuauModule, CLuau)
+IMPLEMENT_MODULE(FCLuauModule, CLuau)
 

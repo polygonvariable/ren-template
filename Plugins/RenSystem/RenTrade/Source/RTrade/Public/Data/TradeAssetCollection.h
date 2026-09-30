@@ -27,7 +27,7 @@ class UTradeAssetCollection : public UAssetCollection
 
 public:
 
-	REN_API virtual const TMap<UCoreDataAsset*, FTradeAssetDetail>& GetAssetList() const;
+	REN_API virtual const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& GetAssetList() const;
 	REN_API virtual bool GetAssetDetail(const FPrimaryAssetId& AssetId, FTradeAssetDetail& OutDetail) const;
 
 	// ~ UAssetCollection
@@ -52,7 +52,7 @@ protected:
 #endif
 
 	UPROPERTY(VisibleAnywhere, meta = (DisplayName = "Asset List"))
-	TMap<UCoreDataAsset*, FTradeAssetDetail> AssetList;
+	TMap<UFragmentedDataAsset*, FTradeAssetDetail> AssetList;
 
 };
 

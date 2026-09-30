@@ -6,11 +6,11 @@
 // Project Headers
 #include "DialogueEngine.h"
 #include "EventflowEngine.h"
-#include "Library/PoolHelper.h"
+#include "Core/PoolLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "GameplayModeProvider.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 #include "DialogueSettings.h"
 
 
@@ -22,7 +22,7 @@ void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId)
 		return;
 	}
 
-	UDialogueEngine* Dialogue = FPoolHelper::AcquireFromArray<UDialogueEngine>(EnginePool, UDialogueEngine::StaticClass(), this);
+	UDialogueEngine* Dialogue = FPoolLibrary::AcquireFromArray<UDialogueEngine>(EnginePool, UDialogueEngine::StaticClass(), this);
 	if (!IsValid(Dialogue))
 	{
 		LOG_ERROR(LogDialogue, TEXT("Failed to create dialogue"));
@@ -87,7 +87,7 @@ void UDialogueSubsystem::HandleOnEngineStateChanged(EFSMState PreviousState, EFS
 
 			if (Dialogues.Remove(AssetId) > 0)
 			{
-				FPoolHelper::ReturnToArray(EnginePool, Engine);
+				FPoolLibrary::ReturnToArray(EnginePool, Engine);
 			}
 		}
 	}

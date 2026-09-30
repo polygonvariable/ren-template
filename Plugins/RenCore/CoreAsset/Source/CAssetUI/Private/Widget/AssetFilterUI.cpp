@@ -9,7 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Filter/FilterCriterion.h"
+#include "FilterCriterion.h"
 #include "Widget/AssetCollectionUI.h"
 
 

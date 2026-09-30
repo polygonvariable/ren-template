@@ -10,7 +10,7 @@
 #include "Actor/QuestObjectiveActor.h"
 #include "Core/QuestSettings.h"
 #include "Task/EventflowSubTask.h"
-#include "Util/ObjectUtil.h"
+#include "PropertyBagLibrary.h"
 
 
 #if WITH_EDITOR
@@ -20,7 +20,7 @@ void UQuestTask_TriggerZone::PreDuplicate(FObjectDuplicationParameters& DupParam
 	//UClass* Class = TriggerZone.ActorClass.LoadSynchronous();
 	//FInstancedPropertyBag& PropertyBag = TriggerZone.Properties;
 
-	//FObjectUtil::CleanupBagProperties(Class, PropertyBag);
+	//FPropertyBagLibrary::CleanupBagProperties(Class, PropertyBag);
 
 	Super::PreDuplicate(DupParams);
 }
@@ -37,7 +37,7 @@ void UQuestTask_TriggerZone::PostEditChangeProperty(FPropertyChangedEvent& Prope
 	//	FInstancedPropertyBag& PropertyBag = TriggerZone.Properties;
 	//	UClass* Class = TriggerZone.ActorClass.LoadSynchronous();
 
-	//	FObjectUtil::CopyPropertiesToBag(Class, PropertyBag);
+	//	FPropertyBagLibrary::CopyPropertiesToBag(Class, PropertyBag);
 	//}
 }
 
@@ -80,7 +80,7 @@ void UQuestTask_TriggerZone::OnLoaded(EFSMState PreviousStatus)
 	RuntimeActor = World->SpawnActorDeferred<AQuestObjectiveActor>(ActorClass, TriggerZone.Transform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (IsValid(RuntimeActor))
 	{
-		FObjectUtil::CopyPropertiesToInstance(TriggerZone.Properties, RuntimeActor);
+		FPropertyBagLibrary::CopyPropertiesToInstance(TriggerZone.Properties, RuntimeActor);
 
 		RuntimeActor->SetOwningTask(this);
 		RuntimeActor->FinishSpawning(TriggerZone.Transform);

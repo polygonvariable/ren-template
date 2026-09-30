@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetCompositionFragment.generated.h"
 
-// Module Macros
-#define REN_API CASSET_API
-
 // Forward Declarations
 class UAssetGroup;
 class UAssetCollection;
@@ -34,12 +31,8 @@ public:
 	TObjectPtr<UAssetGroup> RebuildItems = nullptr;
 
 
-	REN_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const;
-	REN_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const;
+	CASSET_API virtual const UAssetCollection* GetBreakdownAssets(const FGuid& InId) const;
+	CASSET_API virtual const UAssetCollection* GetRebuildAssets(const FGuid& InId) const;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

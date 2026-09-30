@@ -7,8 +7,8 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
-#include "Core/AssetManagerUtil.h"
+#include "Data/FragmentedDataAsset.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Widget/AssetEntry.h"
@@ -36,17 +36,17 @@ void UAssetUI::InitializeAssetById(const FPrimaryAssetId& AssetId)
 
 	if (_AssetId == AssetId)
 	{
-		InitializeAssetDetail(AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(AssetId));
+		InitializeAssetDetail(AssetManager->GetPrimaryAssetObject<UFragmentedDataAsset>(AssetId));
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetId = AssetId;
 	_AssetHandle = AssetManager->LoadPrimaryAsset(AssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAssetUI::HandleAssetLoaded));
 }
 
-void UAssetUI::InitializeAssetDetail(const UCoreDataAsset* Asset)
+void UAssetUI::InitializeAssetDetail(const UFragmentedDataAsset* Asset)
 {
 	if (IsValid(Asset))
 	{
@@ -70,21 +70,19 @@ const FPrimaryAssetId& UAssetUI::GetActiveAssetId() const
 	return _AssetId;
 }
 
-const UCoreDataAsset* UAssetUI::GetActiveAsset() const
+const UFragmentedDataAsset* UAssetUI::GetActiveAsset() const
 {
-	return AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(_AssetId);
+	return AssetManager->GetPrimaryAssetObject<UFragmentedDataAsset>(_AssetId);
 }
 
 void UAssetUI::CancelInitialization()
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAssetUI::HandleAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
-
-	UCoreDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(_AssetId);
+	UFragmentedDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UFragmentedDataAsset>(_AssetId);
 	InitializeAssetDetail(Asset);
 }
 

@@ -32,7 +32,7 @@ public class RInventoryUI : ModuleRules
 				"CAssetUI",
 				"CAssetManager",
                 "RInventory",
-                "RCoreCommon",
+                "CFramework",
             }
 			);
 			
@@ -45,8 +45,8 @@ public class RInventoryUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreLibrary",
-                "RCoreFilter",
+                "CLibrary",
+                "CFilter",
                 "RCoreAscension",
                 "RCoreAscensionUI",
                 "CGamedataStorage",

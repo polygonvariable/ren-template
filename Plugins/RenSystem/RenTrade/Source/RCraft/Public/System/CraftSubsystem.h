@@ -19,7 +19,7 @@ class UAssetCollection;
 class IStorageProvider;
 class UCraftStorageManager;
 class UTradeAsset;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FTradeAssetDetail;
 struct FInstancedStruct;
 struct FCraftInstance;
@@ -41,8 +41,8 @@ public:
 	REN_API bool TryClaimCraftItem(const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId);
 	REN_API bool TryCraftItem(const FPrimaryAssetId& CraftAssetId, const FGuid& TradeCollectionId, const FPrimaryAssetId& TargetAssetId);
 
-	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const;
-	REN_API const UAssetCollection* GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UFragmentedDataAsset* Asset, const FInstancedStruct& Context) const;
+	REN_API const UAssetCollection* GetMaterialCollection(const UFragmentedDataAsset* Asset, const FGuid& CollectionId) const;
 
 	REN_API void QueryItems(const UTradeAsset* Asset, const FGuid& CollectionId, ECraftQuerySource QuerySource, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)> Callback);
 
@@ -51,8 +51,8 @@ protected:
 	IStorageProvider* StorageProvider = nullptr;
 
 
-	void QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
-	void QueryStorageItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
+	void QueryAssetItems(const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
+	void QueryStorageItems(const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback);
 
 	void OnPreGameInitialized();
 

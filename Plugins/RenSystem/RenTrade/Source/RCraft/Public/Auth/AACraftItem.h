@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 
 // Generated Headers
 #include "AACraftItem.generated.h"
@@ -11,7 +11,7 @@
 // Forward Declarations
 class UAssetManager;
 class UTradeAsset;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class IAssetInstanceCollection;
 struct FStreamableHandle;
 
@@ -44,7 +44,7 @@ protected:
 	TObjectPtr<const UTradeAsset> TradeAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> TargetAsset = nullptr;
+	TObjectPtr<const UFragmentedDataAsset> TargetAsset = nullptr;
 
 	IAssetInstanceCollection* MaterialTransaction = nullptr;
 

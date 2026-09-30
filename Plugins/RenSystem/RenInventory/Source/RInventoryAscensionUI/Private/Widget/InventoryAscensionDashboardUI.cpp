@@ -14,9 +14,9 @@
 #include "Core/Type/Runtime/InventoryInstance.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Delegate/GameUIDelegate.h"
-#include "Filter/Criterion/FilterCriterion_Leaf.h"
+#include "Criterion/FilterCriterion_Leaf.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "System/InventoryAscensionSubsystem.h"
@@ -167,7 +167,7 @@ void UInventoryAscensionDashboardUI::UnlockControls_Implementation()
 	RankUpButton->SetIsEnabled(true);
 }
 
-void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UInventoryAscensionDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	InventoryDetail->InitializeAssetDetail(Asset);
 

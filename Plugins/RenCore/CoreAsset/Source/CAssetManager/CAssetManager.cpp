@@ -2,14 +2,14 @@
 
 #include "CAssetManager.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreAssetManagerModule"
+#define LOCTEXT_NAMESPACE "FCAssetManagerModule"
 
-void FRCoreAssetManagerModule::StartupModule()
+void FCAssetManagerModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreAssetManagerModule::ShutdownModule()
+void FCAssetManagerModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreAssetManagerModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreAssetManagerModule, CAssetManager)
+IMPLEMENT_MODULE(FCAssetManagerModule, CAssetManager)
 

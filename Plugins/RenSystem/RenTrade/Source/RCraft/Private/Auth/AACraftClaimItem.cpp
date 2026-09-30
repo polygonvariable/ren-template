@@ -15,8 +15,8 @@
 #include "Core/Type/AssetRuleDefinition.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/Interface/AssetInstanceCollectionProvider.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/AssetGroup.h"
 #include "System/CraftStorageManager.h"
 #include "System/CraftSubsystem.h"
@@ -30,7 +30,7 @@ void UAACraftClaimItem::OnStarted()
 
 void UAACraftClaimItem::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAACraftClaimItem::OnCleanup()
@@ -53,14 +53,14 @@ void UAACraftClaimItem::Step_LoadAsset()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAsset(CraftAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAACraftClaimItem::Step_HandleOnAssetsLoaded));
 }
 
 void UAACraftClaimItem::Step_HandleOnAssetsLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	TradeAsset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(CraftAssetId);
 
@@ -136,7 +136,7 @@ void UAACraftClaimItem::Step_PerformTransaction()
 	UWorld* World = GetWorld();
 	UGameInstance* GameInstance = World->GetGameInstance();
 
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GameInstance, TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceLibrary::GetInstanceCollectionProvider(GameInstance, TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));

@@ -5,9 +5,6 @@
 // Generated Headers
 #include "AssetGroup.generated.h"
 
-// Module Macros
-#define REN_API CASSET_API
-
 // Forward Declarations
 class UAssetCollection;
 struct FInstancedStruct;
@@ -24,8 +21,8 @@ class UAssetGroup : public UObject
 
 public:
 
-	REN_API virtual const UAssetCollection* GetCollectionRule() const;
-	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule() const;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const;
 
 	template<typename T>
 	const T* GetCollectionRule() const
@@ -54,8 +51,8 @@ class UAssetGroup_Single : public UAssetGroup
 public:
 
 	// ~ UAssetCollectionGroup
-	REN_API virtual const UAssetCollection* GetCollectionRule() const override;
-	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule() const override;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
 	// ~ End of UAssetCollectionGroup
 
 protected:
@@ -78,8 +75,8 @@ class UAssetGroup_List : public UAssetGroup
 public:
 
 	// ~ UAssetCollectionGroup
-	REN_API virtual const UAssetCollection* GetCollectionRule() const override;
-	REN_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule() const override;
+	CASSET_API virtual const UAssetCollection* GetCollectionRule(const FInstancedStruct& Context) const override;
 	// ~ End of UAssetCollectionGroup
 
 protected:
@@ -88,8 +85,4 @@ protected:
 	TArray<TObjectPtr<UAssetCollection>> Collections;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

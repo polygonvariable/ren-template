@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetInstanceCollectionProvider.generated.h"
 
-// Module Macros
-#define REN_API CASSETINSTANCE_API
-
 // Forward Declarations
 class IAssetInstanceCollection;
 
@@ -24,7 +21,7 @@ class UAssetInstanceCollectionProvider : public UInterface
 /**
  *
  */
-class REN_API IAssetInstanceCollectionProvider
+class CASSETINSTANCE_API IAssetInstanceCollectionProvider
 {
 
 	GENERATED_BODY()
@@ -47,8 +44,4 @@ public:
 	}
 
 };
-
-
-// Module Macros
-#undef REN_API
 

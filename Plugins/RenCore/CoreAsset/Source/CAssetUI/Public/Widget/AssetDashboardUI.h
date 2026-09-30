@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetDashboardUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UButton;
 class UOverlay;
@@ -28,9 +25,9 @@ class UAssetDashboardUI : public UAssetUI
 public:
 
 	// ~ IAssetWidget
-	REN_API virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
-	REN_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
-	REN_API virtual void CloseWidget() override;
+	CASSETUI_API virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override;
+	CASSETUI_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
+	CASSETUI_API virtual void CloseWidget() override;
 	// ~ End of IAssetWidget
 
 protected:
@@ -46,25 +43,21 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent)
-	REN_API void GetAssetWidgets(TArray<UWidget*>& Widgets);
-	REN_API virtual void GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets);
+	CASSETUI_API void GetAssetWidgets(TArray<UWidget*>& Widgets);
+	CASSETUI_API virtual void GetAssetWidgets_Implementation(TArray<UWidget*>& Widgets);
 
 	UFUNCTION(BlueprintCallable)
-	REN_API virtual void RedirectToWidget(UPARAM(meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
+	CASSETUI_API virtual void RedirectToWidget(UPARAM(meta = (AllowAbstract = false)) TSubclassOf<UAssetDashboardUI> WidgetClass);
 
 	// ~ UAssetUI
-	REN_API virtual void LockControls_Implementation() override;
-	REN_API virtual void UnlockControls_Implementation() override;
+	CASSETUI_API virtual void LockControls_Implementation() override;
+	CASSETUI_API virtual void UnlockControls_Implementation() override;
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget
-	REN_API virtual void NativeConstruct() override;
-	REN_API virtual void NativeDestruct() override;
+	CASSETUI_API virtual void NativeConstruct() override;
+	CASSETUI_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 };
-
-
-// Module Macros
-#undef REN_API
 

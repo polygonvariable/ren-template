@@ -11,16 +11,11 @@
 // Generated Headers
 #include "AssetEntryUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UImage;
 class UTextBlock;
 class UAssetDragOperation;
-
 struct FInstancedStruct;
-
 
 
 /**
@@ -35,7 +30,7 @@ class UAssetEntryUI : public UAssetUI, public IUserObjectListEntry
 public:
 
 	// ~ UAssetUI
-	REN_API virtual void ResetDetail() override;
+	CASSETUI_API virtual void ResetDetail() override;
 	// ~ End of UAssetUI
 
 protected:
@@ -54,18 +49,13 @@ protected:
 	void GetAssetSubDetail(FInstancedStruct& SubDetail) const;
 
 	// ~ IUserObjectListEntry
-	REN_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-	REN_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
+	CASSETUI_API virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	CASSETUI_API virtual void NativeOnItemSelectionChanged(bool bSelected) override;
 	// ~ End of IUserObjectListEntry
 
 	// ~ UWidget
-	REN_API virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation);
+	CASSETUI_API virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation);
 	// ~ End of UWidget
 
 };
-
-
-
-// Module Macros
-#undef REN_API
 

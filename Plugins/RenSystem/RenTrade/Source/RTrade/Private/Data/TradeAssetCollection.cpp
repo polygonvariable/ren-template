@@ -7,21 +7,21 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
-const TMap<UCoreDataAsset*, FTradeAssetDetail>& UTradeAssetCollection::GetAssetList() const
+const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& UTradeAssetCollection::GetAssetList() const
 {
 	return AssetList;
 }
 
 bool UTradeAssetCollection::GetAssetDetail(const FPrimaryAssetId& AssetId, FTradeAssetDetail& OutDetail) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		const UCoreDataAsset* Asset = Kv.Key;
+		const UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -38,9 +38,9 @@ bool UTradeAssetCollection::GetAssetDetail(const FPrimaryAssetId& AssetId, FTrad
 
 bool UTradeAssetCollection::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>& OutAsset) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		UCoreDataAsset* Asset = Kv.Key;
+		UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -57,9 +57,9 @@ bool UTradeAssetCollection::GetRandomAsset(TPair<FPrimaryAssetId, FAssetDetail>&
 
 bool UTradeAssetCollection::GetAssetDetail(const FPrimaryAssetId& AssetId, FAssetDetail& OutDetail) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		const UCoreDataAsset* Asset = Kv.Key;
+		const UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -76,9 +76,9 @@ bool UTradeAssetCollection::GetAssetDetail(const FPrimaryAssetId& AssetId, FAsse
 
 void UTradeAssetCollection::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& OutAssets) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		const UCoreDataAsset* Asset = Kv.Key;
+		const UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -91,9 +91,9 @@ void UTradeAssetCollection::GetAssetList(TMap<FPrimaryAssetId, FAssetDetail>& Ou
 
 void UTradeAssetCollection::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		const UCoreDataAsset* Asset = Kv.Key;
+		const UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -106,9 +106,9 @@ void UTradeAssetCollection::GetAssetList(TMap<FPrimaryAssetId, int>& OutAssets) 
 
 void UTradeAssetCollection::GetAssetIds(TArray<FPrimaryAssetId>& OutAssets) const
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& Kv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& Kv : AssetList)
 	{
-		const UCoreDataAsset* Asset = Kv.Key;
+		const UFragmentedDataAsset* Asset = Kv.Key;
 		if (!IsValid(Asset))
 		{
 			continue;
@@ -130,8 +130,8 @@ void UTradeAssetCollection::PreSave(FObjectPreSaveContext ObjectSaveContext)
 
 	for (const FTradeAssetDetail& Item : AssetListEd)
 	{
-		TSoftObjectPtr<UCoreDataAsset> Asset = Item.DataAsset;
-		UCoreDataAsset* DataAsset = Asset.LoadSynchronous();
+		TSoftObjectPtr<UFragmentedDataAsset> Asset = Item.DataAsset;
+		UFragmentedDataAsset* DataAsset = Asset.LoadSynchronous();
 		if (!IsValid(DataAsset))
 		{
 			LOG_ERROR(LogAsset, TEXT("Failed to load asset"));

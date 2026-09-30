@@ -30,13 +30,14 @@ public class RCharacterSpawner : ModuleRules
 				"DeveloperSettings",
                 "GameplayAbilities",
                 "GameplayTags",
-				"RCoreCommon",
+				"CFramework",
                 "RCoreAscension",
                 "CAsset",
                 "CAssetInstance",
                 "CAssetManager",
+				"CGamedata",
                 "CGamedataStorage",
-                "RCoreAuthAction",
+                "CAuthAction",
                 "RCharacter",
 				"RAvatar",
                 "CGamedataComponent",
@@ -53,7 +54,7 @@ public class RCharacterSpawner : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

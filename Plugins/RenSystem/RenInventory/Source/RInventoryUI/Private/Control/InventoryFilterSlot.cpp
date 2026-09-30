@@ -6,13 +6,13 @@
 // Project Headers
 #include "Data/InventoryAsset.h"
 #include "Core/Type/AssetFilterProperty.h"
-#include "Definition/FilterContext.h"
+#include "FilterContext.h"
 #include "Core/Type/InventoryFilterProperty.h"
 #include "Widget/InventoryEntry.h"
 
 
 
-void UInventoryFilterSlot::InitializeAssetDetail(const UCoreDataAsset* Asset)
+void UInventoryFilterSlot::InitializeAssetDetail(const UFragmentedDataAsset* Asset)
 {
 	const UInventoryAsset* InventoryAsset = Cast<UInventoryAsset>(Asset);
 	if (!InventoryAsset)

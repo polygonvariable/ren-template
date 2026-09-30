@@ -29,7 +29,7 @@ public class RGameplayMode : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
 				"GameplayTags",
-                "RCoreCommon",
+                "CFramework",
                 "CGameplayMode",
 				"CWorldSettings",
             }
@@ -46,7 +46,7 @@ public class RGameplayMode : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "CAsset",
                 "CAssetManager",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

@@ -31,12 +31,13 @@ public class RAvatar : ModuleRules
                 "DeveloperSettings",
                 "GameplayTags",
                 "CAsset",
-                "RCoreCommon",
+                "CFramework",
                 "RCoreAscension",
                 "CGamedataStorage",
                 "RCharacter",
                 "CAssetInstance",
                 "CAssetManager",
+				"CGamedata",
             }
 			);
 			
@@ -50,9 +51,9 @@ public class RAvatar : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
-                "RCoreLibrary",
+                "CLibrary",
                 "RCoreDelegate",
-                "RCoreFilter",
+                "CFilter",
                 "CGameplayBase",
             }
 			);

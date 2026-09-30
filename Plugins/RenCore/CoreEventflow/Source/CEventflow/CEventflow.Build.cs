@@ -27,9 +27,9 @@ public class CEventflow : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"RCoreCommon",
+				"CFramework",
                 "CAsset",
-                "RCorePool",
+                "CPool",
                 "CLuau"
             }
 			);
@@ -43,7 +43,7 @@ public class CEventflow : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreLibrary",
+				"CLibrary",
                 "CAssetManager",
             }
 			);

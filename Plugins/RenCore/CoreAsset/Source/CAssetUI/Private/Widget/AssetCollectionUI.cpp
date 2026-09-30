@@ -7,7 +7,7 @@
 #include "Components/ListView.h"
 
 // Project Headers
-#include "Filter/FilterGroup.h"
+#include "FilterGroup.h"
 #include "Log/LogMacro.h"
 #include "Widget/AssetEntry.h"
 

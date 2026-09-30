@@ -8,10 +8,6 @@
 // Generated Headers
 #include "AssetEntry.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
-
 
 /**
  *
@@ -28,16 +24,12 @@ public:
 	FInstancedStruct AssetSubDetail;
 
 
-	REN_API virtual FGuid GetAssetInstanceId() const;
-	REN_API virtual void ResetData();
+	CASSETUI_API virtual FGuid GetAssetInstanceId() const;
+	CASSETUI_API virtual void ResetData();
 
 	// ~ UObject
-	REN_API virtual void BeginDestroy() override;
+	CASSETUI_API virtual void BeginDestroy() override;
 	// ~ End of UObject
 
 };
-
-
-// Module Macros
-#undef REN_API
 

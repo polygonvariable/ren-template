@@ -8,15 +8,15 @@
 
 // Project Headers
 #include "Core/AscensionLibrary.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/Type/AssetDetail.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AscensionAsset.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
 
@@ -44,8 +44,8 @@ void UAAGrantAvatarExperience::OnStarted()
 
 void UAAGrantAvatarExperience::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
-	FAssetManagerUtil::CancelHandle(_BreakdownHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_BreakdownHandle);
 }
 
 void UAAGrantAvatarExperience::OnCleanup()
@@ -77,14 +77,14 @@ void UAAGrantAvatarExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAGrantAvatarExperience::Step_HandleOnAssetLoaded));
 }
 
 void UAAGrantAvatarExperience::Step_HandleOnAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UAvatarAsset>(TargetAssetId);
 	MaterialAsset = AssetManager->GetPrimaryAssetObject<UAvatarAsset>(MaterialAssetId);
@@ -169,14 +169,14 @@ void UAAGrantAvatarExperience::Step_CheckMaterialAsset(const FGuid& ExperienceCo
 
 void UAAGrantAvatarExperience::Step_LoadBreakdownAsset(const FPrimaryAssetId& AssetId, int Quantity)
 {
-	FAssetManagerUtil::CancelHandle(_BreakdownHandle);
+	FAssetManagerLibrary::CancelHandle(_BreakdownHandle);
 
 	_BreakdownHandle = AssetManager->LoadPrimaryAsset(AssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAGrantAvatarExperience::Step_HandleOnBreakdownAssetLoaded, AssetId, Quantity));
 }
 
 void UAAGrantAvatarExperience::Step_HandleOnBreakdownAssetLoaded(FPrimaryAssetId AssetId, int Quantity)
 {
-	FAssetManagerUtil::ReleaseHandle(_BreakdownHandle);
+	FAssetManagerLibrary::ReleaseHandle(_BreakdownHandle);
 
 	const UExperiencePointAsset* PointAsset = AssetManager->GetPrimaryAssetObject<UExperiencePointAsset>(AssetId);
 
@@ -186,7 +186,7 @@ void UAAGrantAvatarExperience::Step_HandleOnBreakdownAssetLoaded(FPrimaryAssetId
 
 void UAAGrantAvatarExperience::Step_RemoveMaterial()
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialAssetId);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), MaterialAssetId);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));

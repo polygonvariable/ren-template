@@ -8,10 +8,10 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 
 
-void UAvatarEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UAvatarEntryUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

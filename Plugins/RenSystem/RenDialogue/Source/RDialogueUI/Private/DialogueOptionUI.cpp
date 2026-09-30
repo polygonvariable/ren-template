@@ -9,7 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Library/PoolHelper.h"
+#include "Core/PoolLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
@@ -81,7 +81,7 @@ void UDialogueOptionCollectionUI::SetOptions(const TArray<FText>& Options)
 	int Num = Options.Num();
 	for (int i = 0; i < Num; i++)
 	{
-		UDialogueOptionUI* OptionWidget = FPoolHelper::AcquireWidgetFromArray<UDialogueOptionUI>(OptionsPool, OptionUIClass, this);
+		UDialogueOptionUI* OptionWidget = FPoolLibrary::AcquireWidgetFromArray<UDialogueOptionUI>(OptionsPool, OptionUIClass, this);
 		if (IsValid(OptionWidget))
 		{
 			OptionWidget->SetActive(false);
@@ -113,7 +113,7 @@ void UDialogueOptionCollectionUI::ClearOptions()
 		{
 			OptionWidget->OnSelected.Unbind();
 			OptionWidget->ClearOption();
-			FPoolHelper::ReturnToArray(OptionsPool, OptionWidget);
+			FPoolLibrary::ReturnToArray(OptionsPool, OptionWidget);
 		}
 	}
 

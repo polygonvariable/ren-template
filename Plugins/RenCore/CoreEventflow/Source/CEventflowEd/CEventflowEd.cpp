@@ -9,9 +9,9 @@
 #include "CEventflowEd/Public/Graph/EventflowEdGraphPin.h"
 
 
-#define LOCTEXT_NAMESPACE "FRenEventflowEditorModule"
+#define LOCTEXT_NAMESPACE "FCEventflowEdModule"
 
-void FRenEventflowEditorModule::StartupModule()
+void FCEventflowEdModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 
@@ -25,7 +25,7 @@ void FRenEventflowEditorModule::StartupModule()
 	FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
 }
 
-void FRenEventflowEditorModule::ShutdownModule()
+void FCEventflowEdModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -35,5 +35,5 @@ void FRenEventflowEditorModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRenEventflowEditorModule, CEventflowEd)
+IMPLEMENT_MODULE(FCEventflowEdModule, CEventflowEd)
 

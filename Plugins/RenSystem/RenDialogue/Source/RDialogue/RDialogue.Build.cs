@@ -30,7 +30,7 @@ public class RDialogue : ModuleRules
 				"DeveloperSettings",
 				"UMG",
                 "CEventflow",
-                "RCoreCommon",
+                "CFramework",
             }
 			);
 			
@@ -43,7 +43,7 @@ public class RDialogue : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreLibrary",
+                "CLibrary",
                 "CGameplayMode",
             }
 			);

@@ -34,7 +34,7 @@ public class RInventory : ModuleRules
 				"CAssetManager",
                 "CAssetInstance",
                 "CGamedataStorage",
-                "RCoreCommon",
+                "CFramework",
             }
 			);
 			
@@ -48,8 +48,8 @@ public class RInventory : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
-                "RCoreLibrary",
-                "RCoreFilter",
+                "CLibrary",
+                "CFilter",
                 "CGameplayBase",
             }
             );

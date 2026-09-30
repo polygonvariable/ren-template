@@ -11,7 +11,7 @@
 
 // Project Headers
 #include "EquipmentManagerComponent.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "System/EquipmentController.h"
 
 
@@ -83,7 +83,7 @@ void UEquipmentItemUI::UnregisterEquipmentController()
 
 void UEquipmentItemUI::SetDetail(UEquipmentController* Controller)
 {
-	const UCoreDataAsset* Asset = Controller->GetEquipmentAsset();
+	const UFragmentedDataAsset* Asset = Controller->GetEquipmentAsset();
 	if (IsValid(Asset))
 	{
 		EquipmentImage->SetBrushFromSoftTexture(Asset->Icon);

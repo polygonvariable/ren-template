@@ -15,7 +15,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UInventoryStorageManager;
 class UInventoryAscensionSubsystem;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class IAscensionProvider;
 class UAscensionFragment;
 struct FInventoryInstance;
@@ -82,7 +82,7 @@ protected:
 	// ~ UAssetDashboardUI
 	virtual void LockControls_Implementation() override;
 	virtual void UnlockControls_Implementation() override;
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 

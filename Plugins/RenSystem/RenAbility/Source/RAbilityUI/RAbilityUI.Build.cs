@@ -30,8 +30,7 @@ public class RAbilityUI : ModuleRules
 				"CoreUObject",
 				"Engine",
                 "UMG",
-                "RCoreCommon",
-                "RCoreTag",
+                "CFramework",
             }
 			);
 			
@@ -48,7 +47,7 @@ public class RAbilityUI : ModuleRules
 				"GameplayTags",
 				"GameplayTasks",
 				"RAbility",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

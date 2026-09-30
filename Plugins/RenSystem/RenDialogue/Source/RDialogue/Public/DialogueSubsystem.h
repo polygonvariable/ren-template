@@ -6,7 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
-#include "Definition/StateMachine.h"
+#include "StateMachine/FiniteStateMachineType.h"
 
 // Generated Headers
 #include "DialogueSubsystem.generated.h"

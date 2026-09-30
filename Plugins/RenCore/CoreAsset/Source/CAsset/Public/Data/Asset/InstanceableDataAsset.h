@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 
 // Generated Headers
 #include "InstanceableDataAsset.generated.h"
@@ -14,7 +14,7 @@
  * like in an inventory, characters, etc
  */
 UCLASS(Abstract, MinimalAPI)
-class UInstanceableDataAsset : public UCoreDataAsset
+class UInstanceableDataAsset : public UFragmentedDataAsset
 {
 
 	GENERATED_BODY()

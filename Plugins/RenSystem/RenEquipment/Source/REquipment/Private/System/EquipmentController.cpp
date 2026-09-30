@@ -10,19 +10,19 @@
 
 // Project Headers
 #include "EquipmentActor.h"
-#include "Core/AssetInstanceUtil.h"
+#include "Core/AssetInstanceLibrary.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/Type/AscensionData.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Data/EquipmentAbilityCollection.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 
 
-bool UEquipmentController::InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition)
+bool UEquipmentController::InitializeController(const UFragmentedDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition)
 {
 	if (IsInitialized())
 	{
@@ -109,7 +109,7 @@ void UEquipmentController::RefreshEquipment()
 	SetEquipmentLevel(AscensionData->Level);
 }
 
-const UCoreDataAsset* UEquipmentController::GetEquipmentAsset() const
+const UFragmentedDataAsset* UEquipmentController::GetEquipmentAsset() const
 {
 	return EquipmentAsset;
 }
@@ -172,11 +172,11 @@ bool UEquipmentController::ImplementsGetWorld() const
 
 void UEquipmentController::InitializeAssetInstance()
 {
-	if (SourceType == EDataSource::Runtime)
+	if (SpawnSource == ESpawnDataSource::Runtime)
 	{
 		const FPrimaryAssetId& AssetId = EquipmentData.AssetId;
 
-		InstanceCollection = FAssetInstanceUtil::GetPrimaryInstanceCollection(GetWorld(), AssetId.PrimaryAssetType);
+		InstanceCollection = FAssetInstanceLibrary::GetPrimaryInstanceCollection(GetWorld(), AssetId.PrimaryAssetType);
 		if (InstanceCollection)
 		{
 			InstanceCollection->GetOnAssetInstanceCollectionUpdated().AddUObject(this, &UEquipmentController::RefreshEquipment);

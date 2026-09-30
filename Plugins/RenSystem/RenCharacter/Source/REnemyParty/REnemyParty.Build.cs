@@ -30,17 +30,17 @@ public class REnemyParty : ModuleRules
 				"DeveloperSettings",
                 "GameplayAbilities",
                 "GameplayTags",
-                "RCoreCommon",
+                "CFramework",
                 "RCoreAscension",
                 "CAsset",
                 "CAssetInstance",
                 "CAssetManager",
                 "CGamedataStorage",
-                "RCoreAuthAction",
+                "CAuthAction",
                 "RCharacter",
 				"RAvatar",
                 "REnemy",
-				"RCoreBroadcast",
+				"CBroadcast",
             }
 			);
 			
@@ -54,7 +54,7 @@ public class REnemyParty : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

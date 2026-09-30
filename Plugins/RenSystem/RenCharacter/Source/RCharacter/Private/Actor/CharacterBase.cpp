@@ -370,14 +370,6 @@ bool ACharacterBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& Tag
 	return ASC->HasAnyMatchingGameplayTags(TagContainer);
 }
 
-void ACharacterBase::GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& OutValue) const
-{
-	const FInstancedStruct* Value = CharacterData.Metadata.Find(InTag);
-	if (Value)
-	{
-		OutValue = *Value;
-	}
-}
 
 
 

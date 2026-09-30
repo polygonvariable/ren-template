@@ -14,8 +14,8 @@
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AvatarStorage.h"
 #include "Core/Type/AssetFilterProperty.h"
-#include "Definition/FilterContext.h"
-#include "Filter/FilterCriterion.h"
+#include "FilterContext.h"
+#include "FilterCriterion.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 

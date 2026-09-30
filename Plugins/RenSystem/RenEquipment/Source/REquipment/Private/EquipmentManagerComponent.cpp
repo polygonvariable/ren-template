@@ -8,19 +8,19 @@
 #include "UObject/ObjectSaveContext.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EquipmentSettings.h"
 #include "Core/Interface/AssetInstanceContextProvider.h"
 #include "Core/Type/EquipmentSpawnData.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Data/EquipmentDataDefinition.h"
 #include "Data/EquipmentFragment.h"
 #include "EquipmentActor.h"
-#include "Interface/SpawnContextProvider.h"
-#include "Library/PoolHelper.h"
+#include "SpawnContextProvider.h"
+#include "Core/PoolLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/ActorFreelistSubsystem.h"
+#include "System/ActorFreelistSubsystem.h"
 #include "System/Controller/EquipmentStateController.h"
 #include "System/EquipmentController.h"
 #include "System/EquipmentStorageManager.h"
@@ -40,10 +40,10 @@ void UEquipmentManagerComponent::InitializeManager()
 	//ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
 	//if (SpawnContext)
 	//{
-	//	SourceType = SpawnContext->GetSpawnSource();
+	//	SpawnSource = SpawnContext->GetSpawnSource();
 	//}
 
-	if (SourceType == EDataSource::Runtime)
+	if (SpawnSource == ESpawnDataSource::Runtime)
 	{
 		EquipmentSubsystem = UEquipmentSubsystem::Get(GetWorld());
 		if (IsValid(EquipmentSubsystem))
@@ -215,7 +215,7 @@ void UEquipmentManagerComponent::UpdateEquipment(const FGuid& InOwnerId)
 
 void UEquipmentManagerComponent::CreateEquipment()
 {
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(_SpawnHandle);
 	OnEquipmentReset.Broadcast();
 
 	SetInitialized(false);
@@ -240,7 +240,7 @@ void UEquipmentManagerComponent::CreateEquipment()
 
 void UEquipmentManagerComponent::RemoveEquipment()
 {
-	FAssetManagerUtil::CancelHandle(_SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(_SpawnHandle);
 	OnEquipmentReset.Broadcast();
 
 	RemovePendingController();
@@ -256,13 +256,13 @@ void UEquipmentManagerComponent::RemoveEquipment()
 
 void UEquipmentManagerComponent::SpawnEquipmentActors()
 {
-	FAssetManagerUtil::ReleaseHandle(_SpawnHandle);
+	FAssetManagerLibrary::ReleaseHandle(_SpawnHandle);
 
 	UWorld* World = GetWorld();
 
 	for (const FEquipmentInitializationData& Data : EquipmentSpawnData)
 	{
-		const UCoreDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UCoreDataAsset>(Data.AssetId);
+		const UFragmentedDataAsset* Asset = AssetManager->GetPrimaryAssetObject<UFragmentedDataAsset>(Data.AssetId);
 		bool bFoundController = EquipmentControllers.ContainsByPredicate([Data](UEquipmentController* Controller) { return IsValid(Controller) && Controller->GetEquipmentData() == Data; });
 		if (!IsValid(Asset) || bFoundController)
 		{
@@ -292,7 +292,7 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 			continue;
 		}
 
-		UEquipmentController* Controller = FPoolHelper::AcquireFromContainer<UEquipmentController>(_ControllerPool, ControllerClass, this);
+		UEquipmentController* Controller = FPoolLibrary::AcquireFromContainer<UEquipmentController>(_ControllerPool, ControllerClass, this);
 		AEquipmentActor* Actor = ActorFreelist->AcquireFromList<AEquipmentActor>(ActorClass, FTransform(), GetOwner());
 		if (!IsValid(Controller) || !IsValid(Actor))
 		{
@@ -305,7 +305,7 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 			Actor->FinishSpawning(FTransform());
 		}
 
-		Controller->SourceType = SourceType;
+		Controller->SpawnSource = SpawnSource;
 
 		if (!Controller->InitializeController(Asset, Data, Actor, Definition))
 		{
@@ -324,7 +324,7 @@ void UEquipmentManagerComponent::SpawnEquipmentActors()
 
 void UEquipmentManagerComponent::RefreshEquipmentData(TArray<FPrimaryAssetId>& OutAssetIds)
 {
-	if (SourceType == EDataSource::Static)
+	if (SpawnSource == ESpawnDataSource::Static)
 	{
 		//ISpawnContextProvider* SpawnContext = GetOwner<ISpawnContextProvider>();
 		//if (SpawnContext)
@@ -403,7 +403,7 @@ void UEquipmentManagerComponent::UnregisterEquipment(UEquipmentController* Contr
 	UnbindController(Cast<UEquipmentStateController>(Controller));
 	Controller->DeinitializeController();
 
-	FPoolHelper::ReturnToContainer(_ControllerPool, Controller);
+	FPoolLibrary::ReturnToContainer(_ControllerPool, Controller);
 	ActorFreelist->ReturnToList(Actor);
 }
 

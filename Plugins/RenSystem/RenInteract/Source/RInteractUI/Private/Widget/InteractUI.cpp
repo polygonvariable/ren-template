@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Definition/InteractItem.h"
-#include "Library/PoolHelper.h"
+#include "Core/PoolLibrary.h"
 #include "Log/LogMacro.h"
 #include "Subsystem/InteractSubsystem.h"
 #include "Widget/InteractEntry.h"
@@ -48,7 +48,7 @@ void UInteractUI::HandleInteractAdded(const FGuid& InteractId, const FInteractIt
 		return;
 	}
 
-	UInteractEntry* Entry = FPoolHelper::AcquireFromArray<UInteractEntry>(_InteractPool, UInteractEntry::StaticClass(), this);
+	UInteractEntry* Entry = FPoolLibrary::AcquireFromArray<UInteractEntry>(_InteractPool, UInteractEntry::StaticClass(), this);
 	if (!IsValid(Entry))
 	{
 		LOG_ERROR(LogTemp, TEXT("InteractEntry is invalid"));
@@ -83,7 +83,7 @@ void UInteractUI::HandleInteractRemoved(const FGuid& InteractId)
 
 			Entry->ResetData();
 
-			FPoolHelper::ReturnToArray<UInteractEntry>(_InteractPool, Entry);
+			FPoolLibrary::ReturnToArray<UInteractEntry>(_InteractPool, Entry);
 			InteractList->RemoveItem(Entry);
 		}
 	}

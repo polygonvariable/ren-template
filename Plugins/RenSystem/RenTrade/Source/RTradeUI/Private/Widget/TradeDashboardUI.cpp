@@ -11,8 +11,8 @@
 #include "Data/TradeAsset.h"
 #include "Core/Type/AssetDetail.h"
 #include "Core/Type/AssetFilterProperty.h"
-#include "Filter/Criterion/FilterCriterion_Leaf.h"
-#include "Core/AssetManagerUtil.h"
+#include "Criterion/FilterCriterion_Leaf.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetCollection.h"
@@ -29,7 +29,7 @@ void UTradeDashboardUI::InitializeDetail()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_TradeHandle);
+	FAssetManagerLibrary::CancelHandle(_TradeHandle);
 
 	_TradeHandle = AssetManager->LoadPrimaryAsset(TradeAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UTradeDashboardUI::InitializeTradeDetail));
 }
@@ -40,14 +40,14 @@ void UTradeDashboardUI::ResetDetail()
 	SecondaryCollection->ClearEntries(true);
 }
 
-const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
+const UAssetCollection* UTradeDashboardUI::GetTradeMaterialCollection(const UFragmentedDataAsset* Asset) const
 {
 	return nullptr;
 }
 
 void UTradeDashboardUI::InitializeTradeDetail()
 {
-	FAssetManagerUtil::ReleaseHandle(_TradeHandle);
+	FAssetManagerLibrary::ReleaseHandle(_TradeHandle);
 
 	const UTradeAsset* Asset = AssetManager->GetPrimaryAssetObject<UTradeAsset>(TradeAssetId);
 	if (!IsValid(Asset))
@@ -70,7 +70,7 @@ void UTradeDashboardUI::InitializeTradeDetail()
 	SecondaryCollection->InitializeCollection();
 }
 
-void UTradeDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UTradeDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
 
@@ -107,7 +107,7 @@ void UTradeDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
 
 void UTradeDashboardUI::CancelInitialization()
 {
-	FAssetManagerUtil::CancelHandle(_TradeHandle);
+	FAssetManagerLibrary::CancelHandle(_TradeHandle);
 
 	Super::CancelInitialization();
 }

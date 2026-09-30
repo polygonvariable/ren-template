@@ -7,7 +7,7 @@
 #include "Components/Button.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetCollection.h"
@@ -29,7 +29,7 @@ void UShopDashboardUI::HandlePurchase()
 	ShopSubsystem->TryPurchaseItem(TradeAssetId, TradeCollectionId, TargetAssetId);
 }
 
-const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const UCoreDataAsset* Asset) const
+const UAssetCollection* UShopDashboardUI::GetTradeMaterialCollection(const UFragmentedDataAsset* Asset) const
 {
 	if (!IsValid(ShopSubsystem))
 	{

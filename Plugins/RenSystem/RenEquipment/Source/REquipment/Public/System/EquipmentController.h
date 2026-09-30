@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Core/Type/EquipmentSpawnData.h"
-#include "Definition/QueryType.h"
+#include "SpawnDataSource.h"
 
 // Generated Headers
 #include "EquipmentController.generated.h"
@@ -19,7 +19,7 @@
 // Forward Declarations
 class UAnimInstance;
 class UAbilitySystemComponent;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class AEquipmentActor;
 class IAssetInstanceCollection;
 class IAscensionInstanceProvider;
@@ -39,17 +39,17 @@ class UEquipmentController : public UObject
 public:
 
 	UPROPERTY()
-	EDataSource SourceType = EDataSource::Static;
+	ESpawnDataSource SpawnSource = ESpawnDataSource::Static;
 
 
-	bool InitializeController(const UCoreDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition);
+	bool InitializeController(const UFragmentedDataAsset* InEquipmentAsset, const FEquipmentInitializationData& InEquipmentData, AEquipmentActor* InEquipmentActor, const UEquipmentDataDefinition* InDataDefinition);
 	void DeinitializeController();
 
 	REN_API virtual bool ActivateEquipment();
 	REN_API virtual bool DeactivateEquipment(bool bForce = false);
 	REN_API virtual void RefreshEquipment();
 
-	REN_API const UCoreDataAsset* GetEquipmentAsset() const;
+	REN_API const UFragmentedDataAsset* GetEquipmentAsset() const;
 	REN_API const FEquipmentInitializationData& GetEquipmentData() const;
 	REN_API const UEquipmentAbilityCollection* GetEquipmentAbilityCollection() const;
 	REN_API const UEquipmentDataDefinition* GetEquipmentDataDefinition() const;
@@ -74,7 +74,7 @@ public:
 protected:
 
 	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> EquipmentAsset = nullptr;
+	TObjectPtr<const UFragmentedDataAsset> EquipmentAsset = nullptr;
 
 	UPROPERTY()
 	FEquipmentInitializationData EquipmentData;

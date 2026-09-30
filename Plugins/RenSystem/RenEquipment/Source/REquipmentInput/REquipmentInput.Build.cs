@@ -42,7 +42,7 @@ public class REquipmentInput : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
                 "GameplayAbilities",
-                "RCoreLibrary",
+                "CLibrary",
                 "CAssetManager",
             }
 			);

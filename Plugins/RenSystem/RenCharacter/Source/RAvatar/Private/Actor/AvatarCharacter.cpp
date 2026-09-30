@@ -21,8 +21,8 @@
 #include "Log/LogMacro.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
-#include "Util/SubsystemUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "SubsystemLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 
 
 AAvatarCharacter::AAvatarCharacter() : Super()
@@ -106,15 +106,15 @@ FPrimaryAssetType AAvatarCharacter::GetAssetType() const
 	return CharacterAsset->GetPrimaryAssetType();
 }
 
-EDataSource AAvatarCharacter::GetSpawnSource() const
+ESpawnDataSource AAvatarCharacter::GetSpawnSource() const
 {
-	return SourceType;
+	return SpawnSource;
 }
 
 
 void AAvatarCharacter::InitializeCharacter()
 {
-	if (SourceType == EDataSource::Runtime)
+	if (SpawnSource == ESpawnDataSource::Runtime)
 	{
 		UAvatarSubsystem* AvatarSubsystem = UAvatarSubsystem::Get(GetWorld());
 		if (IsValid(AvatarSubsystem))
@@ -170,7 +170,7 @@ void AAvatarCharacter::RefreshCharacter()
 
 void AAvatarCharacter::AddRuntimeAttributes()
 {
-	if (SourceType == EDataSource::Runtime)
+	if (SpawnSource == ESpawnDataSource::Runtime)
 	{
 		const UCharacterSettings* Settings = UCharacterSettings::Get();
 		TMap<FGameplayTag, float>& Attributes = GetCharacterAttributes();

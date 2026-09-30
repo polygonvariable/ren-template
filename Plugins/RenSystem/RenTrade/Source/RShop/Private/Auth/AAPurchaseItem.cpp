@@ -8,7 +8,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Core/Type/Runtime/ShopInstance.h"
 #include "Core/Type/Runtime/TradeKey.h"
 #include "Data/ShopAsset.h"
@@ -18,8 +18,8 @@
 #include "Core/Type/AssetRuleDefinition.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/Interface/AssetInstanceCollectionProvider.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/AssetCollection.h"
 #include "Data/AssetGroup.h"
 #include "System/ShopStorageManager.h"
@@ -34,7 +34,7 @@ void UAAPurchaseItem::OnStarted()
 
 void UAAPurchaseItem::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAAPurchaseItem::OnCleanup()
@@ -64,14 +64,14 @@ void UAAPurchaseItem::Step_LoadAsset()
 	Assets.Add(ShopAssetId);
 	Assets.Add(TargetAssetId);
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAPurchaseItem::Step_HandleOnAssetsLoaded));
 }
 
 void UAAPurchaseItem::Step_HandleOnAssetsLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	ShopAsset = AssetManager->GetPrimaryAssetObject<UShopAsset>(ShopAssetId);
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UShopAsset>(TargetAssetId);
@@ -142,7 +142,7 @@ void UAAPurchaseItem::Step_CheckMaterial()
 
 void UAAPurchaseItem::Step_CheckMaterialTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialAssetType);
+	IAssetInstanceCollectionProvider* MaterialInterchange = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), MaterialAssetType);
 	if (!MaterialInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));
@@ -213,7 +213,7 @@ void UAAPurchaseItem::Step_CheckShopQuota(TMap<FPrimaryAssetId, int>&& MaterialA
 
 void UAAPurchaseItem::Step_PerformTransaction(TMap<FPrimaryAssetId, int>&& MaterialAssetList, FPrimaryAssetType MaterialAssetType)
 {
-	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), TargetAssetId);
+	IAssetInstanceCollectionProvider* TargetInterchange = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), TargetAssetId);
 	if (!TargetInterchange)
 	{
 		Fail(TEXT("Failed to get transaction interface"));

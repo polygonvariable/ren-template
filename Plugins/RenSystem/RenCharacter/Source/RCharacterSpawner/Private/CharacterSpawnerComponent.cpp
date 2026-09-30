@@ -8,7 +8,7 @@
 
 // Project Headers
 #include "Actor/CharacterBase.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/CharacterSpawnerSettings.h"
 #include "Data/CharacterAsset.h"
 #include "Log/LogCategory.h"
@@ -35,7 +35,7 @@ void UCharacterSpawnerComponent::InitializeComponent()
 
 void UCharacterSpawnerComponent::UninitializeComponent()
 {
-	FAssetManagerUtil::CancelHandle(SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(SpawnHandle);
 	AssetManager = nullptr;
 
 	Super::UninitializeComponent();
@@ -44,7 +44,7 @@ void UCharacterSpawnerComponent::UninitializeComponent()
 
 void UCharacterSpawnerComponent::CreateCharacters()
 {
-	FAssetManagerUtil::CancelHandle(SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(SpawnHandle);
 
 	if (SpawnedCharacters.Num() > 0)
 	{
@@ -86,7 +86,7 @@ void UCharacterSpawnerComponent::CreateCharacters()
 
 void UCharacterSpawnerComponent::RemoveCharacters()
 {
-	FAssetManagerUtil::CancelHandle(SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(SpawnHandle);
 
 	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : SpawnedCharacters)
 	{
@@ -110,7 +110,7 @@ void UCharacterSpawnerComponent::ShowCharacters()
 
 void UCharacterSpawnerComponent::HideCharacters()
 {
-	FAssetManagerUtil::CancelHandle(SpawnHandle);
+	FAssetManagerLibrary::CancelHandle(SpawnHandle);
 
 	for (const TPair<FPrimaryAssetId, TObjectPtr<ACharacterBase>>& Kv : SpawnedCharacters)
 	{

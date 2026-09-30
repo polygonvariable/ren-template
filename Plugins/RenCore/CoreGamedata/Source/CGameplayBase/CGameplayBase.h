@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRCoreGameModule : public IModuleInterface
+class FCGameplayBaseModule : public IModuleInterface
 {
 public:
 

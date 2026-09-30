@@ -8,7 +8,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 
 
 
@@ -17,7 +17,7 @@ void UTradeDetailUI::ResetDetail()
 	SwitchDetail(false);
 }
 
-void UTradeDetailUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UTradeDetailUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

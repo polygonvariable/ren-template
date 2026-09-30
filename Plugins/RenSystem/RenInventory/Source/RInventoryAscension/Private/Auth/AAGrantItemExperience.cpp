@@ -8,12 +8,12 @@
 
 // Project Headers
 #include "Core/AscensionLibrary.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/Type/AssetDetail.h"
 #include "Core/Type/Runtime/InventoryInstance.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Data/Fragment/AssetCompositionFragment.h"
 #include "Data/InventoryAsset.h"
 #include "System/InventoryStorageManager.h"
@@ -43,7 +43,7 @@ void UAAGrantItemExperience::OnStarted()
 
 void UAAGrantItemExperience::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAAGrantItemExperience::OnCleanup()
@@ -75,14 +75,14 @@ void UAAGrantItemExperience::Step_LoadAssets()
 	Assets.Add(TargetAssetId);
 	Assets.Add(MaterialAssetId);
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAssets(Assets, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAGrantItemExperience::Step_HandleOnAssetLoaded));
 }
 
 void UAAGrantItemExperience::Step_HandleOnAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UInventoryAsset>(TargetAssetId);
 	MaterialAsset = AssetManager->GetPrimaryAssetObject<UInventoryAsset>(MaterialAssetId);

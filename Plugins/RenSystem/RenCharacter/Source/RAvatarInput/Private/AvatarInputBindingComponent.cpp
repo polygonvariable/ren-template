@@ -13,7 +13,7 @@
 // Project Headers
 #include "Actor/AvatarCharacter.h"
 #include "AvatarInputBindingAsset.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 
 
 UAvatarInputBindingComponent::UAvatarInputBindingComponent()
@@ -58,7 +58,7 @@ void UAvatarInputBindingComponent::EndPlay(const EEndPlayReason::Type EndPlayRea
 	PlayerController = nullptr;
 
 	InputBindingAsset = nullptr;
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	Super::EndPlay(EndPlayReason);
 }

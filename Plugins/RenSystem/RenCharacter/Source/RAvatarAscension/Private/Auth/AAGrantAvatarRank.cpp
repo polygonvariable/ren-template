@@ -8,13 +8,13 @@
 
 // Project Headers
 #include "Core/AscensionLibrary.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/Type/Runtime/AvatarInstance.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
 #include "Data/AvatarAsset.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "System/AvatarStorageManager.h"
 #include "System/AvatarSubsystem.h"
 
@@ -42,7 +42,7 @@ void UAAGrantAvatarRank::OnStarted()
 
 void UAAGrantAvatarRank::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAAGrantAvatarRank::OnCleanup()
@@ -61,14 +61,14 @@ void UAAGrantAvatarRank::OnCleanup()
 
 void UAAGrantAvatarRank::Step_LoadAsset()
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAsset(TargetAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAGrantAvatarRank::Step_HandleOnAssetLoaded));
 }
 
 void UAAGrantAvatarRank::Step_HandleOnAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UAvatarAsset>(TargetAssetId);
 	if (!IsValid(TargetAsset))
@@ -120,7 +120,7 @@ void UAAGrantAvatarRank::Step_CheckTarget()
 
 void UAAGrantAvatarRank::Step_RemoveMaterial(const TMap<FPrimaryAssetId, int>& Materials, FPrimaryAssetType MaterialType)
 {
-	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceUtil::GetInstanceCollectionProvider(GetWorld(), MaterialType);
+	IAssetInstanceCollectionProvider* MaterialProvider = FAssetInstanceLibrary::GetInstanceCollectionProvider(GetWorld(), MaterialType);
 	if (!MaterialProvider)
 	{
 		Fail(TEXT("Failed to get instance collection provider"));

@@ -45,7 +45,7 @@ public class RGameplayHUD : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "UMG",
                 "EnhancedInput",
-                "RCoreLibrary",
+                "CLibrary",
                 "CAssetManager",
             }
 			);

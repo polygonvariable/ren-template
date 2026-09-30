@@ -6,18 +6,15 @@
 #include "Blueprint/UserWidget.h"
 
 // Project Headers
-#include "Interface/AssetWidget.h"
+#include "Core/AssetWidget.h"
 
 // Generated Headers
 #include "AssetUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UAssetManager;
 class UAssetEntry;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FStreamableHandle;
 
 
@@ -37,20 +34,20 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
-	REN_API virtual void InitializeDetail() {};
+	CASSETUI_API virtual void InitializeDetail() {};
 
 	UFUNCTION(BlueprintCallable)
-	REN_API virtual void CloseWidget();
+	CASSETUI_API virtual void CloseWidget();
 
-	REN_API virtual void InitializeAssetByEntry(const UAssetEntry* Entry);
-	REN_API virtual void InitializeAssetById(const FPrimaryAssetId& AssetId);
+	CASSETUI_API virtual void InitializeAssetByEntry(const UAssetEntry* Entry);
+	CASSETUI_API virtual void InitializeAssetById(const FPrimaryAssetId& AssetId);
 
-	REN_API virtual void RefreshDetail() {};
-	REN_API virtual void ResetDetail() {};
+	CASSETUI_API virtual void RefreshDetail() {};
+	CASSETUI_API virtual void ResetDetail() {};
 
 	// ~ IAssetWidget
-	REN_API virtual void InitializeAssetDetail(const UCoreDataAsset* Asset) override;
-	REN_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
+	CASSETUI_API virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override;
+	CASSETUI_API virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
 	// ~ End of IAssetWidget
 
 protected:
@@ -60,31 +57,31 @@ protected:
 
 
 	UFUNCTION(BlueprintNativeEvent)
-	REN_API TArray<UWidget*> GetLockingControls() const;
-	REN_API virtual TArray<UWidget*> GetLockingControls_Implementation() const;
+	CASSETUI_API TArray<UWidget*> GetLockingControls() const;
+	CASSETUI_API virtual TArray<UWidget*> GetLockingControls_Implementation() const;
 
 	UFUNCTION(BlueprintNativeEvent)
-	REN_API void LockControls();
-	REN_API virtual void LockControls_Implementation() {};
+	CASSETUI_API void LockControls();
+	CASSETUI_API virtual void LockControls_Implementation() {};
 
 	UFUNCTION(BlueprintNativeEvent)
-	REN_API void UnlockControls();
-	REN_API virtual void UnlockControls_Implementation() {};
+	CASSETUI_API void UnlockControls();
+	CASSETUI_API virtual void UnlockControls_Implementation() {};
 
-	REN_API const FPrimaryAssetId& GetActiveAssetId() const;
-	REN_API const UCoreDataAsset* GetActiveAsset() const;
+	CASSETUI_API const FPrimaryAssetId& GetActiveAssetId() const;
+	CASSETUI_API const UFragmentedDataAsset* GetActiveAsset() const;
 
-	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) {};
-	REN_API virtual void SetSecondaryDetail(const UAssetEntry* Entry) {};
+	CASSETUI_API virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) {};
+	CASSETUI_API virtual void SetSecondaryDetail(const UAssetEntry* Entry) {};
 
-	REN_API virtual void CancelInitialization();
-	REN_API virtual void SwitchDetail(bool bPrimary) {};
+	CASSETUI_API virtual void CancelInitialization();
+	CASSETUI_API virtual void SwitchDetail(bool bPrimary) {};
 
 	void HandleAssetLoaded();
 
 	// ~ UUserWidget
-	REN_API virtual void NativeConstruct() override;
-	REN_API virtual void NativeDestruct() override;
+	CASSETUI_API virtual void NativeConstruct() override;
+	CASSETUI_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 private:
@@ -93,8 +90,4 @@ private:
 	TSharedPtr<FStreamableHandle> _AssetHandle;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

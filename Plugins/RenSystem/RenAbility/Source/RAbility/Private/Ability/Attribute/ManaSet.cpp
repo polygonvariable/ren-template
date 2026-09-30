@@ -11,7 +11,6 @@
 
 // Project Headers
 #include "Log/LogMacro.h"
-#include "RCoreTag/Public/AttributeTags.h"
 
 
 void UManaSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

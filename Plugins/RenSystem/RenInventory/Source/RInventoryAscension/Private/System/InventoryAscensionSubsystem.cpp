@@ -6,7 +6,7 @@
 // Project Headers
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 #include "Auth/AAGrantItemExperience.h"
 #include "Auth/AAGrantItemRank.h"
 

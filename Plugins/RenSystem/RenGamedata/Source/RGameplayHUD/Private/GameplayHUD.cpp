@@ -13,9 +13,9 @@
 #include "GameFramework/HUD.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "GameplayModeProvider.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 AGameplayHUD::AGameplayHUD()
@@ -34,7 +34,7 @@ void AGameplayHUD::BeginPlay()
 
 void AGameplayHUD::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	if (GameplayMode)
 	{

@@ -40,7 +40,7 @@ public class RenTimestamp : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
-                "RCoreLibrary",
+                "CLibrary",
                 "RCoreCounter",
                 "RenCounter",
             }

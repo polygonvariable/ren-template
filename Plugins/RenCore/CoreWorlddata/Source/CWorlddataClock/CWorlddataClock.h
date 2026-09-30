@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FCoreWorlddataClockModule : public IModuleInterface
+class FCWorlddataClockModule : public IModuleInterface
 {
 public:
 

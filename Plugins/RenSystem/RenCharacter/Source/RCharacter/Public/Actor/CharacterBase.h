@@ -9,7 +9,7 @@
 // Project Headers
 #include "Core/Type/AssetQuerySource.h"
 #include "Core/Type/CharacterInitializationData.h"
-#include "Interface/SpawnContextProvider.h"
+#include "SpawnContextProvider.h"
 
 // Generated Headers
 #include "CharacterBase.generated.h"
@@ -91,10 +91,6 @@ public:
 	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 	// ~ End of IGameplayTagAssetInterface
-
-	// ~ ISpawnContextProvider
-	virtual void GetSpawnData(const FGameplayTag& InTag, FInstancedStruct& OutValue) const override;
-	// ~ End of ISpawnContextProvider
 
 	// ~ ACharacter
 	virtual void BeginPlay() override;

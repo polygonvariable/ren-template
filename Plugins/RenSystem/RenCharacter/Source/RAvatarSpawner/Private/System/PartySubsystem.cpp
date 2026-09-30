@@ -12,9 +12,9 @@
 #include "GameLifecycleDelegate.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 #include "System/PartyStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UPartyStorageManager* UPartySubsystem::GetStorageManager()
@@ -80,7 +80,7 @@ bool UPartySubsystem::TryRemovePartyCharacter(int Slot)
 
 void UPartySubsystem::HandleOnPreGameInitialized()
 {
-	StorageProvider = SubsystemUtil::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
+	StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetGameInstance());
 	if (StorageProvider)
 	{
 		const UPartySettings* Settings = UPartySettings::Get();

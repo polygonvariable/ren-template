@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Definition/StateMachine.h"
+#include "StateMachine/FiniteStateMachineType.h"
 
 // Generated Headers
 #include "EventflowCondition.generated.h"

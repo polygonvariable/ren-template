@@ -10,8 +10,8 @@
 #include "Asset/RewardAsset.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/Interface/AssetInstanceCollectionProvider.h"
-#include "Core/AssetInstanceUtil.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetInstanceLibrary.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Data/AssetCollection.h"
 #include "Settings/RewardSettings.h"
 #include "Storage/RewardStorageManager.h"
@@ -31,7 +31,7 @@ void UAAGiveReward::OnCleanup()
 	RewardSubsystem = nullptr;
 	RewardAssetId = FPrimaryAssetId();
 
-	FAssetManagerUtil::CancelHandle(RewardHandle);
+	FAssetManagerLibrary::CancelHandle(RewardHandle);
 }
 
 void UAAGiveReward::Step_LoadReward()
@@ -41,7 +41,7 @@ void UAAGiveReward::Step_LoadReward()
 
 void UAAGiveReward::Step_OnRewardLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(RewardHandle);
+	FAssetManagerLibrary::ReleaseHandle(RewardHandle);
 
 	const URewardAsset* Asset = AssetManager->GetPrimaryAssetObject<URewardAsset>(RewardAssetId);
 	if (!IsValid(Asset))
@@ -67,7 +67,7 @@ void UAAGiveReward::Step_AddReward(const UAssetCollection* Collection)
 	TMap<FPrimaryAssetId, int> AssetMap;
 	Collection->GetAssetList(AssetMap);
 
-	IAssetInstanceCollection* AssetInstance = FAssetInstanceUtil::GetPrimaryInstanceCollection(GetWorld(), RewardType);
+	IAssetInstanceCollection* AssetInstance = FAssetInstanceLibrary::GetPrimaryInstanceCollection(GetWorld(), RewardType);
 	if (!AssetInstance)
 	{
 		Fail(TEXT("Failed to load reward provider"));

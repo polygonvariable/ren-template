@@ -27,7 +27,7 @@ public class RAvatarAscension : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-                "RCoreAuthAction",
+                "CAuthAction",
                 "RCoreAscension",
             }
 			);
@@ -44,7 +44,7 @@ public class RAvatarAscension : ModuleRules
                 "CAsset",
                 "CAssetManager",
                 "CAssetInstance",
-                "RCoreLibrary",
+                "CLibrary",
                 "RAvatar",
             }
 			);

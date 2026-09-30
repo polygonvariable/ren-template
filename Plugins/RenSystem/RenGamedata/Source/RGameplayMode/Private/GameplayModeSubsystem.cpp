@@ -7,7 +7,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "GameplayModeSettings.h"
 #include "GameplayModeTagGroup.h"
 #include "GameplayModeWorldConfig.h"
@@ -236,7 +236,7 @@ void UGameplayModeSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 void UGameplayModeSubsystem::Deinitialize()
 {
-	FAssetManagerUtil::CancelHandle(TableHandle);
+	FAssetManagerLibrary::CancelHandle(TableHandle);
 	bCanBroadcast = false;
 	
 	for (TPair<FGameplayTag, TPair<FOnGameplayModeTagChanged, int>>& Kv : Handles)

@@ -6,18 +6,17 @@
 // Engine Headers
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Core/Type/AssetFilterProperty.h"
-#include "Definition/FilterContext.h"
+#include "FilterContext.h"
 #include "Core/Type/InventoryFilterProperty.h"
-#include "Filter/FilterCriterion.h"
-#include "Filter/FilterGroup.h"
+#include "FilterCriterion.h"
+#include "FilterGroup.h"
 #include "Core/InventoryPrimaryAsset.h"
-#include "Manager/RAssetManager.h"
 
 
 
-//void UInventoryFilterUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+//void UInventoryFilterUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 //{
 //	if (!IsValid(AssetManager) || !IsValid(FilterRule))
 //	{

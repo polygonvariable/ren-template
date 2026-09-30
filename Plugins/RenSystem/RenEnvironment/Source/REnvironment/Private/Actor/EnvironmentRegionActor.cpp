@@ -8,7 +8,7 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Data/EnvironmentProfileAsset.h"
 #include "Log/LogCategory.h"
@@ -24,7 +24,7 @@ void AEnvironmentRegionActor::LoadProfile()
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	TArray<FPrimaryAssetId> AssetIds;
 	ProfileAssets.GetKeys(AssetIds);
@@ -52,7 +52,7 @@ void AEnvironmentRegionActor::AddProfile()
 
 void AEnvironmentRegionActor::RemoveProfile()
 {
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(EnvironmentSubsystem) || !IsValid(AssetManager))
@@ -70,7 +70,7 @@ void AEnvironmentRegionActor::RemoveProfile()
 
 void AEnvironmentRegionActor::HandleOnProfileLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(AssetHandle);
 	AddProfile();
 }
 

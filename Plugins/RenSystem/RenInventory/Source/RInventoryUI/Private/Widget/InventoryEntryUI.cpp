@@ -9,11 +9,11 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Widget/InventoryEntry.h"
 
 
-void UInventoryEntryUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UInventoryEntryUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

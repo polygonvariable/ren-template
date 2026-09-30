@@ -8,12 +8,12 @@
 
 // Project Headers
 #include "Core/AscensionLibrary.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/Type/AscensionData.h"
 #include "Core/Type/Runtime/InventoryInstance.h"
 #include "Data/AscensionFragment.h"
 #include "Data/AssetCollection.h"
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Data/InventoryAsset.h"
 #include "System/InventoryStorageManager.h"
 #include "System/InventorySubsystem.h"
@@ -42,7 +42,7 @@ void UAAGrantItemRank::OnStarted()
 
 void UAAGrantItemRank::OnCompleted(bool bSuccess)
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 }
 
 void UAAGrantItemRank::OnCleanup()
@@ -59,14 +59,14 @@ void UAAGrantItemRank::OnCleanup()
 
 void UAAGrantItemRank::Step_LoadAsset()
 {
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	_AssetHandle = AssetManager->LoadPrimaryAsset(TargetAssetId, TArray<FName>(), FStreamableDelegate::CreateUObject(this, &UAAGrantItemRank::Step_HandleOnAssetLoaded));
 }
 
 void UAAGrantItemRank::Step_HandleOnAssetLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(_AssetHandle);
+	FAssetManagerLibrary::ReleaseHandle(_AssetHandle);
 
 	TargetAsset = AssetManager->GetPrimaryAssetObject<UInventoryAsset>(TargetAssetId);
 	Step_CheckTarget();

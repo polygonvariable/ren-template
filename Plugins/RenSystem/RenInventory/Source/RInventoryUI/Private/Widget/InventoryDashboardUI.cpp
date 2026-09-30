@@ -26,7 +26,7 @@ void UInventoryDashboardUI::ResetDetail()
 	InventoryDetail->ResetDetail();
 }
 
-void UInventoryDashboardUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UInventoryDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	InventoryDetail->InitializeAssetDetail(Asset);
 }

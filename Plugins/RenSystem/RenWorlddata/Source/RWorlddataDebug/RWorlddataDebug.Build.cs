@@ -41,7 +41,7 @@ public class RWorlddataDebug : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "RWorlddata",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

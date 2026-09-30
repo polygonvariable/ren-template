@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 #include "Core/Type/AscensionData.h"
 
 // Generated Headers
@@ -13,7 +13,7 @@
 class UAvatarAsset;
 class UAvatarStorageManager;
 class UAssetManager;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FStreamableHandle;
 
 
@@ -42,7 +42,7 @@ protected:
 	TObjectPtr<const UAvatarAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> MaterialAsset = nullptr;
+	TObjectPtr<const UFragmentedDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAvatarStorageManager> StorageManager = nullptr;

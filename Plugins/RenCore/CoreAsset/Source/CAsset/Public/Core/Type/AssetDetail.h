@@ -6,7 +6,7 @@
 #include "AssetDetail.generated.h"
 
 // Forward Declarations
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 
 
 /**
@@ -26,7 +26,7 @@ public:
 #if WITH_EDITORONLY_DATA
 
 	UPROPERTY(EditDefaultsOnly)
-	TSoftObjectPtr<UCoreDataAsset> DataAsset;
+	TSoftObjectPtr<UFragmentedDataAsset> DataAsset;
 
 #endif
 

@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetInstanceRelation.generated.h"
 
-// Module Macros
-#define REN_API CASSETINSTANCE_API
-
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceRelation : public UInterface
@@ -21,7 +18,7 @@ class UAssetInstanceRelation : public UInterface
 /**
  * 
  */
-class REN_API IAssetInstanceRelation
+class CASSETINSTANCE_API IAssetInstanceRelation
 {
 
 	GENERATED_BODY()
@@ -31,8 +28,4 @@ public:
 	virtual bool HasLinkedInstance(const FPrimaryAssetId& AssetId, const FGuid& AssetInstanceId) const = 0;
 	
 };
-
-
-// Module Macros
-#undef REN_API
 

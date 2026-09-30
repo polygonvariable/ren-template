@@ -48,7 +48,7 @@ public class REquipmentWeapon : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "EnhancedInput",
                 "GameplayTasks",
-                "RCoreLibrary",
+                "CLibrary",
                 "CAssetManager",
             }
 			);

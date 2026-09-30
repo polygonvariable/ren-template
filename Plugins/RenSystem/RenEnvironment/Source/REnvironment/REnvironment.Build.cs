@@ -29,7 +29,8 @@ public class REnvironment : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "Landscape",
                 "DeveloperSettings",
-                "RCoreCommon",
+                "CFramework",
+				"CWorlddataRegion",
                 "CAsset",
                 "CWorldSettings",
             }
@@ -45,7 +46,7 @@ public class REnvironment : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "SunPosition",
-                "RCoreLibrary",
+                "CLibrary",
                 "CAssetManager",
                 "CWorlddataClock",
             }

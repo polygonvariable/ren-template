@@ -5,8 +5,8 @@
 // Project Headers
 #include "Core/Type/EquipmentSlotId.h"
 #include "Core/Type/EquipmentSpawnData.h"
-#include "Definition/PoolCollection.h"
-#include "Definition/QueryType.h"
+#include "Core/PoolCollection.h"
+#include "SpawnDataSource.h"
 
 // Generated Headers
 #include "EquipmentManagerComponent.generated.h"
@@ -44,9 +44,9 @@ public:
 
 
 	UPROPERTY(EditAnywhere)
-	EDataSource SourceType = EDataSource::Static;
+	ESpawnDataSource SpawnSource = ESpawnDataSource::Static;
 
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SpawnSource==ESpawnDataSource::Static", EditConditionHides))
 	TArray<FEquipmentInitializationData> EquipmentSpawnData;
 
 	DECLARE_MULTICAST_DELEGATE(FOnEquipmentManagerEvent);

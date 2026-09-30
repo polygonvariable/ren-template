@@ -13,7 +13,7 @@ void UAssetDashboardUI::RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetCl
 
 }
 
-void UAssetDashboardUI::InitializeAssetDetail(const UCoreDataAsset* Asset)
+void UAssetDashboardUI::InitializeAssetDetail(const UFragmentedDataAsset* Asset)
 {
 	Super::InitializeAssetDetail(Asset);
 

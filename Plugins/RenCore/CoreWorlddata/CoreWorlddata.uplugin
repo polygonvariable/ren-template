@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "CWorlddataRegion",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "CWorldSettings",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

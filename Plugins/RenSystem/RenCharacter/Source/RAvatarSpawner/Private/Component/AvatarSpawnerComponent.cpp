@@ -14,14 +14,14 @@
 #include "GameplayModeProvider.h"
 #include "System/PartyStorageManager.h"
 #include "System/PartySubsystem.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 void UAvatarSpawnerComponent::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	if (SourceType == EDataSource::Runtime)
+	if (SpawnSource == ESpawnDataSource::Runtime)
 	{
 		PartySubsystem = UPartySubsystem::Get(GetWorld());
 		if (IsValid(PartySubsystem))
@@ -146,7 +146,7 @@ void UAvatarSpawnerComponent::OnSpawnFinished()
 
 void UAvatarSpawnerComponent::GetCharacterData(TArray<FCharacterInitializationData>& OutData)
 {
-	if (SourceType == EDataSource::Static)
+	if (SpawnSource == ESpawnDataSource::Static)
 	{
 		OutData = CharacterData;
 	}
@@ -171,7 +171,7 @@ void UAvatarSpawnerComponent::PreRegisterCharacter(const FPrimaryAssetId& AssetI
 	AAvatarCharacter* Avatar = Cast<AAvatarCharacter>(Character);
 	if (IsValid(Avatar))
 	{
-		Avatar->SourceType = SourceType;
+		Avatar->SpawnSource = SpawnSource;
 	}
 }
 

@@ -9,7 +9,7 @@
 
 // Project Header
 #include "Actor/WeatherEffectActor.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/WeatherSettings.h"
 #include "Data/WeatherAsset.h"
 #include "Log/LogCategory.h"
@@ -153,7 +153,7 @@ void AWeatherEffectManager::RemoveLoadHandle(UWeatherAsset* WeatherAsset)
 {
     TSharedPtr<FStreamableHandle> Handle;
     LoadHandles.RemoveAndCopyValue(WeatherAsset, Handle);
-    FAssetManagerUtil::CancelHandle(Handle);
+    FAssetManagerLibrary::CancelHandle(Handle);
 }
 
 
@@ -223,7 +223,7 @@ void AWeatherEffectManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     for (TPair<TObjectPtr<UWeatherAsset>, TSharedPtr<FStreamableHandle>>& Kv : LoadHandles)
     {
-        FAssetManagerUtil::CancelHandle(Kv.Value);
+        FAssetManagerLibrary::CancelHandle(Kv.Value);
     }
     LoadHandles.Empty();
 

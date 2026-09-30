@@ -30,10 +30,11 @@ public class RCharacter : ModuleRules
 				"DeveloperSettings",
                 "GameplayAbilities",
                 "GameplayTags",
-				"RCoreCommon",
+				"CFramework",
                 "RCoreAscension",
                 "CAsset",
                 "CAssetInstance",
+				"CGamedata",
                 "CGamedataComponent",
             }
 			);
@@ -48,7 +49,7 @@ public class RCharacter : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"MotionTrajectory",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

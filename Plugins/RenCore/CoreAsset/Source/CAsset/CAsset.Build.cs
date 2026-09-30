@@ -40,7 +40,7 @@ public class CAsset : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"DeveloperSettings",
-                "RCoreLibrary",
+                "CLibrary",
             }
 			);
 		

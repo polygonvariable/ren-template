@@ -8,13 +8,9 @@
 // Generated Headers
 #include "AssetDragUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UImage;
 class UTextBlock;
-
 
 
 /**
@@ -41,8 +37,4 @@ protected:
 	TObjectPtr<UTextBlock> AssetDisplayName = nullptr;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

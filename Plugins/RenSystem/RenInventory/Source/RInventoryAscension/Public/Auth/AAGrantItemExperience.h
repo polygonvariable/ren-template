@@ -4,7 +4,7 @@
 
 // Project Headers
 #include "Core/Type/AscensionData.h"
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 
 // Generated Headers
 #include "AAGrantItemExperience.generated.h"
@@ -12,8 +12,7 @@
 // Forward Declarations
 class UInventoryAsset;
 class UInventoryStorageManager;
-class URAssetManager;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FGameplayTagContainer;
 struct FStreamableHandle;
 
@@ -42,7 +41,7 @@ protected:
 	TObjectPtr<const UInventoryAsset> TargetAsset = nullptr;
 
 	UPROPERTY()
-	TObjectPtr<const UCoreDataAsset> MaterialAsset = nullptr;
+	TObjectPtr<const UFragmentedDataAsset> MaterialAsset = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UInventoryStorageManager> StorageManager = nullptr;

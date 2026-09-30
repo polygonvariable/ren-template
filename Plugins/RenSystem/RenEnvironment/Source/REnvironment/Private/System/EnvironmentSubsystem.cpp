@@ -9,7 +9,7 @@
 
 // Project Headers
 #include "Actor/EnvironmentActor.h"
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Data/EnvironmentWorldConfig.h"
 #include "Data/EnvironmentProfileAsset.h"
@@ -197,7 +197,7 @@ void UEnvironmentSubsystem::RegisterDefaultProfiles(const UEnvironmentWorldConfi
 
 void UEnvironmentSubsystem::HandleOnEnvironmentLoaded()
 {
-	FAssetManagerUtil::ReleaseHandle(ProfileHandle);
+	FAssetManagerLibrary::ReleaseHandle(ProfileHandle);
 
 	if (!IsValid(WorldConfig))
 	{
@@ -244,7 +244,7 @@ void UEnvironmentSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 	Super::OnWorldComponentsUpdated(InWorld);
 	LOG_WARNING(LogEnvironment, TEXT("EnvironmentSubsystem OnWorldComponentsUpdated"));
 
-	FAssetManagerUtil::CancelHandle(ProfileHandle);
+	FAssetManagerLibrary::CancelHandle(ProfileHandle);
 
 	WorldConfig = AWorldFragmentSettings::GetConfigByClass<UEnvironmentWorldConfig>(&InWorld);
 	if (!IsValid(WorldConfig))
@@ -265,7 +265,7 @@ void UEnvironmentSubsystem::Deinitialize()
 {
 	UnregisterControllers();
 
-	FAssetManagerUtil::CancelHandle(ProfileHandle);
+	FAssetManagerLibrary::CancelHandle(ProfileHandle);
 	if (IsValid(AssetManager))
 	{
 		AssetManager->UnloadPrimaryAssetsWithType(UEnvironmentProfileAsset::GetPrimaryAssetType());

@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 
 // Generated Headers
 #include "MetadataAsset.generated.h"
@@ -13,7 +13,7 @@
  * 
  */
 UCLASS(Abstract, MinimalAPI)
-class UMetadataAsset : public UCoreDataAsset
+class UMetadataAsset : public UFragmentedDataAsset
 {
 
 	GENERATED_BODY()

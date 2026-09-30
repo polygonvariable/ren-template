@@ -44,7 +44,7 @@ public:
 	TObjectPtr<UCameraComponent> Camera;
 
 	UPROPERTY(EditAnywhere)
-	EDataSource SourceType = EDataSource::Static;
+	ESpawnDataSource SpawnSource = ESpawnDataSource::Static;
 
 
 	UFUNCTION(BlueprintCallable, meta = (BlueprintProtected))
@@ -60,7 +60,7 @@ public:
 	// ~ End of IAssetInstanceContextProvider
 
 	// ~ ISpawnContextProvider
-	virtual EDataSource GetSpawnSource() const override;
+	virtual ESpawnDataSource GetSpawnSource() const override;
 	// ~ End of ISpawnContextProvider
 
 	// ~ ACharacterBase

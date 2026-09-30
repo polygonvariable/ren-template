@@ -8,11 +8,11 @@
 
 // Project Headers
 #include "Core/Type/AssetFilterProperty.h"
-#include "Definition/FilterContext.h"
+#include "FilterContext.h"
 #include "Core/Type/InventoryFilterProperty.h"
-#include "Core/Type/InventoryQueryType.h"
+#include "Core/Type/InventoryQueryRule.h"
 #include "Core/Type/InventorySortType.h"
-#include "Filter/FilterCriterion.h"
+#include "FilterCriterion.h"
 #include "Core/InventoryPrimaryAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"

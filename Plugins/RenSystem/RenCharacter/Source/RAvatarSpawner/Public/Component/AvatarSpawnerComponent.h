@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere, meta = (Categories = "Gameplay"))
 	FGameplayTag CharacterPossessTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Possess.Character"));
 
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SpawnSource==ESpawnDataSource::Static", EditConditionHides))
 	TArray<FCharacterInitializationData> CharacterData;
 
 

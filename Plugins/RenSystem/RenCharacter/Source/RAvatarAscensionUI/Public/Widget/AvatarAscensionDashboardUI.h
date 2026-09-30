@@ -15,7 +15,7 @@ class UAssetCollectionUI;
 class UAssetDetailUI;
 class UAvatarStorageManager;
 class UAvatarAscensionSubsystem;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class UAscensionFragment;
 struct FAvatarInstance;
 struct FTaskResult;
@@ -79,7 +79,7 @@ protected:
 
 	// ~ UAssetDashboardUI
 	virtual TArray<UWidget*> GetLockingControls_Implementation() const override;
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UAssetDashboardUI
 

@@ -22,9 +22,9 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Data/AssetGroup.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 #include "System/CraftStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 UCraftStorageManager* UCraftSubsystem::GetStorageManager()
@@ -84,7 +84,7 @@ bool UCraftSubsystem::TryCraftItem(const FPrimaryAssetId& CraftAssetId, const FG
 }
 
 
-const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FInstancedStruct& Context) const
+const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UFragmentedDataAsset* Asset, const FInstancedStruct& Context) const
 {
 	const UCraftFragment* CraftFragment = Asset->FindFragmentByClass<UCraftFragment>();
 	if (!IsValid(CraftFragment))
@@ -94,7 +94,7 @@ const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAs
 	return CraftFragment->GetCraftingMaterial(Context);
 }
 
-const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UCoreDataAsset* Asset, const FGuid& CollectionId) const
+const UAssetCollection* UCraftSubsystem::GetMaterialCollection(const UFragmentedDataAsset* Asset, const FGuid& CollectionId) const
 {
 	return GetMaterialCollection(Asset, FInstancedStruct::Make(FAssetRuleContext(CollectionId)));
 }
@@ -122,7 +122,7 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 	}
 
 	FPrimaryAssetId CraftAssetId = Asset->GetPrimaryAssetId();
-	const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList = AssetCollection->GetAssetList();
+	const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList = AssetCollection->GetAssetList();
 
 	if (QuerySource == ECraftQuerySource::Glossary)
 	{
@@ -134,11 +134,11 @@ void UCraftSubsystem::QueryItems(const UTradeAsset* Asset, const FGuid& Collecti
 	}
 }
 
-void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
+void UCraftSubsystem::QueryAssetItems(const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
 	{
-		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
+		const UFragmentedDataAsset* ItemDataAsset = AssetKv.Key;
 		FTradeAssetDetail ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);
@@ -160,11 +160,11 @@ void UCraftSubsystem::QueryAssetItems(const TMap<UCoreDataAsset*, FTradeAssetDet
 	}
 }
 
-void UCraftSubsystem::QueryStorageItems(const TMap<UCoreDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
+void UCraftSubsystem::QueryStorageItems(const TMap<UFragmentedDataAsset*, FTradeAssetDetail>& AssetList, const FPrimaryAssetId& CraftAssetId, const FGuid& CollectionId, const FInstancedStruct& Context, UCraftStorageManager* StorageManager, TFunctionRef<void(const FPrimaryAssetId&, const FTradeAssetDetail&, const FCraftInstance*)>&& Callback)
 {
-	for (const TPair<UCoreDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
+	for (const TPair<UFragmentedDataAsset*, FTradeAssetDetail>& AssetKv : AssetList)
 	{
-		const UCoreDataAsset* ItemDataAsset = AssetKv.Key;
+		const UFragmentedDataAsset* ItemDataAsset = AssetKv.Key;
 		FTradeAssetDetail ItemDetail = AssetKv.Value;
 
 		const UAssetCollection* MaterialCollection = GetMaterialCollection(ItemDataAsset, Context);

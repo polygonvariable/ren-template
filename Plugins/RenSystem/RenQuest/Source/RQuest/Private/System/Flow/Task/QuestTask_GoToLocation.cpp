@@ -9,7 +9,7 @@
 // Project Headers
 #include "Actor/QuestObjectiveActor.h"
 #include "Core/QuestSettings.h"
-#include "Util/ObjectUtil.h"
+#include "PropertyBagLibrary.h"
 
 
 void UQuestTask_GoToLocation::CopyFromAsset(const UEventflowTask* Template)
@@ -67,7 +67,7 @@ void UQuestTask_GoToLocation::OnLoaded(EFSMState PreviousState)
 	RuntimeActor = World->SpawnActorDeferred<AQuestObjectiveActor>(ActorClass, ActorData.Transform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (IsValid(RuntimeActor))
 	{
-		FObjectUtil::CopyPropertiesToInstance(ActorData.Properties, RuntimeActor);
+		FPropertyBagLibrary::CopyPropertiesToInstance(ActorData.Properties, RuntimeActor);
 
 		RuntimeActor->OnCompleted.BindUObject(this, &UQuestTask_GoToLocation::HandleOnDestinationReached);
 		RuntimeActor->FinishSpawning(ActorData.Transform);

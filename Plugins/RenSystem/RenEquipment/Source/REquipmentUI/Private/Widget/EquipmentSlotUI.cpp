@@ -9,7 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "System/EquipmentStorageManager.h"
 #include "System/EquipmentSubsystem.h"
 #include "Widget/AssetEntry.h"
@@ -49,7 +49,7 @@ void UEquipmentSlotUI::ClearSlot()
 	}
 }
 
-void UEquipmentSlotUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UEquipmentSlotUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	if (!IsValid(Asset))
 	{

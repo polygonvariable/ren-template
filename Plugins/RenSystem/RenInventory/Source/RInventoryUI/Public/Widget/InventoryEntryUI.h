@@ -10,7 +10,7 @@
 
 // Forward Declarations
 class UOverlay;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 
 
 /**
@@ -31,7 +31,7 @@ protected:
 	TObjectPtr<UOverlay> ItemRelation = nullptr;
 
 	// ~ UInventoryUI
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	// ~ End of UInventoryUI
 

@@ -8,7 +8,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "Widget/Drag/AssetDragOperation.h"
 
 
@@ -23,7 +23,7 @@ void UAssetDragUI::NativeConstruct()
 		return;
 	}
 
-	const UCoreDataAsset* DataAsset = DragOperation->DataAsset;
+	const UFragmentedDataAsset* DataAsset = DragOperation->DataAsset;
 	if (!IsValid(DataAsset))
 	{
 		return;

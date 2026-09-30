@@ -28,7 +28,7 @@ public class RShop : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "DeveloperSettings",
-                "RCoreAuthAction",
+                "CAuthAction",
                 "CGamedataStorage",
                 "RTrade",
             }
@@ -47,7 +47,7 @@ public class RShop : ModuleRules
                 "CAsset",
                 "CAssetManager",
                 "CAssetInstance",
-                "RCoreLibrary",
+                "CLibrary",
                 "CGameplayBase",
             }
 			);

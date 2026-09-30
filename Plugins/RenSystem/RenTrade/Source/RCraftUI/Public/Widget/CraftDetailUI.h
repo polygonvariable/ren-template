@@ -12,7 +12,7 @@
 // Forward Declarations
 class UTextBlock;
 class UAssetEntry;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class UCraftStorageManager;
 
 

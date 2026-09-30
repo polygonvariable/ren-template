@@ -28,7 +28,7 @@ public class RInteractUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
-				"RCorePool",
+				"CPool",
             }
 			);
 			
@@ -41,7 +41,7 @@ public class RInteractUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreLibrary",
+				"CLibrary",
                 "RInteract",
             }
 			);

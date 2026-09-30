@@ -8,9 +8,6 @@
 // Generated Headers
 #include "AssetInstanceContextProvider.generated.h"
 
-// Module Macros
-#define REN_API CASSETINSTANCE_API
-
 
 UINTERFACE(MinimalAPI, meta = (CannotImplementInterfaceInBlueprint))
 class UAssetInstanceContextProvider : public UInterface
@@ -21,7 +18,7 @@ class UAssetInstanceContextProvider : public UInterface
 /**
  * 
  */
-class REN_API IAssetInstanceContextProvider
+class CASSETINSTANCE_API IAssetInstanceContextProvider
 {
 
 	GENERATED_BODY()
@@ -33,8 +30,4 @@ public:
 	virtual FPrimaryAssetType GetAssetType() const = 0;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

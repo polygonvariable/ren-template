@@ -9,15 +9,11 @@
 // Generated Headers
 #include "AssetCollectionUI.generated.h"
 
-// Module Macros
-#define REN_API CASSETUI_API
-
 // Forward Declarations
 class UListView;
 class UAssetEntry;
 class UFilterGroup;
 class UFilterCriterion;
-
 
 
 /**
@@ -41,26 +37,24 @@ public:
 	FName PrimarySourceId = NAME_None;
 
 
-	REN_API virtual void InitializeCollection();
+	CASSETUI_API virtual void InitializeCollection();
 
-	REN_API virtual void DisplayEntries();
-	REN_API virtual void ClearEntries(bool bRegenerate);
-	REN_API virtual void RefreshEntries();
+	CASSETUI_API virtual void DisplayEntries();
+	CASSETUI_API virtual void ClearEntries(bool bRegenerate);
+	CASSETUI_API virtual void RefreshEntries();
 
-	REN_API UAssetEntry* GetSelectedEntry();
+	CASSETUI_API UAssetEntry* GetSelectedEntry();
 	template<typename T>
 	T* GetSelectedEntry()
 	{
 		return Cast<T>(GetSelectedEntry());
 	}
 
+	CASSETUI_API void AddSubDetails(const FPrimaryAssetId& Id, const FInstancedStruct& Detail);
+	CASSETUI_API void RemoveSubDetails(const FPrimaryAssetId& Id);
+	CASSETUI_API void ClearSubDetails();
 
-	REN_API void AddSubDetails(const FPrimaryAssetId& Id, const FInstancedStruct& Detail);
-	REN_API void RemoveSubDetails(const FPrimaryAssetId& Id);
-	REN_API void ClearSubDetails();
-
-
-	REN_API UFilterCriterion* GetCriterionByName(FName Name) const;
+	CASSETUI_API UFilterCriterion* GetCriterionByName(FName Name) const;
 
 	template<typename T>
 	T* GetCriterionByName(FName Name)
@@ -92,16 +86,14 @@ protected:
 	TArray<TObjectPtr<UAssetEntry>> EntryPool;
 
 
-	REN_API const UFilterCriterion* GetFilterRoot() const;
+	CASSETUI_API const UFilterCriterion* GetFilterRoot() const;
 
+	CASSETUI_API virtual void AutoSelectCaching();
+	CASSETUI_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;
 
-	REN_API virtual void AutoSelectCaching();
-	REN_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;
-
-
-	REN_API void AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry);
-	REN_API void ReturnEntryToPool(UAssetEntry* Item);
-	REN_API UAssetEntry* GetEntryFromPool(const TSubclassOf<UAssetEntry>& EntryClass);
+	CASSETUI_API void AddEntry(const FPrimaryAssetId& AssetId, UAssetEntry* Entry);
+	CASSETUI_API void ReturnEntryToPool(UAssetEntry* Item);
+	CASSETUI_API UAssetEntry* GetEntryFromPool(const TSubclassOf<UAssetEntry>& EntryClass);
 
 	template<typename T>
 	T* GetEntryFromPool()
@@ -109,12 +101,11 @@ protected:
 		return Cast<T>(GetEntryFromPool(T::StaticClass()));
 	}
 
-
 	void HandleOnItemSelectionChanged(UObject* Object);
 
 	// ~ UUserWidget
-	REN_API virtual void NativeConstruct() override;
-	REN_API virtual void NativeDestruct() override;
+	CASSETUI_API virtual void NativeConstruct() override;
+	CASSETUI_API virtual void NativeDestruct() override;
 	// ~ End of UUserWidget
 
 private:
@@ -122,8 +113,4 @@ private:
 	FPrimaryAssetId _SelectedAssetId;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

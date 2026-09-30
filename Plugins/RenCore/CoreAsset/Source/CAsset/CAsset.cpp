@@ -2,14 +2,14 @@
 
 #include "CAsset.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreAssetModule"
+#define LOCTEXT_NAMESPACE "FCAssetModule"
 
-void FRCoreAssetModule::StartupModule()
+void FCAssetModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreAssetModule::ShutdownModule()
+void FCAssetModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreAssetModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreAssetModule, CAsset)
+IMPLEMENT_MODULE(FCAssetModule, CAsset)
 

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRCoreSettingsModule : public IModuleInterface
+class FCWorldSettingsModule : public IModuleInterface
 {
 public:
 

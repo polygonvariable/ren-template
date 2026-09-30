@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 
 // Generated Headers
 #include "AACraftClaimItem.generated.h"
@@ -11,7 +11,7 @@
 // Forward Declarations
 class UAssetManager;
 class UTradeAsset;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FStreamableHandle;
 
 

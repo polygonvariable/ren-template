@@ -2,14 +2,11 @@
 
 #pragma once
 
-// Module Macros
-#define REN_API CASSET_API
-
 
 /**
  *
  */
-class REN_API FAssetFilterProperty
+class CASSET_API FAssetFilterProperty
 {
 
 public:
@@ -18,8 +15,4 @@ public:
 	static const FName InstanceId;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

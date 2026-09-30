@@ -45,7 +45,7 @@ protected:
 
 
 	// ~ UAssetDashboardUI
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	virtual void SetSecondaryDetail(const UAssetEntry* Entry) override;
 	virtual void RedirectToWidget(TSubclassOf<UAssetDashboardUI> WidgetClass) override;
 	// ~ End of UAssetDashboardUI

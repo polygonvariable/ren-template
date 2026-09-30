@@ -14,10 +14,10 @@
 #include "Core/StorageProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 #include "System/AssetInstanceRelationSubsystem.h"
 #include "System/EquipmentStorageManager.h"
-#include "Util/SubsystemUtil.h"
+#include "SubsystemLibrary.h"
 
 
 void UEquipmentSubsystem::SyncEquipment(const FGuid& OwnerInstanceId) const

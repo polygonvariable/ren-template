@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Auth/AuthAction.h"
+#include "AuthAction.h"
 #include "Core/Type/EquipmentSlotId.h"
 
 // Generated Headers

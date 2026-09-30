@@ -20,7 +20,7 @@ class UTradeCollectionUI;
 class UTradeDetailUI;
 class UAssetEntry;
 class UTradeAsset;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 struct FStreamableHandle;
 
 
@@ -59,10 +59,10 @@ protected:
 
 
 	REN_API virtual void InitializeTradeDetail();
-	REN_API virtual const UAssetCollection* GetTradeMaterialCollection(const UCoreDataAsset* Asset) const;
+	REN_API virtual const UAssetCollection* GetTradeMaterialCollection(const UFragmentedDataAsset* Asset) const;
 
 	// ~ UAssetDashboardUI
-	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	REN_API virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	REN_API virtual void CancelInitialization() override;
 	// ~ End of UAssetDashboardUI
 	

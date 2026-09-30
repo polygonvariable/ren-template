@@ -42,7 +42,7 @@ public class RShopUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"CAssetUI",
-                "RCoreLibrary",
+                "CLibrary",
                 "CGamedataStorage",
                 "RTrade",
                 "RShop",

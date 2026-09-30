@@ -4,8 +4,8 @@
 #include "Ability/Attribute/DamageSet.h"
 
 // Engine Headers
-#include "GameplayEffectExtension.h"
 #include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
 

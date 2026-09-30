@@ -8,7 +8,7 @@
 #include "Materials/MaterialParameterCollection.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "Core/EnvironmentSettings.h"
 #include "Core/SeasonSettings.h"
 #include "Data/SeasonCollectionAsset.h"
@@ -55,7 +55,7 @@ void USeasonSubsystem::RemoveSeasonController()
 
 void USeasonSubsystem::HandleOnSeasonLoaded()
 {
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	if (!IsValid(SeasonConfig))
 	{
@@ -110,7 +110,7 @@ void USeasonSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 
 	const UEnvironmentSettings* Settings = UEnvironmentSettings::Get();
 	const TArray<FName>& Bundles = Settings->EnvironmentBundles;
@@ -123,7 +123,7 @@ void USeasonSubsystem::OnWorldEndPlay(UWorld& InWorld)
 {
 	RemoveSeasonController();
 
-	FAssetManagerUtil::CancelHandle(AssetHandle);
+	FAssetManagerLibrary::CancelHandle(AssetHandle);
 	AssetManager = nullptr;
 	SeasonConfig = nullptr;
 

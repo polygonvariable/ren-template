@@ -5,9 +5,6 @@
 // Generated Headers
 #include "AssetFragment.generated.h"
 
-// Module Macros
-#define REN_API CASSET_API
-
 
 /**
  * 
@@ -21,12 +18,8 @@ class UAssetFragment : public UObject
 public:
 
 #if WITH_EDITORONLY_DATA
-	REN_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData) {};
+	CASSET_API virtual void AppendAssetBundleData(FAssetBundleData& InAssetBundleData) {};
 #endif
 
 };
-
-
-// Module Macros
-#undef REN_API
 

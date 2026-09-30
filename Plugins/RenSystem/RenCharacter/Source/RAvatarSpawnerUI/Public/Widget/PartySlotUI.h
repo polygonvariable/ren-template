@@ -12,7 +12,7 @@
 class UImage;
 class UButton;
 class UTextBlock;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 class UPartyStorageManager;
 
 
@@ -66,7 +66,7 @@ protected:
 	void ClearSlot();
 
 	// ~ UAssetUI
-	virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	// ~ End of UAssetUI
 
 	// ~ UUserWidget

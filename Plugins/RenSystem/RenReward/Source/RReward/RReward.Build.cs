@@ -29,7 +29,7 @@ public class RReward : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
 				"DeveloperSettings",
 				"GameplayTags",
-				"RCoreAuthAction",
+				"CAuthAction",
 				"CGamedataStorage",
 				"CAsset",
 				"CAssetInstance",
@@ -46,9 +46,9 @@ public class RReward : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"RCoreBroadcast",
+				"CBroadcast",
 				"RCoreDelegate",
-                "RCoreLibrary",
+                "CLibrary",
                 "CGameplayBase",
             }
 		);

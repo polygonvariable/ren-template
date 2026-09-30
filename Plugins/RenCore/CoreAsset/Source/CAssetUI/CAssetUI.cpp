@@ -2,14 +2,14 @@
 
 #include "CAssetUI.h"
 
-#define LOCTEXT_NAMESPACE "FRCoreAssetUIModule"
+#define LOCTEXT_NAMESPACE "FCAssetUIModule"
 
-void FRCoreAssetUIModule::StartupModule()
+void FCAssetUIModule::StartupModule()
 {
 	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
 }
 
-void FRCoreAssetUIModule::ShutdownModule()
+void FCAssetUIModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
@@ -17,5 +17,5 @@ void FRCoreAssetUIModule::ShutdownModule()
 
 #undef LOCTEXT_NAMESPACE
 	
-IMPLEMENT_MODULE(FRCoreAssetUIModule, CAssetUI)
+IMPLEMENT_MODULE(FCAssetUIModule, CAssetUI)
 

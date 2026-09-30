@@ -6,7 +6,7 @@
 #include "Core/Type/ComponentTemplateData.h"
 #include "EquipmentManagerComponent.h"
 #include "Core/Type/EquipmentSpawnData.h"
-#include "Definition/QueryType.h"
+#include "SpawnDataSource.h"
 
 // Generated Headers
 #include "EquipmentManagerTemplateData.generated.h"
@@ -24,9 +24,9 @@ struct FEquipmentManagerTemplateData : public FComponentTemplateData
 public:
 
 	UPROPERTY(EditAnywhere)
-	EDataSource SourceType = EDataSource::Static;
+	ESpawnDataSource SpawnSource = ESpawnDataSource::Static;
 
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "SourceType==EDataSource::Static", EditConditionHides))
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "SpawnSource==ESpawnDataSource::Static", EditConditionHides))
 	TArray<FEquipmentInitializationData> SpawnData;
 
     
@@ -42,7 +42,7 @@ public:
         {
             return false;
         }
-        Component->SourceType = SourceType;
+        Component->SpawnSource = SpawnSource;
         Component->EquipmentSpawnData = SpawnData;
         return true;
     };

@@ -41,8 +41,8 @@ public class RGameplayModeDebug : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"GameplayTags",
-                "RCoreLibrary",
-                "RCoreCommon",
+                "CLibrary",
+                "CFramework",
                 "CAsset",
                 "RGameplayMode",
             }

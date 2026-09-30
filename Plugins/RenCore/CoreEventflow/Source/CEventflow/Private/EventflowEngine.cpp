@@ -7,9 +7,9 @@
 #include "Engine/AssetManager.h"
 
 // Project Headers
-#include "Core/AssetManagerUtil.h"
+#include "Core/AssetManagerLibrary.h"
 #include "EventflowAsset.h"
-#include "Library/PoolHelper.h"
+#include "Core/PoolLibrary.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/EventflowPrimaryTask.h"
@@ -155,7 +155,7 @@ void UEventflowEngine::CreateTask(const FGuid& NodeId, const FEventflowNode* Nod
 
 	UClass* Class = AssetTask->GetClass();
 
-	_ActiveTask = FPoolHelper::AcquireFromContainer<UEventflowPrimaryTask>(_TaskPool, Class, this);
+	_ActiveTask = FPoolLibrary::AcquireFromContainer<UEventflowPrimaryTask>(_TaskPool, Class, this);
 	_ActiveTask->OnStateChanged.BindUObject(this, &UEventflowEngine::HandleOnTaskStateChanged);
 	_ActiveTask->CopyFromAsset(AssetTask);
 	_ActiveTask->InitializeData(NodeId, Node);
@@ -177,7 +177,7 @@ void UEventflowEngine::RemoveTask()
 			_ActiveTask->Reset();
 		}
 
-		FPoolHelper::ReturnToContainer(_TaskPool, _ActiveTask);
+		FPoolLibrary::ReturnToContainer(_TaskPool, _ActiveTask);
 		LOG_WARNING(LogEventflowEngine, TEXT("Primary task removed and returned to pool"));
 	}
 
@@ -236,7 +236,7 @@ void UEventflowEngine::OnInitialized(EFSMState PreviousState)
 		return;
 	}
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	TArray<FName> AssetBundle;
 	GetAssetBundle(AssetBundle);
@@ -296,8 +296,8 @@ void UEventflowEngine::OnReset()
 {
 	RemoveTask();
 
-	FAssetManagerUtil::CancelHandle(_AssetHandle);
-	FPoolHelper::Clear(_TaskPool);
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
+	FPoolLibrary::Clear(_TaskPool);
 
 	_Asset = nullptr;
 

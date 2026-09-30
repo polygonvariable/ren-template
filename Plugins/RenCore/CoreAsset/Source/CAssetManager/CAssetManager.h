@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleManager.h"
 
-class FRCoreAssetManagerModule : public IModuleInterface
+class FCAssetManagerModule : public IModuleInterface
 {
 public:
 

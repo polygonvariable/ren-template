@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/InventoryQueryType.h"
+#include "Core/Type/InventoryQueryRule.h"
 #include "Widget/AssetCollectionUI.h"
 
 // Generated Headers

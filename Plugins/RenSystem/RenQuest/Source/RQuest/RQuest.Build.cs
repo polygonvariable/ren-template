@@ -31,7 +31,7 @@ public class RQuest : ModuleRules
 				"GameplayTags",
                 "UMG",
                 "CEventflow",
-				"RCoreCommon",
+				"CFramework",
                 "CGamedataStorage",
             }
 			);
@@ -45,9 +45,9 @@ public class RQuest : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "RCoreLibrary",
-				"RCorePool",
-                "RCoreBroadcast",
+                "CLibrary",
+				"CPool",
+                "CBroadcast",
             }
 			);
 		

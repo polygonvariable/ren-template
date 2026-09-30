@@ -8,7 +8,7 @@
 #include "Auth/AAGrantAvatarRank.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Subsystem/AuthActionSubsystem.h"
+#include "AuthActionSubsystem.h"
 
 
 bool UAvatarAscensionSubsystem::TryAddExperiencePoints(FName TargetSourceId, FPrimaryAssetId TargetAssetId, FPrimaryAssetId MaterialAssetId, FGuid MaterialId)

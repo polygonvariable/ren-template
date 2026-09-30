@@ -15,7 +15,7 @@
 
 // Forward Declarations
 class UAssetEntry;
-class UCoreDataAsset;
+class UFragmentedDataAsset;
 
 
 
@@ -40,7 +40,7 @@ public:
 protected:
 
 	// ~ UAssetDetailUI
-	REN_API virtual void SetPrimaryDetail(const UCoreDataAsset* Asset) override;
+	REN_API virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
 	// ~ End of UAssetDetailUI
 
 };

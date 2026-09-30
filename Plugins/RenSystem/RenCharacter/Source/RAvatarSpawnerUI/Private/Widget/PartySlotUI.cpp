@@ -9,7 +9,7 @@
 #include "Components/TextBlock.h"
 
 // Project Headers
-#include "Data/CoreDataAsset.h"
+#include "Data/FragmentedDataAsset.h"
 #include "System/PartyStorageManager.h"
 #include "System/PartySubsystem.h"
 #include "Widget/Drag/AssetDragOperation.h"
@@ -47,7 +47,7 @@ void UPartySlotUI::ClearSlot()
 	}
 }
 
-void UPartySlotUI::SetPrimaryDetail(const UCoreDataAsset* Asset)
+void UPartySlotUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
 	AssetDisplayName->SetText(Asset->DisplayName);
 	AssetIcon->SetBrushFromSoftTexture(Asset->Icon);
