@@ -24,15 +24,28 @@
 			"Name": "RQuestEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "RQuestDebug",
+			"Type": "DeveloperTool",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
+		{
+			"Name": "SlateIM",
+			"Enabled": true
+		},
 		{
 			"Name": "CoreFramework",
 			"Enabled": true
 		},
 		{
 			"Name": "CoreGamedata",
+			"Enabled": true
+		},
+		{
+			"Name": "CoreWorlddata",
 			"Enabled": true
 		},
 		{

@@ -31,6 +31,12 @@ bool UEventflowTask::ImplementsGetWorld() const
 
 #endif
 
+#if UE_BUILD_DEVELOPMENT
+void UEventflowTask::GetEditorDebugInfo(TArray<FString>& OutDebug) const
+{
+}
+#endif
+
 UEventflowEngine* UEventflowTask::GetOwningEngine() const
 {
 	return Cast<UEventflowEngine>(GetOuter());

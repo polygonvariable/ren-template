@@ -27,6 +27,7 @@ public class CEventflowEd : ModuleRules
             {
                 "Core",
 				// ... add other public dependencies that you statically link with here ...
+                "PropertyEditor",
 				"AssetTools",
                 "UnrealEd",
                 "CDataManager",
@@ -44,7 +45,6 @@ public class CEventflowEd : ModuleRules
                 "Slate",
                 "SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "PropertyEditor",
                 "ToolMenus",
                 "GraphEditor",
             }

@@ -5,6 +5,9 @@
 // Engine Headers
 #include "Subsystems/GameInstanceSubsystem.h"
 
+// Project Headers
+#include "lua.h"
+
 // Generated Headers
 #include "LuauSubsystem.generated.h"
 
@@ -26,6 +29,7 @@ class ULuauSubsystem : public UGameInstanceSubsystem
 
 public:
 
+	void EnsureState();
 	lua_State* GetState() const;
 	void CreateState();
 	void CloseState();
@@ -34,9 +38,16 @@ public:
 	bool CompileCode(const FString& InCode, TArray<uint8>& OutBytecode);
 
 	UFUNCTION(BlueprintCallable)
-	bool ExecuteBytecode(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output);
+	CLUAU_API bool ExecuteBytecode(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output);
+
+	CLUAU_API bool ExecuteBytecodeWithContext(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output, UObject* Context);
+
+	CLUAU_API void RegisterFunction(const FString& Namespace, const FString& FunctionName, lua_CFunction Function);
+
+	UObject* GetCurrentContext();
 
 protected:
+
 
 	// ~ UGameInstanceSubsystem
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
@@ -46,6 +57,9 @@ protected:
 
 private:
 
+	UPROPERTY()
+	TArray<TWeakObjectPtr<UObject>> Contexts;
+	
 	lua_State* L = nullptr;
 
 
@@ -57,8 +71,11 @@ private:
 
 public:
 
-	static ULuauSubsystem* Get(UWorld* World);
-	static ULuauSubsystem* Get(UGameInstance* GameInstance);
+	static CLUAU_API ULuauSubsystem* Get(UWorld* World);
+	static CLUAU_API ULuauSubsystem* Get(UGameInstance* GameInstance);
+
+	static CLUAU_API ULuauSubsystem* GetFromState(lua_State* InL);
+	static CLUAU_API UObject* GetCurrentContextFromState(lua_State* LInL);
 
 };
 

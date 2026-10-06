@@ -11,10 +11,12 @@ TMap<FName, UClass*> UQuestEdGraphSchema::GetRegisteredNodeClasses() const
 {
 	TMap<FName, UClass*> NodeClasses;
 
-	NodeClasses.Add(UQuestEdNode_GoToPlace::StaticClass()->GetFName(), UQuestEdNode_GoToPlace::StaticClass());
 	NodeClasses.Add(UQuestEdNode_Begin::StaticClass()->GetFName(), UQuestEdNode_Begin::StaticClass());
 	NodeClasses.Add(UQuestEdNode_End::StaticClass()->GetFName(), UQuestEdNode_End::StaticClass());
-	NodeClasses.Add(UQuestEdNode_SubGraph::StaticClass()->GetFName(), UQuestEdNode_SubGraph::StaticClass());
+	NodeClasses.Add(UQuestEdNode_SpawnMarker::StaticClass()->GetFName(), UQuestEdNode_SpawnMarker::StaticClass());
+	NodeClasses.Add(UQuestEdNode_ConditionalSpawnMarker::StaticClass()->GetFName(), UQuestEdNode_ConditionalSpawnMarker::StaticClass());
+	NodeClasses.Add(UQuestEdNode_Reroute::StaticClass()->GetFName(), UQuestEdNode_Reroute::StaticClass());
+	NodeClasses.Add(UQuestEdNode_ExternalTask::StaticClass()->GetFName(), UQuestEdNode_ExternalTask::StaticClass());
 
 	return NodeClasses;
 }

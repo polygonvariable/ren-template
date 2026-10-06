@@ -10,8 +10,9 @@
 #include "ToolMenu.h"
 
 // Project Headers
+#include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphSchema.h"
-
+#include "Task/EventflowPrimaryTask.h"
 
 
 UEventflowPrimaryTask* UEventflowEdGraphNode::GetTask() const
@@ -25,17 +26,14 @@ void UEventflowEdGraphNode::SetTask(UEventflowPrimaryTask* Task)
 }
 
 
-
-TArray<UEventflowSubTask*> UEventflowEdGraphNode::GetSubTasks() const
-{
-	return TArray<UEventflowSubTask*>();
-}
-
-void UEventflowEdGraphNode::SetSubTasks(const TArray<UEventflowSubTask*>& Tasks)
-{
-}
-
-
+//TArray<UEventflowSubTask*> UEventflowEdGraphNode::GetSubTasks() const
+//{
+//	return TArray<UEventflowSubTask*>();
+//}
+//
+//void UEventflowEdGraphNode::SetSubTasks(const TArray<UEventflowSubTask*>& Tasks)
+//{
+//}
 
 
 bool UEventflowEdGraphNode::IsEntryNode() const
@@ -133,8 +131,8 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 	Section.AddMenuEntry(
 		TEXT("DELETE_NODE"),
 		FText::FromString(TEXT("Delete Node")),
-		FText::FromString(TEXT("Delete a node")),
-		FSlateIcon(TEXT("GraphEditorStyle"), TEXT("Icons.Pin")),
+		FText::FromString(TEXT("Delete node")),
+		FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Delete"),
 		FUIAction(FExecuteAction::CreateLambda(
 			[Node]()
 			{
@@ -142,8 +140,33 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 			}
 		))
 	);
+	Section.AddMenuEntry(
+		TEXT("REFRESH_NODE"),
+		FText::FromString(TEXT("Refresh Node")),
+		FText::FromString(TEXT("Refresh node")),
+		FSlateIcon(FAppStyle::GetAppStyleSetName(), "Icons.Refresh"),
+		FUIAction(FExecuteAction::CreateLambda(
+			[Node]()
+			{
+				Node->SyncRuntimeData();
+				Node->GetGraph()->NotifyGraphChanged();
+			}
+		))
+	);
 }
 
+
+UObject* UEventflowEdGraphNode::CreateOrSetTask(UEventflowPrimaryTask* Task, UClass* TaskClass)
+{
+	if (IsValid(Task))
+	{
+		return Task;
+	}
+	else
+	{
+		return NewObject<UEventflowPrimaryTask>(this, TaskClass);
+	}
+}
 
 void UEventflowEdGraphNode::CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction)
 {

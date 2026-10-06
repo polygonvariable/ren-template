@@ -44,6 +44,9 @@ public:
 protected:
 
 	UPROPERTY(EditAnywhere)
+	FName HUDInputMode;
+
+	UPROPERTY(EditAnywhere)
 	TSoftObjectPtr<UHUDInputBindingAsset> InputBinding;
 
 	IGameplayModeProvider* GameplayMode;

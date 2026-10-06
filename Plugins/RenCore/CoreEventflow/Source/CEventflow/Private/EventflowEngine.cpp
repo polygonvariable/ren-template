@@ -8,17 +8,17 @@
 
 // Project Headers
 #include "Core/AssetManagerLibrary.h"
-#include "EventflowAsset.h"
 #include "Core/PoolLibrary.h"
+#include "EventflowAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/EventflowPrimaryTask.h"
 
 
-void UEventflowEngine::InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition)
+void UEventflowEngine::InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData)
 {
-	_AssetId = AssetId;
-	_Entry = EntryDefinition;
+	_AssetId = InAssetId;
+	_EntryData = InEntryData;
 }
 
 
@@ -37,11 +37,15 @@ UEventflowAsset* UEventflowEngine::GetAsset() const
 	return _Asset;
 }
 
+const TInstancedStruct<FEventflowReturnData>& UEventflowEngine::GetReturnData() const
+{
+	return _ReturnData;
+}
+
 
 void UEventflowEngine::GetAssetBundle(TArray<FName>& OutBundle) const
 {
 }
-
 
 const FEventflowNode* UEventflowEngine::GetNode(const FGuid& NodeId) const
 {
@@ -60,7 +64,7 @@ void UEventflowEngine::ReachNode(const FGuid& NodeId)
 	if (!Node)
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find entry node"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -81,7 +85,7 @@ void UEventflowEngine::ReachNextNode(int Index)
 	if (!CurrentNode)
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -96,7 +100,7 @@ void UEventflowEngine::ReachNextNode(int Index)
 	if (!Outputs.IsValidIndex(Index))
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Invalid output index"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -104,7 +108,7 @@ void UEventflowEngine::ReachNextNode(int Index)
 	if (!Relation)
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find output relation"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -117,7 +121,7 @@ void UEventflowEngine::ReachPreviousNode()
 	if (!CurrentNode)
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -125,7 +129,7 @@ void UEventflowEngine::ReachPreviousNode()
 	if (Inputs.Num() == 0)
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find input"));
-		Finish(EFSMResult::Failed);
+		Finish(EFSMResult::Aborted);
 		return;
 	}
 
@@ -140,7 +144,7 @@ void UEventflowEngine::ReachPreviousNode()
 	}
 
 	LOG_ERROR(LogEventflowEngine, TEXT("Failed to find input relation"));
-	Finish(EFSMResult::Failed);
+	Finish(EFSMResult::Aborted);
 }
 
 
@@ -184,6 +188,18 @@ void UEventflowEngine::RemoveTask()
 	_ActiveTask = nullptr;
 }
 
+
+void UEventflowEngine::CreateReturnData(UEventflowPrimaryTask* Task)
+{
+	Task->GetReturnData(_ReturnData);
+}
+
+void UEventflowEngine::RemoveReturnData()
+{
+	_ReturnData.Reset();
+}
+
+
 void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result)
 {
 	FString TaskState = UEnum::GetDisplayValueAsText(NewState).ToString();
@@ -193,10 +209,15 @@ void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMSta
 		UEventflowPrimaryTask* Task = GetTask();
 		if (IsValid(Task))
 		{
-			int TransitionIndex = Task->GetTransitionIndex(Result);
-			EEventflowTransitionType TransitionType = Task->GetTransitionType(Result);
+			if (Task->TaskType == EEventflowPrimaryTaskType::Exit)
+			{
+				CreateReturnData(Task);
+			}
 
-			switch (TransitionType)
+			const TInstancedStruct<FEventflowTransitionData>& RawTransitionData = Task->GetTransitionData(Result);
+			const FEventflowTransitionData& TransitionData = RawTransitionData.Get();
+
+			switch (TransitionData.Type)
 			{
 			case EEventflowTransitionType::GraphFail:
 				LOG_ERROR(LogEventflowEngine, TEXT("Graph failed caused by task transition"));
@@ -207,13 +228,17 @@ void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMSta
 				Finish(EFSMResult::Success);
 				break;
 			case EEventflowTransitionType::NextNode:
-				ReachNextNode(TransitionIndex);
+				ReachNextNode(TransitionData.NextNodeIndex);
+				break;
+			case EEventflowTransitionType::RedirectNode:
+				ReachNode(TransitionData.NextNodeId);
 				break;
 			case EEventflowTransitionType::RestartNode:
 				Task->Restart();
 				break;
 			default:
-				LOG_ERROR(LogTemp, TEXT("Unknown transition type"));
+				LOG_ERROR(LogTemp, TEXT("Unknown transition type, no task will be handled"));
+				Finish(EFSMResult::Failed);
 				break;
 			}
 		}
@@ -264,13 +289,13 @@ void UEventflowEngine::OnReady(EFSMState PreviousState)
 
 void UEventflowEngine::OnActive(EFSMState PreviousState)
 {
-	switch (_Entry.EntryType)
+	switch (_EntryData.EntryType)
 	{
 	case EEventflowEntryType::Root:
 		ReachEntryNode();
 		break;
 	case EEventflowEntryType::Custom:
-		ReachNode(_Entry.NodeId);
+		ReachNode(_EntryData.EntryNodeId);
 		break;
 	default:
 		LOG_ERROR(LogEventflowEngine, TEXT("Unknown entry location"));
@@ -294,21 +319,24 @@ void UEventflowEngine::OnRestart(EFSMState PreviousState, EFSMResult PreviousRes
 
 void UEventflowEngine::OnReset()
 {
+	RemoveReturnData();
 	RemoveTask();
 
-	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 	FPoolLibrary::Clear(_TaskPool);
 
 	_Asset = nullptr;
+	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
 	if (IsValid(_AssetManager))
 	{
 		_AssetManager->UnloadPrimaryAsset(_AssetId);
 	}
-	_AssetManager = nullptr;
 
+	_AssetManager = nullptr;
 	_AssetId = FPrimaryAssetId();
-	_Entry.Reset();
+
+	_EntryData.Reset();
+	_ReturnData.Reset();
 
 	_ActiveNodeId.Invalidate();
 }

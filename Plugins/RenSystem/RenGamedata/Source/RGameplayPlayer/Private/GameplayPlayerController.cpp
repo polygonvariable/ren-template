@@ -17,31 +17,45 @@ void AGameplayPlayerController::BeginPlay()
 	{
 		return;
 	}
-	HandleOnMouseVisiblityTagChanged(GameplayMode->HasTagExact(MouseVisiblityTag));
-	GameplayMode->RegisterTagNotify(MouseVisiblityTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &AGameplayPlayerController::HandleOnMouseVisiblityTagChanged));
+
+	HandleOnInputModeTagChanged(true);
+
+	GameplayMode->RegisterTagNotify(InputModeGameTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &AGameplayPlayerController::HandleOnInputModeTagChanged));
+	GameplayMode->RegisterTagNotify(InputModeGameUITag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &AGameplayPlayerController::HandleOnInputModeTagChanged));
+	GameplayMode->RegisterTagNotify(InputModeUITag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &AGameplayPlayerController::HandleOnInputModeTagChanged));
 }
 
 void AGameplayPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (GameplayMode)
 	{
-		GameplayMode->UnregisterTagNotify(MouseVisiblityTag, this);
+		GameplayMode->UnregisterTagNotify(InputModeGameTag, this);
+		GameplayMode->UnregisterTagNotify(InputModeGameUITag, this);
+		GameplayMode->UnregisterTagNotify(InputModeUITag, this);
 	}
 	GameplayMode = nullptr;
 
 	Super::EndPlay(EndPlayReason);
 }
 
-void AGameplayPlayerController::HandleOnMouseVisiblityTagChanged(bool bAdded)
+void AGameplayPlayerController::HandleOnInputModeTagChanged(bool bAdded)
 {
-	bShowMouseCursor = bAdded;
-	if (bShowMouseCursor)
+	const FGameplayTag& InputTag = GameplayMode->GetInputModeTag();
+
+	if (InputTag.MatchesTagExact(InputModeGameTag))
 	{
-		SetInputMode(FInputModeUIOnly());
-	}
-	else
-	{
+		bShowMouseCursor = false;
 		SetInputMode(FInputModeGameOnly());
+	}
+	else if (InputTag.MatchesTagExact(InputModeGameUITag))
+	{
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeGameAndUI());
+	}
+	else if (InputTag.MatchesTagExact(InputModeUITag))
+	{
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
 	}
 }
 

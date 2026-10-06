@@ -39,7 +39,8 @@ public:
 	virtual void PopGameplayMode(FName Mode) override;
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) override;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) override;
-	RGAMEPLAYMODE_API virtual const FGameplayTagContainer& GetGameplayModeTags() const;
+	RGAMEPLAYMODE_API virtual const FGameplayTagContainer& GetGameplayModeTags() const override;
+	RGAMEPLAYMODE_API virtual const FGameplayTag& GetInputModeTag() const override;
 	// ~ End of IGameplayModeProvider
 	
 	// ~ UWorldSubsystem
@@ -50,13 +51,14 @@ public:
 	// ~ End of UWorldSubsystem
 
 #if UE_BUILD_DEVELOPMENT
+	RGAMEPLAYMODE_API const FString GetEditorInputMode() const;
 	RGAMEPLAYMODE_API const TArray<FName>& GetEditorGameplayModeStack() const;
 #endif
 
 protected:
 
+	FGameplayTag InputModeTag;
 	FGameplayTagContainer GameplayModeTag;
-
 	TArray<FName> GameplayModeStack;
 
 	bool bCanBroadcast = false;
@@ -70,6 +72,8 @@ protected:
 
 
 	void BroadcastTagChange(FGameplayTag Tag, bool bAdded);
+
+	void SetInputMode(FGameplayTag Tag);
 
 	// ~ IGameplayModeProvider
 	virtual void AddGameplayMode(FGameplayTagContainer Tags) override;

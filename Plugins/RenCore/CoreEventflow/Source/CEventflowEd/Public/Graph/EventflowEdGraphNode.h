@@ -7,7 +7,6 @@
 
 // Project Headers
 #include "LuauSourceCode.h"
-#include "Type/EventflowCondition.h"
 #include "Type/EventflowTransition.h"
 
 // Generated Headers
@@ -29,21 +28,11 @@ class CEVENTFLOWED_API UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	UPROPERTY()
-	TArray<FEventflowTransition> TaskTransitions;
-
-	UPROPERTY()
-	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
-
-	UPROPERTY()
-	FLuauSourceCode LuauCode;
-
-
 	virtual UEventflowPrimaryTask* GetTask() const;
 	virtual void SetTask(UEventflowPrimaryTask* Task);
 
-	virtual TArray<UEventflowSubTask*> GetSubTasks() const;
-	virtual void SetSubTasks(const TArray<UEventflowSubTask*>& Tasks);
+	//virtual TArray<UEventflowSubTask*> GetSubTasks() const;
+	//virtual void SetSubTasks(const TArray<UEventflowSubTask*>& Tasks);
 
 	virtual bool IsEntryNode() const;
 	virtual FText GetNodeDescription() const;
@@ -60,6 +49,14 @@ public:
 	// ~ End of UEdGraphNode
 
 protected:
+
+	UObject* CreateOrSetTask(UEventflowPrimaryTask* Task, UClass* TaskClass);
+
+	template<typename T>
+	T* CreateOrSetTask(UEventflowPrimaryTask* Task)
+	{
+		return Cast<T>(CreateOrSetTask(Task, T::StaticClass()));
+	}
 
 	void CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction);
 	void FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins);

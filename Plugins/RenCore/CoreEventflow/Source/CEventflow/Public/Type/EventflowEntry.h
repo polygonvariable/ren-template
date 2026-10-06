@@ -19,28 +19,49 @@ enum class EEventflowEntryType : uint8
 /**
  *
  */
-USTRUCT(BlueprintType)
-struct FEventflowEntry
+USTRUCT()
+struct FEventflowEntryData
 {
 	GENERATED_BODY()
 
 public:
 
-	FEventflowEntry() {};
-	FEventflowEntry(EEventflowEntryType InEntryType, FGuid InNodeId) : EntryType(InEntryType), NodeId(InNodeId) {};
+	FEventflowEntryData() {};
 
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	EEventflowEntryType EntryType = EEventflowEntryType::Root;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "EntryType == EEventflowEntryType::Custom", EditConditionHides))
-	FGuid NodeId = FGuid();
+	UPROPERTY()
+	FGuid EntryNodeId = FGuid();
 
 	void Reset()
-    {
-        EntryType = EEventflowEntryType::Root;
-        NodeId = FGuid();
-    }
+	{
+		EntryType = EEventflowEntryType::Root;
+		EntryNodeId = FGuid();
+	}
+
+};
+
+/**
+ *
+ */
+USTRUCT()
+struct FEventflowReturnData
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FEventflowReturnData() {};
+
+	UPROPERTY()
+	FGuid ExitNodeId = FGuid();
+
+	void Reset()
+	{
+		ExitNodeId.Invalidate();
+	}
 
 };
 

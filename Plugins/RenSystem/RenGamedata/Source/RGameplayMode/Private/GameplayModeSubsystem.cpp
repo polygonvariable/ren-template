@@ -42,6 +42,7 @@ void UGameplayModeSubsystem::PushGameplayMode(FName Mode)
 
 	GameplayModeStack.Push(Mode);
 
+	SetInputMode(FoundRow->InputModeTag);
 	AddGameplayMode(FoundRow->ActivateTags);
 	RempoveGameplayMode(FoundRow->DeactivateTags);
 }
@@ -65,6 +66,7 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 		return;
 	}
 
+	FGameplayTag NewInputTag;
 	FGameplayTagContainer NewActiveTags;
 	FGameplayTagContainer LastActiveTags = LastRow->ActivateTags;
 
@@ -76,9 +78,11 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 		{
 			LastActiveTags.AppendTags(NewLastRow->DeactivateTags);
 			NewActiveTags.AppendTags(NewLastRow->ActivateTags);
+			NewInputTag = NewLastRow->InputModeTag;
 		}
 	}
 
+	SetInputMode(NewInputTag);
 	AddGameplayMode(NewActiveTags);
 	RempoveGameplayMode(LastActiveTags);
 }
@@ -127,6 +131,11 @@ const FGameplayTagContainer& UGameplayModeSubsystem::GetGameplayModeTags() const
 	return GameplayModeTag;
 }
 
+const FGameplayTag& UGameplayModeSubsystem::GetInputModeTag() const
+{
+	return InputModeTag;
+}
+
 void UGameplayModeSubsystem::AddGameplayMode(FGameplayTagContainer Tags)
 {
 	for (const FGameplayTag& Tag : Tags)
@@ -169,6 +178,15 @@ void UGameplayModeSubsystem::BroadcastTagChange(FGameplayTag Tag, bool bAdded)
 	}
 }
 
+void UGameplayModeSubsystem::SetInputMode(FGameplayTag Tag)
+{
+	if (Tag.IsValid() && InputModeTag != Tag)
+	{
+		InputModeTag = Tag;
+		BroadcastTagChange(InputModeTag, true);
+	}
+}
+
 void UGameplayModeSubsystem::HandleOnGameplayModeTableLoaded()
 {
 	const UGameplayModeSettings* Settings = UGameplayModeSettings::Get();
@@ -195,6 +213,7 @@ void UGameplayModeSubsystem::HandleOnGameplayModeTableLoaded()
 		bCanBroadcast = true;
 	}
 
+	SetInputMode(FoundRow->InputModeTag);
 	AddGameplayMode(FoundRow->ActivateTags);
 	RempoveGameplayMode(FoundRow->DeactivateTags);
 }
@@ -260,6 +279,10 @@ UGameplayModeSubsystem* UGameplayModeSubsystem::Get(UWorld* World)
 
 
 #if UE_BUILD_DEVELOPMENT
+const FString UGameplayModeSubsystem::GetEditorInputMode() const
+{
+	return InputModeTag.ToString();
+}
 const TArray<FName>& UGameplayModeSubsystem::GetEditorGameplayModeStack() const
 {
 	return GameplayModeStack;

@@ -69,7 +69,7 @@ void UQuestTask_GoToLocation::OnLoaded(EFSMState PreviousState)
 	{
 		FPropertyBagLibrary::CopyPropertiesToInstance(ActorData.Properties, RuntimeActor);
 
-		RuntimeActor->OnCompleted.BindUObject(this, &UQuestTask_GoToLocation::HandleOnDestinationReached);
+		//RuntimeActor->OnCompleted.BindUObject(this, &UQuestTask_GoToLocation::HandleOnDestinationReached);
 		RuntimeActor->FinishSpawning(ActorData.Transform);
 	}
 

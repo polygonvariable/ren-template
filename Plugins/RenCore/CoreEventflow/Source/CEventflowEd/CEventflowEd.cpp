@@ -5,9 +5,9 @@
 #include "EdGraphUtilities.h"
 #include "IAssetTools.h"
 
-#include "CEventflowEd/Public/EventflowEdAction.h"
-#include "CEventflowEd/Public/Graph/EventflowEdGraphPin.h"
-
+#include "EventflowEdAction.h"
+#include "EventflowTransitionCustomization.h"
+#include "Graph/EventflowEdGraphPin.h"
 
 #define LOCTEXT_NAMESPACE "FCEventflowEdModule"
 
@@ -23,14 +23,24 @@ void FCEventflowEdModule::StartupModule()
 
 	PinFactory = MakeShareable(new FEventflowEdPanelPinFactory());
 	FEdGraphUtilities::RegisterVisualPinFactory(PinFactory);
+
+    FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
+    
+    PropertyModule.RegisterCustomPropertyTypeLayout("EventflowTransition", FOnGetPropertyTypeCustomizationInstance::CreateStatic(&FEventflowTransitionCustomization::MakeInstance));
+    PropertyModule.NotifyCustomizationModuleChanged();
 }
 
 void FCEventflowEdModule::ShutdownModule()
 {
 	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
 	// we call this function before unloading the module.
-
 	FEdGraphUtilities::UnregisterVisualPinFactory(PinFactory);
+
+	if (FModuleManager::Get().IsModuleLoaded("PropertyEditor"))
+    {
+        FPropertyEditorModule& PropertyModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+        PropertyModule.UnregisterCustomPropertyTypeLayout("EventflowTransition");
+    }
 }
 
 #undef LOCTEXT_NAMESPACE

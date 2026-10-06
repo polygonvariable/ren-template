@@ -84,6 +84,19 @@ void FGameplayModeDebugWidget::DrawWidget(float DeltaTime)
 					SlateIM::EndHorizontalStack();
 				}
 			}
+
+			SlateIM::Text(FString::ChrN(40, TEXT('-')));
+
+			FString InputMode = Subsystem->GetEditorInputMode();
+			if (SlateIM::NextTableCell())
+			{
+				SlateIM::BeginHorizontalStack();
+				{
+					SlateIM::Text(TEXT("Input Mode:"));
+					SlateIM::Text(InputMode, FColor::Cyan);
+				}
+				SlateIM::EndHorizontalStack();
+			}
 		}
 		SlateIM::EndTable();
 	}

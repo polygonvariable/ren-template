@@ -35,6 +35,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CancelQuest(const FPrimaryAssetId& AssetId);
 
+
+#if UE_BUILD_DEVELOPMENT
+	RQUEST_API const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetEditorQuests() const;
+#endif
+
 protected:
 
 	UPROPERTY()

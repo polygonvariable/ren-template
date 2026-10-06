@@ -28,7 +28,9 @@ private:
 
 	TSet<FString> Keywords;
 	TSet<FString> Symbols;
+	TSet<FString> Strings;
 
+	FTextBlockStyle StringStyle;
 	FTextBlockStyle NormalStyle;
 	FTextBlockStyle KeywordStyle;
 	FTextBlockStyle SymbolStyle;

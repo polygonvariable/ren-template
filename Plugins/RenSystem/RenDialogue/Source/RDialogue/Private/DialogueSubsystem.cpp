@@ -32,7 +32,7 @@ void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId)
 	Dialogues.Add(AssetId, Dialogue);
 
 	Dialogue->OnStateChanged.BindUObject(this, &UDialogueSubsystem::HandleOnEngineStateChanged, AssetId);
-	Dialogue->InitializeData(AssetId, FEventflowEntry());
+	Dialogue->InitializeData(AssetId, FEventflowEntryData());
 	Dialogue->Initialize();
 }
 

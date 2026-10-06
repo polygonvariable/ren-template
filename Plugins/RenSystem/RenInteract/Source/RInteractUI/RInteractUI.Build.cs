@@ -41,7 +41,8 @@ public class RInteractUI : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-				"CLibrary",
+                "EnhancedInput",
+                "CLibrary",
                 "RInteract",
             }
 			);

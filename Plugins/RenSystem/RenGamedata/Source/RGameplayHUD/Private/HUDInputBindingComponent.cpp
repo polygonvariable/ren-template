@@ -179,29 +179,11 @@ void UHUDInputBindingComponent::HandleOnWidgetVisibilityChanged(ESlateVisibility
 
 	if (Visiblity == ESlateVisibility::Visible)
 	{
-		FGameplayTagContainer R;
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.HUD")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Character")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Camera")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.HUD.Visible")));
-		GameplayMode->RempoveGameplayMode(R);
-
-		FGameplayTagContainer A;
-		A.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Mouse.Visible")));
-		GameplayMode->AddGameplayMode(A);
+		GameplayMode->PushGameplayMode(HUDInputMode);
 	}
 	else if (Visiblity == ESlateVisibility::Collapsed)
 	{
-		FGameplayTagContainer A;
-		A.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Mouse.Visible")));
-		GameplayMode->RempoveGameplayMode(A);
-
-		FGameplayTagContainer R;
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.HUD")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Character")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Input.Camera")));
-		R.AddTag(FGameplayTag::RequestGameplayTag(TEXT("Gameplay.HUD.Visible")));
-		GameplayMode->AddGameplayMode(R);
+		GameplayMode->PopGameplayMode(HUDInputMode);
 	}
 }
 

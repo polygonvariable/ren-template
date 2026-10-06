@@ -4,12 +4,19 @@
 #include "LuauSubsystem.h"
 
 // Project Headers
-#include "lua.h"
+#include "LuauLibrary.h"
+#include "LuauProperty.h"
 #include "luacode.h"
 #include "lualib.h"
-#include "LuauProperty.h"
-#include "LuauLibrary.h"
 
+
+void ULuauSubsystem::EnsureState()
+{
+	if (!L)
+	{
+		CreateState();
+	}
+}
 
 lua_State* ULuauSubsystem::GetState() const
 {
@@ -18,26 +25,86 @@ lua_State* ULuauSubsystem::GetState() const
 
 void ULuauSubsystem::CreateState()
 {
+	if (L)
+	{
+		return;
+	}
+
+	L = luaL_newstate();
 	if (!L)
 	{
-		L = luaL_newstate();
-		luaL_openlibs(L);
+		UE_LOG(LogTemp, Error, TEXT("Failed to create luau state"));
+		return;
 	}
+
+	luaL_openlibs(L);
+	
+	lua_pushlightuserdata(L, this);
+	lua_setfield(L, LUA_REGISTRYINDEX, "LuauSubsystem");
 }
 
 void ULuauSubsystem::CloseState()
 {
-	lua_close(L);
+	if (L)
+	{
+		lua_close(L);
+	}
+	L = nullptr;
 }
 
 
 bool ULuauSubsystem::CompileCode(const FString& InCode, TArray<uint8>& OutBytecode)
 {
-	return FLuauHelper::Compile(InCode, OutBytecode);
+	return FLuauLibrary::Compile(InCode, OutBytecode);
 }
+
+bool ULuauSubsystem::ExecuteBytecodeWithContext(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output, UObject* Context)
+{
+	if (!IsValid(Context))
+	{
+		return false;
+	}
+
+	Contexts.Push(TWeakObjectPtr<UObject>(Context));
+	bool bResult = ExecuteBytecode(Bytecode, Chunk, Method, Input, Output);
+	Contexts.Pop();
+
+	return bResult;
+}
+
+void ULuauSubsystem::RegisterFunction(const FString& Namespace, const FString& FunctionName, lua_CFunction Function)
+{
+	EnsureState();
+	if (!L)
+	{
+		return;
+	}
+
+	FTCHARToUTF8 NamespaceUtf8(*Namespace);
+	FTCHARToUTF8 FunctionUtf8(*FunctionName);
+
+	lua_getglobal(L, NamespaceUtf8.Get());
+	if (!lua_istable(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_newtable(L);
+		lua_pushvalue(L, -1);
+		lua_setglobal(L, NamespaceUtf8.Get());
+	}
+
+	lua_pushcfunction(L, Function, FunctionUtf8.Get());
+	lua_setfield(L, -2, FunctionUtf8.Get());
+
+	lua_pop(L, 1);
+}
+
+
+
 
 bool ULuauSubsystem::ExecuteBytecode(const TArray<uint8>& Bytecode, const FString& Chunk, const FString& Method, const FLuauProperties& Input, FLuauProperties& Output)
 {
+	EnsureState();
+
 	int BytecodeSize = Bytecode.Num();
 	if (!L || BytecodeSize == 0 || Chunk.IsEmpty() || Method.IsEmpty())
 	{
@@ -68,7 +135,7 @@ bool ULuauSubsystem::ExecuteBytecode(const TArray<uint8>& Bytecode, const FStrin
 		lua_pop(L, 1);
 		return false;
 	}
-	
+
 	lua_getglobal(L, LMethod);
 	if (!lua_isfunction(L, -1))
 	{
@@ -120,7 +187,6 @@ bool ULuauSubsystem::ExecuteBytecode(const TArray<uint8>& Bytecode, const FStrin
 	lua_settop(L, 0);
 	return true;
 }
-
 
 bool ULuauSubsystem::PushProperty(lua_State* State, const TInstancedStruct<FLuauProperty>& Property)
 {
@@ -298,6 +364,7 @@ void ULuauSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 void ULuauSubsystem::Deinitialize()
 {
 	CloseState();
+	Contexts.Empty();
 	Super::Deinitialize();
 }
 
@@ -319,3 +386,31 @@ ULuauSubsystem* ULuauSubsystem::Get(UGameInstance* GameInstance)
 	return GameInstance->GetSubsystem<ULuauSubsystem>();
 }
 
+
+
+ULuauSubsystem* ULuauSubsystem::GetFromState(lua_State* InL)
+{
+	lua_getfield(InL, LUA_REGISTRYINDEX, "LuauSubsystem");
+	ULuauSubsystem* Subsystem = static_cast<ULuauSubsystem*>(lua_touserdata(InL, -1));
+	lua_pop(InL, 1);
+	return Subsystem;
+}
+
+UObject* ULuauSubsystem::GetCurrentContext()
+{
+	if (Contexts.IsEmpty())
+	{
+		return nullptr;
+	}
+	return Contexts.Last().Get();
+}
+
+UObject* ULuauSubsystem::GetCurrentContextFromState(lua_State* InL)
+{
+	ULuauSubsystem* Subsystem = GetFromState(InL);
+	if (!IsValid(Subsystem))
+	{
+		return nullptr;
+	}
+	return Subsystem->GetCurrentContext();
+}

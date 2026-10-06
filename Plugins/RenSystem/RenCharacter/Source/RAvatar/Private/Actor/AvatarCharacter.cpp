@@ -43,9 +43,11 @@ AAvatarCharacter::AAvatarCharacter() : Super()
 		WeaponSocket01->TargetArmLength = 2.0f;
 		WeaponSocket01->bEnableCameraLag = true;
 		WeaponSocket01->bEnableCameraRotationLag = true;
-		//WeaponSocket01->bDrawDebugLagMarkers = true;
+		WeaponSocket01->bDoCollisionTest = false;
 		WeaponSocket01->CameraLagSpeed = 35.0f;
-		WeaponSocket01->CameraRotationLagSpeed = 15.0f;
+		WeaponSocket01->CameraRotationLagSpeed = 10.0f;
+		WeaponSocket01->CameraLagMaxDistance = 15.0f;
+		WeaponSocket01->bUseCameraLagSubstepping = false;
 		WeaponSocket01->ComponentTags.Add(TEXT("Weapon01"));
 	}
 
@@ -56,9 +58,11 @@ AAvatarCharacter::AAvatarCharacter() : Super()
 		WeaponSocket02->TargetArmLength = 2.0f;
 		WeaponSocket02->bEnableCameraLag = true;
 		WeaponSocket02->bEnableCameraRotationLag = true;
-		//WeaponSocket02->bDrawDebugLagMarkers = true;
+		WeaponSocket02->bDoCollisionTest = false;
 		WeaponSocket02->CameraLagSpeed = 35.0f;
-		WeaponSocket02->CameraRotationLagSpeed = 15.0f;
+		WeaponSocket02->CameraRotationLagSpeed = 10.0f;
+		WeaponSocket02->CameraLagMaxDistance = 15.0f;
+		WeaponSocket02->bUseCameraLagSubstepping = false;
 		WeaponSocket02->ComponentTags.Add(TEXT("Weapon02"));
 	}
 	

@@ -27,16 +27,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Dialogue")
 	FDialogueData Dialogue;
 
+	int NextIndex = 0;
+
 
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
 
 protected:
-
-	// ~ Binding
-	void HandleOnDialogueCompleted(int NextIndex);
-	// ~ End of Binding
 
 	// ~ UEventflowTask
 	virtual void OnInitialized(EFSMState PreviousState) override;

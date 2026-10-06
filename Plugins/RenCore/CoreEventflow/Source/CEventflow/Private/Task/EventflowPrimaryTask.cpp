@@ -12,25 +12,49 @@
 
 void UEventflowPrimaryTask::InitializeData(const FGuid& NodeId, const FEventflowNode* Node)
 {
-	_CurrentNode = Node;
-	_CurrentNodeId = NodeId;
+	_OwningNode = Node;
+	_OwningNodeId = NodeId;
 }
 
 
-int UEventflowPrimaryTask::GetTransitionIndex(EFSMResult Result) const
-{
-	return _TransitionIndex;
-}
 
-EEventflowTransitionType UEventflowPrimaryTask::GetTransitionType(EFSMResult Result) const
+void UEventflowPrimaryTask::GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData)
 {
-	const FEventflowTransition* FoundTransition = TaskTransitions.FindByPredicate([Result](const FEventflowTransition& Transition) { return Transition.Result == Result; });
-	if (FoundTransition)
+	ReturnData.Reset();
+
+	if (TaskType == EEventflowPrimaryTaskType::Exit)
 	{
-		return FoundTransition->Type;
+		FEventflowReturnData& Data = ReturnData.InitializeAs<FEventflowReturnData>();
+		Data.ExitNodeId = GetOwningNodeId();
 	}
-	return EEventflowTransitionType::NextNode;
 }
+
+TInstancedStruct<FEventflowTransitionData>& UEventflowPrimaryTask::GetTransitionData(EFSMResult Result)
+{
+	return _TransitionData;
+}
+
+void UEventflowPrimaryTask::CreateTransitionData()
+{
+	_TransitionData.InitializeAs<FEventflowTransitionData>();
+}
+
+void UEventflowPrimaryTask::RemoveTransitionData()
+{
+	_TransitionData.Reset();
+}
+
+void UEventflowPrimaryTask::ModifyTransitionData(TFunctionRef<void(TInstancedStruct<FEventflowTransitionData>&)> TransitionData)
+{
+	if (_TransitionData.IsValid())
+	{
+		TransitionData(_TransitionData);
+	}
+}
+
+
+
+
 
 const TArray<TObjectPtr<UEventflowSubTask>>& UEventflowPrimaryTask::GetSubTasks()
 {
@@ -43,14 +67,12 @@ void UEventflowPrimaryTask::CopyFromAsset(const UEventflowTask* Template)
 	const UEventflowPrimaryTask* Task = Cast<UEventflowPrimaryTask>(Template);
 	if (IsValid(Task))
 	{
-		TaskTransitions = Task->TaskTransitions;
-		SubTaskConditions = Task->SubTaskConditions;
+		TaskTitle = Task->TaskTitle;
 	}
 }
 
 
 #if WITH_EDITOR
-
 void UEventflowPrimaryTask::AppendAssetBundleData(FAssetBundleData& AssetBundle)
 {
 	Super::AppendAssetBundleData(AssetBundle);
@@ -63,13 +85,28 @@ void UEventflowPrimaryTask::AppendAssetBundleData(FAssetBundleData& AssetBundle)
 		}
 	}
 }
-
 #endif
 
 
-void UEventflowPrimaryTask::SetTransitionIndex(int Index)
+
+
+FGuid UEventflowPrimaryTask::GetOwningNodeId() const
 {
-	_TransitionIndex = Index;
+	return _OwningNodeId;
+}
+
+const FEventflowNode* UEventflowPrimaryTask::GetOwningNode() const
+{
+	return _OwningNode;
+}
+
+const UEventflowTask* UEventflowPrimaryTask::GetOwningTemplate() const
+{
+	if (!_OwningNode)
+	{
+		return nullptr;
+	}
+	return _OwningNode->Task;
 }
 
 
@@ -85,20 +122,20 @@ UEventflowSubTask* UEventflowPrimaryTask::GetSubTask(const FName& TaskName) cons
 
 void UEventflowPrimaryTask::CreateSubTasks()
 {
-	if (!_CurrentNode || _ActiveSubTasks.Num() > 0)
+	if (!bAllowSubTasks || !_OwningNode || _ActiveSubTasks.Num() > 0)
 	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Current node is invalid or subtasks are already created"));
+		LOG_ERROR(LogEventflowEngine, TEXT("Current node is invalid or subtasks are already created or disabled"));
 		return;
 	}
 
-	const UEventflowPrimaryTask* TaskTemplate = Cast<UEventflowPrimaryTask>(_CurrentNode->Task);
-	if (!IsValid(TaskTemplate))
+	const UEventflowPrimaryTask* Template = GetOwningTemplate<UEventflowPrimaryTask>();
+	if (!IsValid(Template))
 	{
 		LOG_ERROR(LogEventflowEngine, TEXT("Task template is invalid"));
 		return;
 	}
 
-	const TArray<UEventflowSubTask*>& Tasks = TaskTemplate->SubTasks;
+	const TArray<UEventflowSubTask*>& Tasks = Template->SubTasks;
 	for (UEventflowSubTask* Task : Tasks)
 	{
 		if (!IsValid(Task))
@@ -106,19 +143,27 @@ void UEventflowPrimaryTask::CreateSubTasks()
 			continue;
 		}
 
-		UClass* Class = Task->GetClass();
+		UEventflowSubTask* NewTask = NewObject<UEventflowSubTask>(this, Task->GetClass());
+		if (!IsValid(NewTask))
+		{
+			continue;
+		}
 
-		UEventflowSubTask* NewTask = NewObject<UEventflowSubTask>(this, Class);
+		_ActiveSubTasks.Add(NewTask);
+
 		NewTask->OnStateChanged.BindUObject(this, &UEventflowPrimaryTask::HandleOnSubTaskStateChanged);
 		NewTask->CopyFromAsset(Task);
 		NewTask->Initialize();
-
-		_ActiveSubTasks.Add(NewTask);
 	}
 }
 
 void UEventflowPrimaryTask::RemoveSubTasks()
 {
+	if (!bAllowSubTasks)
+	{
+		return;
+	}
+
 	for (UEventflowSubTask* Task : _ActiveSubTasks)
 	{
 		if (!IsValid(Task))
@@ -145,23 +190,22 @@ void UEventflowPrimaryTask::RemoveSubTasks()
 
 void UEventflowPrimaryTask::HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result)
 {
-	if (PreviousState == EFSMState::Active && NewState == EFSMState::Finished)
-	{
-		Finish(Result);
-	}
+
 }
 
 
 void UEventflowPrimaryTask::OnInitialized(EFSMState PreviousState)
 {
+	CreateTransitionData();
 	CreateSubTasks();
 }
 
 void UEventflowPrimaryTask::OnReset()
 {
+	RemoveTransitionData();
 	RemoveSubTasks();
 
-	_CurrentNode = nullptr;
-	_CurrentNodeId.Invalidate();
+	_OwningNode = nullptr;
+	_OwningNodeId.Invalidate();
 }
 

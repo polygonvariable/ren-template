@@ -6,11 +6,12 @@
 // Project Headers
 #include "DialogueAsset.h"
 #include "DialogueSettings.h"
+#include "DialogueTask.h"
 #include "GameplayModeProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Task/EventflowPrimaryTask.h"
 #include "SubsystemLibrary.h"
+#include "Task/EventflowPrimaryTask.h"
 
 
 void UDialogueEngine::SkipDialogue()
@@ -20,10 +21,16 @@ void UDialogueEngine::SkipDialogue()
 
 void UDialogueEngine::NextDialogue(int Index)
 {
-	UEventflowPrimaryTask* CurrentTask = GetTask();
+	UDialogueTask_Base* CurrentTask = GetTask<UDialogueTask_Base>();
 	if (CurrentTask)
 	{
-		CurrentTask->SetTransitionIndex(Index);
+		CurrentTask->ModifyTransitionData(
+			[Index](TInstancedStruct<FEventflowTransitionData>& TransitionData)
+			{
+				FEventflowTransitionData& Data = TransitionData.GetMutable();
+				Data.NextNodeIndex = Index;
+			}
+		);
 		CurrentTask->Finish(EFSMResult::Success);
 	}
 }

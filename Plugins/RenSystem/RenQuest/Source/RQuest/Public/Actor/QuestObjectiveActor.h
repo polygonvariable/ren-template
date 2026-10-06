@@ -5,6 +5,10 @@
 // Engine Headers
 #include "GameFramework/Actor.h"
 
+// Project Headers
+#include "RegionActor.h"
+#include "StateMachine/FiniteStateMachineType.h"
+
 // Generated Headers
 #include "QuestObjectiveActor.generated.h"
 
@@ -16,7 +20,7 @@ class UEventflowTask;
  *
  */
 UCLASS(Abstract)
-class AQuestObjectiveActor : public AActor
+class AQuestObjectiveActor : public ARegionActor
 {
 
 	GENERATED_BODY()
@@ -26,11 +30,17 @@ public:
 	UPROPERTY()
 	TWeakObjectPtr<UEventflowTask> OwningTask;
 
-	DECLARE_DELEGATE(FOnQuestObjectiveCompleted);
+	DECLARE_DELEGATE(FOnQuestObjectiveStarted);
+	FOnQuestObjectiveStarted OnStarted;
+
+	DECLARE_DELEGATE_OneParam(FOnQuestObjectiveCompleted, EFSMResult /* State */);
 	FOnQuestObjectiveCompleted OnCompleted;
 
 
+
+
 	void SetOwningTask(UEventflowTask* Task);
+
 
 	UFUNCTION(BlueprintCallable)
 	void StartTasks();
@@ -61,5 +71,63 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CompleteObjective(bool bSuccess);
 
+
+protected:
+
+	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
+
+
 };
+
+
+
+
+
+
+
+
+
+/*
+ *
+ */
+UCLASS(Abstract)
+class AQuestObjectiveMarker : public ARegionActor
+{
+
+	GENERATED_BODY()
+
+public:
+
+	DECLARE_DELEGATE(FOnInteractionCompleted);
+	FOnInteractionCompleted OnInteractionCompleted;
+
+protected:
+
+	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
+
+};
+
+
+/*
+ *
+ */
+UCLASS(Abstract)
+class AQuestInteractionMarker : public AQuestObjectiveMarker
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UFUNCTION(BlueprintCallable)
+	void HandleI();
+
+	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
+
+};
+
+
 

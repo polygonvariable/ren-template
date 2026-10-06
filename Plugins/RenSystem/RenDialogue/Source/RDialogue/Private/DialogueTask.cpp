@@ -17,16 +17,11 @@ void UDialogueTask_Base::CopyFromAsset(const UEventflowTask* Template)
 	}
 }
 
-void UDialogueTask_Base::HandleOnDialogueCompleted(int NextIndex)
-{
-	SetTransitionIndex(NextIndex);
-	Finish(EFSMResult::Success);
-}
-
 void UDialogueTask_Base::OnInitialized(EFSMState PreviousState)
 {
 	Super::OnInitialized(PreviousState);
 
+	NextIndex = 0;
 	Load();
 }
 

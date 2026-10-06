@@ -2,11 +2,14 @@
 
 #pragma once
 
+//
+#include "StructUtils/InstancedStruct.h"
+
 // Project Headers
 #include "EventflowTask.h"
 #include "LuauSourceCode.h"
-#include "Type/EventflowCondition.h"
 #include "Type/EventflowTransition.h"
+#include "Type/EventflowEntry.h"
 
 // Generated Headers
 #include "EventflowPrimaryTask.generated.h"
@@ -19,70 +22,88 @@ struct FEventflowNode;
 /**
  *
  */
-UCLASS(Abstract, MinimalAPI)
-class UEventflowPrimaryTask : public UEventflowTask
+UCLASS(Abstract)
+class CEVENTFLOW_API UEventflowPrimaryTask : public UEventflowTask
 {
 	
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY()
-	TArray<FEventflowTransition> TaskTransitions;
+	UPROPERTY(EditAnywhere, Category = "Task")
+	FName TaskTitle;
 
-	UPROPERTY(Instanced)
+	UPROPERTY(EditAnywhere, Instanced, Category = "Task", meta = (EditCondition = "bAllowSubTasks"))
 	TArray<TObjectPtr<UEventflowSubTask>> SubTasks;
 
-	UPROPERTY()
-	TMap<EFSMResult, FEventflowTaskCondition> SubTaskConditions;
-
-	UPROPERTY()
-	FLuauSourceCode LuauCode;
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Task")
+	EEventflowPrimaryTaskType TaskType = EEventflowPrimaryTaskType::Other;
 
 
-	CEVENTFLOW_API void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
+	void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
 
-	CEVENTFLOW_API int GetTransitionIndex(EFSMResult Result) const;
-	CEVENTFLOW_API void SetTransitionIndex(int Index);
 
-	CEVENTFLOW_API EEventflowTransitionType GetTransitionType(EFSMResult Result) const;
-	CEVENTFLOW_API const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
+	virtual void GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData);
+	virtual TInstancedStruct<FEventflowTransitionData>& GetTransitionData(EFSMResult Result);
+	virtual void ModifyTransitionData(TFunctionRef<void(TInstancedStruct<FEventflowTransitionData>&)> TransitionData);
+
+
+	const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
+	UEventflowSubTask* GetSubTask(const FName& TaskName) const;
 
 	// ~ UEventflowTask
-	CEVENTFLOW_API virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
 	
 #if WITH_EDITOR
-
 	// ~ UEventflowTask
-	CEVENTFLOW_API virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
+	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
 	// ~ End of UEventflowTask
-
 #endif
 
 protected:
 
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Task")
+	bool bAllowSubTasks = false;
 
-	CEVENTFLOW_API UEventflowSubTask* GetSubTask(const FName& TaskName) const;
+
+	virtual void CreateTransitionData();
+	virtual void RemoveTransitionData();
+
+	FGuid GetOwningNodeId() const;
+	const FEventflowNode* GetOwningNode() const;
+	const UEventflowTask* GetOwningTemplate() const;
+
+	template<typename T>
+	const T* GetOwningTemplate() const
+	{
+		return Cast<T>(GetOwningTemplate());
+	}
+
+
+
 	void CreateSubTasks();
 	void RemoveSubTasks();
 
 	// ~ Bindings
-	CEVENTFLOW_API virtual void HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	virtual void HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
-	CEVENTFLOW_API virtual void OnInitialized(EFSMState PreviousState) override;
-	CEVENTFLOW_API virtual void OnReset() override;
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
 
 private:
 
-	FGuid _CurrentNodeId;
+	
 
-	const FEventflowNode* _CurrentNode = nullptr;
+	FGuid _OwningNodeId;
 
-	int _TransitionIndex = 0;
+	const FEventflowNode* _OwningNode = nullptr;
+
+	UPROPERTY()
+	TInstancedStruct<FEventflowTransitionData> _TransitionData;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UEventflowSubTask>> _ActiveSubTasks;

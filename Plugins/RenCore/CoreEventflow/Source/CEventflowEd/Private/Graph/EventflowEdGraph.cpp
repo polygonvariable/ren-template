@@ -78,19 +78,18 @@ void UEventflowEdGraph::SerializeTask(UEventflowAsset* GraphAsset, FEventflowNod
 	}
 
 	NodeDefinition.Task = DuplicateObject(TemplateTask, GraphAsset);
-	NodeDefinition.Task->SubTasks.Empty();
-	NodeDefinition.Task->TaskTransitions = EdNode->TaskTransitions;
-	NodeDefinition.Task->SubTaskConditions = EdNode->SubTaskConditions;
-	NodeDefinition.Task->LuauCode = EdNode->LuauCode;
-
-	TArray<UEventflowSubTask*> TemplateSubTasks = EdNode->GetSubTasks();
-	for (UEventflowSubTask* Task : TemplateSubTasks)
-	{
-		if (IsValid(Task))
-		{
-			NodeDefinition.Task->SubTasks.Add(DuplicateObject(Task, NodeDefinition.Task));
-		}
-	}
+	//NodeDefinition.Task->SubTasks.Empty();
+	//NodeDefinition.Task->TaskTransitions = EdNode->TaskTransitions;
+	//NodeDefinition.Task->SubTaskConditions = EdNode->SubTaskConditions;
+	//NodeDefinition.Task->LuauCode = EdNode->LuauCode;
+	//TArray<UEventflowSubTask*> TemplateSubTasks = EdNode->GetSubTasks();
+	//for (UEventflowSubTask* Task : TemplateSubTasks)
+	//{
+	//	if (IsValid(Task))
+	//	{
+	//		NodeDefinition.Task->SubTasks.Add(DuplicateObject(Task, NodeDefinition.Task));
+	//	}
+	//}
 }
 
 void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNode& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation)
@@ -167,10 +166,10 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNode& Nod
 	EdNode->NodePosX = NodeDefinition.Position.X;
 	EdNode->NodePosY = NodeDefinition.Position.Y;
 	EdNode->SetTask(NodeDefinition.Task);
-	EdNode->SetSubTasks(NodeDefinition.Task->SubTasks);
-	EdNode->TaskTransitions = NodeDefinition.Task->TaskTransitions;
-	EdNode->SubTaskConditions = NodeDefinition.Task->SubTaskConditions;
-	EdNode->LuauCode = NodeDefinition.Task->LuauCode;
+	//EdNode->SetSubTasks(NodeDefinition.Task->SubTasks);
+	//EdNode->TaskTransitions = NodeDefinition.Task->TaskTransitions;
+	//EdNode->SubTaskConditions = NodeDefinition.Task->SubTaskConditions;
+	//EdNode->LuauCode = NodeDefinition.Task->LuauCode;
 
 	EdNode->AllocateDefaultPins();
 
@@ -185,7 +184,7 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNode& Nod
 	{
 		RenderNodePin(EEdGraphPinDirection::EGPD_Input, Pin, EdNode, PinCollection);
 	}
-
+	
 	AddNode(EdNode, false, false);
 }
 
@@ -199,7 +198,7 @@ void UEventflowEdGraph::RenderNodePin(EEdGraphPinDirection Direction, const FEve
 	}
 	else
 	{
-		EdPin = EdNode->CreatePin(EEdGraphPinDirection::EGPD_Output, Definition.Category, Definition.Name);
+		EdPin = EdNode->CreatePin(Direction, Definition.Category, Definition.Name);
 		EdPin->PinFriendlyName = Definition.FriendlyName;
 		EdPin->PinType.bIsConst = false;
 	}

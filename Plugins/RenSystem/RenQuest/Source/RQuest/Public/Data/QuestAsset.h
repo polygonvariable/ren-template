@@ -12,7 +12,7 @@
 /**
  * 
  */
-UCLASS(MinimalAPI, BlueprintType)
+UCLASS(MinimalAPI)
 class UQuestAsset : public UEventflowAsset
 {
 
@@ -21,10 +21,17 @@ class UQuestAsset : public UEventflowAsset
 public:
 
 	UPROPERTY(EditAnywhere)
+	FText Title;
+
+	UPROPERTY(EditAnywhere)
 	FText Summary;
 
-	UPROPERTY(EditAnywhere, Instanced)
-	TArray<TObjectPtr<UEventflowPrimaryTask>> GlobalTasks;
+	// ~ UPrimaryDataAsset
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override
+	{
+		return FPrimaryAssetId(TEXT("Quest"), GetFName());
+	}
+	// ~ End of UPrimaryDataAsset
 
 };
 

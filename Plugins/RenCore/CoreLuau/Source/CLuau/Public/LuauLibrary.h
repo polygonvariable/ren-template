@@ -9,7 +9,7 @@ struct lua_State;
 /*
  *
  */
-class CLUAU_API FLuauHelper
+class CLUAU_API FLuauLibrary
 {
 
 public:

@@ -59,6 +59,7 @@ void UOrbitalLightComponent::UpdateLightVisibility()
         bEnableLightShaftOcclusion = bLightTime;
         bEnableLightShaftBloom = bLightTime;
         SetCastShadows(bLightTime);
+        //SetVisibility(bLightTime);
         //SetHiddenInGame(!bLightTime);
     }
 }

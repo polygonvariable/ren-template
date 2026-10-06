@@ -36,9 +36,10 @@ TSharedRef<FLuauSyntaxHighlighter> FLuauSyntaxHighlighter::Create()
     TokenizerRules.Emplace(FSyntaxTokenizer::FRule(TEXT("(")));
     TokenizerRules.Emplace(FSyntaxTokenizer::FRule(TEXT(")")));
     TokenizerRules.Emplace(FSyntaxTokenizer::FRule(TEXT(":")));
+
+    TokenizerRules.Emplace(FSyntaxTokenizer::FRule(TEXT("\"")));
     
     TSharedRef<ISyntaxTokenizer> Tokenizer = FSyntaxTokenizer::Create(TokenizerRules);
-
     return MakeShareable(new FLuauSyntaxHighlighter(Tokenizer));
 }
 
@@ -46,7 +47,6 @@ void FLuauSyntaxHighlighter::ParseTokens(const FString& SourceString, FTextLayou
 {
     TArray<FTextLayout::FNewLineData> LinesToAdd;
     
-
     for (const ISyntaxTokenizer::FTokenizedLine& Line : TokenizedLines)
     {
         TSharedRef<FString> ModelString = MakeShared<FString>();
@@ -73,6 +73,10 @@ void FLuauSyntaxHighlighter::ParseTokens(const FString& SourceString, FTextLayou
                 else if (Symbols.Contains(TokenString))
                 {
                     RunStyle = &SymbolStyle;
+                }
+                else if (Strings.Contains(TokenString))
+                {
+                    RunStyle = &StringStyle;
                 }
             }
 
@@ -111,12 +115,16 @@ FLuauSyntaxHighlighter::FLuauSyntaxHighlighter(TSharedPtr<ISyntaxTokenizer> InTo
     Symbols.Add(TEXT(")"));
     Symbols.Add(TEXT(":"));
 
+    Strings.Add(TEXT("\""));
+
     NormalStyle = FAppStyle::Get().GetWidgetStyle<FTextBlockStyle>("NormalText");
 
     KeywordStyle = NormalStyle;
     SymbolStyle = NormalStyle;
+    StringStyle = NormalStyle;
 
     NormalStyle.SetColorAndOpacity(FSlateColor(FLinearColor(FColor::FromHex("#C7696E"))));
     KeywordStyle.SetColorAndOpacity(FSlateColor(FLinearColor(FColor::FromHex("#705BCF"))));
     SymbolStyle.SetColorAndOpacity(FSlateColor(FLinearColor(FColor::FromHex("#3F91E8"))));
+    StringStyle.SetColorAndOpacity(FSlateColor(FLinearColor(FColor::FromHex("#98C379"))));
 }

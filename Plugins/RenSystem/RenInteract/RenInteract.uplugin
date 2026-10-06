@@ -28,7 +28,19 @@
 	],
 	"Plugins": [
 		{
+			"Name": "EnhancedInput",
+			"Enabled": true
+		},
+		{
 			"Name": "CoreFramework",
+			"Enabled": true
+		},
+		{
+			"Name": "CoreGamedata",
+			"Enabled": true
+		},
+		{
+			"Name": "CoreWorlddata",
 			"Enabled": true
 		}
 	]

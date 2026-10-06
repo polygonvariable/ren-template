@@ -10,12 +10,16 @@
 
 // Forward Declarations
 class UEventflowNodeData;
-class UQuestTask_TriggerZone;
 class UQuestPrimaryTask;
 class UQuestSubTask;
 class UQuestEngine;
 
-
+class UQuestTask_Begin;
+class UQuestTask_End;
+class UQuestTask_ConditionalSpawnMarker;
+class UQuestTask_SpawnMarker;
+class UQuestTask_Reroute;
+class UQuestTask_ExternalTask;
 
 
 /*
@@ -24,10 +28,94 @@ class UQuestEngine;
 UCLASS()
 class UQuestEdNode_Base : public UEventflowEdGraphNode
 {
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_Base();
+
+	FText Title;
+
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+
+
+	virtual bool IsEntryNode() const override;
+
+};
+
+
+/*
+ *
+ */
+UCLASS()
+class UQuestEdNode_Reroute : public UQuestEdNode_Base
+{
 
 	GENERATED_BODY()
 
+public:
+
+	UQuestEdNode_Reroute();
+
+
+	// ~ UEventflowEdGraphNode
+	virtual UEventflowPrimaryTask* GetTask() const override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
+	// ~ End of UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
+	virtual FText GetNodeDescription() const override;
+	virtual TArray<FText> GetRuntimeInputPins() const override;
+	virtual TArray<FText> GetRuntimeOutputPins() const override;
+	// ~ End of UEdGraphNode
+
+protected:
+
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_Reroute> Task = nullptr;
+
 };
+
+
+
+/*
+ *
+ */
+UCLASS()
+class UQuestEdNode_ExternalTask : public UQuestEdNode_Base
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_ExternalTask();
+
+
+	// ~ UEventflowEdGraphNode
+	virtual UEventflowPrimaryTask* GetTask() const override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
+	// ~ End of UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual FText GetNodeDescription() const override;
+	virtual void AllocateDefaultPins() override;
+	virtual TArray<FText> GetRuntimeOutputPins() const override;
+	// ~ End of UEdGraphNode
+
+protected:
+
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_ExternalTask> Task = nullptr;
+
+};
+
+
+
+
 
 
 
@@ -45,23 +133,28 @@ class UQuestEdNode_Begin : public UQuestEdNode_Base
 
 public:
 
+	UQuestEdNode_Begin();
+
 	// ~ UEventflowEdGraphNode
 	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* Task) override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
+	virtual bool IsEntryNode() const override;
 	// ~ End of UEventflowEdGraphNode
 
 	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
 
 protected:
 
-	//UPROPERTY(EditAnywhere, Instanced)
-	//TObjectPtr<UQuestTask_Begin> PrimaryTask = nullptr;
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_Begin> Task = nullptr;
 
 };
+
+
 
 /*
  *
@@ -74,65 +167,61 @@ class UQuestEdNode_End : public UQuestEdNode_Base
 
 public:
 
-	// ~ UEventflowEdGraphNode
-	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* Task) override;
-	// ~ End of UEventflowEdGraphNode
-
-	// ~ UEdGraphNode
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
-	virtual void AllocateDefaultPins() override;
-	// ~ End of UEdGraphNode
-
-protected:
-
-	//UPROPERTY(EditAnywhere, Instanced)
-	//TObjectPtr<UQuestTask_End> PrimaryTask = nullptr;
-
-};
-
-
-
-
-/*
- *
- */
-UCLASS()
-class UQuestEdNode_GoToPlace : public UQuestEdNode_Base
-{
-
-	GENERATED_BODY()
-
-public:
+	UQuestEdNode_End();
 
 	// ~ UEventflowEdGraphNode
-	virtual TArray<FText> GetRuntimeOutputPins() const override;
-
 	virtual UEventflowPrimaryTask* GetTask() const override;
 	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
-
-	virtual TArray<UEventflowSubTask*> GetSubTasks() const override;
-	virtual void SetSubTasks(const TArray<UEventflowSubTask*>& Tasks) override;
-
-	virtual bool IsEntryNode() const override;
 	// ~ End of UEventflowEdGraphNode
 
 	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
 
 protected:
 
-	UPROPERTY(EditAnywhere, Instanced, Category = "Task")
-	TObjectPtr<UQuestTask_TriggerZone> Task = nullptr;
-
-	UPROPERTY(EditAnywhere, Instanced, Category = "Sub Tasks")
-	TArray<TObjectPtr<UQuestSubTask>> SubTasks;
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_End> Task = nullptr;
 
 };
+
+
+
+/*
+ *
+ */
+UCLASS()
+class UQuestEdNode_SpawnMarker : public UQuestEdNode_Base
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_SpawnMarker();
+
+	// ~ UEventflowEdGraphNode
+	virtual UEventflowPrimaryTask* GetTask() const override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
+	// ~ End of UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual FText GetNodeDescription() const override;
+	virtual void AllocateDefaultPins() override;
+	virtual TArray<FText> GetRuntimeOutputPins() const override;
+	// ~ End of UEdGraphNode
+
+protected:
+
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_SpawnMarker> Task = nullptr;
+
+};
+
+
 
 
 
@@ -141,27 +230,31 @@ protected:
  *
  */
 UCLASS()
-class UQuestEdNode_SubGraph : public UQuestEdNode_Base
+class UQuestEdNode_ConditionalSpawnMarker : public UQuestEdNode_Base
 {
 
 	GENERATED_BODY()
 
 public:
 
+	UQuestEdNode_ConditionalSpawnMarker();
+
 	// ~ UEventflowEdGraphNode
 	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* Task) override;
+	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
 	// ~ End of UEventflowEdGraphNode
 
 	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
 
 protected:
 
-	//UPROPERTY(EditAnywhere, Instanced)
-	//TObjectPtr<UQuestObjective_SubGraph> PrimaryTask = nullptr;
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UQuestTask_ConditionalSpawnMarker> Task = nullptr;
 
 };
+
+

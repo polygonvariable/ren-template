@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
 // Project Headers
 #include "Core/PoolCollection.h"
 #include "StateMachine/FiniteStateMachine.h"
@@ -22,17 +25,17 @@ struct FEventflowPinRelation;
 /**
  *
  */
-UCLASS(MinimalAPI, BlueprintType, Blueprintable)
-class UEventflowEngine : public UFiniteStateMachine
+UCLASS(BlueprintType, Blueprintable)
+class CEVENTFLOW_API UEventflowEngine : public UFiniteStateMachine
 {
 
 	GENERATED_BODY()
 
 public:
 
-	CEVENTFLOW_API virtual void InitializeData(const FPrimaryAssetId& AssetId, const FEventflowEntry& EntryDefinition);
+	virtual void InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData);
 
-	CEVENTFLOW_API UEventflowPrimaryTask* GetTask() const;
+	UEventflowPrimaryTask* GetTask() const;
 
 	template<typename T>
 	T* GetTask()
@@ -40,7 +43,7 @@ public:
 		return Cast<T>(GetTask());
 	}
 
-	CEVENTFLOW_API UEventflowAsset* GetAsset() const;
+	UEventflowAsset* GetAsset() const;
 
 	template<typename T>
 	T* GetAsset()
@@ -48,45 +51,51 @@ public:
 		return Cast<T>(GetAsset());
 	}
 
+	const TInstancedStruct<FEventflowReturnData>& GetReturnData() const;
+
 	// ~ UObject
-	CEVENTFLOW_API virtual UWorld* GetWorld() const override;
+	virtual UWorld* GetWorld() const override;
 	// ~ End of UObject
 
 protected:
 
-	CEVENTFLOW_API virtual void GetAssetBundle(TArray<FName>& OutBundle) const;
+	virtual void GetAssetBundle(TArray<FName>& OutBundle) const;
+	const FEventflowNode* GetNode(const FGuid& NodeId) const;
+	const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
 
-	CEVENTFLOW_API const FEventflowNode* GetNode(const FGuid& NodeId) const;
-	CEVENTFLOW_API const FEventflowPinRelation* GetPinRelation(const FGuid& PinId) const;
+	void ReachNode(const FGuid& NodeId);
+	void ReachEntryNode();
+	void ReachNextNode(int Index = 0);
+	void ReachPreviousNode();
 
-	CEVENTFLOW_API void ReachNode(const FGuid& NodeId);
-	CEVENTFLOW_API void ReachEntryNode();
-	CEVENTFLOW_API void ReachNextNode(int Index = 0);
-	CEVENTFLOW_API void ReachPreviousNode();
-
-	CEVENTFLOW_API void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
-	CEVENTFLOW_API void RemoveTask();
+	void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
+	void RemoveTask();
+	
+	void CreateReturnData(UEventflowPrimaryTask* Task);
+	void RemoveReturnData();
 
 	// ~ Bindings
-	CEVENTFLOW_API virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
-	CEVENTFLOW_API virtual void OnInitialized(EFSMState PreviousState) override;
-	CEVENTFLOW_API virtual void OnLoaded(EFSMState PreviousState) override;
-	CEVENTFLOW_API virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
 
-	CEVENTFLOW_API virtual void OnActive(EFSMState PreviousState) override;
-	CEVENTFLOW_API virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
 
-	CEVENTFLOW_API virtual void OnFinished(EFSMResult Result) override;
-	CEVENTFLOW_API virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
-	CEVENTFLOW_API virtual void OnReset() override;
+	virtual void OnFinished(EFSMResult Result) override;
+	virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
+	virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
 
 private:
 
-	FEventflowEntry _Entry;
+	TInstancedStruct<FEventflowReturnData> _ReturnData;
+	FEventflowEntryData _EntryData;
+
 
 	UPROPERTY()
 	TMap<UClass*, FPoolCollection> _TaskPool;
@@ -96,12 +105,13 @@ private:
 
 	FGuid _ActiveNodeId;
 
-	FPrimaryAssetId _AssetId;
-
-	TSharedPtr<FStreamableHandle> _AssetHandle = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UEventflowAsset> _Asset = nullptr;
+
+	FPrimaryAssetId _AssetId;
+
+	TSharedPtr<FStreamableHandle> _AssetHandle = nullptr;
 
 	UPROPERTY()
 	TObjectPtr<UAssetManager> _AssetManager = nullptr;

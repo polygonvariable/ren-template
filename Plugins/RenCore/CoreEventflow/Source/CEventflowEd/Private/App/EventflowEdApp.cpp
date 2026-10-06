@@ -164,7 +164,6 @@ UEventflowEdGraphNode* FEventflowEdApp::GetFirstSelectedNode(const FGraphPanelSe
 			return GraphNode;
 		}
 	}
-
 	return nullptr;
 }
 

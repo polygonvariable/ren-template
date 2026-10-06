@@ -7,10 +7,15 @@
 #include "luacode.h"
 
 
-bool FLuauHelper::Compile(const FString& InCode, TArray<uint8>& OutBytecode)
+bool FLuauLibrary::Compile(const FString& InCode, TArray<uint8>& OutBytecode)
 {
     bool bResult = false;
     OutBytecode.Empty();
+
+    if (InCode.IsEmpty())
+    {
+        return bResult;
+    }
 
     FTCHARToUTF8 Code(*InCode);
 

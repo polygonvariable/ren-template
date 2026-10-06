@@ -54,16 +54,16 @@ void FLuauSourceCodeCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
     ChildBuilder.AddCustomRow(FText::FromString(TEXT("Text")))
         [
             SNew(SVerticalBox)
+                //+ SVerticalBox::Slot()
+                //.AutoHeight()
+                //.Padding(PaddingAll)
+                //[
+                //    SNew(STextBlock)
+                //        .Text(CodeProperty->GetPropertyDisplayName())
+                //]
                 + SVerticalBox::Slot()
                 .AutoHeight()
                 .Padding(PaddingAll)
-                [
-                    SNew(STextBlock)
-                        .Text(CodeProperty->GetPropertyDisplayName())
-                ]
-                + SVerticalBox::Slot()
-                .AutoHeight()
-                .Padding(PaddingV)
                 [
                     SNew(SHorizontalBox)
                         + SHorizontalBox::Slot()
@@ -135,7 +135,7 @@ FReply FLuauSourceCodeCustomization::CompileCode()
     FString& Code = Struct->Code;
     TArray<uint8>& Bytecode = Struct->Bytecode;
 
-    if (FLuauHelper::Compile(Code, Bytecode))
+    if (FLuauLibrary::Compile(Code, Bytecode))
     {
         UE_LOG(LogTemp, Warning, TEXT("Code compiled"));
     }

@@ -31,14 +31,20 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, meta = (Categories = "Gameplay"))
-	FGameplayTag MouseVisiblityTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.Mouse.Visible"));
+	UPROPERTY(EditAnywhere, meta = (Categories = "InputMode"))
+	FGameplayTag InputModeGameTag = FGameplayTag::RequestGameplayTag(TEXT("InputMode.Game"));
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "InputMode"))
+	FGameplayTag InputModeGameUITag = FGameplayTag::RequestGameplayTag(TEXT("InputMode.GameUI"));
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "InputMode"))
+	FGameplayTag InputModeUITag = FGameplayTag::RequestGameplayTag(TEXT("InputMode.UI"));
 
 	IGameplayModeProvider* GameplayMode;
 
 
 	// ~ Binding
-	void HandleOnMouseVisiblityTagChanged(bool bAdded);
+	void HandleOnInputModeTagChanged(bool bAdded);
 	// ~ End of Binding
 
 };
