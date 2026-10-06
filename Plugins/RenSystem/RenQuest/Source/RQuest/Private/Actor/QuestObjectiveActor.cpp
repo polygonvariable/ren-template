@@ -5,6 +5,7 @@
 
 // Project Headers
 #include "EventflowTask.h"
+#include "GameplayContextInterface.h"
 
 
 void AQuestObjectiveActor::SetOwningTask(UEventflowTask* Task)
@@ -75,27 +76,33 @@ void AQuestObjectiveMarker::HandlePlayerExited(UPrimitiveComponent* OverlappedCo
 }
 
 
-
-
-void AQuestInteractionMarker::HandleI()
+void AQuestInteractionMarker::BeginPlay()
 {
-	OnInteractionCompleted.ExecuteIfBound();
-}
-
-void AQuestInteractionMarker::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
+	Super::BeginPlay();
+	
+	UActorComponent* ContextComponent = FindComponentByInterface(UGameplayContextInterface::StaticClass());
+	if (IsValid(ContextComponent))
 	{
-		EnableInput(GetWorld()->GetFirstPlayerController());
-		bPlayerInRegion = true;
+		IGameplayContextInterface* ContextInterface = Cast<IGameplayContextInterface>(ContextComponent);
+		if (ContextInterface)
+		{
+			TInstancedStruct<FGameplayContextAction> Action;
+			FGameplayContext_QuestInteractionHandle& InteractionHandle = Action.InitializeAs<FGameplayContext_QuestInteractionHandle>();
+			InteractionHandle.ContextTags = ContextTags;
+			InteractionHandle.Owner = TWeakObjectPtr<AQuestInteractionMarker>(this);
+
+			ContextInterface->PushContext(MoveTemp(Action));
+		}
 	}
 }
 
-void AQuestInteractionMarker::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
+bool FGameplayContext_QuestInteractionHandle::Execute(UWorld* World, UObject* Caller)
 {
-	if (DoesCollidedWithPlayer(OtherActor) && bPlayerInRegion)
+	AQuestInteractionMarker* Actor = Owner.Get();
+	if (IsValid(Actor))
 	{
-		DisableInput(GetWorld()->GetFirstPlayerController());
-		bPlayerInRegion = false;
+		Actor->OnInteractionCompleted.ExecuteIfBound();
 	}
+	return true;
 }
+

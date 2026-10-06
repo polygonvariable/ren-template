@@ -49,9 +49,6 @@ public:
 	virtual const FGameplayTag& GetInputModeTag() const = 0;
 	virtual const FGameplayTagContainer& GetGameplayModeTags() const = 0;
 
-	virtual void AddGameplayMode(FGameplayTagContainer Tags) = 0;
-	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) = 0;
-
 protected:
 
 	FOnGameplayModeTagsChanged OnGameplayModeTagsChanged;

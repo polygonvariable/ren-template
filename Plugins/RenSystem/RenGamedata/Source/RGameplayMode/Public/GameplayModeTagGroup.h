@@ -24,9 +24,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, meta = (Categories = "Gameplay"))
 	FGameplayTagContainer ActivateTags;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Categories = "Gameplay"))
-	FGameplayTagContainer DeactivateTags;
-
 	UPROPERTY(EditDefaultsOnly, meta = (Categories = "InputMode"))
 	FGameplayTag InputModeTag;
 

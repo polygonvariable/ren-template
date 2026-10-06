@@ -27,10 +27,12 @@ public class RDialogue : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"GameplayTags",
 				"DeveloperSettings",
 				"UMG",
                 "CEventflow",
                 "CDataManager",
+				"CGameplayContext",
             }
 			);
 			

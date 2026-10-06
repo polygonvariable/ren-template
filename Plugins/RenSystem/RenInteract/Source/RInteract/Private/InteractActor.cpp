@@ -33,5 +33,6 @@ AInteractActor::AInteractActor()
 
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
+	SetCanBeDamaged(false);
 }
 

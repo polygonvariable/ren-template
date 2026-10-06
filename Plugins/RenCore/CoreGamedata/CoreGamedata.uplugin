@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "CGameplayContext",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "CGamedataStorage",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"

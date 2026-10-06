@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Engine Headers
+#include "GameplayTagContainer.h"
+
 // Project Headers
 #include "InteractItem.h"
 
@@ -33,6 +36,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	FInteractItem InteractItem;
 
+	UPROPERTY(EditAnywhere, meta = (Categories = "GameContext"))
+	FGameplayTagContainer ContextTags;
+
+	UPROPERTY(EditAnywhere)
+	bool bHideAfterInteract = true;
+
 
 	void OnInteracted();
 	
@@ -50,11 +59,13 @@ protected:
 	UPrimitiveComponent* GetCollisionComponent() const;
 	bool CollisionCondition(AActor* Actor) const;
 
+	// ~ Binding
 	UFUNCTION()
-	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex);
+	void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex);
+	// ~ End of Binding
 
 private:
 

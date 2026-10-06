@@ -42,9 +42,28 @@ void UGameplayModeSubsystem::PushGameplayMode(FName Mode)
 
 	GameplayModeStack.Push(Mode);
 
+	const FGameplayTagContainer OldTags = GameplayModeTag;
+	const FGameplayTagContainer& NewTags = FoundRow->ActivateTags;
+
+	FGameplayTagContainer TagsToAdd = NewTags;
+	TagsToAdd.RemoveTags(OldTags);
+
+	FGameplayTagContainer TagsToRemove = OldTags;
+	TagsToRemove.RemoveTags(NewTags);
+	
 	SetInputMode(FoundRow->InputModeTag);
-	AddGameplayMode(FoundRow->ActivateTags);
-	RempoveGameplayMode(FoundRow->DeactivateTags);
+
+	for (const FGameplayTag& Tag : TagsToRemove)
+	{
+		GameplayModeTag.RemoveTag(Tag);
+		BroadcastTagChange(Tag, false);
+	}
+
+	for (const FGameplayTag& Tag : TagsToAdd)
+	{
+		GameplayModeTag.AddTag(Tag);
+		BroadcastTagChange(Tag, true);
+	}
 }
 
 void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
@@ -59,32 +78,44 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 		return;
 	}
 
-	FName LastMode = GameplayModeStack.Pop();
+	const FName LastMode = GameplayModeStack.Last();
 	const FGameplayModeTagGroup* LastRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(LastMode, FString());
 	if (!LastRow)
 	{
 		return;
 	}
 
-	FGameplayTag NewInputTag;
-	FGameplayTagContainer NewActiveTags;
-	FGameplayTagContainer LastActiveTags = LastRow->ActivateTags;
+	GameplayModeStack.Pop();
 
+	FGameplayTagContainer NewTags;
 	if (!GameplayModeStack.IsEmpty())
 	{
-		FName NewLast = GameplayModeStack.Last();
-		const FGameplayModeTagGroup* NewLastRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(NewLast, FString());
-		if (NewLastRow)
+		const FName NewMode = GameplayModeStack.Last();
+		const FGameplayModeTagGroup* NewRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(NewMode, FString());
+		if (NewRow)
 		{
-			LastActiveTags.AppendTags(NewLastRow->DeactivateTags);
-			NewActiveTags.AppendTags(NewLastRow->ActivateTags);
-			NewInputTag = NewLastRow->InputModeTag;
+			NewTags = NewRow->ActivateTags;
+			SetInputMode(NewRow->InputModeTag);
 		}
 	}
 
-	SetInputMode(NewInputTag);
-	AddGameplayMode(NewActiveTags);
-	RempoveGameplayMode(LastActiveTags);
+	FGameplayTagContainer TagsToRemove = GameplayModeTag;
+	TagsToRemove.RemoveTags(NewTags);
+
+	FGameplayTagContainer TagsToAdd = NewTags;
+	TagsToAdd.RemoveTags(GameplayModeTag);
+
+	for (const FGameplayTag& Tag : TagsToRemove)
+	{
+		GameplayModeTag.RemoveTag(Tag);
+		BroadcastTagChange(Tag, false);
+	}
+
+	for (const FGameplayTag& Tag : TagsToAdd)
+	{
+		GameplayModeTag.AddTag(Tag);
+		BroadcastTagChange(Tag, true);
+	}
 }
 
 void UGameplayModeSubsystem::RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback)
@@ -136,34 +167,15 @@ const FGameplayTag& UGameplayModeSubsystem::GetInputModeTag() const
 	return InputModeTag;
 }
 
-void UGameplayModeSubsystem::AddGameplayMode(FGameplayTagContainer Tags)
+
+void UGameplayModeSubsystem::SetInputMode(FGameplayTag Tag)
 {
-	for (const FGameplayTag& Tag : Tags)
+	if (Tag.IsValid() && InputModeTag != Tag)
 	{
-		if (!Tag.IsValid() || GameplayModeTag.HasTagExact(Tag))
-		{
-			continue;
-		}
-		GameplayModeTag.AddTag(Tag);
-		BroadcastTagChange(Tag, true);
+		InputModeTag = Tag;
+		BroadcastTagChange(InputModeTag, true);
 	}
 }
-
-void UGameplayModeSubsystem::RempoveGameplayMode(FGameplayTagContainer Tags)
-{
-	for (const FGameplayTag& Tag : Tags)
-	{
-		if (!Tag.IsValid())
-		{
-			continue;
-		}
-		if (GameplayModeTag.RemoveTag(Tag))
-		{
-			BroadcastTagChange(Tag, false);
-		}
-	}
-}
-
 
 void UGameplayModeSubsystem::BroadcastTagChange(FGameplayTag Tag, bool bAdded)
 {
@@ -175,15 +187,6 @@ void UGameplayModeSubsystem::BroadcastTagChange(FGameplayTag Tag, bool bAdded)
 			FoundHandle->Key.Broadcast(bAdded);
 		}
 		OnGameplayModeTagsChanged.Broadcast(Tag, bAdded);
-	}
-}
-
-void UGameplayModeSubsystem::SetInputMode(FGameplayTag Tag)
-{
-	if (Tag.IsValid() && InputModeTag != Tag)
-	{
-		InputModeTag = Tag;
-		BroadcastTagChange(InputModeTag, true);
 	}
 }
 
@@ -206,16 +209,12 @@ void UGameplayModeSubsystem::HandleOnGameplayModeTableLoaded()
 		return;
 	}
 
-	GameplayModeStack.Push(ModeConfig->DefaultMode);
-
 	if (HasCalledBeginPlay())
 	{
 		bCanBroadcast = true;
 	}
 
-	SetInputMode(FoundRow->InputModeTag);
-	AddGameplayMode(FoundRow->ActivateTags);
-	RempoveGameplayMode(FoundRow->DeactivateTags);
+	PushGameplayMode(ModeConfig->DefaultMode);
 }
 
 

@@ -71,14 +71,8 @@ protected:
 	TSharedPtr<FStreamableHandle> TableHandle;
 
 
-	void BroadcastTagChange(FGameplayTag Tag, bool bAdded);
-
 	void SetInputMode(FGameplayTag Tag);
-
-	// ~ IGameplayModeProvider
-	virtual void AddGameplayMode(FGameplayTagContainer Tags) override;
-	virtual void RempoveGameplayMode(FGameplayTagContainer Tags) override;
-	// ~ End of IGameplayModeProvider
+	void BroadcastTagChange(FGameplayTag Tag, bool bAdded);
 
 	// ~ Binding
 	void HandleOnGameplayModeTableLoaded();

@@ -8,6 +8,7 @@
 // Project Headers
 #include "RegionActor.h"
 #include "StateMachine/FiniteStateMachineType.h"
+#include "GameplayContextAction.h"
 
 // Generated Headers
 #include "QuestObjectiveActor.generated.h"
@@ -119,15 +120,34 @@ class AQuestInteractionMarker : public AQuestObjectiveMarker
 
 	GENERATED_BODY()
 
-protected:
+public:
 
-	UFUNCTION(BlueprintCallable)
-	void HandleI();
+	virtual void BeginPlay() override;
 
-	virtual void HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
-	virtual void HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex) override;
+	UPROPERTY(EditAnywhere, meta = (Categories = "GameContext"))
+	FGameplayTagContainer ContextTags;
 
 };
 
 
 
+
+/*
+ *
+ */
+USTRUCT(DisplayName = "Quest Interact Handle (Internal)")
+struct FGameplayContext_QuestInteractionHandle : public FGameplayContextAction
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(VisibleAnywhere)
+	TWeakObjectPtr<AQuestInteractionMarker> Owner = nullptr;
+
+	// ~ FGameplayContextAction
+	virtual bool Execute(UWorld* World, UObject* Caller) override;
+	// ~ End of FGameplayContextAction
+
+};

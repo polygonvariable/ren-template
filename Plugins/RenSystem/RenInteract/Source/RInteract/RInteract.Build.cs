@@ -27,6 +27,7 @@ public class RInteract : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
+				"GameplayTags",
             }
 			);
 			
@@ -41,6 +42,7 @@ public class RInteract : ModuleRules
 				// ... add private dependencies that you statically link with here ...
 				"CLibrary",
                 "CGameplayMode",
+				"CGameplayContext",
             }
 			);
 		

@@ -9,6 +9,7 @@
 
 // Project Headers
 #include "InteractSubsystem.h"
+#include "GameplayContextInterface.h"
 
 
 UInteractComponent::UInteractComponent()
@@ -16,7 +17,6 @@ UInteractComponent::UInteractComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 	PrimaryComponentTick.bStartWithTickEnabled = false;
 	bAutoActivate = false;
-
 	InteractId = FGuid::NewGuid();
 }
 
@@ -54,8 +54,22 @@ void UInteractComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 void UInteractComponent::OnInteracted()
 {
-	GetOwner()->SetActorEnableCollision(false);
-	GetOwner()->SetActorHiddenInGame(true);
+	AActor* Owner = GetOwner();
+	if (bHideAfterInteract)
+	{
+		Owner->SetActorHiddenInGame(true);
+		Owner->SetActorEnableCollision(false);
+	}
+
+	UActorComponent* ContextComponent = Owner->FindComponentByInterface(UGameplayContextInterface::StaticClass());
+	if (IsValid(ContextComponent))
+	{
+		IGameplayContextInterface* ContextInterface = Cast<IGameplayContextInterface>(ContextComponent);
+		if (ContextInterface)
+		{
+			ContextInterface->Execute(ContextTags, this);
+		}
+	}
 }
 
 UPrimitiveComponent* UInteractComponent::GetCollisionComponent() const

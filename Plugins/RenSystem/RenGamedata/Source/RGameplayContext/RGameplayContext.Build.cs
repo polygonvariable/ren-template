@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class RQuest : ModuleRules
+public class RGameplayContext : ModuleRules
 {
-	public RQuest(ReadOnlyTargetRules Target) : base(Target)
+	public RGameplayContext(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -27,16 +27,8 @@ public class RQuest : ModuleRules
 			{
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
-				"DeveloperSettings",
 				"GameplayTags",
-                "UMG",
-                "CEventflow",
-                "CLuau",
-                "CDataManager",
-                "CGamedataComponent",
-                "CGamedataStorage",
-                "CWorlddataRegion",
-                "CGameplayContext",
+				"CGameplayContext",
             }
 			);
 			
@@ -49,9 +41,6 @@ public class RQuest : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
-                "CLibrary",
-				"CPool",
-                "CBroadcast",
             }
 			);
 		
