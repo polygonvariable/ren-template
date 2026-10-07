@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
+#include "EventflowEngineProvider.h"
 #include "StateMachine/FiniteStateMachineType.h"
 
 // Generated Headers
@@ -13,25 +14,24 @@
 
 // Forward Declarations
 class UDialogueEngine;
+class UEventflowEngine;
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UDialogueSubsystem : public UWorldSubsystem
+class UDialogueSubsystem : public UWorldSubsystem, public IEventflowEngineProvider
 {
 
 	GENERATED_BODY()
 
 public:
 
-	DECLARE_DELEGATE_TwoParams(FOnDialogueAdded, FPrimaryAssetId /* AssetId */, UDialogueEngine* /* Engine */);
-	FOnDialogueAdded OnDialogueAdded;
-
-	DECLARE_DELEGATE_OneParam(FOnDialogueRemoved, FPrimaryAssetId /* AssetId */);
-	FOnDialogueRemoved OnDialogueRemoved;
-
+	// ~ IEventflowEngineProvider
+	virtual void StartEventflow(const FPrimaryAssetId& AssetId) override;
+	virtual void StopEventflow(const FPrimaryAssetId& AssetId) override;
+	// ~ End of IEventflowEngineProvider
 
 	UFUNCTION(BlueprintCallable)
 	void StartDialogue(const FPrimaryAssetId& AssetId);

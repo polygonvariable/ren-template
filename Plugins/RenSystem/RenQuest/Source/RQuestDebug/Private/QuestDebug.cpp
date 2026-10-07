@@ -14,7 +14,7 @@
 #include "System/QuestSubsystem.h"
 #include "EventflowTask.h"
 #include "Task/EventflowSubTask.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
 #include "System/Flow/Task/QuestSubTask.h"
 
@@ -103,8 +103,8 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 						SlateIM::EndTable();
 						
 
-						UEventflowPrimaryTask* PrimaryTask = Engine->GetTask();
-						if (!IsValid(PrimaryTask))
+						UEventflowNodeTask* NodeTask = Engine->GetTask();
+						if (!IsValid(NodeTask))
 						{
 							SlateIM::BeginHorizontalStack();
 							{
@@ -120,7 +120,7 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 						{
 							SlateIM::Text(TEXT("[>]"), FColor::Green);
 							SlateIM::Text(TEXT("Task:"));
-							SlateIM::Text(PrimaryTask->GetFName().ToString(), FColor::Magenta);
+							SlateIM::Text(NodeTask->GetFName().ToString(), FColor::Magenta);
 						}
 						SlateIM::EndHorizontalStack();
 
@@ -137,8 +137,8 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 
 							SlateIM::BeginTableBody();
 							{
-								FString StateString = StaticEnum<EFSMState>()->GetNameStringByValue(static_cast<int64>(PrimaryTask->GetState()));
-								FString ResultString = StaticEnum<EFSMResult>()->GetNameStringByValue(static_cast<int64>(PrimaryTask->GetResult()));
+								FString StateString = StaticEnum<EFSMState>()->GetNameStringByValue(static_cast<int64>(NodeTask->GetState()));
+								FString ResultString = StaticEnum<EFSMResult>()->GetNameStringByValue(static_cast<int64>(NodeTask->GetResult()));
 
 								SlateIM::NextTableCell();
 								SlateIM::Text(StateString);
@@ -152,7 +152,7 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 
 
 						int SubTaskIndex = 0;
-						const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = PrimaryTask->GetSubTasks();
+						const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = NodeTask->GetSubTasks();
 						for (TObjectPtr<UEventflowSubTask> SubTask : SubTasks)
 						{
 							if (!IsValid(SubTask))

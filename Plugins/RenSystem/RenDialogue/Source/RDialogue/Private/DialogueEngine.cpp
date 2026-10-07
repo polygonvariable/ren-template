@@ -11,12 +11,15 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "SubsystemLibrary.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 
 
 void UDialogueEngine::SkipDialogue()
 {
-	Finish(EFSMResult::Success);
+	UDialogueAsset* Asset = Cast<UDialogueAsset>(GetAsset());
+	check(IsValid(Asset));
+
+	ReachNode(Asset->SkipNodeId);
 }
 
 void UDialogueEngine::NextDialogue(int Index)
@@ -25,9 +28,9 @@ void UDialogueEngine::NextDialogue(int Index)
 	if (CurrentTask)
 	{
 		CurrentTask->ModifyTransitionData(
-			[Index](TInstancedStruct<FEventflowTransitionData>& TransitionData)
+			[Index](TInstancedStruct<FEventflowNodeTransitionData>& TransitionData)
 			{
-				FEventflowTransitionData& Data = TransitionData.GetMutable();
+				FEventflowNodeTransitionData& Data = TransitionData.GetMutable();
 				Data.NextNodeIndex = Index;
 			}
 		);
@@ -38,12 +41,7 @@ void UDialogueEngine::NextDialogue(int Index)
 void UDialogueEngine::OnReady(EFSMState PreviousState)
 {
 	UDialogueAsset* Asset = Cast<UDialogueAsset>(GetAsset());
-	if (!IsValid(Asset))
-	{
-		LOG_ERROR(LogDialogue, TEXT("Failed to get dialogue asset"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	check(IsValid(Asset));
 
 	IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
 	if (GameplayMode)

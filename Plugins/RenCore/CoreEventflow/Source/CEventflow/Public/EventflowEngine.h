@@ -16,7 +16,7 @@
 // Forward Declarations
 class UAssetManager;
 class UEventflowAsset;
-class UEventflowPrimaryTask;
+class UEventflowNodeTask;
 struct FStreamableHandle;
 struct FEventflowNode;
 struct FEventflowPinRelation;
@@ -25,7 +25,7 @@ struct FEventflowPinRelation;
 /**
  *
  */
-UCLASS(BlueprintType, Blueprintable)
+UCLASS()
 class CEVENTFLOW_API UEventflowEngine : public UFiniteStateMachine
 {
 
@@ -35,7 +35,7 @@ public:
 
 	virtual void InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData);
 
-	UEventflowPrimaryTask* GetTask() const;
+	UEventflowNodeTask* GetTask() const;
 
 	template<typename T>
 	T* GetTask()
@@ -71,7 +71,7 @@ protected:
 	void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
 	void RemoveTask();
 	
-	void CreateReturnData(UEventflowPrimaryTask* Task);
+	void CreateReturnData(UEventflowNodeTask* Task);
 	void RemoveReturnData();
 
 	// ~ Bindings
@@ -101,7 +101,7 @@ private:
 	TMap<UClass*, FPoolCollection> _TaskPool;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowPrimaryTask> _ActiveTask = nullptr;
+	TObjectPtr<UEventflowNodeTask> _ActiveTask = nullptr;
 
 	FGuid _ActiveNodeId;
 

@@ -2,6 +2,9 @@
 
 #pragma once
 
+// Project Headers
+#include "Type/EventflowTransition.h"
+
 // Generated Headers
 #include "EventflowEntry.generated.h"
 
@@ -57,6 +60,9 @@ public:
 
 	UPROPERTY()
 	FGuid ExitNodeId = FGuid();
+
+	UPROPERTY()
+	EEventflowGraphTransitionType GraphTransition = EEventflowGraphTransitionType::GraphSuccess;
 
 	void Reset()
 	{

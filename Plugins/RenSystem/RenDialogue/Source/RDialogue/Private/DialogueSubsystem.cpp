@@ -4,15 +4,24 @@
 #include "DialogueSubsystem.h"
 
 // Project Headers
-#include "DialogueEngine.h"
-#include "EventflowEngine.h"
 #include "Core/PoolLibrary.h"
+#include "DialogueEngine.h"
+#include "DialogueSettings.h"
+#include "EventflowEngine.h"
+#include "GameplayModeProvider.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "GameplayModeProvider.h"
 #include "SubsystemLibrary.h"
-#include "DialogueSettings.h"
 
+
+void UDialogueSubsystem::StartEventflow(const FPrimaryAssetId& AssetId)
+{
+	StartDialogue(AssetId);
+}
+
+void UDialogueSubsystem::StopEventflow(const FPrimaryAssetId& AssetId)
+{
+}
 
 void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId)
 {
@@ -65,7 +74,7 @@ void UDialogueSubsystem::HandleOnEngineStateChanged(EFSMState PreviousState, EFS
 		UDialogueEngine* Engine = GetDialogueEngine(AssetId);
 		if (IsValid(Engine))
 		{
-			OnDialogueAdded.ExecuteIfBound(AssetId, Engine);
+			OnEngineAdded.Broadcast(AssetId, Engine);
 			Engine->Active();
 		}
 	}
@@ -74,7 +83,7 @@ void UDialogueSubsystem::HandleOnEngineStateChanged(EFSMState PreviousState, EFS
 		UDialogueEngine* Engine = GetDialogueEngine(AssetId);
 		if (IsValid(Engine))
 		{
-			OnDialogueRemoved.ExecuteIfBound(AssetId);
+			OnEngineRemoved.Broadcast(AssetId, Engine);
 			Engine->Reset();
 		}
 	}

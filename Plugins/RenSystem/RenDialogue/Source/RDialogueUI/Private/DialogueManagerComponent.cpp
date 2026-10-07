@@ -30,8 +30,8 @@ void UDialogueManagerComponent::BeginPlay()
 	UDialogueSubsystem* Subsystem = UDialogueSubsystem::Get(GetWorld());
 	if (IsValid(Subsystem))
 	{
-		Subsystem->OnDialogueAdded.BindUObject(this, &UDialogueManagerComponent::HandleOnDialogueAdded);
-		Subsystem->OnDialogueRemoved.BindUObject(this, &UDialogueManagerComponent::HandleOnDialogueRemoved);
+		Subsystem->GetOnEngineAdded().AddUObject(this, &UDialogueManagerComponent::HandleOnDialogueAdded);
+		Subsystem->GetOnEngineRemoved().AddUObject(this, &UDialogueManagerComponent::HandleOnDialogueRemoved);
 	}
 }
 
@@ -40,8 +40,8 @@ void UDialogueManagerComponent::EndPlay(const EEndPlayReason::Type EndPlayReason
 	UDialogueSubsystem* Subsystem = UDialogueSubsystem::Get(GetWorld());
 	if (IsValid(Subsystem))
 	{
-		Subsystem->OnDialogueAdded.Unbind();
-		Subsystem->OnDialogueRemoved.Unbind();
+		Subsystem->GetOnEngineAdded().RemoveAll(this);
+		Subsystem->GetOnEngineRemoved().RemoveAll(this);
 	}
 
 	for (TPair<FPrimaryAssetId, TObjectPtr<UDialogueUI>>& Kv : WidgetCollection)
@@ -68,11 +68,12 @@ APlayerController* UDialogueManagerComponent::GetPlayerController() const
 	return HUD->GetOwningPlayerController();
 }
 
-void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, UDialogueEngine* Engine)
+void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, UEventflowEngine* Engine)
 {
-	if (WidgetCollection.Contains(AssetId))
+	UDialogueEngine* DialogueEngine = Cast<UDialogueEngine>(Engine);
+	if (WidgetCollection.Contains(AssetId) || !IsValid(DialogueEngine))
 	{
-		LOG_ERROR(LogDialogue, TEXT("Widget already exists with id"));
+		LOG_ERROR(LogDialogue, TEXT("Widget already exists with id or dialogue engine is invalid"));
 		return;
 	}
 
@@ -92,12 +93,12 @@ void UDialogueManagerComponent::HandleOnDialogueAdded(FPrimaryAssetId AssetId, U
 	}
 
 	WidgetCollection.Add(AssetId, Widget);
-	Widget->InitializeDialogue(Asset, Engine);
+	Widget->InitializeDialogue(Asset, DialogueEngine);
 	Widget->SetFocus();
 	Widget->AddToViewport();
 }
 
-void UDialogueManagerComponent::HandleOnDialogueRemoved(FPrimaryAssetId AssetId)
+void UDialogueManagerComponent::HandleOnDialogueRemoved(FPrimaryAssetId AssetId, UEventflowEngine* Engine)
 {
 	TObjectPtr<UDialogueUI>* FoundWidget = WidgetCollection.Find(AssetId);
 	if (FoundWidget)

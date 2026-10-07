@@ -23,7 +23,7 @@ EDataValidationResult UCharacterTemplateAsset::IsDataValid(FDataValidationContex
 
 	for (const FComponentDefinition& Definition : Components)
 	{
-		if (!Definition.IsDataValid())
+		if (!Definition.IsValid())
 		{
 			Context.AddError(FText::FromString("Invalid component definition"));
 			return EDataValidationResult::Invalid;

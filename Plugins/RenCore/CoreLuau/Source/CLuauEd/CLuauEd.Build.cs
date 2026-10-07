@@ -42,6 +42,7 @@ public class CLuauEd : ModuleRules
 				"Slate",
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
+				"DesktopWidgets"
             }
             );
 		

@@ -12,7 +12,8 @@
 class UEventflowNodeData;
 class UDialogueTask_Default;
 class UDialogueTask_Branch;
-
+class UDialogueTask_Begin;
+class UDialogueTask_End;
 
 
 /*
@@ -28,16 +29,6 @@ public:
 
 	UDialogueEdNode_Base();
 
-	// ~ UEventflowEdGraphNode
-	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
-	// ~ End of UEventflowEdGraphNode
-
-protected:
-
-	UPROPERTY(EditAnywhere, Instanced, Category = "Task")
-	TObjectPtr<UDialogueTask_Default> Task;
-
 };
 
 
@@ -52,9 +43,13 @@ class UDialogueEdNode_Begin : public UDialogueEdNode_Base
 
 public:
 
+	UDialogueEdNode_Begin();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+	
 	// ~ UEdGraphNode
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
@@ -73,9 +68,13 @@ class UDialogueEdNode_End : public UDialogueEdNode_Base
 
 public:
 
+	UDialogueEdNode_End();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+	
 	// ~ UEdGraphNode
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
@@ -94,9 +93,13 @@ class UDialogueEdNode_Dialogue : public UDialogueEdNode_Base
 
 public:
 
+	UDialogueEdNode_Dialogue();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+	
 	// ~ UEdGraphNode
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
@@ -118,22 +121,14 @@ public:
 	UDialogueEdNode_Branch();
 
 	// ~ UEventflowEdGraphNode
-	virtual UEventflowPrimaryTask* GetTask() const override;
-	virtual void SetTask(UEventflowPrimaryTask* InTask) override;
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
 	virtual TArray<FText> GetRuntimeOutputPins() const override;
 	// ~ End of UEventflowEdGraphNode
 
 	// ~ UEdGraphNode
-	virtual FText GetNodeDescription() const override;
-	virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override;
 	virtual FLinearColor GetNodeTitleColor() const override;
 	virtual void AllocateDefaultPins() override;
 	// ~ End of UEdGraphNode
-
-protected:
-
-	UPROPERTY(EditAnywhere, Instanced, Category = "Task")
-	TObjectPtr<UDialogueTask_Branch> Task;
 
 };
 

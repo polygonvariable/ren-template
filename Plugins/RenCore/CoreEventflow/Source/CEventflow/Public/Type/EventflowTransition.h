@@ -13,7 +13,7 @@
  *
  */
 UENUM()
-enum class EEventflowPrimaryTaskType : uint8
+enum class EEventflowNodeType : uint8
 {
 	Entry UMETA(DisplayName = "Entry"),
 	Other UMETA(DisplayName = "Other"),
@@ -25,54 +25,40 @@ enum class EEventflowPrimaryTaskType : uint8
  *
  */
 UENUM()
-enum class EEventflowTransitionType : uint8
+enum class EEventflowGraphTransitionType : uint8
+{
+	GraphFail UMETA(DisplayName = "Graph Fail"),
+	GraphSuccess UMETA(DisplayName = "Graph Success"),
+};
+
+/**
+ *
+ */
+UENUM()
+enum class EEventflowNodeTransitionType : uint8
 {
 	None UMETA(DisplayName = "None"),
 	RestartNode UMETA(DisplayName = "Restart Node"),
 	NextNode UMETA(DisplayName = "Next Node"),
 	RedirectNode UMETA(DisplayName = "Redirect Node"),
-	GraphFail UMETA(DisplayName = "Graph Fail"),
-	GraphSuccess UMETA(DisplayName = "Graph Success")
 };
 
-/**
- *
- */
-USTRUCT(BlueprintType)
-struct FEventflowTransition
-{
-
-	GENERATED_BODY()
-
-public:
-
-	FEventflowTransition() {};
-	FEventflowTransition(EFSMResult InResult, EEventflowTransitionType InType) : Result(InResult), Type(InType) {};
-
-
-	UPROPERTY(EditAnywhere)
-	EFSMResult Result = EFSMResult::Success;
-
-	UPROPERTY(EditAnywhere)
-	EEventflowTransitionType Type = EEventflowTransitionType::NextNode;
-
-};
 
 /**
  *
  */
 USTRUCT()
-struct FEventflowTransitionData
+struct FEventflowNodeTransitionData
 {
 
 	GENERATED_BODY()
 
 public:
 
-	FEventflowTransitionData() {};
+	FEventflowNodeTransitionData() {};
 
 	UPROPERTY(EditAnywhere)
-	EEventflowTransitionType Type = EEventflowTransitionType::NextNode;
+	EEventflowNodeTransitionType NodeTransition = EEventflowNodeTransitionType::NextNode;
 
 	UPROPERTY(EditAnywhere)
 	int NextNodeIndex = 0;

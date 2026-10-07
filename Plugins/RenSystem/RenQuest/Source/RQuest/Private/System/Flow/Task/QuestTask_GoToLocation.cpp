@@ -112,7 +112,7 @@ void UQuestTask_GoToLocation::OnReset()
 {
 	if (IsValid(RuntimeActor))
 	{
-		RuntimeActor->OnCompleted.Unbind();
+		//RuntimeActor->OnCompleted.Unbind();
 		RuntimeActor->Destroy();
 	}
 	RuntimeActor = nullptr;

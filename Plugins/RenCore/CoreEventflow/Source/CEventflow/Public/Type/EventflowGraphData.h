@@ -6,7 +6,7 @@
 #include "EventflowGraphData.generated.h"
 
 // Forward Declarations
-class UEventflowPrimaryTask;
+class UEventflowNodeTask;
 
 
 /**
@@ -80,7 +80,7 @@ public:
 	TArray<FEventflowPin> StaticOutputs;
 
 	UPROPERTY(VisibleAnywhere, Instanced)
-	TObjectPtr<UEventflowPrimaryTask> Task = nullptr;
+	TObjectPtr<UEventflowNodeTask> Task = nullptr;
 
 #if WITH_EDITORONLY_DATA
 

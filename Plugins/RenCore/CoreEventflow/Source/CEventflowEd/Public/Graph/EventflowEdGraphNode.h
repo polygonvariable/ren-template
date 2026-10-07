@@ -13,7 +13,7 @@
 #include "EventflowEdGraphNode.generated.h"
 
 // Forward Declarations
-class UEventflowPrimaryTask;
+class UEventflowNodeTask;
 class UEventflowSubTask;
 
 
@@ -28,13 +28,10 @@ class CEVENTFLOWED_API UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	virtual UEventflowPrimaryTask* GetTask() const;
-	virtual void SetTask(UEventflowPrimaryTask* Task);
+	virtual UEventflowNodeTask* GetTask() const;
+	virtual void SetTask(UEventflowNodeTask* InTask);
 
-	//virtual TArray<UEventflowSubTask*> GetSubTasks() const;
-	//virtual void SetSubTasks(const TArray<UEventflowSubTask*>& Tasks);
-
-	virtual bool IsEntryNode() const;
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
 	virtual FText GetNodeDescription() const;
 
 	virtual TArray<FText> GetRuntimeInputPins() const;
@@ -50,13 +47,13 @@ public:
 
 protected:
 
-	UObject* CreateOrSetTask(UEventflowPrimaryTask* Task, UClass* TaskClass);
+	FText NodeTitle;
 
-	template<typename T>
-	T* CreateOrSetTask(UEventflowPrimaryTask* Task)
-	{
-		return Cast<T>(CreateOrSetTask(Task, T::StaticClass()));
-	}
+	UPROPERTY(EditAnywhere, Instanced)
+	TObjectPtr<UEventflowNodeTask> NodeTask = nullptr;
+
+
+	UEventflowNodeTask* EnsureTask(UEventflowNodeTask* InTask, UClass* TaskClass);
 
 	void CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction);
 	void FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins);

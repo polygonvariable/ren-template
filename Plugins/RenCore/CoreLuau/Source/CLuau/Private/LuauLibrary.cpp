@@ -4,6 +4,7 @@
 #include "LuauLibrary.h"
 
 // Project Headers
+#include "LuauSourceCode.h"
 #include "luacode.h"
 
 
@@ -35,5 +36,24 @@ bool FLuauLibrary::Compile(const FString& InCode, TArray<uint8>& OutBytecode)
     free(Bytecode);
 
     return bResult;
+}
+
+bool FLuauLibrary::Compile(FLuauSourceCode& LuauCode)
+{
+    FString LibraryCode;
+    FString GeneratedCode;
+
+    if (LuauCode.Library.IsEmpty() || !FFileHelper::LoadFileToString(LibraryCode, *LuauCode.Library))
+    {
+        GeneratedCode = LuauCode.Code;
+        UE_LOG(LogTemp, Warning, TEXT("Luau library path is empty or invalid"));
+    }
+    else
+    {
+        GeneratedCode = LibraryCode + "\n\n" + LuauCode.Code;
+        UE_LOG(LogTemp, Log, TEXT("Luau generated code:\n%s"), *GeneratedCode);
+    }
+
+    return FLuauLibrary::Compile(GeneratedCode, LuauCode.Bytecode);
 }
 

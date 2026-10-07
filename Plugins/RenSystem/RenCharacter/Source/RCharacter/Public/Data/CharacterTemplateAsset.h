@@ -6,7 +6,7 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "Core/Type/ComponentDefinition.h"
+#include "ComponentDefinition.h"
 
 // Generated Headers
 #include "CharacterTemplateAsset.generated.h"

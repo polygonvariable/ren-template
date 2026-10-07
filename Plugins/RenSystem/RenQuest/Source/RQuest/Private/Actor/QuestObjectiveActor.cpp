@@ -3,106 +3,110 @@
 // Parent Header
 #include "Actor/QuestObjectiveActor.h"
 
+#include "Components/ShapeComponent.h"
+
 // Project Headers
 #include "EventflowTask.h"
 #include "GameplayContextInterface.h"
 
 
-void AQuestObjectiveActor::SetOwningTask(UEventflowTask* Task)
+
+
+
+
+
+
+AQuestObjectiveMarker::AQuestObjectiveMarker()
 {
-	OwningTask = Task;
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
 }
-
-void AQuestObjectiveActor::StartTasks()
-{
-	OnStarted.ExecuteIfBound();
-}
-
-void AQuestObjectiveActor::AbortTasks()
-{
-	OnCompleted.ExecuteIfBound(EFSMResult::Aborted);
-}
-
-void AQuestObjectiveActor::CompleteTasks()
-{
-	OnCompleted.ExecuteIfBound(EFSMResult::Success);
-}
-
-void AQuestObjectiveActor::CompleteObjective(bool bSuccess)
-{
-	OnCompleted.ExecuteIfBound(EFSMResult::Success);
-}
-
-
-
-
-
-void AQuestObjectiveActor::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
-	{
-		OnCompleted.ExecuteIfBound(EFSMResult::Success);
-	}
-}
-
-void AQuestObjectiveActor::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
-{
-	if (DoesCollidedWithPlayer(OtherActor) && bPlayerInRegion)
-	{
-
-	}
-}
-
-
-
-
-
-
 
 void AQuestObjectiveMarker::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
 	{
 		OnInteractionCompleted.ExecuteIfBound();
+		bPlayerInRegion = true;
 	}
 }
 
-void AQuestObjectiveMarker::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
+
+bool FGameplayContext_QuestInteractionHandle::Execute(UWorld* World, UObject* Owner, UObject* Instigator)
+{
+	UActorComponent* Component = Cast<UActorComponent>(Owner);
+	if (!::IsValid(Component))
+	{
+		return false;
+	}
+
+	AQuestInteractionMarker* InteractActor = Cast<AQuestInteractionMarker>(Component->GetOwner());
+	if (!::IsValid(Component))
+	{
+		return false;
+	}
+
+	InteractActor->OnInteractionCompleted.ExecuteIfBound();
+	return true;
+}
+
+
+
+
+
+
+
+UPrimitiveComponent* AObjectiveCascadeMarker::GetCollisionComponent_Implementation() const
+{
+	return FindComponentByClass<UShapeComponent>();
+}
+
+void AObjectiveCascadeMarker::InitialMarkerLocation()
+{
+	UPrimitiveComponent* Component = GetCollisionComponent();
+	if (IsValid(Component) && Locations.IsValidIndex(Index))
+	{
+		Component->SetWorldLocation(Locations[Index]);
+	}
+}
+
+void AObjectiveCascadeMarker::UpdateMarkerLocation()
+{
+	Index++;
+	if (!Locations.IsValidIndex(Index))
+	{
+		OnInteractionCompleted.ExecuteIfBound();
+		return;
+	}
+
+	UPrimitiveComponent* Component = GetCollisionComponent();
+	if (IsValid(Component))
+	{
+		Component->SetWorldLocation(Locations[Index]);
+	}
+}
+
+void AObjectiveCascadeMarker::HandlePlayerEntered(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (DoesCollidedWithPlayer(OtherActor) && !bPlayerInRegion)
+	{
+		UpdateMarkerLocation();
+		bPlayerInRegion = true;
+	}
+}
+
+void AObjectiveCascadeMarker::HandlePlayerExited(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int OtherBodyIndex)
 {
 	if (DoesCollidedWithPlayer(OtherActor) && bPlayerInRegion)
 	{
-
+		bPlayerInRegion = false;
 	}
 }
 
-
-void AQuestInteractionMarker::BeginPlay()
+void AObjectiveCascadeMarker::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	UActorComponent* ContextComponent = FindComponentByInterface(UGameplayContextInterface::StaticClass());
-	if (IsValid(ContextComponent))
-	{
-		IGameplayContextInterface* ContextInterface = Cast<IGameplayContextInterface>(ContextComponent);
-		if (ContextInterface)
-		{
-			TInstancedStruct<FGameplayContextAction> Action;
-			FGameplayContext_QuestInteractionHandle& InteractionHandle = Action.InitializeAs<FGameplayContext_QuestInteractionHandle>();
-			InteractionHandle.ContextTags = ContextTags;
-			InteractionHandle.Owner = TWeakObjectPtr<AQuestInteractionMarker>(this);
 
-			ContextInterface->PushContext(MoveTemp(Action));
-		}
-	}
-}
-
-bool FGameplayContext_QuestInteractionHandle::Execute(UWorld* World, UObject* Caller)
-{
-	AQuestInteractionMarker* Actor = Owner.Get();
-	if (IsValid(Actor))
-	{
-		Actor->OnInteractionCompleted.ExecuteIfBound();
-	}
-	return true;
+	InitialMarkerLocation();
 }
 

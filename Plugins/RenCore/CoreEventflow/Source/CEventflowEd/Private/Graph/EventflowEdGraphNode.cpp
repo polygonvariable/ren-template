@@ -12,43 +12,23 @@
 // Project Headers
 #include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 
 
-UEventflowPrimaryTask* UEventflowEdGraphNode::GetTask() const
+UEventflowNodeTask* UEventflowEdGraphNode::GetTask() const
 {
-	return nullptr;
+	return NodeTask;
 }
 
-void UEventflowEdGraphNode::SetTask(UEventflowPrimaryTask* Task)
+void UEventflowEdGraphNode::SetTask(UEventflowNodeTask* InTask)
 {
-
+	NodeTask = EnsureTask(InTask, GetTaskClass());
 }
 
 
-//TArray<UEventflowSubTask*> UEventflowEdGraphNode::GetSubTasks() const
-//{
-//	return TArray<UEventflowSubTask*>();
-//}
-//
-//void UEventflowEdGraphNode::SetSubTasks(const TArray<UEventflowSubTask*>& Tasks)
-//{
-//}
-
-
-bool UEventflowEdGraphNode::IsEntryNode() const
+TSubclassOf<UEventflowNodeTask> UEventflowEdGraphNode::GetTaskClass() const
 {
-	int PinCount = Pins.Num();
-	int InputPinCount = 0;
-	for (int i = 0; i < PinCount; i++)
-	{
-		UEdGraphPin* Pin = GetPinAt(i);
-		if (Pin->Direction == EEdGraphPinDirection::EGPD_Input)
-		{
-			InputPinCount++;
-		}
-	}
-	return InputPinCount == 0;
+	return UEventflowNodeTask::StaticClass();
 }
 
 FText UEventflowEdGraphNode::GetNodeDescription() const
@@ -109,7 +89,19 @@ void UEventflowEdGraphNode::SyncRuntimeData()
 
 FText UEventflowEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	return FText::FromString(TEXT("Eventflow Node"));
+	if (IsValid(NodeTask) && !NodeTask->NodeTitle.IsNone())
+	{
+		FString NewTitle = NodeTask->NodeTitle.ToString();
+		const int MaxLength = 35;
+
+		if (NewTitle.Len() > MaxLength)
+		{
+			NewTitle = NewTitle.Left(MaxLength) + TEXT("...");
+		}
+
+		return FText::FromString(NewTitle);
+	}
+	return NodeTitle;
 }
 
 FLinearColor UEventflowEdGraphNode::GetNodeTitleColor() const
@@ -156,15 +148,15 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 }
 
 
-UObject* UEventflowEdGraphNode::CreateOrSetTask(UEventflowPrimaryTask* Task, UClass* TaskClass)
+UEventflowNodeTask* UEventflowEdGraphNode::EnsureTask(UEventflowNodeTask* InTask, UClass* TaskClass)
 {
-	if (IsValid(Task))
+	if (IsValid(InTask))
 	{
-		return Task;
+		return InTask;
 	}
 	else
 	{
-		return NewObject<UEventflowPrimaryTask>(this, TaskClass);
+		return NewObject<UEventflowNodeTask>(this, TaskClass);
 	}
 }
 

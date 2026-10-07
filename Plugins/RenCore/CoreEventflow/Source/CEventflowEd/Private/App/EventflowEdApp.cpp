@@ -14,7 +14,7 @@
 #include "Graph/EventflowEdGraph.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 
 
 void FEventflowEdApp::InitEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, UObject* ObjectToEdit)

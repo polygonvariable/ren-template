@@ -3,23 +3,19 @@
 // Parent Header
 #include "EventflowAsset.h"
 
-#if WITH_EDITOR
 // Engine Headers
-#include "UObject/ObjectSaveContext.h"
+#if WITH_EDITOR
 #include "Misc/DataValidation.h"
+#include "UObject/ObjectSaveContext.h"
+#endif
 
 // Project Headers
-#include "Task/EventflowPrimaryTask.h"
+#if WITH_EDITOR
+#include "Task/EventflowNodeTask.h"
 #endif
 
 
-FPrimaryAssetType UEventflowAsset::GetPrimaryAssetType()
-{
-	return TEXT("Asset.Eventflow");
-}
-
 #if WITH_EDITOR
-
 void UEventflowAsset::PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext)
 {
 	Super::PreSaveRoot(ObjectSaveContext);
@@ -28,13 +24,26 @@ void UEventflowAsset::PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext)
 	UE_LOG(LogTemp, Warning, TEXT("UEventflowAsset::PreSaveRoot"));
 }
 
-void UEventflowAsset::Serialize(FArchive& Ar)
-{
-	Super::Serialize(Ar);
-}
-
 EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Context) const
 {
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+	for (const TPair<FGuid, FEventflowNode>& Kv : NodeCollection)
+	{
+		UEventflowNodeTask* Task = Kv.Value.Task;
+		if (!IsValid(Task))
+		{
+			Context.AddError(FText::FromString("Invalid task instance in graph"));
+			return EDataValidationResult::Invalid;
+		}
+
+		EDataValidationResult TaskResult = Task->IsDataValid(Context);
+		if (TaskResult == EDataValidationResult::Invalid)
+		{
+			return EDataValidationResult::Invalid;
+		}
+	}
+
 	return EDataValidationResult::Valid;
 }
 
@@ -44,7 +53,7 @@ void UEventflowAsset::UpdateAssetBundleData()
 
 	for (const TPair<FGuid, FEventflowNode>& Kv : NodeCollection)
 	{
-		UEventflowPrimaryTask* Task = Kv.Value.Task;
+		UEventflowNodeTask* Task = Kv.Value.Task;
 		if (IsValid(Task))
 		{
 			Task->AppendAssetBundleData(AssetBundleData);
@@ -53,11 +62,5 @@ void UEventflowAsset::UpdateAssetBundleData()
 
 	AssetBundleData;
 }
-
 #endif
-
-FPrimaryAssetId UEventflowAsset::GetPrimaryAssetId() const
-{
-	return FPrimaryAssetId(UEventflowAsset::GetPrimaryAssetType(), GetFName());
-}
 

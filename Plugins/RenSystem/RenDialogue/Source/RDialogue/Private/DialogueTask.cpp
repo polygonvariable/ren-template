@@ -7,6 +7,51 @@
 #include "DialogueEngine.h"
 
 
+UDialoguePrimaryTask::UDialoguePrimaryTask()
+{
+	bAllowSubTasks = false;
+}
+
+void UDialoguePrimaryTask::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	Load();
+}
+
+void UDialoguePrimaryTask::OnLoaded(EFSMState PreviousState)
+{
+	Ready();
+}
+
+void UDialoguePrimaryTask::OnReady(EFSMState PreviousState)
+{
+	Active();
+}
+
+void UDialoguePrimaryTask::OnActive(EFSMState PreviousState)
+{
+	Finish(EFSMResult::Success);
+}
+
+
+
+UDialogueTask_Begin::UDialogueTask_Begin()
+{
+	NodeType = EEventflowNodeType::Entry;
+}
+
+UDialogueTask_End::UDialogueTask_End()
+{
+	NodeType = EEventflowNodeType::Exit;
+}
+
+
+
+
+
+
+
+
 void UDialogueTask_Base::CopyFromAsset(const UEventflowTask* Template)
 {
 	const UDialogueTask_Base* DialogueTemplate = Cast<UDialogueTask_Base>(Template);
@@ -20,8 +65,6 @@ void UDialogueTask_Base::CopyFromAsset(const UEventflowTask* Template)
 void UDialogueTask_Base::OnInitialized(EFSMState PreviousState)
 {
 	Super::OnInitialized(PreviousState);
-
-	NextIndex = 0;
 	Load();
 }
 
@@ -80,4 +123,5 @@ void UDialogueTask_Branch::OnFinished(EFSMResult Result)
 {
 	Super::OnFinished(Result);
 }
+
 

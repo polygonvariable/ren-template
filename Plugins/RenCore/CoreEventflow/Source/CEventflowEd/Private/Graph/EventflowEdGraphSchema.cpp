@@ -52,19 +52,27 @@ const FPinConnectionResponse UEventflowEdGraphSchema::CanCreateConnection(const 
 
 	if (A->Direction == EEdGraphPinDirection::EGPD_Output && B->Direction == EEdGraphPinDirection::EGPD_Input)
 	{
+		if (A->LinkedTo.Contains(B))
+		{
+			return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Already linked"));
+		}
 		if (A->LinkedTo.Num() > 0)
 		{
-			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT("Can't connect more than one output pin"));
+			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_A, TEXT("Can't connect more than one output pin"));
 		}
 		return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
 	}
 	
 	if (A->Direction == EEdGraphPinDirection::EGPD_Input && B->Direction == EEdGraphPinDirection::EGPD_Output)
 	{
-		//if (B->LinkedTo.Num() > 0)
-		//{
-		//	return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_AB, TEXT("Can't connect more than one input pin"));
-		//}
+		if (B->LinkedTo.Contains(A))
+		{
+			return FPinConnectionResponse(CONNECT_RESPONSE_DISALLOW, TEXT("Already linked"));
+		}
+		if (B->LinkedTo.Num() > 0)
+		{
+			return FPinConnectionResponse(CONNECT_RESPONSE_BREAK_OTHERS_B, TEXT("Can't connect more than one output pin"));
+		}
 		return FPinConnectionResponse(CONNECT_RESPONSE_MAKE, TEXT(""));
 	}
 

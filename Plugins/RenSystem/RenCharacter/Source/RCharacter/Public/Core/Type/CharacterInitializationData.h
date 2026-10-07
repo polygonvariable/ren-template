@@ -7,7 +7,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "Core/Type/ComponentDefinition.h"
+#include "ComponentDefinition.h"
 
 // Generated Headers
 #include "CharacterInitializationData.generated.h"

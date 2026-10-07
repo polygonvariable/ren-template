@@ -12,7 +12,7 @@
 #include "EventflowAsset.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 
 
 void UEventflowEngine::InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData)
@@ -27,7 +27,7 @@ UWorld* UEventflowEngine::GetWorld() const
 	return GetOuter()->GetWorld();
 }
 
-UEventflowPrimaryTask* UEventflowEngine::GetTask() const
+UEventflowNodeTask* UEventflowEngine::GetTask() const
 {
 	return _ActiveTask.Get();
 }
@@ -49,11 +49,13 @@ void UEventflowEngine::GetAssetBundle(TArray<FName>& OutBundle) const
 
 const FEventflowNode* UEventflowEngine::GetNode(const FGuid& NodeId) const
 {
+	checkf(IsValid(_Asset), TEXT("Invalid asset"));
 	return _Asset->NodeCollection.Find(NodeId);
 }
 
 const FEventflowPinRelation* UEventflowEngine::GetPinRelation(const FGuid& PinId) const
 {
+	checkf(IsValid(_Asset), TEXT("Invalid asset"));
 	return _Asset->PinRelation.Find(PinId);
 }
 
@@ -61,12 +63,14 @@ const FEventflowPinRelation* UEventflowEngine::GetPinRelation(const FGuid& PinId
 void UEventflowEngine::ReachNode(const FGuid& NodeId)
 {
 	const FEventflowNode* Node = GetNode(NodeId);
-	if (!Node)
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find entry node"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(Node, TEXT("Failed to found node with id"));
+	
+	//if (!Node)
+	//{
+	//	LOG_ERROR(LogEventflowEngine, TEXT("Failed to find entry node"));
+	//	Finish(EFSMResult::Aborted);
+	//	return;
+	//}
 
 	_ActiveNodeId = NodeId;
 
@@ -76,41 +80,49 @@ void UEventflowEngine::ReachNode(const FGuid& NodeId)
 
 void UEventflowEngine::ReachEntryNode()
 {
+	checkf(IsValid(_Asset), TEXT("Invalid asset"));
 	ReachNode(_Asset->EntryNodeId);
 }
 
 void UEventflowEngine::ReachNextNode(int Index)
 {
 	const FEventflowNode* CurrentNode = GetNode(_ActiveNodeId);
-	if (!CurrentNode)
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(CurrentNode, TEXT("Current node is invalid"));
 
 	const TArray<FEventflowPin>& Outputs = CurrentNode->StaticOutputs;
-	if (Outputs.Num() == 0)
-	{
-		LOG_WARNING(LogEventflowEngine, TEXT("Failed to find next linked node, stopping graph with success"));
-		Finish(EFSMResult::Success);
-		return;
-	}
-
-	if (!Outputs.IsValidIndex(Index))
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Invalid output index"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(!Outputs.IsEmpty(), TEXT("Current node have no output pins, if this was supposed to be exit point then change its node type to Exit"));
+	checkf(Outputs.IsValidIndex(Index), TEXT("Current node has no output pins or invalid index"));
 
 	const FEventflowPinRelation* Relation = GetPinRelation(Outputs[Index].UniqueId);
-	if (!Relation)
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to find output relation"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(Relation, TEXT("Failed to find pin relation for next node"));
+
+	//if (!CurrentNode)
+	//{
+	//	LOG_ERROR(LogEventflowEngine, TEXT("Failed to find node"));
+	//	Finish(EFSMResult::Aborted);
+	//	return;
+	//}
+
+	//if (Outputs.Num() == 0)
+	//{
+	//	LOG_WARNING(LogEventflowEngine, TEXT("Failed to find next linked node, stopping graph with success"));
+	//	Finish(EFSMResult::Success);
+	//	return;
+	//}
+
+	//if (!Outputs.IsValidIndex(Index))
+	//{
+	//	LOG_ERROR(LogEventflowEngine, TEXT("Invalid output index"));
+	//	Finish(EFSMResult::Aborted);
+	//	return;
+	//}
+
+	//if (!Relation)
+	//{
+	//	LOG_ERROR(LogEventflowEngine, TEXT("Failed to find output relation"));
+	//	Finish(EFSMResult::Aborted);
+	//	return;
+	//}
 
 	ReachNode(Relation->LinkedToNode);
 }
@@ -150,16 +162,12 @@ void UEventflowEngine::ReachPreviousNode()
 
 void UEventflowEngine::CreateTask(const FGuid& NodeId, const FEventflowNode* Node)
 {
-	const UEventflowPrimaryTask* AssetTask = Node->Task;
-	if (!IsValid(AssetTask))
-	{
-		LOG_WARNING(LogEventflowEngine, TEXT("Primary task is invalid"));
-		return;
-	}
+	const UEventflowNodeTask* AssetTask = Node->Task;
+	checkf(IsValid(AssetTask), TEXT("Node contains invalid instanced node task"));
 
 	UClass* Class = AssetTask->GetClass();
 
-	_ActiveTask = FPoolLibrary::AcquireFromContainer<UEventflowPrimaryTask>(_TaskPool, Class, this);
+	_ActiveTask = FPoolLibrary::AcquireFromContainer<UEventflowNodeTask>(_TaskPool, Class, this);
 	_ActiveTask->OnStateChanged.BindUObject(this, &UEventflowEngine::HandleOnTaskStateChanged);
 	_ActiveTask->CopyFromAsset(AssetTask);
 	_ActiveTask->InitializeData(NodeId, Node);
@@ -189,7 +197,7 @@ void UEventflowEngine::RemoveTask()
 }
 
 
-void UEventflowEngine::CreateReturnData(UEventflowPrimaryTask* Task)
+void UEventflowEngine::CreateReturnData(UEventflowNodeTask* Task)
 {
 	Task->GetReturnData(_ReturnData);
 }
@@ -206,46 +214,43 @@ void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMSta
 
 	if (NewState == EFSMState::Finished)
 	{
-		UEventflowPrimaryTask* Task = GetTask();
-		if (IsValid(Task))
+		UEventflowNodeTask* Task = GetTask();
+		checkf(Task, TEXT("No active task found when its state changed"));
+
+		if (Task->NodeType == EEventflowNodeType::Exit)
 		{
-			if (Task->TaskType == EEventflowPrimaryTaskType::Exit)
-			{
-				CreateReturnData(Task);
-			}
+			CreateReturnData(Task);
 
-			const TInstancedStruct<FEventflowTransitionData>& RawTransitionData = Task->GetTransitionData(Result);
-			const FEventflowTransitionData& TransitionData = RawTransitionData.Get();
+			const FEventflowReturnData* ReturnData = GetReturnData().GetPtr();
+			checkf(ReturnData, TEXT("Node return data is invalid"));
 
-			switch (TransitionData.Type)
+			switch (ReturnData->GraphTransition)
 			{
-			case EEventflowTransitionType::GraphFail:
-				LOG_ERROR(LogEventflowEngine, TEXT("Graph failed caused by task transition"));
-				Finish(EFSMResult::Failed);
-				break;
-			case EEventflowTransitionType::GraphSuccess:
-				LOG_WARNING(LogEventflowEngine, TEXT("Graph success caused by task transition"))
+			case EEventflowGraphTransitionType::GraphSuccess:
 				Finish(EFSMResult::Success);
 				break;
-			case EEventflowTransitionType::NextNode:
-				ReachNextNode(TransitionData.NextNodeIndex);
-				break;
-			case EEventflowTransitionType::RedirectNode:
-				ReachNode(TransitionData.NextNodeId);
-				break;
-			case EEventflowTransitionType::RestartNode:
-				Task->Restart();
-				break;
-			default:
-				LOG_ERROR(LogTemp, TEXT("Unknown transition type, no task will be handled"));
+			case EEventflowGraphTransitionType::GraphFail:
 				Finish(EFSMResult::Failed);
 				break;
 			}
 		}
 		else
 		{
-			LOG_ERROR(LogEventflowEngine, TEXT("Primary task is invalid, no task will be handled"));
-			Finish(EFSMResult::Failed);
+			const FEventflowNodeTransitionData* TransitionData = Task->GetTransitionData(Result).GetPtr();
+			checkf(TransitionData, TEXT("Node transition data is invalid"));
+
+			switch (TransitionData->NodeTransition)
+			{
+			case EEventflowNodeTransitionType::NextNode:
+				ReachNextNode(TransitionData->NextNodeIndex);
+				break;
+			case EEventflowNodeTransitionType::RedirectNode:
+				ReachNode(TransitionData->NextNodeId);
+				break;
+			case EEventflowNodeTransitionType::RestartNode:
+				Task->Restart();
+				break;
+			}
 		}
 	}
 }
@@ -254,12 +259,8 @@ void UEventflowEngine::HandleOnTaskStateChanged(EFSMState PreviousState, EFSMSta
 void UEventflowEngine::OnInitialized(EFSMState PreviousState)
 {
 	_AssetManager = UAssetManager::GetIfInitialized();
-	if (!_AssetId.IsValid() || !IsValid(_AssetManager))
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("AssetId or _AssetManager is invalid"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(_AssetId.IsValid(), TEXT("AssetId is invalid"));
+	checkf(IsValid(_AssetManager), TEXT("Asset manager invalid"));
 
 	FAssetManagerLibrary::CancelHandle(_AssetHandle);
 
@@ -272,12 +273,7 @@ void UEventflowEngine::OnInitialized(EFSMState PreviousState)
 void UEventflowEngine::OnLoaded(EFSMState PreviousState)
 {
 	_Asset = _AssetManager->GetPrimaryAssetObject<UEventflowAsset>(_AssetId);
-	if (!IsValid(_Asset))
-	{
-		LOG_ERROR(LogEventflowEngine, TEXT("Failed to load asset"));
-		Finish(EFSMResult::Aborted);
-		return;
-	}
+	checkf(IsValid(_Asset), TEXT("Failed to load asset"));
 
 	Ready();
 }

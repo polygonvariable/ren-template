@@ -7,7 +7,7 @@
 #include "EventflowAsset.h"
 #include "Graph/EventflowEdGraphNode.h"
 #include "Graph/EventflowEdGraphSchema.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 #include "Task/EventflowSubTask.h"
 
 
@@ -63,7 +63,8 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 
 	NodeCollection.Add(Node->NodeGuid, NodeDefinition);
 
-	if (EdNode->IsEntryNode())
+	UEventflowNodeTask* Task = EdNode->GetTask();
+	if (IsValid(Task) && Task->NodeType == EEventflowNodeType::Entry)
 	{
 		EntryId = Node->NodeGuid;
 	}
@@ -71,25 +72,13 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 
 void UEventflowEdGraph::SerializeTask(UEventflowAsset* GraphAsset, FEventflowNode& NodeDefinition, UEventflowEdGraphNode* EdNode)
 {
-	UEventflowPrimaryTask* TemplateTask = EdNode->GetTask();
+	UEventflowNodeTask* TemplateTask = EdNode->GetTask();
 	if (!IsValid(TemplateTask))
 	{
 		return;
 	}
 
 	NodeDefinition.Task = DuplicateObject(TemplateTask, GraphAsset);
-	//NodeDefinition.Task->SubTasks.Empty();
-	//NodeDefinition.Task->TaskTransitions = EdNode->TaskTransitions;
-	//NodeDefinition.Task->SubTaskConditions = EdNode->SubTaskConditions;
-	//NodeDefinition.Task->LuauCode = EdNode->LuauCode;
-	//TArray<UEventflowSubTask*> TemplateSubTasks = EdNode->GetSubTasks();
-	//for (UEventflowSubTask* Task : TemplateSubTasks)
-	//{
-	//	if (IsValid(Task))
-	//	{
-	//		NodeDefinition.Task->SubTasks.Add(DuplicateObject(Task, NodeDefinition.Task));
-	//	}
-	//}
 }
 
 void UEventflowEdGraph::SerializePin(UEdGraphPin* Pin, FEventflowNode& NodeDefinition, TMap<FGuid, FEventflowPinRelation>& PinRelation)

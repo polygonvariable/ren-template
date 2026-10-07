@@ -53,15 +53,3 @@ protected:
 
 };
 
-
-/**
- *
- */
-UCLASS(Abstract)
-class CEVENTFLOW_API UEventflowExternalReference : public UObject
-{
-
-	GENERATED_BODY()
-
-};
-

@@ -10,6 +10,7 @@
 #include "Widgets/Input/SButton.h"
 #include "Widgets/Input/SMultiLineEditableTextBox.h"
 #include "Widgets/Text/STextBlock.h"
+#include "Widgets/Input/SFilePathPicker.h"
 
 // Project Headers
 #include "LuauLibrary.h"
@@ -41,6 +42,7 @@ void FLuauSourceCodeCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
 
     CodeProperty = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLuauSourceCode, Code));
     BytecodeProperty = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLuauSourceCode, Bytecode));
+    LibraryProperty = StructPropertyHandle->GetChildHandle(GET_MEMBER_NAME_CHECKED(FLuauSourceCode, Library));
     BytecodeArrayProperty = BytecodeProperty->AsArray();
     
     float Padding = 6.0;
@@ -82,6 +84,33 @@ void FLuauSourceCodeCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
                                 .OnClicked(this, &FLuauSourceCodeCustomization::ClearCode)
                                 .Text(FText::FromString(TEXT("Clear")))
                         ]
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(PaddingAll)
+                [
+                    SNew(STextBlock)
+                        .Text(FText::FromString(TEXT("Library:")))
+                ]
+                + SVerticalBox::Slot()
+                .AutoHeight()
+                .Padding(PaddingV)
+                [
+                    SNew(SFilePathPicker)
+                        .BrowseButtonImage(FAppStyle::GetBrush("PropertyWindow.Button_Ellipsis"))
+                        .BrowseButtonStyle(FAppStyle::Get(), "HoverHintOnly")
+                        .FileTypeFilter(TEXT("Text File (*.luau)|*.luau"))
+                        .FilePath_Lambda([this]() -> FString
+                            {
+                                FString Value;
+                                LibraryProperty->GetValue(Value);
+
+                                return Value;
+                            })
+                        .OnPathPicked_Lambda([this](const FString& PickedPath)
+                            {
+                                LibraryProperty->SetValue(PickedPath);
+                            })
                 ]
                 + SVerticalBox::Slot()
                 .AutoHeight()
@@ -127,15 +156,12 @@ FReply FLuauSourceCodeCustomization::CompileCode()
     FLuauSourceCode* Struct = nullptr;
     if (!GetParent(Struct))
     {
-        return FReply::Handled();
+        return FReply::Unhandled();
     }
 
     ParentHandle->NotifyPreChange();
 
-    FString& Code = Struct->Code;
-    TArray<uint8>& Bytecode = Struct->Bytecode;
-
-    if (FLuauLibrary::Compile(Code, Bytecode))
+    if (FLuauLibrary::Compile(*Struct))
     {
         UE_LOG(LogTemp, Warning, TEXT("Code compiled"));
     }
@@ -155,7 +181,7 @@ FReply FLuauSourceCodeCustomization::ClearCode()
     FLuauSourceCode* Struct = nullptr;
     if (!GetParent(Struct))
     {
-        return FReply::Handled();
+        return FReply::Unhandled();
     }
 
     ParentHandle->NotifyPreChange();

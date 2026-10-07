@@ -4,12 +4,12 @@
 #include "GameplayContextAction.h"
 
 
-bool FGameplayContextAction::IsDataValid() const
+bool FGameplayContextAction::IsValid() const
 {
     return ContextTags.IsValid();
 }
 
-bool FGameplayContextAction::Execute(UWorld* World, UObject* Caller)
+bool FGameplayContextAction::Execute(UWorld* World, UObject* Owner, UObject* Instigator)
 {
     return false;
 }

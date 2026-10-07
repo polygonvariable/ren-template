@@ -33,9 +33,11 @@ private:
 	TSharedPtr<IPropertyHandle> ParentHandle = nullptr;
 	TSharedPtr<IPropertyHandle> CodeProperty = nullptr;
 	TSharedPtr<IPropertyHandle> BytecodeProperty = nullptr;
+	TSharedPtr<IPropertyHandle> LibraryProperty = nullptr;
 	TSharedPtr<IPropertyHandleArray> BytecodeArrayProperty = nullptr;
 
 	bool GetParent(FLuauSourceCode*& Struct) const;
+
 
 };
 

@@ -10,38 +10,24 @@
 #include "Graph/EventflowEdGraphSchema.h"
 
 
+
 UDialogueEdNode_Base::UDialogueEdNode_Base()
 {
-	//Task = CreateDefaultSubobject<UDialogueTask_Default>(TEXT("Task"));
-}
 
-UEventflowPrimaryTask* UDialogueEdNode_Base::GetTask() const
-{
-	return Task;
-}
-
-void UDialogueEdNode_Base::SetTask(UEventflowPrimaryTask* InTask)
-{
-	if (InTask)
-	{
-		Task = Cast<UDialogueTask_Default>(InTask);
-	}
-	else
-	{
-		Task = NewObject<UDialogueTask_Default>(this, TEXT("Task"));
-	}
 }
 
 
 
-FText UDialogueEdNode_Begin::GetNodeDescription() const
+
+
+UDialogueEdNode_Begin::UDialogueEdNode_Begin()
 {
-	return FText::FromString(TEXT("Starts a conversation."));
+	NodeTitle = FText::FromString(TEXT("Begin"));
 }
 
-FText UDialogueEdNode_Begin::GetNodeTitle(ENodeTitleType::Type TitleType) const
+TSubclassOf<UEventflowNodeTask> UDialogueEdNode_Begin::GetTaskClass() const
 {
-	return FText::FromString(TEXT("Begin"));
+	return UDialogueTask_Begin::StaticClass();
 }
 
 FLinearColor UDialogueEdNode_Begin::GetNodeTitleColor() const
@@ -51,21 +37,25 @@ FLinearColor UDialogueEdNode_Begin::GetNodeTitleColor() const
 
 void UDialogueEdNode_Begin::AllocateDefaultPins()
 {
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("Exec"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
-	Pin->PinType.bIsConst = true;
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
 }
 
 
 
-FText UDialogueEdNode_End::GetNodeDescription() const
+
+
+
+
+UDialogueEdNode_End::UDialogueEdNode_End()
 {
-	return FText::FromString(TEXT("Ends a conversation."));
+	NodeTitle = FText::FromString(TEXT("End"));
 }
 
-FText UDialogueEdNode_End::GetNodeTitle(ENodeTitleType::Type TitleType) const
+TSubclassOf<UEventflowNodeTask> UDialogueEdNode_End::GetTaskClass() const
 {
-	return FText::FromString(TEXT("End"));
+	return UDialogueTask_End::StaticClass();
 }
 
 FLinearColor UDialogueEdNode_End::GetNodeTitleColor() const
@@ -75,21 +65,24 @@ FLinearColor UDialogueEdNode_End::GetNodeTitleColor() const
 
 void UDialogueEdNode_End::AllocateDefaultPins()
 {
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("Exec"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
-	Pin->PinType.bIsConst = true;
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
 }
 
 
 
-FText UDialogueEdNode_Dialogue::GetNodeDescription() const
+
+
+
+UDialogueEdNode_Dialogue::UDialogueEdNode_Dialogue()
 {
-	return FText::FromString(TEXT("Conversation node"));
+	NodeTitle = FText::FromString(TEXT("Dialogue"));
 }
 
-FText UDialogueEdNode_Dialogue::GetNodeTitle(ENodeTitleType::Type TitleType) const
+TSubclassOf<UEventflowNodeTask> UDialogueEdNode_Dialogue::GetTaskClass() const
 {
-	return FText::FromString(TEXT("Dialog"));
+	return UDialogueTask_Dialogue::StaticClass();
 }
 
 FLinearColor UDialogueEdNode_Dialogue::GetNodeTitleColor() const
@@ -99,57 +92,37 @@ FLinearColor UDialogueEdNode_Dialogue::GetNodeTitleColor() const
 
 void UDialogueEdNode_Dialogue::AllocateDefaultPins()
 {
-	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("In"));
-	PinIn->PinFriendlyName = FText::FromString(TEXT("In"));
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
 	PinIn->PinType.bIsConst = true;
 
-	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("Out"));
-	PinOut->PinFriendlyName = FText::FromString(TEXT("Out"));
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
 	PinOut->PinType.bIsConst = true;
 }
 
 
 
+
+
 UDialogueEdNode_Branch::UDialogueEdNode_Branch()
 {
-	//Task = CreateDefaultSubobject<UDialogueTask_Branch>(TEXT("Task"));
+	NodeTitle = FText::FromString(TEXT("Branch"));
 }
 
-UEventflowPrimaryTask* UDialogueEdNode_Branch::GetTask() const
+TSubclassOf<UEventflowNodeTask> UDialogueEdNode_Branch::GetTaskClass() const
 {
-	return Task;
-}
-
-void UDialogueEdNode_Branch::SetTask(UEventflowPrimaryTask* InTask)
-{
-	if (InTask)
-	{
-		Task = Cast<UDialogueTask_Branch>(InTask);
-	}
-	else
-	{
-		Task = NewObject<UDialogueTask_Branch>(this, TEXT("Task"));
-	}
+	return UDialogueTask_Branch::StaticClass();
 }
 
 TArray<FText> UDialogueEdNode_Branch::GetRuntimeOutputPins() const
 {
-	UDialogueTask_Branch* DialogueTask = Cast<UDialogueTask_Branch>(Task);
+	UDialogueTask_Branch* DialogueTask = Cast<UDialogueTask_Branch>(NodeTask);
 	if (!IsValid(DialogueTask))
 	{
 		return TArray<FText>();
 	}
 	return DialogueTask->Options;
-}
-
-FText UDialogueEdNode_Branch::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("Conversation branch node"));
-}
-
-FText UDialogueEdNode_Branch::GetNodeTitle(ENodeTitleType::Type TitleType) const
-{
-	return FText::FromString(TEXT("Branch"));
 }
 
 FLinearColor UDialogueEdNode_Branch::GetNodeTitleColor() const
@@ -159,8 +132,8 @@ FLinearColor UDialogueEdNode_Branch::GetNodeTitleColor() const
 
 void UDialogueEdNode_Branch::AllocateDefaultPins()
 {
-	UEdGraphPin* Pin = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("Exec"));
-	Pin->PinFriendlyName = FText::FromString(TEXT("Exec"));
-	Pin->PinType.bIsConst = true;
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
 }
 

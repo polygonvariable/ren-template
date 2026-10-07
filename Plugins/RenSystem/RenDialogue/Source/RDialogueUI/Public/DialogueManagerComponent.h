@@ -6,7 +6,7 @@
 #include "DialogueManagerComponent.generated.h"
 
 // Forward Declarations
-class UDialogueEngine;
+class UEventflowEngine;
 class UDialogueUI;
 
 
@@ -38,8 +38,8 @@ protected:
 	APlayerController* GetPlayerController() const;
 
 	// ~ Binding
-	void HandleOnDialogueAdded(FPrimaryAssetId AssetId, UDialogueEngine* Engine);
-	void HandleOnDialogueRemoved(FPrimaryAssetId AssetId);
+	void HandleOnDialogueAdded(FPrimaryAssetId AssetId, UEventflowEngine* Engine);
+	void HandleOnDialogueRemoved(FPrimaryAssetId AssetId, UEventflowEngine* Engine);
 	// ~ End of Binding
 
 };

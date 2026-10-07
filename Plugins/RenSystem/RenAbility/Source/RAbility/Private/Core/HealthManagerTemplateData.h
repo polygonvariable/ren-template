@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/ComponentTemplateData.h"
+#include "ComponentTemplateData.h"
 #include "Component/HealthManagerComponent.h"
 
 // Generated Headers
@@ -21,20 +21,22 @@ struct FHealthManagerTemplateData : public FComponentTemplateData
 
 public:
 
-    virtual bool IsDataValid(UClass* Target) const override
+    // ~ FComponentTemplateData
+    virtual TSubclassOf<UActorComponent> GetComponentClass() const override
     {
-        return Target == UHealthManagerComponent::StaticClass();
+        return UHealthManagerComponent::StaticClass();
     };
 
     virtual bool ApplyToInstance(UObject* Target) override
     {
         UHealthManagerComponent* Component = Cast<UHealthManagerComponent>(Target);
-        if (!IsValid(Component))
+        if (!::IsValid(Component))
         {
             return false;
         }
         return true;
     };
+    // ~ End of FComponentTemplateData
 
 };
 

@@ -7,12 +7,11 @@
 
 // Project Headers
 #include "EventflowTask.h"
-#include "LuauSourceCode.h"
 #include "Type/EventflowTransition.h"
 #include "Type/EventflowEntry.h"
 
 // Generated Headers
-#include "EventflowPrimaryTask.generated.h"
+#include "EventflowNodeTask.generated.h"
 
 // Forward Declarations
 class UEventflowSubTask;
@@ -23,30 +22,28 @@ struct FEventflowNode;
  *
  */
 UCLASS(Abstract)
-class CEVENTFLOW_API UEventflowPrimaryTask : public UEventflowTask
+class CEVENTFLOW_API UEventflowNodeTask : public UEventflowTask
 {
 	
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Task")
-	FName TaskTitle;
+	UPROPERTY(EditAnywhere, Category = "Node")
+	FName NodeTitle;
 
-	UPROPERTY(EditAnywhere, Instanced, Category = "Task", meta = (EditCondition = "bAllowSubTasks"))
+	UPROPERTY(EditAnywhere, Instanced, Category = "Node", meta = (EditCondition = "bAllowSubTasks"))
 	TArray<TObjectPtr<UEventflowSubTask>> SubTasks;
 
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Task")
-	EEventflowPrimaryTaskType TaskType = EEventflowPrimaryTaskType::Other;
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Node")
+	EEventflowNodeType NodeType = EEventflowNodeType::Other;
 
 
 	void InitializeData(const FGuid& NodeId, const FEventflowNode* Node);
 
-
 	virtual void GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData);
-	virtual TInstancedStruct<FEventflowTransitionData>& GetTransitionData(EFSMResult Result);
-	virtual void ModifyTransitionData(TFunctionRef<void(TInstancedStruct<FEventflowTransitionData>&)> TransitionData);
-
+	virtual TInstancedStruct<FEventflowNodeTransitionData>& GetTransitionData(EFSMResult Result);
+	virtual void ModifyTransitionData(TFunctionRef<void(TInstancedStruct<FEventflowNodeTransitionData>&)> TransitionData);
 
 	const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
 	UEventflowSubTask* GetSubTask(const FName& TaskName) const;
@@ -59,6 +56,10 @@ public:
 	// ~ UEventflowTask
 	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
 	// ~ End of UEventflowTask
+
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+	// ~ End of UObject
 #endif
 
 protected:
@@ -72,15 +73,13 @@ protected:
 
 	FGuid GetOwningNodeId() const;
 	const FEventflowNode* GetOwningNode() const;
-	const UEventflowTask* GetOwningTemplate() const;
+	UEventflowTask* GetOwningTemplate() const;
 
 	template<typename T>
-	const T* GetOwningTemplate() const
+	T* GetOwningTemplate() const
 	{
 		return Cast<T>(GetOwningTemplate());
 	}
-
-
 
 	void CreateSubTasks();
 	void RemoveSubTasks();
@@ -96,14 +95,12 @@ protected:
 
 private:
 
-	
-
 	FGuid _OwningNodeId;
 
 	const FEventflowNode* _OwningNode = nullptr;
 
 	UPROPERTY()
-	TInstancedStruct<FEventflowTransitionData> _TransitionData;
+	TInstancedStruct<FEventflowNodeTransitionData> _TransitionData;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UEventflowSubTask>> _ActiveSubTasks;

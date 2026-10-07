@@ -30,7 +30,7 @@ void UGameplayContextComponent::Execute(const FGameplayTagContainer& ContextTags
 		FGameplayContextAction* Data = ContextData.GetMutablePtr();
 		if (Data && Data->ContextTags.HasAnyExact(ContextTags))
 		{
-			Data->Execute(World, Caller);
+			Data->Execute(World, this, Caller);
 		}
 	}
 }

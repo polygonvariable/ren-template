@@ -23,8 +23,8 @@ public:
 	UPROPERTY(EditAnywhere, meta = (Categories = "GameContext"))
 	FGameplayTagContainer ContextTags;
 
-	virtual bool IsDataValid() const;
-    virtual bool Execute(UWorld* World, UObject* Caller);
+	virtual bool IsValid() const;
+    virtual bool Execute(UWorld* World, UObject* Owner, UObject* Instigator);
 	virtual void Reset();
     
 	virtual ~FGameplayContextAction() = default;

@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Core/Type/ComponentTemplateData.h"
+#include "ComponentTemplateData.h"
 #include "EquipmentManagerComponent.h"
 #include "Core/Type/EquipmentSpawnData.h"
 #include "SpawnDataSource.h"
@@ -30,15 +30,16 @@ public:
 	TArray<FEquipmentInitializationData> SpawnData;
 
     
-    virtual bool IsDataValid(UClass* Target) const override
+    // ~ FComponentTemplateData
+    virtual TSubclassOf<UActorComponent> GetComponentClass() const override
     {
-        return Target == UEquipmentManagerComponent::StaticClass();
+        return UEquipmentManagerComponent::StaticClass();
     };
 
     virtual bool ApplyToInstance(UObject* Target) override
     {
         UEquipmentManagerComponent* Component = Cast<UEquipmentManagerComponent>(Target);
-        if (!IsValid(Component))
+        if (!::IsValid(Component))
         {
             return false;
         }
@@ -46,6 +47,7 @@ public:
         Component->EquipmentSpawnData = SpawnData;
         return true;
     };
+    // ~ End of FComponentTemplateData
 
 };
 

@@ -4,6 +4,9 @@
 #include "System/Flow/Task/QuestPrimaryTask.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "UObject/ObjectSaveContext.h"
 
 //
@@ -20,12 +23,16 @@
 #include "Task/EventflowSubTask.h"
 #include "Task/EventflowSubTask.h"
 #include "Type/EventflowGraphData.h"
-
+#include "ComponentTemplateLibrary.h"
+#include "EventflowLibrary.h"
+#include "EventflowEngineProvider.h"
+#include "EventflowEngine.h"
+#include "MiscLibrary.h"
 
 
 UQuestPrimaryTask::UQuestPrimaryTask()
 {
-	bAllowSubTasks = true;
+	bAllowSubTasks = false;
 }
 
 
@@ -35,54 +42,27 @@ UQuestPrimaryTask::UQuestPrimaryTask()
 
 
 
-void UQuestTask_ExternalTask::PreSave(FObjectPreSaveContext ObjectSaveContext)
+
+
+
+
+
+
+
+TInstancedStruct<FEventflowNodeTransitionData>& UQuestTask_Reroute::GetTransitionData(EFSMResult Result)
 {
-#if WITH_EDITOR
-	ExternalPinIds.Empty();
-	ExternalPinTitles.Empty();
+	TInstancedStruct<FEventflowNodeTransitionData>& TransitionData = Super::GetTransitionData(Result);
+	FEventflowNodeTransitionData* Data = TransitionData.GetMutablePtr();
+	checkf(Data, TEXT("Node transition data is invalid"));
 
-	if (ExternalTask)
-	{
-		const TMap<FGuid, FEventflowNode>& Nodes = ExternalTask->NodeCollection;
-		for (const TPair<FGuid, FEventflowNode>& Kv : Nodes)
-		{
-			UEventflowPrimaryTask* NTask = Kv.Value.Task;
-			if (IsValid(NTask) && NTask->TaskType == EEventflowPrimaryTaskType::Exit)
-			{
-				ExternalPinIds.Add(Kv.Key);
-				ExternalPinTitles.Add(NTask->TaskTitle);
-			}
-		}
-	}
-#endif
-
-	Super::PreSave(ObjectSaveContext);
-}
-
-
-
-
-
-
-
-
-UQuestTask_Reroute::UQuestTask_Reroute()
-{
-
-}
-
-TInstancedStruct<FEventflowTransitionData>& UQuestTask_Reroute::GetTransitionData(EFSMResult Result)
-{
-	TInstancedStruct<FEventflowTransitionData>& TransitionData = Super::GetTransitionData(Result);
-	FEventflowTransitionData& Data = TransitionData.GetMutable();
-	Data.NextNodeId = RerouteId;
+	Data->NextNodeId = RerouteId;
 	if (RerouteType == ERerouteType::Target)
 	{
-		Data.Type = EEventflowTransitionType::NextNode;
+		Data->NodeTransition = EEventflowNodeTransitionType::NextNode;
 	}
 	else
 	{
-		Data.Type = EEventflowTransitionType::RedirectNode;
+		Data->NodeTransition = EEventflowNodeTransitionType::RedirectNode;
 	}
 	return TransitionData;
 }
@@ -92,21 +72,20 @@ void UQuestTask_Reroute::CopyFromAsset(const UEventflowTask* Template)
 	Super::CopyFromAsset(Template);
 
 	const UQuestTask_Reroute* Task = Cast<UQuestTask_Reroute>(Template);
-	if (IsValid(Task))
-	{
-		RerouteType = Task->RerouteType;
-		RerouteName = Task->RerouteName;
-		RerouteId = Task->RerouteId;
-	}
+	checkf(Task, TEXT("Invalid task template"));
+
+	RerouteType = Task->RerouteType;
+	RerouteName = Task->RerouteName;
+	RerouteId = Task->RerouteId;
 }
 
 void UQuestTask_Reroute::PreSave(FObjectPreSaveContext ObjectSaveContext)
 {
 #if WITH_EDITOR
+	RerouteId.Invalidate();
+	
 	if (RerouteType == ERerouteType::Source)
 	{
-		RerouteId.Invalidate();
-
 		const UQuestAsset* Asset = Cast<UQuestAsset>(GetOuter());
 		if (IsValid(Asset))
 		{
@@ -139,7 +118,7 @@ void UQuestTask_Reroute::OnLoaded(EFSMState PreviousState)
 
 void UQuestTask_Reroute::OnReady(EFSMState PreviousState)
 {
-	Execute();
+	Active();
 }
 
 void UQuestTask_Reroute::OnActive(EFSMState PreviousState)
@@ -153,7 +132,7 @@ void UQuestTask_Reroute::OnActive(EFSMState PreviousState)
 
 UQuestTask_Begin::UQuestTask_Begin()
 {
-	TaskType = EEventflowPrimaryTaskType::Entry;
+	NodeType = EEventflowNodeType::Entry;
 }
 
 void UQuestTask_Begin::OnInitialized(EFSMState PreviousState)
@@ -169,7 +148,7 @@ void UQuestTask_Begin::OnLoaded(EFSMState PreviousState)
 
 void UQuestTask_Begin::OnReady(EFSMState PreviousState)
 {
-	Execute();
+	Active();
 }
 
 void UQuestTask_Begin::OnActive(EFSMState PreviousState)
@@ -180,7 +159,27 @@ void UQuestTask_Begin::OnActive(EFSMState PreviousState)
 
 UQuestTask_End::UQuestTask_End()
 {
-	TaskType = EEventflowPrimaryTaskType::Exit;
+	NodeType = EEventflowNodeType::Exit;
+}
+
+void UQuestTask_End::GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData)
+{
+	Super::GetReturnData(ReturnData);
+
+	FEventflowReturnData* Data = ReturnData.GetMutablePtr();
+	checkf(Data, TEXT("Node return data is invalid"));
+
+	Data->GraphTransition = GraphResult;
+}
+
+void UQuestTask_End::CopyFromAsset(const UEventflowTask* Template)
+{
+	Super::CopyFromAsset(Template);
+
+	const UQuestTask_End* Task = Cast<UQuestTask_End>(Template);
+	checkf(IsValid(Task), TEXT("Invalid task template"));
+
+	GraphResult = Task->GraphResult;
 }
 
 void UQuestTask_End::OnInitialized(EFSMState PreviousState)
@@ -196,7 +195,7 @@ void UQuestTask_End::OnLoaded(EFSMState PreviousState)
 
 void UQuestTask_End::OnReady(EFSMState PreviousState)
 {
-	Execute();
+	Active();
 }
 
 void UQuestTask_End::OnActive(EFSMState PreviousState)
@@ -228,7 +227,6 @@ void UQuestTask_End::OnActive(EFSMState PreviousState)
 
 UQuestTask_SpawnMarker::UQuestTask_SpawnMarker()
 {
-	bAllowSubTasks = false;
 }
 
 void UQuestTask_SpawnMarker::CopyFromAsset(const UEventflowTask* Template)
@@ -236,11 +234,10 @@ void UQuestTask_SpawnMarker::CopyFromAsset(const UEventflowTask* Template)
 	Super::CopyFromAsset(Template);
 	
 	const UQuestTask_SpawnMarker* Task = Cast<UQuestTask_SpawnMarker>(Template);
-	if (IsValid(Task))
-	{
-		MarkerClass = Task->MarkerClass;
-		MarkerTransform = Task->MarkerTransform;
-	}
+	checkf(Task, TEXT("Invalid task template"));
+
+	MarkerClass = Task->MarkerClass;
+	MarkerTransform = Task->MarkerTransform;
 }
 
 #if WITH_EDITOR
@@ -255,19 +252,23 @@ void UQuestTask_SpawnMarker::AppendAssetBundleData(FAssetBundleData& AssetBundle
 }
 #endif
 
-void UQuestTask_SpawnMarker::OnInitialized(EFSMState PreviousStatus)
+void UQuestTask_SpawnMarker::OnInitialized(EFSMState PreviousState)
 {
-	Super::OnInitialized(PreviousStatus);
-	Load();
+	Super::OnInitialized(PreviousState);
+	FMiscLibrary::NextFrame(this, &UQuestTask_SpawnMarker::Load);
 }
 
-void UQuestTask_SpawnMarker::OnLoaded(EFSMState PreviousStatus)
+void UQuestTask_SpawnMarker::OnLoaded(EFSMState PreviousState)
 {
+	UQuestTask_SpawnMarker* Template = GetOwningTemplate<UQuestTask_SpawnMarker>();
+	checkf(Template, TEXT("Invalid task template"));
+
 	MarkerActor = GetWorld()->SpawnActorDeferred<AQuestObjectiveMarker>(MarkerClass.Get(), MarkerTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
 	if (IsValid(MarkerActor))
 	{
 		MarkerActor->OnInteractionCompleted.BindUObject(this, &UQuestTask_SpawnMarker::HandleOnInteractionCompleted);
 		MarkerActor->FinishSpawning(MarkerTransform);
+		FComponentTemplateLibrary::RegisterComponents(MarkerActor, Template->MarkerComponents);
 		Ready();
 	}
 }
@@ -508,153 +509,15 @@ void UQuestTask_Countdown::OnReset()
 
 
 
-#if WITH_EDITOR
-void UQuestTask_ReachLocation::AppendAssetBundleData(FAssetBundleData& AssetBundle)
-{
-	Super::AppendAssetBundleData(AssetBundle);
-
-	const UQuestSettings* Settings = UQuestSettings::Get();
-	const FName& BundleName = Settings->BundleName;
-
-	const TSoftClassPtr<AQuestObjectiveActor>& ActorClass = ReachArea.ActorClass;
-
-	AssetBundle.AddBundleAsset(BundleName, ActorClass.ToSoftObjectPath().GetAssetPath());
-}
-#endif
-
-void UQuestTask_ReachLocation::CopyFromAsset(const UEventflowTask* Template)
-{
-	Super::CopyFromAsset(Template);
-	const UQuestTask_ReachLocation* T = Cast<UQuestTask_ReachLocation>(Template);
-	if (IsValid(T))
-	{
-		ReachArea = T->ReachArea;
-	}
-}
-
-void UQuestTask_ReachLocation::HandleOnDestinationReached(EFSMResult Result)
-{
-	Finish(EFSMResult::Success);
-}
-
-void UQuestTask_ReachLocation::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_ReachLocation::OnLoaded(EFSMState PreviousState)
-{
-	UClass* ActorClass = ReachArea.ActorClass.Get();
-	UWorld* World = GetWorld();
-
-	RuntimeActor = World->SpawnActorDeferred<AQuestObjectiveActor>(ActorClass, ReachArea.Transform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
-	if (IsValid(RuntimeActor))
-	{
-		FPropertyBagLibrary::CopyPropertiesToInstance(ReachArea.Properties, RuntimeActor);
-
-		RuntimeActor->OnCompleted.BindUObject(this, &UQuestTask_ReachLocation::HandleOnDestinationReached);
-		RuntimeActor->SetOwningTask(this);
-		RuntimeActor->FinishSpawning(ReachArea.Transform);
-	}
-
-	Ready();
-}
-
-void UQuestTask_ReachLocation::OnReady(EFSMState PreviousState)
-{
-	if (IsValid(RuntimeActor))
-	{
-		RuntimeActor->SetActorHiddenInGame(true);
-		RuntimeActor->SetActorEnableCollision(false);
-	}
-}
-
-void UQuestTask_ReachLocation::OnActive(EFSMState PreviousState)
-{
-	if (IsValid(RuntimeActor))
-	{
-		RuntimeActor->SetActorHiddenInGame(false);
-		RuntimeActor->SetActorEnableCollision(true);
-	}
-}
-
-void UQuestTask_ReachLocation::OnEndActive(EFSMState NextState, EFSMResult Result)
-{
-	if (IsValid(RuntimeActor))
-	{
-		RuntimeActor->SetActorHiddenInGame(true);
-		RuntimeActor->SetActorEnableCollision(false);
-	}
-}
-
-void UQuestTask_ReachLocation::OnFinished(EFSMResult Result)
-{
-}
-
-void UQuestTask_ReachLocation::OnRestart(EFSMState PreviousState, EFSMResult PreviousResult)
-{
-
-}
-
-void UQuestTask_ReachLocation::OnReset()
-{
-	if (IsValid(RuntimeActor))
-	{
-		RuntimeActor->OnCompleted.Unbind();
-		RuntimeActor->SetOwningTask(nullptr);
-		RuntimeActor->Destroy();
-	}
-	RuntimeActor = nullptr;
-	
-	Super::OnReset();
-}
 
 
 
 
 
 
-void UQuestTask_ActorHaveTag::CopyFromAsset(const UEventflowTask* Template)
-{
-	Super::CopyFromAsset(Template);
-	const UQuestTask_ActorHaveTag* T = Cast<UQuestTask_ActorHaveTag>(Template);
-	if (IsValid(T))
-	{
-		Tag = T->Tag;
-	}
-}
 
-void UQuestTask_ActorHaveTag::OnInitialized(EFSMState PreviousState)
-{
-	Load();
-}
 
-void UQuestTask_ActorHaveTag::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
 
-void UQuestTask_ActorHaveTag::OnReady(EFSMState PreviousState)
-{
-
-}
-
-void UQuestTask_ActorHaveTag::OnActive(EFSMState PreviousState)
-{
-	UWorld* World = GetWorld();
-	APlayerController* PC = World->GetFirstPlayerController();
-	if (PC)
-	{
-		APawn* Pawn = PC->GetPawn();
-		if (Pawn)
-		{
-			Finish(Pawn->ActorHasTag(Tag) ? EFSMResult::Success : EFSMResult::Failed);
-			return;
-		}
-	}
-	Finish(EFSMResult::Failed);
-}
 
 
 
@@ -683,6 +546,145 @@ bool FQCondition_ActorHaveTag::Evaluate(UWorld* World, UQuestPrimaryTask* Task) 
 }
 
 
+void UQuestTask_ExternalTask::CopyFromAsset(const UEventflowTask* Template)
+{
+	Super::CopyFromAsset(Template);
+
+	const UQuestTask_ExternalTask* Task = Cast<UQuestTask_ExternalTask>(Template);
+	checkf(Task, TEXT("Invalid task template"));
+
+	ExternalAsset = Task->ExternalAsset;
+	ExternalPins = Task->ExternalPins;
+}
+
+#if WITH_EDITOR
+void UQuestTask_ExternalTask::AppendAssetBundleData(FAssetBundleData& AssetBundle)
+{
+	Super::AppendAssetBundleData(AssetBundle);
+
+	const UQuestSettings* Settings = UQuestSettings::Get();
+	const FName& BundleName = Settings->BundleName;
+
+	if (!ExternalAsset.IsNull())
+	{
+		AssetBundle.AddBundleAsset(BundleName, ExternalAsset.ToSoftObjectPath().GetAssetPath());
+	}
+}
+EDataValidationResult UQuestTask_ExternalTask::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+	if (ExternalAsset.IsNull())
+	{
+		Context.AddError(FText::FromString("External eventflow asset is invalid"));
+		return EDataValidationResult::Invalid;
+	}
+
+	if (ExternalPins.IsEmpty())
+	{
+		Context.AddError(FText::FromString("External evetflow have invalid exit pins"));
+		return EDataValidationResult::Invalid;
+	}
+
+	return Result;
+}
+#endif
+
+void UQuestTask_ExternalTask::HandleOnEngineRemoved(FPrimaryAssetId AssetId, UEventflowEngine* Engine)
+{
+	const UEventflowAsset* TaskAsset = ExternalAsset.Get();
+	checkf(IsValid(TaskAsset), TEXT("Failed to get external task asset"));
+
+	FPrimaryAssetId TaskAssetId = TaskAsset->GetPrimaryAssetId();
+	if (TaskAssetId != AssetId)
+	{
+		return;
+	}
+
+	IEventflowEngineProvider* EngineProvider = FEventflowLibrary::GetEngineProvider(GetWorld(), TaskAssetId);
+	checkf(EngineProvider, TEXT("Failed to get external task engine provider"));
+
+	EngineProvider->GetOnEngineRemoved().RemoveAll(this);
+
+	const TInstancedStruct<FEventflowReturnData>& ReturnData = Engine->GetReturnData();
+	if (!ReturnData.IsValid())
+	{
+		return;
+	}
+
+	const FEventflowReturnData& Data = ReturnData.Get();
+	FGuid ExitId = Data.ExitNodeId;
+
+	int Index = ExternalPins.IndexOfByPredicate([ExitId](const FGuid& NodeId) { return NodeId == ExitId; });
+	if (Index >= 0)
+	{
+		ModifyTransitionData(
+			[Index](TInstancedStruct<FEventflowNodeTransitionData>& TransitionData)
+			{
+				FEventflowNodeTransitionData& Data = TransitionData.GetMutable();
+				Data.NextNodeIndex = Index;
+			}
+		);
+
+		TWeakObjectPtr<UQuestTask_ExternalTask> WeakThis(this);
+
+		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+		TimerManager.SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this,
+			[WeakThis]()
+			{
+				UQuestTask_ExternalTask* This = WeakThis.Get();
+				checkf(This, TEXT("Failed to resolve task pointer"));
+
+				This->Finish(EFSMResult::Success);
+			}
+		));
+	}
+}
+
+void UQuestTask_ExternalTask::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	Load();
+}
+
+void UQuestTask_ExternalTask::OnLoaded(EFSMState PreviousState)
+{
+	Ready();
+}
+
+void UQuestTask_ExternalTask::OnReady(EFSMState PreviousState)
+{
+	Active();
+}
+
+void UQuestTask_ExternalTask::OnActive(EFSMState PreviousState)
+{
+	const UEventflowAsset* TaskAsset = ExternalAsset.Get();
+	checkf(IsValid(TaskAsset), TEXT("Failed to get external task asset"));
+
+	FPrimaryAssetId TaskAssetId = TaskAsset->GetPrimaryAssetId();
+	IEventflowEngineProvider* EngineProvider = FEventflowLibrary::GetEngineProvider(GetWorld(), TaskAssetId);
+	checkf(EngineProvider, TEXT("Failed to get external task engine provider"));
+
+	EngineProvider->GetOnEngineRemoved().AddUObject(this, &UQuestTask_ExternalTask::HandleOnEngineRemoved);
+	EngineProvider->StartEventflow(TaskAssetId);
+}
+
+void UQuestTask_ExternalTask::OnReset()
+{
+	const UEventflowAsset* TaskAsset = ExternalAsset.Get();
+	if (IsValid(TaskAsset))
+	{
+		FPrimaryAssetId TaskAssetId = TaskAsset->GetPrimaryAssetId();
+		IEventflowEngineProvider* EngineProvider = FEventflowLibrary::GetEngineProvider(GetWorld(), TaskAssetId);
+		if (EngineProvider)
+		{
+			EngineProvider->GetOnEngineRemoved().RemoveAll(this);
+		}
+	}
+
+	Super::OnReset();
+}
 
 
 
@@ -690,4 +692,248 @@ bool FQCondition_ActorHaveTag::Evaluate(UWorld* World, UQuestPrimaryTask* Task) 
 
 
 
+
+
+
+UQuestTask_SubtaskGate::UQuestTask_SubtaskGate()
+{
+	bAllowSubTasks = true;
+}
+
+void UQuestTask_SubtaskGate::PreSave(FObjectPreSaveContext ObjectSaveContext)
+{
+#if WITH_EDITOR
+	if (bAutoCompile)
+	{
+		if (!FLuauLibrary::Compile(LuauCode))
+		{
+			LuauCode.Bytecode.Empty();
+		}
+	}
+#endif
+
+	Super::PreSave(ObjectSaveContext);
+}
+
+void UQuestTask_SubtaskGate::HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result)
+{
+	if (NewState != EFSMState::Finished)
+	{
+		return;
+	}
+
+	const UQuestTask_SubtaskGate* Template = GetOwningTemplate<UQuestTask_SubtaskGate>();
+	checkf(IsValid(Template), TEXT("Invalid template task"));
+
+	ULuauSubsystem* LuauSubsystem = ULuauSubsystem::Get(GetWorld());
+	if (!IsValid(Template) || !IsValid(LuauSubsystem))
+	{
+		return;
+	}
+
+	FLuauProperties Inputs;
+	FLuauProperties Outputs;
+
+	FLuauProperty_Table& TaskTable = Inputs.SetTable();
+	TaskTable.Set(TEXT("state"), static_cast<int>(GetState()));
+	TaskTable.Set(TEXT("result"), static_cast<int>(GetResult()));
+
+	FLuauProperty_Table& SubTaskTable = Inputs.SetTable();
+	const TArray<UEventflowSubTask*>& Tasks = GetSubTasks();
+	for (UEventflowSubTask* Task : Tasks)
+	{
+		if (IsValid(Task))
+		{
+			FLuauProperty_Table& SubTaskTableEntry = SubTaskTable.SetTable(Task->TaskName.ToString());
+			SubTaskTableEntry.Set(TEXT("state"), static_cast<int>(Task->GetState()));
+			SubTaskTableEntry.Set(TEXT("result"), static_cast<int>(Task->GetResult()));
+		}
+	}
+
+	bool bSuccess = LuauSubsystem->ExecuteBytecode(Template->LuauCode.Bytecode, TEXT("script"), TEXT("evaluateSubTasks"), Inputs, Outputs);
+	if (!ensureMsgf(bSuccess, TEXT("Failed to execute quest luau bytecode")))
+	{
+		return;
+	}
+
+	const FLuauProperty_Number* OutputResult = Outputs.Get<FLuauProperty_Number>(0);
+	if (!ensureMsgf(OutputResult, TEXT("Failed to get output from luau method")))
+	{
+		return;
+	}
+
+	int Index = 2;
+	EFSMResult FSMResult = static_cast<EFSMResult>(OutputResult->Value);
+	switch (FSMResult)
+	{
+	case EFSMResult::Success:
+		Index = 0;
+		break;
+	case EFSMResult::Failed:
+		Index = 1;
+		break;
+	case EFSMResult::Cancelled:
+		Index = 2;
+		break;
+	}
+
+	ModifyTransitionData(
+		[Index](TInstancedStruct<FEventflowNodeTransitionData>& TransitionData)
+		{
+			FEventflowNodeTransitionData& Data = TransitionData.GetMutable();
+			Data.NextNodeIndex = Index;
+		}
+	);
+
+	Finish(FSMResult);
+}
+
+void UQuestTask_SubtaskGate::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	Load();
+}
+
+void UQuestTask_SubtaskGate::OnLoaded(EFSMState PreviousState)
+{
+	Ready();
+}
+
+void UQuestTask_SubtaskGate::OnReady(EFSMState PreviousState)
+{
+	Active();
+}
+
+void UQuestTask_SubtaskGate::OnActive(EFSMState PreviousState)
+{
+	const TArray<UEventflowSubTask*>& Tasks = GetSubTasks();
+	for (UEventflowSubTask* Task : Tasks)
+	{
+		if (IsValid(Task))
+		{
+			Task->Active();
+		}
+	}
+}
+
+void UQuestTask_SubtaskGate::OnFinished(EFSMResult Result)
+{
+}
+
+void UQuestTask_SubtaskGate::OnReset()
+{
+	Super::OnReset();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+UQuestTask_SpawnLocation::UQuestTask_SpawnLocation()
+{
+}
+
+void UQuestTask_SpawnLocation::CopyFromAsset(const UEventflowTask* Template)
+{
+	Super::CopyFromAsset(Template);
+
+	const UQuestTask_SpawnLocation* Task = Cast<UQuestTask_SpawnLocation>(Template);
+	checkf(Task, TEXT("Invalid task template"));
+
+	MarkerActor = Task->MarkerActor;
+	MarkerClass = Task->MarkerClass;
+	MarkerTransform = Task->MarkerTransform;
+}
+
+#if WITH_EDITOR
+void UQuestTask_SpawnLocation::AppendAssetBundleData(FAssetBundleData& AssetBundle)
+{
+	Super::AppendAssetBundleData(AssetBundle);
+
+	const UQuestSettings* Settings = UQuestSettings::Get();
+	const FName& BundleName = Settings->BundleName;
+
+	AssetBundle.AddBundleAsset(BundleName, MarkerClass.ToSoftObjectPath().GetAssetPath());
+}
+#endif
+
+void UQuestTask_SpawnLocation::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	FMiscLibrary::NextFrame(this, &UQuestTask_SpawnLocation::Load);
+}
+
+void UQuestTask_SpawnLocation::OnLoaded(EFSMState PreviousState)
+{
+	MarkerActor = GetWorld()->SpawnActorDeferred<AQuestObjectiveMarker>(MarkerClass.Get(), MarkerTransform, nullptr, nullptr, ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn);
+	if (IsValid(MarkerActor))
+	{
+		MarkerActor->OnInteractionCompleted.BindUObject(this, &UQuestTask_SpawnLocation::HandleOnInteractionCompleted);
+		MarkerActor->FinishSpawning(MarkerTransform);
+		Ready();
+	}
+}
+
+void UQuestTask_SpawnLocation::OnReady(EFSMState PreviousState)
+{
+	if (IsValid(MarkerActor))
+	{
+		MarkerActor->SetActorHiddenInGame(false);
+		MarkerActor->SetActorEnableCollision(true);
+	}
+}
+
+void UQuestTask_SpawnLocation::OnActive(EFSMState PreviousState)
+{
+	Finish(EFSMResult::Success);
+}
+
+void UQuestTask_SpawnLocation::OnFinished(EFSMResult Result)
+{
+	if (IsValid(MarkerActor))
+	{
+		MarkerActor->SetActorHiddenInGame(true);
+		MarkerActor->SetActorEnableCollision(false);
+	}
+}
+
+void UQuestTask_SpawnLocation::OnReset()
+{
+	if (IsValid(MarkerActor))
+	{
+		MarkerActor->Destroy();
+	}
+	MarkerActor = nullptr;
+
+	Super::OnReset();
+}
+
+void UQuestTask_SpawnLocation::HandleOnInteractionCompleted()
+{
+	Active();
+}
 

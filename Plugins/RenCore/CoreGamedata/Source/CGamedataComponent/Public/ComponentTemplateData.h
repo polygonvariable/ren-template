@@ -10,16 +10,17 @@
  *
  */
 USTRUCT()
-struct FComponentTemplateData
+struct CGAMEDATACOMPONENT_API FComponentTemplateData
 {
 
 	GENERATED_BODY()
 
 public:
 
-    CGAMEDATACOMPONENT_API virtual bool IsDataValid(UClass* Target) const;
-    CGAMEDATACOMPONENT_API virtual bool AttachToParent(UActorComponent* Target, AActor* Owner);
-    CGAMEDATACOMPONENT_API virtual bool ApplyToInstance(UObject* Target);
+    virtual bool IsValid() const;
+    virtual bool AttachToParent(UActorComponent* Target, AActor* Owner);
+    virtual bool ApplyToInstance(UObject* Target);
+    virtual TSubclassOf<UActorComponent> GetComponentClass() const;
     
 	virtual ~FComponentTemplateData() = default;
     
@@ -30,7 +31,7 @@ public:
  *
  */
 USTRUCT(DisplayName = "Scene Component")
-struct FSceneComponentTemplateData : public FComponentTemplateData
+struct CGAMEDATACOMPONENT_API FSceneComponentTemplateData : public FComponentTemplateData
 {
 
 	GENERATED_BODY()
@@ -44,7 +45,7 @@ public:
 	FName NativeParentSocket = TEXT_EMPTY;
 
     // ~ FComponentTemplateData
-    CGAMEDATACOMPONENT_API virtual bool AttachToParent(UActorComponent* Target, AActor* Owner) override;
+    virtual bool AttachToParent(UActorComponent* Target, AActor* Owner) override;
     // ~ End of FComponentTemplateData
 
 };

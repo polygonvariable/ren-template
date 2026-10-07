@@ -12,8 +12,9 @@
 #include "Kismet/KismetMathLibrary.h"
 
 // Project Headers
-#include "Core/CharacterSettings.h"
 #include "AscensionFragment.h"
+#include "ComponentTemplateLibrary.h"
+#include "Core/CharacterSettings.h"
 #include "Data/CharacterAsset.h"
 #include "Data/CharacterTemplateAsset.h"
 
@@ -160,34 +161,7 @@ void ACharacterBase::InitializeComponents()
 
 void ACharacterBase::RegisterComponents(TArray<FComponentDefinition>& Components)
 {
-	RuntimeComponents.Reserve(Components.Num());
-
-	for (FComponentDefinition& Definition : Components)
-	{
-		if (!Definition.IsValid())
-		{
-			continue;
-		}
-
-		FComponentTemplateData* InstanceData = Definition.Data.GetMutablePtr<FComponentTemplateData>();
-		if (!InstanceData)
-		{
-			continue;
-		}
-
-		UActorComponent* NewComponent = NewObject<UActorComponent>(this, Definition.Component);
-		if (IsValid(NewComponent))
-		{
-			NewComponent->RegisterComponent();
-
-			InstanceData->AttachToParent(NewComponent, this);
-			InstanceData->ApplyToInstance(NewComponent);
-
-			AddInstanceComponent(NewComponent);
-
-			RuntimeComponents.Add(NewComponent);
-		}
-	}
+	FComponentTemplateLibrary::RegisterComponents(this, Components, RuntimeComponents);
 }
 
 void ACharacterBase::ActivateComponents()

@@ -39,6 +39,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Widget")
 	TSubclassOf<UUserWidget> DialogueWidget;
 
+	UPROPERTY(EditAnywhere, Category = "Widget")
+	FGuid SkipNodeId;
 
 	// ~ UPrimaryDataAsset
 	virtual FPrimaryAssetId GetPrimaryAssetId() const override

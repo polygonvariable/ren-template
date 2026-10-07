@@ -24,15 +24,15 @@ public:
 	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Dialogue"))
 	FPrimaryAssetId DialogueAssetId;
 
-    virtual bool Execute(UWorld* World, UObject* Caller) override
+    virtual bool Execute(UWorld* World, UObject* Owner, UObject* Instigator) override
 	{
-        if (!IsValid(World) || !DialogueAssetId.IsValid())
+        if (!::IsValid(World) || !DialogueAssetId.IsValid())
         {
             return false;
         }
 
         UDialogueSubsystem* DialogueSubsystem = UDialogueSubsystem::Get(World);
-        if (!IsValid(DialogueSubsystem))
+        if (!::IsValid(DialogueSubsystem))
         {
             return false;
         }

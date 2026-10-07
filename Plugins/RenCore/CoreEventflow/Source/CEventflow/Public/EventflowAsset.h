@@ -15,8 +15,8 @@ class FObjectPreSaveRootContext;
 /**
  *
  */
-UCLASS(MinimalAPI, BlueprintType)
-class UEventflowAsset : public UPrimaryDataAsset
+UCLASS()
+class CEVENTFLOW_API UEventflowAsset : public UPrimaryDataAsset
 {
 
 	GENERATED_BODY()
@@ -35,15 +35,10 @@ public:
 	FGuid EntryNodeId = FGuid::NewGuid();
 
 
-	// ~ UPrimaryDataAsset
-	CEVENTFLOW_API virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-	// ~ End of UPrimaryDataAsset
-
 #if WITH_EDITORONLY_DATA
 	// ~ UPrimaryDataAsset
-	CEVENTFLOW_API virtual void Serialize(FArchive& Ar) override;
-	CEVENTFLOW_API virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
-	CEVENTFLOW_API virtual void UpdateAssetBundleData() override;
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	virtual void UpdateAssetBundleData() override;
 	// ~ End of UPrimaryDataAsset
 #endif
 
@@ -51,13 +46,9 @@ protected:
 
 #if WITH_EDITOR
 	// ~ UObject
-	CEVENTFLOW_API virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
+	virtual void PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext) override;
 	// ~ End of UObject
 #endif
-
-public:
-
-	static CEVENTFLOW_API FPrimaryAssetType GetPrimaryAssetType();
 
 };
 

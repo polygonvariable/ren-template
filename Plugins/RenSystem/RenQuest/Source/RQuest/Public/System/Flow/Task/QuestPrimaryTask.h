@@ -6,11 +6,11 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
+#include "ComponentDefinition.h"
 #include "Core/Type/ActorSpawnData.h"
 #include "LuauSourceCode.h"
-#include "Task/EventflowPrimaryTask.h"
 #include "System/Flow/Task/QuestSubTask.h"
-#include "Core/Type/ComponentDefinition.h"
+#include "Task/EventflowNodeTask.h"
 
 // Generated Headers
 #include "QuestPrimaryTask.generated.h"
@@ -24,7 +24,7 @@ class AQuestObjectiveMarker;
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UQuestPrimaryTask : public UEventflowPrimaryTask
+class UQuestPrimaryTask : public UEventflowNodeTask
 {
 
 	GENERATED_BODY()
@@ -33,16 +33,11 @@ public:
 
 	UQuestPrimaryTask();
 
-
 	UPROPERTY(EditAnywhere, Category = "Objective")
 	FName Summary;
 
 	UPROPERTY(EditAnywhere, Category = "Objective")
 	bool bIsTransient = true;
-
-protected:
-
-	int NextPinIndex = 0;
 
 };
 
@@ -51,7 +46,7 @@ protected:
 /**
  *
  */
-UCLASS(MinimalAPI, meta = (DisplayName = "External Task"))
+UCLASS(MinimalAPI)
 class UQuestTask_ExternalTask : public UQuestPrimaryTask
 {
 
@@ -59,42 +54,63 @@ class UQuestTask_ExternalTask : public UQuestPrimaryTask
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "External Task")
-	TObjectPtr<UEventflowAsset> ExternalTask;
+	UPROPERTY(EditAnywhere, Category = "External Asset")
+	TSoftObjectPtr<UEventflowAsset> ExternalAsset;
 
-	UPROPERTY(VisibleAnywhere, Category = "External Task")
-	TArray<FGuid> ExternalPinIds;
+	UPROPERTY(VisibleAnywhere, Category = "External Asset")
+	TArray<FGuid> ExternalPins;
 
-	UPROPERTY(VisibleAnywhere, Category = "External Task")
-	TArray<FName> ExternalPinTitles;
+
+	// ~ UEventflowTask
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	// ~ End of UEventflowTask
+
+#if WITH_EDITOR
+	// ~ UEventflowTask
+	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
+	// ~ End of UEventflowTask
 
 	// ~ UObject
-	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
 	// ~ End of UObject
+#endif
 
+protected:
+
+	// ~ Binding
+	void HandleOnEngineRemoved(FPrimaryAssetId AssetId, UEventflowEngine* Engine);
+	// ~ End of Binding
+
+	// ~ UEventflowTask
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	virtual void OnReset() override;
+	// ~ End of UEventflowTask
 };
 
 
+/**
+ *
+ */
 UENUM()
 enum class ERerouteType : uint8
 {
 	Source, /* That sends signal */
-	Target /* recieve the reroute signal */
+	Target, /* recieve the reroute signal */
 };
 
 /**
  *
  */
-UCLASS(MinimalAPI, meta = (DisplayName = "Reroute"))
+UCLASS(MinimalAPI)
 class UQuestTask_Reroute : public UQuestPrimaryTask
 {
 
 	GENERATED_BODY()
 
 public:
-
-	UQuestTask_Reroute();
-
 
 	UPROPERTY(EditAnywhere, Category = "Reroute")
 	ERerouteType RerouteType;
@@ -106,8 +122,9 @@ public:
 	FGuid RerouteId;
 
 
-	virtual TInstancedStruct<FEventflowTransitionData>& GetTransitionData(EFSMResult Result) override;
-
+	// ~ UEventflowNodeTask
+	virtual TInstancedStruct<FEventflowNodeTransitionData>& GetTransitionData(EFSMResult Result) override;
+	// ~ End of UEventflowNodeTask
 
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
@@ -142,9 +159,6 @@ public:
 
 	UQuestTask_Begin();
 
-	UPROPERTY(EditAnywhere, Category = "Quest")
-	bool bShowSplash;
-
 protected:
 
 	// ~ UEventflowTask
@@ -169,8 +183,13 @@ public:
 
 	UQuestTask_End();
 
-	UPROPERTY(EditAnywhere, Category = "Quest")
-	bool bShowSplash;
+	UPROPERTY(EditAnywhere, Category = "Graph")
+	EEventflowGraphTransitionType GraphResult = EEventflowGraphTransitionType::GraphSuccess;
+
+	// ~ UEventflowTask
+	virtual void GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData) override;
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	// ~ End of UEventflowTask
 
 protected:
 
@@ -211,6 +230,9 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Marker")
 	FTransform MarkerTransform;
 
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	TArray<FComponentDefinition> MarkerComponents;
+
 
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
@@ -228,8 +250,55 @@ protected:
 	TObjectPtr<AQuestObjectiveMarker> MarkerActor = nullptr;
 
 
-	// ~ Bindings
+	// ~ Binding
 	virtual void HandleOnInteractionCompleted();
+	// ~ End of Binding
+
+	// ~ UFiniteStateMachine
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	virtual void OnFinished(EFSMResult Result) override;
+	virtual void OnReset() override;
+	// ~ End of UFiniteStateMachine
+
+};
+
+
+
+
+
+
+/**
+ * 
+ */
+UCLASS(MinimalAPI)
+class UQuestTask_SubtaskGate : public UQuestPrimaryTask
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestTask_SubtaskGate();
+
+	// ~ UObject
+	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
+	// ~ End of UObject
+
+protected:
+
+	UPROPERTY(EditAnywhere, Category = "Subtask Condition")
+	FLuauSourceCode LuauCode;
+
+#if WITH_EDITORONLY_DATA
+	UPROPERTY(EditAnywhere, AdvancedDisplay, Category = "Subtask Condition")
+	bool bAutoCompile = true;
+#endif
+
+	// ~ Binding
+	virtual void HandleOnSubTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result) override;
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
@@ -242,6 +311,25 @@ protected:
 	// ~ End of UFiniteStateMachine
 
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -286,8 +374,6 @@ public:
 
 };
 
-
-
 /**
  * Trigger zone, auto activates when player enter its bounds
  */
@@ -305,7 +391,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Marker Condition")
 	FLuauSourceCode LuauCode;
 
-
 	// ~ UObject
 	virtual void PreSave(FObjectPreSaveContext ObjectSaveContext) override;
 	// ~ End of UObject
@@ -317,9 +402,9 @@ protected:
 	bool bAutoCompile = true;
 #endif
 
-	// ~ Bindings
+	// ~ Binding
 	virtual void HandleOnInteractionCompleted() override;
-	// ~ End of Bindings
+	// ~ End of Binding
 
 };
 
@@ -347,15 +432,24 @@ protected:
  *
  */
 UCLASS(MinimalAPI, meta = (DisplayName = "Reach Location"))
-class UQuestTask_ReachLocation : public UQuestSubTask
+class UQuestTask_SpawnLocation : public UQuestSubTask
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Zone")
-	FActorSpawnData ReachArea;
+	UQuestTask_SpawnLocation();
+
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	TSoftClassPtr<AQuestObjectiveMarker> MarkerClass;
+
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	FTransform MarkerTransform;
+
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	TArray<FComponentDefinition> MarkerComponents;
+
 
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
@@ -370,25 +464,22 @@ public:
 protected:
 
 	UPROPERTY(Transient)
-	TObjectPtr<AQuestObjectiveActor> RuntimeActor = nullptr;
+	TObjectPtr<AQuestObjectiveMarker> MarkerActor = nullptr;
 
 
 	// ~ Binding
-	virtual void HandleOnDestinationReached(EFSMResult Result);
+	virtual void HandleOnInteractionCompleted();
 	// ~ End of Binding
 
 	// ~ UFiniteStateMachine
 	virtual void OnInitialized(EFSMState PreviousState) override;
 	virtual void OnLoaded(EFSMState PreviousState) override;
 	virtual void OnReady(EFSMState PreviousState) override;
-
 	virtual void OnActive(EFSMState PreviousState) override;
-	virtual void OnEndActive(EFSMState NextState, EFSMResult Result) override;
-
 	virtual void OnFinished(EFSMResult Result) override;
-	virtual void OnRestart(EFSMState PreviousState, EFSMResult PreviousResult) override;
 	virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
+
 };
 
 /**
@@ -419,9 +510,9 @@ protected:
 
 	FTimerHandle TimerHandle;
 
-	// ~ Bindings
+	// ~ Binding
 	void HandleCountdownOver();
-	// ~ End of Bindings
+	// ~ End of Binding
 
 	// ~ UFiniteStateMachine
 	virtual void OnInitialized(EFSMState PreviousState) override;
@@ -437,35 +528,3 @@ protected:
 
 };
 
-
-
-
-
-/**
- *
- */
-UCLASS(MinimalAPI, meta = (DisplayName = "Condition - Actor have tag"))
-class UQuestTask_ActorHaveTag : public UQuestSubTask
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	FName Tag;
-
-	// ~ UEventflowTask
-	virtual void CopyFromAsset(const UEventflowTask* Template) override;
-	// ~ End of UEventflowTask
-
-protected:
-
-	// ~ UFiniteStateMachine
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
-	virtual void OnActive(EFSMState PreviousState) override;
-	// ~ End of UFiniteStateMachine
-
-};

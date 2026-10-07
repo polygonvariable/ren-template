@@ -12,37 +12,10 @@
 
 
 
-UQuestEdNode_Base::UQuestEdNode_Base()
+UQuestEdGraphNode::UQuestEdGraphNode()
 {
-	Title = FText::FromString(TEXT("Quest Node"));
+	NodeTitle = FText::FromString(TEXT("Quest Node"));
 }
-
-FText UQuestEdNode_Base::GetNodeTitle(ENodeTitleType::Type TitleType) const
-{
-	UQuestPrimaryTask* PrimaryTask = Cast<UQuestPrimaryTask>(GetTask());
-	if (IsValid(PrimaryTask) && !PrimaryTask->TaskTitle.IsNone())
-	{
-		FString NewTitle = PrimaryTask->TaskTitle.ToString();
-		const int MaxLength = 35;
-
-		if (NewTitle.Len() > MaxLength)
-		{
-			NewTitle = NewTitle.Left(MaxLength) + TEXT("...");
-		}
-
-		return FText::FromString(NewTitle);
-	}
-	return Title;
-}
-
-bool UQuestEdNode_Base::IsEntryNode() const
-{
-	return false;
-}
-
-
-
-
 
 
 
@@ -50,17 +23,12 @@ bool UQuestEdNode_Base::IsEntryNode() const
 
 UQuestEdNode_Reroute::UQuestEdNode_Reroute()
 {
-	Title = FText::FromString(TEXT("Reroute"));
+	NodeTitle = FText::FromString(TEXT("Reroute"));
 }
 
-UEventflowPrimaryTask* UQuestEdNode_Reroute::GetTask() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_Reroute::GetTaskClass() const
 {
-	return Task;
-}
-
-void UQuestEdNode_Reroute::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_Reroute>(InTask);
+	return UQuestTask_Reroute::StaticClass();
 }
 
 FLinearColor UQuestEdNode_Reroute::GetNodeTitleColor() const
@@ -70,36 +38,46 @@ FLinearColor UQuestEdNode_Reroute::GetNodeTitleColor() const
 
 FText UQuestEdNode_Reroute::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	UQuestTask_Reroute* PrimaryTask = Cast<UQuestTask_Reroute>(GetTask());
-	if (IsValid(PrimaryTask) && !PrimaryTask->RerouteName.IsEmpty())
-	{
-		return FText::FromString(PrimaryTask->RerouteName);
-	}
-	return Super::GetNodeTitle(TitleType);
-}
+	UQuestTask_Reroute* QuestTask = Cast<UQuestTask_Reroute>(NodeTask);
 
-FText UQuestEdNode_Reroute::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("Reroute"));
+	if (IsValid(QuestTask) && !QuestTask->RerouteName.IsEmpty())
+	{
+		if (QuestTask->RerouteType == ERerouteType::Source)
+		{
+			return FText::FromString(TEXT("Goto: ") + QuestTask->RerouteName);
+		}
+		else
+		{
+			return FText::FromString(QuestTask->RerouteName);
+		}
+	}
+
+	return Super::GetNodeTitle(TitleType);
 }
 
 TArray<FText> UQuestEdNode_Reroute::GetRuntimeInputPins() const
 {
 	TArray<FText> RuntimePins;
-	if (Task && Task->RerouteType == ERerouteType::Source)
+	UQuestTask_Reroute* QuestTask = Cast<UQuestTask_Reroute>(NodeTask);
+
+	if (IsValid(QuestTask) && QuestTask->RerouteType == ERerouteType::Source)
 	{
 		RuntimePins.Add(FText::FromString(TEXT("in")));
 	}
+
 	return RuntimePins;
 }
 
 TArray<FText> UQuestEdNode_Reroute::GetRuntimeOutputPins() const
 {
 	TArray<FText> RuntimePins;
-	if (Task && Task->RerouteType == ERerouteType::Target)
+	UQuestTask_Reroute* QuestTask = Cast<UQuestTask_Reroute>(NodeTask);
+
+	if (IsValid(QuestTask) && QuestTask->RerouteType == ERerouteType::Target)
 	{
 		RuntimePins.Add(FText::FromString(TEXT("out")));
 	}
+	
 	return RuntimePins;
 }
 
@@ -112,17 +90,12 @@ TArray<FText> UQuestEdNode_Reroute::GetRuntimeOutputPins() const
 
 UQuestEdNode_ExternalTask::UQuestEdNode_ExternalTask()
 {
-	Title = FText::FromString(TEXT("External Task"));
+	NodeTitle = FText::FromString(TEXT("External Task"));
 }
 
-UEventflowPrimaryTask* UQuestEdNode_ExternalTask::GetTask() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_ExternalTask::GetTaskClass() const
 {
-	return Task;
-}
-
-void UQuestEdNode_ExternalTask::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_ExternalTask>(InTask);
+	return UQuestTask_ExternalTask::StaticClass();
 }
 
 FLinearColor UQuestEdNode_ExternalTask::GetNodeTitleColor() const
@@ -130,33 +103,60 @@ FLinearColor UQuestEdNode_ExternalTask::GetNodeTitleColor() const
 	return FLinearColor(0.0f, 1.0f, 1.0f);
 }
 
-FText UQuestEdNode_ExternalTask::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("External Task"));
-}
-
 void UQuestEdNode_ExternalTask::AllocateDefaultPins()
 {
 	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
 	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
 	PinIn->PinType.bIsConst = true;
+}
 
-	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
-	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
-	PinOut->PinType.bIsConst = true;
+void UQuestEdNode_ExternalTask::SyncRuntimeData()
+{
+	UQuestTask_ExternalTask* QuestTask = Cast<UQuestTask_ExternalTask>(NodeTask);
+	if (IsValid(QuestTask))
+	{
+		UEventflowAsset* TaskAsset = QuestTask->ExternalAsset.LoadSynchronous();
+		if (IsValid(TaskAsset))
+		{
+			QuestTask->ExternalPins.Empty();
+
+			const TMap<FGuid, FEventflowNode>& Nodes = TaskAsset->NodeCollection;
+			for (const TPair<FGuid, FEventflowNode>& Kv : Nodes)
+			{
+				UEventflowNodeTask* AssetNodeTask = Kv.Value.Task;
+				if (IsValid(AssetNodeTask) && AssetNodeTask->NodeType == EEventflowNodeType::Exit)
+				{
+					QuestTask->ExternalPins.Add(Kv.Key);
+				}
+			}
+		}
+	}
+
+	UQuestEdGraphNode::SyncRuntimeData();
 }
 
 TArray<FText> UQuestEdNode_ExternalTask::GetRuntimeOutputPins() const
 {
 	TArray<FText> RuntimePins;
-	if (Task && Task->ExternalTask)
+
+	UQuestTask_ExternalTask* QuestTask = Cast<UQuestTask_ExternalTask>(NodeTask);
+	if (IsValid(QuestTask))
 	{
-		const TArray<FName>& PinNames = Task->ExternalPinTitles;
-		for (const FName& PinName : PinNames)
+		UEventflowAsset* TaskAsset = QuestTask->ExternalAsset.LoadSynchronous();
+		if (IsValid(TaskAsset))
 		{
-			RuntimePins.Add(FText::FromString(PinName.ToString()));
+			const TMap<FGuid, FEventflowNode>& Nodes = TaskAsset->NodeCollection;
+			for (const TPair<FGuid, FEventflowNode>& Kv : Nodes)
+			{
+				UEventflowNodeTask* AssetNodeTask = Kv.Value.Task;
+				if (IsValid(AssetNodeTask) && AssetNodeTask->NodeType == EEventflowNodeType::Exit)
+				{
+					RuntimePins.Add(FText::FromString(AssetNodeTask->NodeTitle.ToString()));
+				}
+			}
 		}
 	}
+
 	return RuntimePins;
 }
 
@@ -169,34 +169,74 @@ TArray<FText> UQuestEdNode_ExternalTask::GetRuntimeOutputPins() const
 
 
 
+
+
+
+
+UQuestEdNode_SubtaskGate::UQuestEdNode_SubtaskGate()
+{
+	NodeTitle = FText::FromString(TEXT("SubTask Gate"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_SubtaskGate::GetTaskClass() const
+{
+	return UQuestTask_SubtaskGate::StaticClass();
+}
+
+FLinearColor UQuestEdNode_SubtaskGate::GetNodeTitleColor() const
+{
+	return FLinearColor(0.0f, 1.0f, 1.0f);
+}
+
+void UQuestEdNode_SubtaskGate::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutSuccess = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("success"));
+	PinOutSuccess->PinFriendlyName = FText::FromString(TEXT("success"));
+	PinOutSuccess->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutFail = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("fail"));
+	PinOutFail->PinFriendlyName = FText::FromString(TEXT("fail"));
+	PinOutFail->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutCancel = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("cancel"));
+	PinOutCancel->PinFriendlyName = FText::FromString(TEXT("cancel"));
+	PinOutCancel->PinType.bIsConst = true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 UQuestEdNode_Begin::UQuestEdNode_Begin()
 {
-	Title = FText::FromString(TEXT("Begin"));
+	NodeTitle = FText::FromString(TEXT("Begin"));
 }
 
-bool UQuestEdNode_Begin::IsEntryNode() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_Begin::GetTaskClass() const
 {
-	return true;
-}
-
-UEventflowPrimaryTask* UQuestEdNode_Begin::GetTask() const
-{
-	return Task;
-}
-
-void UQuestEdNode_Begin::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_Begin>(InTask);
+	return UQuestTask_Begin::StaticClass();
 }
 
 FLinearColor UQuestEdNode_Begin::GetNodeTitleColor() const
 {
 	return FLinearColor(0.0f, 1.0f, 0.0f);
-}
-
-FText UQuestEdNode_Begin::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("Start a quest"));
 }
 
 void UQuestEdNode_Begin::AllocateDefaultPins()
@@ -210,27 +250,17 @@ void UQuestEdNode_Begin::AllocateDefaultPins()
 
 UQuestEdNode_End::UQuestEdNode_End()
 {
-	Title = FText::FromString(TEXT("End"));
+	NodeTitle = FText::FromString(TEXT("End"));
 }
 
-UEventflowPrimaryTask* UQuestEdNode_End::GetTask() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_End::GetTaskClass() const
 {
-	return Task;
-}
-
-void UQuestEdNode_End::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_End>(InTask);
+	return UQuestTask_End::StaticClass();
 }
 
 FLinearColor UQuestEdNode_End::GetNodeTitleColor() const
 {
 	return FLinearColor(1.0f, 0.0f, 0.0f);
-}
-
-FText UQuestEdNode_End::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("End a quest"));
 }
 
 void UQuestEdNode_End::AllocateDefaultPins()
@@ -245,27 +275,17 @@ void UQuestEdNode_End::AllocateDefaultPins()
 
 UQuestEdNode_SpawnMarker::UQuestEdNode_SpawnMarker()
 {
-	Title = FText::FromString(TEXT("Spawn Marker"));
+	NodeTitle = FText::FromString(TEXT("Spawn Marker"));
 }
 
-UEventflowPrimaryTask* UQuestEdNode_SpawnMarker::GetTask() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_SpawnMarker::GetTaskClass() const
 {
-	return Task;
-}
-
-void UQuestEdNode_SpawnMarker::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_SpawnMarker>(InTask);
+	return UQuestTask_SpawnMarker::StaticClass();
 }
 
 FLinearColor UQuestEdNode_SpawnMarker::GetNodeTitleColor() const
 {
 	return FLinearColor(1.0f, 0.5f, 0.0f);
-}
-
-FText UQuestEdNode_SpawnMarker::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("Spawn a trigger zone"));
 }
 
 void UQuestEdNode_SpawnMarker::AllocateDefaultPins()
@@ -305,27 +325,17 @@ TArray<FText> UQuestEdNode_SpawnMarker::GetRuntimeOutputPins() const
 
 UQuestEdNode_ConditionalSpawnMarker::UQuestEdNode_ConditionalSpawnMarker()
 {
-	Title = FText::FromString(TEXT("Conditional Spawn Marker"));
+	NodeTitle = FText::FromString(TEXT("Conditional Spawn Marker"));
 }
 
-UEventflowPrimaryTask* UQuestEdNode_ConditionalSpawnMarker::GetTask() const
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_ConditionalSpawnMarker::GetTaskClass() const
 {
-	return Task;
-}
-
-void UQuestEdNode_ConditionalSpawnMarker::SetTask(UEventflowPrimaryTask* InTask)
-{
-	Task = CreateOrSetTask<UQuestTask_ConditionalSpawnMarker>(InTask);
+	return UQuestTask_ConditionalSpawnMarker::StaticClass();
 }
 
 FLinearColor UQuestEdNode_ConditionalSpawnMarker::GetNodeTitleColor() const
 {
 	return FLinearColor(1.0f, 0.5f, 0.0f);
-}
-
-FText UQuestEdNode_ConditionalSpawnMarker::GetNodeDescription() const
-{
-	return FText::FromString(TEXT("Spawn a trigger zone"));
 }
 
 void UQuestEdNode_ConditionalSpawnMarker::AllocateDefaultPins()

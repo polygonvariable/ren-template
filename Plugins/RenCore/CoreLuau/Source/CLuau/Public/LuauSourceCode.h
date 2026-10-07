@@ -17,6 +17,9 @@ struct FLuauSourceCode
 
 public:
 
+	UPROPERTY(EditAnywhere, meta = (FilePathFilter = "luau"))
+	FString Library;
+
 	UPROPERTY(EditAnywhere)
 	FString Code;
 

@@ -14,7 +14,7 @@
 #include "DialogueSubsystem.h"
 #include "EventflowTask.h"
 #include "Task/EventflowSubTask.h"
-#include "Task/EventflowPrimaryTask.h"
+#include "Task/EventflowNodeTask.h"
 #include "DialogueTask.h"
 
 
@@ -116,8 +116,8 @@ void FDialogueDebugWidget::DrawWidget(float DeltaTime)
 						SlateIM::EndTable();
 						
 
-						UEventflowPrimaryTask* PrimaryTask = Engine->GetTask();
-						if (!IsValid(PrimaryTask))
+						UEventflowNodeTask* NodeTask = Engine->GetTask();
+						if (!IsValid(NodeTask))
 						{
 							SlateIM::BeginHorizontalStack();
 							{
@@ -131,7 +131,7 @@ void FDialogueDebugWidget::DrawWidget(float DeltaTime)
 						SlateIM::BeginHorizontalStack();
 						{
 							SlateIM::Text(TEXT("Dialogue Task:"));
-							SlateIM::Text(PrimaryTask->GetFName().ToString(), FColor::Cyan);
+							SlateIM::Text(NodeTask->GetFName().ToString(), FColor::Cyan);
 						}
 						SlateIM::EndHorizontalStack();
 
@@ -148,8 +148,8 @@ void FDialogueDebugWidget::DrawWidget(float DeltaTime)
 
 							SlateIM::BeginTableBody();
 							{
-								FString StateString = StaticEnum<EFSMState>()->GetNameStringByValue(static_cast<int64>(PrimaryTask->GetState()));
-								FString ResultString = StaticEnum<EFSMResult>()->GetNameStringByValue(static_cast<int64>(PrimaryTask->GetResult()));
+								FString StateString = StaticEnum<EFSMState>()->GetNameStringByValue(static_cast<int64>(NodeTask->GetState()));
+								FString ResultString = StaticEnum<EFSMResult>()->GetNameStringByValue(static_cast<int64>(NodeTask->GetResult()));
 
 								SlateIM::NextTableCell();
 								SlateIM::Text(StateString);
@@ -163,7 +163,7 @@ void FDialogueDebugWidget::DrawWidget(float DeltaTime)
 
 
 						int SubTaskIndex = 0;
-						const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = PrimaryTask->GetSubTasks();
+						const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = NodeTask->GetSubTasks();
 						for (TObjectPtr<UEventflowSubTask> SubTask : SubTasks)
 						{
 							if (!IsValid(SubTask))

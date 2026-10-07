@@ -11,12 +11,28 @@ TMap<FName, UClass*> UQuestEdGraphSchema::GetRegisteredNodeClasses() const
 {
 	TMap<FName, UClass*> NodeClasses;
 
-	NodeClasses.Add(UQuestEdNode_Begin::StaticClass()->GetFName(), UQuestEdNode_Begin::StaticClass());
-	NodeClasses.Add(UQuestEdNode_End::StaticClass()->GetFName(), UQuestEdNode_End::StaticClass());
-	NodeClasses.Add(UQuestEdNode_SpawnMarker::StaticClass()->GetFName(), UQuestEdNode_SpawnMarker::StaticClass());
-	NodeClasses.Add(UQuestEdNode_ConditionalSpawnMarker::StaticClass()->GetFName(), UQuestEdNode_ConditionalSpawnMarker::StaticClass());
-	NodeClasses.Add(UQuestEdNode_Reroute::StaticClass()->GetFName(), UQuestEdNode_Reroute::StaticClass());
-	NodeClasses.Add(UQuestEdNode_ExternalTask::StaticClass()->GetFName(), UQuestEdNode_ExternalTask::StaticClass());
+	TArray<UClass*> DerivedClasses;
+	GetDerivedClasses(UQuestEdGraphNode::StaticClass(), DerivedClasses, true);
+
+	for (UClass* Class : DerivedClasses)
+	{
+		if (!IsValid(Class))
+		{
+			continue;
+		}
+
+		if (Class->HasAnyClassFlags(CLASS_Abstract | CLASS_Deprecated | CLASS_NewerVersionExists))
+		{
+			continue;
+		}
+
+		if (!Class->HasMetaData(TEXT("QuestNode")))
+		{
+			continue;
+		}
+
+		NodeClasses.Add(Class->GetFName(), Class);
+	}
 
 	return NodeClasses;
 }
