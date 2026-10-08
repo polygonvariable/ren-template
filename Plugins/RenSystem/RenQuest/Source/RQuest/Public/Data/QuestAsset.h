@@ -8,6 +8,7 @@
 // Generated Headers
 #include "QuestAsset.generated.h"
 
+class UQuestGlobalTask;
 
 /**
  * 
@@ -20,18 +21,31 @@ class UQuestAsset : public UEventflowAsset
 
 public:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	FText Title;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	FText Summary;
 
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	bool bCanCancel = false;
+
+	UPROPERTY(EditAnywhere, Instanced, Category = "Quest Global Task")
+	TArray<TObjectPtr<UQuestGlobalTask>> GlobalTasks;
+
+	// ~ UEventflowAsset
+	virtual UEventflowGlobalTask* GetGlobalTask(FName TaskName) const override;
+	// ~ End of UEventflowAsset
+
 	// ~ UPrimaryDataAsset
-	virtual FPrimaryAssetId GetPrimaryAssetId() const override
-	{
-		return FPrimaryAssetId(TEXT("Quest"), GetFName());
-	}
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
 	// ~ End of UPrimaryDataAsset
+
+#if WITH_EDITORONLY_DATA
+	// ~ UPrimaryDataAsset
+	virtual void UpdateAssetBundleData() override;
+	// ~ End of UPrimaryDataAsset
+#endif
 
 };
 

@@ -52,9 +52,9 @@ const TArray<TObjectPtr<UEventflowSubTask>>& UEventflowNodeTask::GetSubTasks()
 	return _ActiveSubTasks;
 }
 
-UEventflowSubTask* UEventflowNodeTask::GetSubTask(const FName& TaskName) const
+UEventflowSubTask* UEventflowNodeTask::GetSubTask(const FName& InTaskName) const
 {
-	const TObjectPtr<UEventflowSubTask>* FoundTask = _ActiveSubTasks.FindByPredicate([TaskName](UEventflowSubTask* Task) { return Task->TaskName == TaskName; });
+	const TObjectPtr<UEventflowSubTask>* FoundTask = _ActiveSubTasks.FindByPredicate([InTaskName](UEventflowSubTask* Task) { return Task->TaskName == InTaskName; });
 	if (!FoundTask)
 	{
 		return nullptr;
@@ -62,14 +62,6 @@ UEventflowSubTask* UEventflowNodeTask::GetSubTask(const FName& TaskName) const
 	return FoundTask->Get();
 }
 
-
-void UEventflowNodeTask::CopyFromAsset(const UEventflowTask* Template)
-{
-	const UEventflowNodeTask* TaskTemplate = Cast<UEventflowNodeTask>(Template);
-	check(IsValid(TaskTemplate));
-
-	NodeTitle = TaskTemplate->NodeTitle;
-}
 
 #if WITH_EDITOR
 void UEventflowNodeTask::AppendAssetBundleData(FAssetBundleData& AssetBundle)

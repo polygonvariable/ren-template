@@ -17,6 +17,7 @@
 class UAssetManager;
 class UEventflowAsset;
 class UEventflowNodeTask;
+class UEventflowGlobalTask;
 struct FStreamableHandle;
 struct FEventflowNode;
 struct FEventflowPinRelation;
@@ -35,12 +36,20 @@ public:
 
 	virtual void InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData);
 
-	UEventflowNodeTask* GetTask() const;
+	UEventflowNodeTask* GetNodeTask() const;
 
 	template<typename T>
-	T* GetTask()
+	T* GetNodeTask()
 	{
-		return Cast<T>(GetTask());
+		return Cast<T>(GetNodeTask());
+	}
+
+	UEventflowGlobalTask* EnsureGlobalTask(FName TaskName);
+
+	template<typename T>
+	T* EnsureGlobalTask(FName TaskName)
+	{
+		return Cast<T>(EnsureGlobalTask(TaskName));
 	}
 
 	UEventflowAsset* GetAsset() const;
@@ -68,14 +77,16 @@ protected:
 	void ReachNextNode(int Index = 0);
 	void ReachPreviousNode();
 
-	void CreateTask(const FGuid& NodeId, const FEventflowNode* Node);
-	void RemoveTask();
+	void RemoveGlobalTasks();
+
+	void CreateNodeTask(const FGuid& NodeId, const FEventflowNode* Node);
+	void RemoveNodeTask();
 	
 	void CreateReturnData(UEventflowNodeTask* Task);
 	void RemoveReturnData();
 
 	// ~ Bindings
-	virtual void HandleOnTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
+	virtual void HandleOnNodeTaskStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result);
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
@@ -93,15 +104,17 @@ protected:
 
 private:
 
-	TInstancedStruct<FEventflowReturnData> _ReturnData;
 	FEventflowEntryData _EntryData;
-
-
-	UPROPERTY()
-	TMap<UClass*, FPoolCollection> _TaskPool;
+	TInstancedStruct<FEventflowReturnData> _ReturnData;
 
 	UPROPERTY()
-	TObjectPtr<UEventflowNodeTask> _ActiveTask = nullptr;
+	TMap<UClass*, FPoolCollection> _NodeTaskPool;
+
+	UPROPERTY()
+	TArray<TObjectPtr<UEventflowGlobalTask>> _ActiveGlobalTasks;
+
+	UPROPERTY()
+	TObjectPtr<UEventflowNodeTask> _ActiveNodeTask = nullptr;
 
 	FGuid _ActiveNodeId;
 

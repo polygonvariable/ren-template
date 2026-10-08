@@ -87,7 +87,7 @@ void FLuauSourceCodeCustomization::CustomizeChildren(TSharedRef<IPropertyHandle>
                 ]
                 + SVerticalBox::Slot()
                 .AutoHeight()
-                .Padding(PaddingAll)
+                .Padding(PaddingV)
                 [
                     SNew(STextBlock)
                         .Text(FText::FromString(TEXT("Library:")))

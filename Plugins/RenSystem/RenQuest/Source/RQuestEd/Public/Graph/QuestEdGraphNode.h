@@ -21,7 +21,8 @@ class UQuestTask_SpawnMarker;
 class UQuestTask_Reroute;
 class UQuestTask_ExternalTask;
 class UQuestTask_SubtaskGate;
-
+class UQuestTask_EnsureGlobalTask;
+class UQuestTask_CheckStorage;
 
 /*
  *
@@ -95,6 +96,32 @@ public:
 
 
 
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_CheckStorage : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_CheckStorage();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
+
+
+
 
 /*
  *
@@ -121,6 +148,31 @@ public:
 };
 
 
+
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_EnsureGlobal : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_EnsureGlobal();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
 
 
 

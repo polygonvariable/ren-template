@@ -15,14 +15,14 @@
 #include "Task/EventflowNodeTask.h"
 
 
-UEventflowNodeTask* UEventflowEdGraphNode::GetTask() const
+UEventflowNodeTask* UEventflowEdGraphNode::GetNodeTask() const
 {
 	return NodeTask;
 }
 
-void UEventflowEdGraphNode::SetTask(UEventflowNodeTask* InTask)
+void UEventflowEdGraphNode::SetNodeTask(UEventflowNodeTask* InTask)
 {
-	NodeTask = EnsureTask(InTask, GetTaskClass());
+	NodeTask = EnsureNodeTask(InTask, GetTaskClass());
 }
 
 
@@ -89,9 +89,9 @@ void UEventflowEdGraphNode::SyncRuntimeData()
 
 FText UEventflowEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (IsValid(NodeTask) && !NodeTask->NodeTitle.IsNone())
+	if (IsValid(NodeTask) && !NodeTask->DisplayName.IsNone())
 	{
-		FString NewTitle = NodeTask->NodeTitle.ToString();
+		FString NewTitle = NodeTask->DisplayName.ToString();
 		const int MaxLength = 35;
 
 		if (NewTitle.Len() > MaxLength)
@@ -148,7 +148,7 @@ void UEventflowEdGraphNode::GetNodeContextMenuActions(UToolMenu* Menu, UGraphNod
 }
 
 
-UEventflowNodeTask* UEventflowEdGraphNode::EnsureTask(UEventflowNodeTask* InTask, UClass* TaskClass)
+UEventflowNodeTask* UEventflowEdGraphNode::EnsureNodeTask(UEventflowNodeTask* InTask, UClass* TaskClass)
 {
 	if (IsValid(InTask))
 	{

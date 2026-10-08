@@ -11,6 +11,8 @@
 #include "LuauSourceCode.h"
 #include "System/Flow/Task/QuestSubTask.h"
 #include "Task/EventflowNodeTask.h"
+#include "Task/EventflowGlobalTask.h"
+#include "GameplayContextAction.h"
 
 // Generated Headers
 #include "QuestPrimaryTask.generated.h"
@@ -18,6 +20,19 @@
 class FObjectPreSaveContext;
 class UEventflowAsset;
 class AQuestObjectiveMarker;
+class UQuestEngine;
+
+
+/**
+ *
+ */
+UCLASS(Abstract, MinimalAPI)
+class UQuestGlobalTask : public UEventflowGlobalTask
+{
+	GENERATED_BODY()
+};
+
+
 
 
 /**
@@ -88,6 +103,7 @@ protected:
 	virtual void OnActive(EFSMState PreviousState) override;
 	virtual void OnReset() override;
 	// ~ End of UEventflowTask
+
 };
 
 
@@ -204,6 +220,74 @@ protected:
 
 
 
+
+
+/*
+ *
+ */
+USTRUCT()
+struct FObjectiveGlobalTaskFragment
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FName TaskName;
+
+	virtual void Execute(UQuestEngine* Engine);
+	virtual ~FObjectiveGlobalTaskFragment() = default;
+
+};
+
+/*
+ *
+ */
+USTRUCT(DisplayName = "Update Actor Transform")
+struct FOGTFragment_UpdateActorTransform : public FObjectiveGlobalTaskFragment
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere)
+	FTransform Transform;
+
+	// ~ FQuestGlobalTask
+	virtual void Execute(UQuestEngine* Engine) override;
+	// ~ End of FQuestGlobalTask
+
+};
+
+
+
+
+/**
+ *
+ */
+UCLASS(MinimalAPI)
+class UQuestTask_EnsureGlobalTask : public UQuestPrimaryTask
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Global Task", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FObjectiveGlobalTaskFragment>> GlobalTasks;
+
+protected:
+
+	// ~ UEventflowTask
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	// ~ End of UEventflowTask
+
+};
 
 
 
@@ -416,22 +500,10 @@ protected:
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  *
  */
-UCLASS(MinimalAPI, meta = (DisplayName = "Reach Location"))
+UCLASS(MinimalAPI, meta = (DisplayName = "Spawn Location"))
 class UQuestTask_SpawnLocation : public UQuestSubTask
 {
 
@@ -528,3 +600,114 @@ protected:
 
 };
 
+
+
+
+
+
+
+
+
+
+
+/**
+ * Trigger zone, auto activates when player enter its bounds
+ */
+UCLASS(MinimalAPI)
+class UQuestGlobalTask_SpawnActor : public UQuestGlobalTask
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestGlobalTask_SpawnActor();
+
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	TSoftClassPtr<AActor> ActorClass;
+
+	UPROPERTY(EditAnywhere, Category = "Marker")
+	FTransform ActorTransform;
+
+
+	void UpdateTransform(FTransform Transform);
+
+	// ~ UEventflowTask
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	// ~ End of UEventflowTask
+
+#if WITH_EDITOR
+	// ~ UEventflowTask
+	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
+	// ~ End of UEventflowTask
+#endif
+
+protected:
+
+	UPROPERTY(Transient)
+	TObjectPtr<AActor> Actor = nullptr;
+
+
+	// ~ UFiniteStateMachine
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnFinished(EFSMResult Result) override;
+	virtual void OnReset() override;
+	// ~ End of UFiniteStateMachine
+
+};
+
+
+
+
+
+/*
+ *
+ */
+USTRUCT(DisplayName = "Start Quest")
+struct FGameplayContext_StartQuest : public FGameplayContextAction
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Quest"))
+	FPrimaryAssetId AssetId;
+
+	// ~ FGameplayContextAction
+	virtual bool Execute(UWorld* World, UObject* Owner, UObject* Instigator) override;
+	// ~ End of FGameplayContextAction
+
+};
+
+
+
+
+
+
+
+
+
+
+/**
+ *
+ */
+UCLASS(MinimalAPI)
+class UQuestTask_CheckStorage : public UQuestPrimaryTask
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	// ~ UEventflowTask
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	// ~ End of UEventflowTask
+
+
+};

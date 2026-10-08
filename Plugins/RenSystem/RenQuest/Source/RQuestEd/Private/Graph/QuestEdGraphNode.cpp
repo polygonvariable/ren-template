@@ -33,7 +33,7 @@ TSubclassOf<UEventflowNodeTask> UQuestEdNode_Reroute::GetTaskClass() const
 
 FLinearColor UQuestEdNode_Reroute::GetNodeTitleColor() const
 {
-	return FLinearColor(0.2f, 0.2f, 1.0f);
+	return FLinearColor(1.0f, 0.0f, 0.5f);
 }
 
 FText UQuestEdNode_Reroute::GetNodeTitle(ENodeTitleType::Type TitleType) const
@@ -100,7 +100,7 @@ TSubclassOf<UEventflowNodeTask> UQuestEdNode_ExternalTask::GetTaskClass() const
 
 FLinearColor UQuestEdNode_ExternalTask::GetNodeTitleColor() const
 {
-	return FLinearColor(0.0f, 1.0f, 1.0f);
+	return FLinearColor(0.95f, 1.0f, 0.0f);
 }
 
 void UQuestEdNode_ExternalTask::AllocateDefaultPins()
@@ -151,7 +151,7 @@ TArray<FText> UQuestEdNode_ExternalTask::GetRuntimeOutputPins() const
 				UEventflowNodeTask* AssetNodeTask = Kv.Value.Task;
 				if (IsValid(AssetNodeTask) && AssetNodeTask->NodeType == EEventflowNodeType::Exit)
 				{
-					RuntimePins.Add(FText::FromString(AssetNodeTask->NodeTitle.ToString()));
+					RuntimePins.Add(FText::FromString(AssetNodeTask->TaskName.ToString()));
 				}
 			}
 		}
@@ -185,7 +185,7 @@ TSubclassOf<UEventflowNodeTask> UQuestEdNode_SubtaskGate::GetTaskClass() const
 
 FLinearColor UQuestEdNode_SubtaskGate::GetNodeTitleColor() const
 {
-	return FLinearColor(0.0f, 1.0f, 1.0f);
+	return FLinearColor(0.0f, 0.75f, 1.0f);
 }
 
 void UQuestEdNode_SubtaskGate::AllocateDefaultPins()
@@ -214,6 +214,31 @@ void UQuestEdNode_SubtaskGate::AllocateDefaultPins()
 
 
 
+UQuestEdNode_EnsureGlobal::UQuestEdNode_EnsureGlobal()
+{
+	NodeTitle = FText::FromString(TEXT("Ensure Global"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_EnsureGlobal::GetTaskClass() const
+{
+	return UQuestTask_EnsureGlobalTask::StaticClass();
+}
+
+FLinearColor UQuestEdNode_EnsureGlobal::GetNodeTitleColor() const
+{
+	return FLinearColor(0.35f, 1.0f, 0.35f);
+}
+
+void UQuestEdNode_EnsureGlobal::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
+}
 
 
 
@@ -349,5 +374,41 @@ void UQuestEdNode_ConditionalSpawnMarker::AllocateDefaultPins()
 	PinOut->PinType.bIsConst = true;
 }
 
+
+
+
+
+
+
+
+UQuestEdNode_CheckStorage::UQuestEdNode_CheckStorage()
+{
+	NodeTitle = FText::FromString(TEXT("Check Storage"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_CheckStorage::GetTaskClass() const
+{
+	return UQuestTask_CheckStorage::StaticClass();
+}
+
+FLinearColor UQuestEdNode_CheckStorage::GetNodeTitleColor() const
+{
+	return FLinearColor(0.75f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_CheckStorage::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("found"));
+	PinOutFound->PinFriendlyName = FText::FromString(TEXT("found"));
+	PinOutFound->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutNotFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("not found"));
+	PinOutNotFound->PinFriendlyName = FText::FromString(TEXT("not found"));
+	PinOutNotFound->PinType.bIsConst = true;
+}
 
 

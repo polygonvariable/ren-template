@@ -15,13 +15,18 @@
 #endif
 
 
+UEventflowGlobalTask* UEventflowAsset::GetGlobalTask(FName TaskName) const
+{
+	return nullptr;
+}
+
 #if WITH_EDITOR
 void UEventflowAsset::PreSaveRoot(FObjectPreSaveRootContext ObjectSaveContext)
 {
 	Super::PreSaveRoot(ObjectSaveContext);
 
 	GEngine->ForceGarbageCollection(true);
-	UE_LOG(LogTemp, Warning, TEXT("UEventflowAsset::PreSaveRoot"));
+	UE_LOG(LogTemp, Warning, TEXT("Eventflow asset presave (force GC)"));
 }
 
 EDataValidationResult UEventflowAsset::IsDataValid(FDataValidationContext& Context) const
@@ -59,8 +64,6 @@ void UEventflowAsset::UpdateAssetBundleData()
 			Task->AppendAssetBundleData(AssetBundleData);
 		}
 	}
-
-	AssetBundleData;
 }
 #endif
 

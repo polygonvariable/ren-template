@@ -10,6 +10,7 @@
 
 // Forward Declaration
 class FObjectPreSaveRootContext;
+class UEventflowGlobalTask;
 
 
 /**
@@ -34,6 +35,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	FGuid EntryNodeId = FGuid::NewGuid();
 
+
+	virtual UEventflowGlobalTask* GetGlobalTask(FName TaskName) const;
 
 #if WITH_EDITORONLY_DATA
 	// ~ UPrimaryDataAsset

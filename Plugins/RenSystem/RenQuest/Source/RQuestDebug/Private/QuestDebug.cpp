@@ -31,8 +31,8 @@ void FQuestDebugWidget::DisableWidget()
 
 void FQuestDebugWidget::DrawWidget(float DeltaTime)
 {
-	UQuestSubsystem* Subsystem = GetSubsystem();
-
+	UQuestSubsystem* Subsystem = EnsureSubsystem();
+	
 	SlateIM::FWindowParams WindowParams;
 	WindowParams.WindowSize = FVector2f(150.0f * 3, 250.0f * 1.5);
 	WindowParams.bAlwaysOnTop = true;
@@ -47,10 +47,20 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 			{
 				const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Quests = Subsystem->GetEditorQuests();
 
-				int QuestIndex = 0;
-				for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : Quests)
+				if (SlateIM::NextTableCell())
 				{
-					if (SlateIM::NextTableCell())
+					SlateIM::BeginHorizontalStack();
+					{
+						SlateIM::Text(TEXT("Active Quests:"));
+						SlateIM::Text(FString::FromInt(Quests.Num()), FColor::Cyan);
+					}
+					SlateIM::EndHorizontalStack();
+				}
+
+				if (SlateIM::NextTableCell())
+				{
+					int QuestIndex = 0;
+					for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : Quests)
 					{
 						UQuestEngine* Engine = Kv.Value;
 						
@@ -102,8 +112,7 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 						}
 						SlateIM::EndTable();
 						
-
-						UEventflowNodeTask* NodeTask = Engine->GetTask();
+						UEventflowNodeTask* NodeTask = Engine->GetNodeTask();
 						if (!IsValid(NodeTask))
 						{
 							SlateIM::BeginHorizontalStack();
@@ -149,7 +158,6 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 							SlateIM::EndTableBody();
 						}
 						SlateIM::EndTable();
-
 
 						int SubTaskIndex = 0;
 						const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = NodeTask->GetSubTasks();
@@ -211,8 +219,8 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 							SubTaskIndex++;
 						}
 
+						QuestIndex++;
 					}
-					QuestIndex++;
 				}
 			}
 			SlateIM::EndTable();
@@ -231,7 +239,7 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 	SlateIM::EndRoot();
 }
 
-UQuestSubsystem* FQuestDebugWidget::GetSubsystem()
+UQuestSubsystem* FQuestDebugWidget::EnsureSubsystem()
 {
 	if (QuestSubsystem.IsValid())
 	{

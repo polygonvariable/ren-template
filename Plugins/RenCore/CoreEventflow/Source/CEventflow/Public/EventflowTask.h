@@ -23,6 +23,12 @@ class CEVENTFLOW_API UEventflowTask : public UFiniteStateMachine
 
 public:
 
+	UPROPERTY(EditAnywhere)
+	FName TaskName;
+
+	UPROPERTY(EditAnywhere)
+	FName DisplayName;
+
 	virtual void CopyFromAsset(const UEventflowTask* Template);
 
 	// ~ UObject

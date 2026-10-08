@@ -5,6 +5,8 @@
 
 // Project Headers
 #include "Core/QuestSettings.h"
+#include "Data/QuestAsset.h"
+#include "System/Flow/Task/QuestPrimaryTask.h"
 
 
 void UQuestEngine::GetAssetBundle(TArray<FName>& OutBundle) const

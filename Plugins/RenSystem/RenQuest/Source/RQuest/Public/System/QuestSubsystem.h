@@ -3,14 +3,14 @@
 #pragma once
 
 // Engine Headers
-#include "StateMachine/FiniteStateMachineType.h"
 #include "Subsystems/WorldSubsystem.h"
+
+// Project Headers
+#include "EventflowEngineProvider.h"
+#include "StateMachine/FiniteStateMachineType.h"
 
 // Generated Headers
 #include "QuestSubsystem.generated.h"
-
-// Module Macros
-#define REN_API RQUEST_API
 
 // Forward Declarations
 // class UQuestStorageManager;
@@ -22,7 +22,7 @@ class AQuestActor;
  * 
  */
 UCLASS(MinimalAPI)
-class UQuestSubsystem : public UWorldSubsystem
+class UQuestSubsystem : public UWorldSubsystem, public IEventflowEngineProvider
 {
 
 	GENERATED_BODY()
@@ -36,35 +36,43 @@ public:
 	void CancelQuest(const FPrimaryAssetId& AssetId);
 
 
-#if UE_BUILD_DEVELOPMENT
-	RQUEST_API const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetEditorQuests() const;
-#endif
+	// ~ IEventflowEngineProvider
+	virtual void StartEventflow(const FPrimaryAssetId& AssetId) override;
+	virtual void StopEventflow(const FPrimaryAssetId& AssetId) override;
+	// ~ End of IEventflowEngineProvider
 
 protected:
 
 	UPROPERTY()
-	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> ActiveQuests;
+	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> Quests;
 
 
-	virtual void HandleOnStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId);
+	UQuestEngine* GetQuestEngine(const FPrimaryAssetId& AssetId) const;
+	void RemoveQuests();
+
+	// ~ Binding
+	virtual void HandleOnQuestStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId);
+	// ~ End of Binding
 
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void OnWorldComponentsUpdated(UWorld& InWorld) override;
-	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	virtual void Deinitialize() override;
 	// ~ End of UWorldSubsystem
 
+private:
+
+	UPROPERTY()
+	TArray<TObjectPtr<UQuestEngine>> EnginePool;
+
 public:
 
-	static REN_API UQuestSubsystem* Get(UWorld* World);
-	static REN_API UQuestSubsystem* Get(UGameInstance* GameInstance);
+#if UE_BUILD_DEVELOPMENT
+	RQUEST_API const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetEditorQuests() const;
+#endif
+
+	static RQUEST_API UQuestSubsystem* Get(UWorld* World);
 
 };
-
-
-// Module Macros
-#undef REN_API
 

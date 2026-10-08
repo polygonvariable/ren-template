@@ -9,7 +9,11 @@
 
 void UEventflowTask::CopyFromAsset(const UEventflowTask* Template)
 {
+	const UEventflowTask* TaskTemplate = Cast<UEventflowTask>(Template);
+	check(IsValid(TaskTemplate));
 
+	TaskName = TaskTemplate->TaskName;
+	DisplayName = TaskTemplate->DisplayName;
 }
 
 UWorld* UEventflowTask::GetWorld() const

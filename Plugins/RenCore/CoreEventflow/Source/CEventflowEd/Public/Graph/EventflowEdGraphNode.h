@@ -28,8 +28,8 @@ class CEVENTFLOWED_API UEventflowEdGraphNode : public UEdGraphNode
 
 public:
 
-	virtual UEventflowNodeTask* GetTask() const;
-	virtual void SetTask(UEventflowNodeTask* InTask);
+	virtual UEventflowNodeTask* GetNodeTask() const;
+	virtual void SetNodeTask(UEventflowNodeTask* InTask);
 
 	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
 	virtual FText GetNodeDescription() const;
@@ -53,7 +53,7 @@ protected:
 	TObjectPtr<UEventflowNodeTask> NodeTask = nullptr;
 
 
-	UEventflowNodeTask* EnsureTask(UEventflowNodeTask* InTask, UClass* TaskClass);
+	UEventflowNodeTask* EnsureNodeTask(UEventflowNodeTask* InTask, UClass* TaskClass);
 
 	void CreateRuntimePins(const TArray<FText>& PinNames, EEdGraphPinDirection Direction);
 	void FuzzyMatchRuntimePins(const TArray<TPair<FString, TArray<UEdGraphPin*>>> FuzzyPins);

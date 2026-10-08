@@ -6,14 +6,14 @@
 #include "EventflowTask.h"
 
 // Generated Headers
-#include "EventflowSubTask.generated.h"
+#include "EventflowGlobalTask.generated.h"
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UEventflowSubTask : public UEventflowTask
+class UEventflowGlobalTask : public UEventflowTask
 {
 	GENERATED_BODY()
 };

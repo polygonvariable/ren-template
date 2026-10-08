@@ -116,7 +116,7 @@ void FDialogueDebugWidget::DrawWidget(float DeltaTime)
 						SlateIM::EndTable();
 						
 
-						UEventflowNodeTask* NodeTask = Engine->GetTask();
+						UEventflowNodeTask* NodeTask = Engine->GetNodeTask();
 						if (!IsValid(NodeTask))
 						{
 							SlateIM::BeginHorizontalStack();

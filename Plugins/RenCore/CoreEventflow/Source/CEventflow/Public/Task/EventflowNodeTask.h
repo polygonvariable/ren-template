@@ -29,9 +29,6 @@ class CEVENTFLOW_API UEventflowNodeTask : public UEventflowTask
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Node")
-	FName NodeTitle;
-
 	UPROPERTY(EditAnywhere, Instanced, Category = "Node", meta = (EditCondition = "bAllowSubTasks"))
 	TArray<TObjectPtr<UEventflowSubTask>> SubTasks;
 
@@ -46,12 +43,8 @@ public:
 	virtual void ModifyTransitionData(TFunctionRef<void(TInstancedStruct<FEventflowNodeTransitionData>&)> TransitionData);
 
 	const TArray<TObjectPtr<UEventflowSubTask>>& GetSubTasks();
-	UEventflowSubTask* GetSubTask(const FName& TaskName) const;
+	UEventflowSubTask* GetSubTask(const FName& InTaskName) const;
 
-	// ~ UEventflowTask
-	virtual void CopyFromAsset(const UEventflowTask* Template) override;
-	// ~ End of UEventflowTask
-	
 #if WITH_EDITOR
 	// ~ UEventflowTask
 	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
@@ -64,7 +57,7 @@ public:
 
 protected:
 
-	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Task")
+	UPROPERTY(VisibleAnywhere, AdvancedDisplay, Category = "Node")
 	bool bAllowSubTasks = false;
 
 

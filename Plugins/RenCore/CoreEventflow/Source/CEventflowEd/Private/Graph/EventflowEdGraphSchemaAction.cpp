@@ -33,7 +33,7 @@ UEdGraphNode* FEventflowEdGraphSchemaAction::PerformAction(UEdGraph* ParentGraph
 	NewNode->AllocateDefaultPins();
 	NewNode->NodePosX = Location.X;
 	NewNode->NodePosY = Location.Y;
-	NewNode->SetTask(nullptr);
+	NewNode->SetNodeTask(nullptr);
 
 	Graph->Modify();
 	Graph->AddNode(NewNode, true, true);

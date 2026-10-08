@@ -6,9 +6,9 @@
 #include "GameFramework/Actor.h"
 
 // Project Headers
+#include "GameplayContextAction.h"
 #include "RegionActor.h"
 #include "StateMachine/FiniteStateMachineType.h"
-#include "GameplayContextAction.h"
 
 // Generated Headers
 #include "QuestObjectiveActor.generated.h"

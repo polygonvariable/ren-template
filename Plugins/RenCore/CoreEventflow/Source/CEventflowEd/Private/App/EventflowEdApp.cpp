@@ -126,8 +126,7 @@ void FEventflowEdApp::OnGraphSelectionChanged(const FGraphPanelSelectionSet& Sel
 		UEventflowEdGraphNode* GraphNode = Cast<UEventflowEdGraphNode>(Node);
 		if (IsValid(GraphNode))
 		{
-			ObjectsToEdit.Add(GraphNode->GetTask());
-			//ObjectsToEdit.Add(GraphNode);
+			ObjectsToEdit.Add(GraphNode->GetNodeTask());
 			break;
 		}
 	}

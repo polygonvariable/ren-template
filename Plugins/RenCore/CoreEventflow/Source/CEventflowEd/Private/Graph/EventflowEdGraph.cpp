@@ -63,7 +63,7 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 
 	NodeCollection.Add(Node->NodeGuid, NodeDefinition);
 
-	UEventflowNodeTask* Task = EdNode->GetTask();
+	UEventflowNodeTask* Task = EdNode->GetNodeTask();
 	if (IsValid(Task) && Task->NodeType == EEventflowNodeType::Entry)
 	{
 		EntryId = Node->NodeGuid;
@@ -72,7 +72,7 @@ void UEventflowEdGraph::SerializeNode(UEventflowAsset* GraphAsset, UEdGraphNode*
 
 void UEventflowEdGraph::SerializeTask(UEventflowAsset* GraphAsset, FEventflowNode& NodeDefinition, UEventflowEdGraphNode* EdNode)
 {
-	UEventflowNodeTask* TemplateTask = EdNode->GetTask();
+	UEventflowNodeTask* TemplateTask = EdNode->GetNodeTask();
 	if (!IsValid(TemplateTask))
 	{
 		return;
@@ -154,7 +154,7 @@ void UEventflowEdGraph::RenderNode(const FGuid NodeId, const FEventflowNode& Nod
 	EdNode->NodeGuid = NodeId;
 	EdNode->NodePosX = NodeDefinition.Position.X;
 	EdNode->NodePosY = NodeDefinition.Position.Y;
-	EdNode->SetTask(NodeDefinition.Task);
+	EdNode->SetNodeTask(NodeDefinition.Task);
 	//EdNode->SetSubTasks(NodeDefinition.Task->SubTasks);
 	//EdNode->TaskTransitions = NodeDefinition.Task->TaskTransitions;
 	//EdNode->SubTaskConditions = NodeDefinition.Task->SubTaskConditions;

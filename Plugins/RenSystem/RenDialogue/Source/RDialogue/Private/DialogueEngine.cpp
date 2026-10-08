@@ -24,7 +24,7 @@ void UDialogueEngine::SkipDialogue()
 
 void UDialogueEngine::NextDialogue(int Index)
 {
-	UDialogueTask_Base* CurrentTask = GetTask<UDialogueTask_Base>();
+	UDialogueTask_Base* CurrentTask = GetNodeTask<UDialogueTask_Base>();
 	if (CurrentTask)
 	{
 		CurrentTask->ModifyTransitionData(

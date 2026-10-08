@@ -8,6 +8,9 @@
 // Generated Headers
 #include "QuestEngine.generated.h"
 
+// Forward Declarations
+class UQuestGlobalTask;
+
 
 /**
  *

@@ -29,7 +29,7 @@ protected:
     TWeakObjectPtr<UQuestSubsystem> QuestSubsystem;
 
 
-    UQuestSubsystem* GetSubsystem();
+    UQuestSubsystem* EnsureSubsystem();
 
     // ~ FSlateIMWidgetBase
     virtual void DrawWidget(float DeltaTime) override;

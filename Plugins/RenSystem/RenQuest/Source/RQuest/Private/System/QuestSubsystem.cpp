@@ -4,6 +4,7 @@
 #include "System/QuestSubsystem.h"
 
 // Project Headers
+#include "Core/PoolLibrary.h"
 #include "Core/QuestSettings.h"
 #include "Data/QuestAsset.h"
 #include "Log/LogCategory.h"
@@ -13,48 +14,93 @@
 #include "lua.h"
 #include "luacode.h"
 #include "lualib.h"
+#include "MiscLibrary.h"
 
+
+void UQuestSubsystem::StartEventflow(const FPrimaryAssetId& AssetId)
+{
+	StartQuest(AssetId);
+}
+
+void UQuestSubsystem::StopEventflow(const FPrimaryAssetId& AssetId)
+{
+	CancelQuest(AssetId);
+}
 
 void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId)
 {
-	if (!AssetId.IsValid() || ActiveQuests.Contains(AssetId))
+	if (!AssetId.IsValid() || Quests.Contains(AssetId))
 	{
 		LOG_ERROR(LogTemp, TEXT("AssetId is invalid or is already active"));
 		return;
 	}
 
-	UQuestEngine* Engine = NewObject<UQuestEngine>(this);
-	if (!IsValid(Engine))
+	UQuestEngine* Engine = FPoolLibrary::AcquireFromArray<UQuestEngine>(EnginePool, UQuestEngine::StaticClass(), this);
+	if (!ensureAlwaysMsgf(IsValid(Engine), TEXT("Failed to acquire/create quest engine")))
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to create QuestEngine"));
 		return;
 	}
 
-	ActiveQuests.Add(AssetId, Engine);
+	Quests.Add(AssetId, Engine);
 
 	FEventflowEntryData EntryData;
 	EntryData.EntryType = EEventflowEntryType::Root;
 
-	Engine->OnStateChanged.BindUObject(this, &UQuestSubsystem::HandleOnStateChanged, AssetId);
+	Engine->OnStateChanged.BindUObject(this, &UQuestSubsystem::HandleOnQuestStateChanged, AssetId);
 	Engine->InitializeData(AssetId, EntryData);
 	Engine->Initialize();
 
-	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest started, added to ActiveQuests"));
+	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest started, added to Quests"));
 }
 
 
 void UQuestSubsystem::CancelQuest(const FPrimaryAssetId& AssetId)
 {
-	TObjectPtr<UQuestEngine>* FoundEngine = ActiveQuests.Find(AssetId);
-	if (!FoundEngine)
-	{
-		LOG_ERROR(LogTemp, TEXT("Failed to find QuestEngine"));
-		return;
-	}
-
-	UQuestEngine* Engine = FoundEngine->Get();
+	UQuestEngine* Engine = GetQuestEngine(AssetId);
 	if (IsValid(Engine))
 	{
+		UQuestAsset* QuestAsset = Engine->GetAsset<UQuestAsset>();
+		if (IsValid(QuestAsset) && QuestAsset->bCanCancel)
+		{
+			Engine->OnStateChanged.Unbind();
+
+			if (Engine->GetState() == EFSMState::Active)
+			{
+				Engine->Finish(EFSMResult::Aborted);
+			}
+			if (Engine->GetState() != EFSMState::Uninitialized)
+			{
+				Engine->Reset();
+			}
+		}
+	}
+
+	Quests.Remove(AssetId);
+	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest canceled, removing from Quests"));
+}
+
+
+
+#if UE_BUILD_DEVELOPMENT
+const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& UQuestSubsystem::GetEditorQuests() const
+{
+	return Quests;
+}
+#endif
+
+
+
+
+void UQuestSubsystem::RemoveQuests()
+{
+	for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : Quests)
+	{
+		UQuestEngine* Engine = Kv.Value.Get();
+		if (!IsValid(Engine))
+		{
+			continue;
+		}
+
 		Engine->OnStateChanged.Unbind();
 
 		if (Engine->GetState() == EFSMState::Active)
@@ -65,56 +111,57 @@ void UQuestSubsystem::CancelQuest(const FPrimaryAssetId& AssetId)
 		{
 			Engine->Reset();
 		}
+
+		Engine->MarkAsGarbage();
 	}
 
-	ActiveQuests.Remove(AssetId);
-	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest canceled, removing from ActiveQuests"));
+	Quests.Empty();
 }
 
-
-
-#if UE_BUILD_DEVELOPMENT
-const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& UQuestSubsystem::GetEditorQuests() const
+UQuestEngine* UQuestSubsystem::GetQuestEngine(const FPrimaryAssetId& AssetId) const
 {
-	return ActiveQuests;
+	const TObjectPtr<UQuestEngine>* FoundEngine = Quests.Find(AssetId);
+	if (FoundEngine)
+	{
+		return FoundEngine->Get();
+	}
+	return nullptr;
 }
-#endif
 
-
-
-
-void UQuestSubsystem::HandleOnStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId)
+void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId)
 {
-	//if (NewState == EFSMState::Finished)
-	//{
-	//	TObjectPtr<UQuestEngine>* FoundEngine = ActiveQuests.Find(AssetId);
-	//	if (!FoundEngine)
-	//	{
-	//		LOG_ERROR(LogTemp, TEXT("Failed to find QuestEngine"));
-	//		return;
-	//	}
+	if (NewState != EFSMState::Ready && NewState != EFSMState::Finished && NewState != EFSMState::Uninitialized)
+	{
+		return;
+	}
 
-	//	UQuestEngine* Engine = FoundEngine->Get();
-	//	if (!IsValid(Engine))
-	//	{
-	//		LOG_ERROR(LogTemp, TEXT("Failed to get QuestEngine"));
-	//		return;
-	//	}
+	UQuestEngine* Engine = GetQuestEngine(AssetId);
+	if (!IsValid(Engine))
+	{
+		return;
+	}
 
-	//	Engine->OnStateChanged.Unbind();
+	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
+	switch (NewState)
+	{
+	case EFSMState::Ready:
+		OnEngineAdded.Broadcast(AssetId, Engine);
+		Engine->Active();
+		break;
 
-	//	if (Engine->GetState() == EFSMState::Active)
-	//	{
-	//		Engine->Finish(EFSMResult::Aborted);
-	//	}
-	//	if (Engine->GetState() != EFSMState::Uninitialized)
-	//	{
-	//		Engine->Reset();
-	//	}
+	case EFSMState::Finished:
+		OnEngineRemoved.Broadcast(AssetId, Engine);
+		Engine->Reset();
+		break;
 
-	//	ActiveQuests.Remove(AssetId);
-	//	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest ended, removing from ActiveQuests"));
-	//}
+	case EFSMState::Uninitialized:
+		Engine->OnStateChanged.Unbind();
+		if (Quests.Remove(AssetId) > 0)
+		{
+			FPoolLibrary::ReturnToArray(EnginePool, Engine);
+		}
+		break;
+	}
 }
 
 
@@ -144,60 +191,9 @@ void UQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	LOG_WARNING(LogTemp, TEXT("QuestSubsystem initialized"));
 }
 
-static int Luau_ContextName(lua_State* L)
-{
-	UObject* Context = ULuauSubsystem::GetCurrentContextFromState(L);
-	if (!Context)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OBJECT: nullptr"));
-		return 0;
-	}
-	FString S = Context->GetFName().ToString();
-	UE_LOG(LogTemp, Warning, TEXT("OBJECT: %s"), *S);
-	return 0;
-}
-
-void UQuestSubsystem::OnWorldComponentsUpdated(UWorld& InWorld)
-{
-	Super::OnWorldComponentsUpdated(InWorld);
-
-	ULuauSubsystem* L = ULuauSubsystem::Get(&InWorld);
-	if (L)
-	{
-		L->RegisterFunction(TEXT("Quest"), "ContextName", &Luau_ContextName);
-	}
-}
-
-void UQuestSubsystem::OnWorldBeginPlay(UWorld& InWorld)
-{
-	Super::OnWorldBeginPlay(InWorld);
-}
-
 void UQuestSubsystem::Deinitialize()
 {
-	for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : ActiveQuests)
-	{
-		UQuestEngine* Engine = Kv.Value.Get();
-		if (!IsValid(Engine))
-		{
-			continue;
-		}
-
-		Engine->OnStateChanged.Unbind();
-
-		if (Engine->GetState() == EFSMState::Active)
-		{
-			Engine->Finish(EFSMResult::Aborted);
-		}
-		if (Engine->GetState() != EFSMState::Uninitialized)
-		{
-			Engine->Reset();
-		}
-
-		Engine->MarkAsGarbage();
-	}
-
-	ActiveQuests.Empty();
+	RemoveQuests();
 
 	LOG_WARNING(LogTemp, TEXT("QuestSubsystem deinitialized"));
 	Super::Deinitialize();
@@ -205,20 +201,7 @@ void UQuestSubsystem::Deinitialize()
 
 UQuestSubsystem* UQuestSubsystem::Get(UWorld* World)
 {
-	if (!IsValid(World))
-	{
-		return nullptr;
-	}
+	check(IsValid(World));
 	return World->GetSubsystem<UQuestSubsystem>();
 }
-
-UQuestSubsystem* UQuestSubsystem::Get(UGameInstance* GameInstance)
-{
-	if (!IsValid(GameInstance))
-	{
-		return nullptr;
-	}
-	return Get(GameInstance->GetWorld());
-}
-
 
