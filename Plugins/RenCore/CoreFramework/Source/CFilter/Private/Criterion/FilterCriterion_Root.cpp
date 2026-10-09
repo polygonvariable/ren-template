@@ -7,7 +7,7 @@
 #include "FilterContext.h"
 
 
-bool UFilterCriterion_Group::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Group::Evaluate(const FFilterContext& Context) const
 {
 	if (Criteria.Num() == 0)
 	{
@@ -16,8 +16,9 @@ bool UFilterCriterion_Group::Evaluate(const FFilterContext& Context) const
 
 	if (Operator == EFilterOperator::And)
 	{
-		for (const UFilterCriterion* Criterion : Criteria)
+		for (const TInstancedStruct<FFilterCriterion>& RawCriterion : Criteria)
 		{
+			const FFilterCriterion* Criterion = RawCriterion.GetPtr();
 			if (Criterion && !Criterion->Evaluate(Context))
 			{
 				return false;
@@ -27,8 +28,9 @@ bool UFilterCriterion_Group::Evaluate(const FFilterContext& Context) const
 	}
 	else
 	{
-		for (const UFilterCriterion* Criterion : Criteria)
+		for (const TInstancedStruct<FFilterCriterion>& RawCriterion : Criteria)
 		{
+			const FFilterCriterion* Criterion = RawCriterion.GetPtr();
 			if (Criterion && Criterion->Evaluate(Context))
 			{
 				return true;
@@ -38,11 +40,12 @@ bool UFilterCriterion_Group::Evaluate(const FFilterContext& Context) const
 	}
 }
 
-bool UFilterCriterion_Not::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Not::Evaluate(const FFilterContext& Context) const
 {
-	if (Negate)
+	const FFilterCriterion* Criterion = Negate.GetPtr();
+	if (Criterion)
 	{
-		return !Negate->Evaluate(Context);
+		return !Criterion->Evaluate(Context);
 	}
 	return true;
 }

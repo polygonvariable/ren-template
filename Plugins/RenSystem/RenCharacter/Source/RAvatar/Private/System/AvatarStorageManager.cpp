@@ -124,7 +124,7 @@ const FAvatarInstance* UAvatarStorageManager::GetInstanceById(const FGuid& Insta
 }
 
 
-void UAvatarStorageManager::QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems)
+void UAvatarStorageManager::QueryInstances(const TInstancedStruct<FFilterCriterion>& FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -189,7 +189,7 @@ void UAvatarStorageManager::HandleItemSorting(TArray<FAvatarSortEntry>& SortedIt
 	}
 }
 
-void UAvatarStorageManager::QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const
+void UAvatarStorageManager::QueryAssetItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const
 {
 	TArray<FPrimaryAssetId> AssetIds;
 	if (!AssetManager->GetPrimaryAssetIdList(FCharacterPrimaryAsset::GetAssetType(), AssetIds))
@@ -211,12 +211,13 @@ void UAvatarStorageManager::QueryAssetItems(UAssetManager* AssetManager, const U
 			continue;
 		}
 
-		if (IsValid(FilterCriterion))
+		const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+		if (Criterion)
 		{
 			FFilterContext Context;
 			Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
 
-			if (!FilterCriterion->Evaluate(Context))
+			if (!Criterion->Evaluate(Context))
 			{
 				continue;
 			}
@@ -226,7 +227,7 @@ void UAvatarStorageManager::QueryAssetItems(UAssetManager* AssetManager, const U
 	}
 }
 
-void UAvatarStorageManager::QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const
+void UAvatarStorageManager::QueryInstanceItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const
 {
 	if (!IsValid(LocalStorage))
 	{
@@ -250,12 +251,13 @@ void UAvatarStorageManager::QueryInstanceItems(UAssetManager* AssetManager, cons
 			continue;
 		}
 
-		if (IsValid(FilterCriterion))
+		const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+		if (Criterion)
 		{
 			FFilterContext Context;
 			Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
 
-			if (!FilterCriterion->Evaluate(Context))
+			if (!Criterion->Evaluate(Context))
 			{
 				continue;
 			}

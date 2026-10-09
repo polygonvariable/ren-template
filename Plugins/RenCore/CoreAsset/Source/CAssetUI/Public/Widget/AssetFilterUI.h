@@ -6,118 +6,118 @@
 #include "Blueprint/UserWidget.h"
 
 // Generated Headers
-#include "AssetFilterUI.generated.h"
+//#include "AssetFilterUI.generated.h"
 
 // Forward Declarations
-class UTextBlock;
-class UButton;
-class UAssetCollectionUI;
-class UFilterCriterion;
+// class UTextBlock;
+// class UButton;
+// class UAssetCollectionUI;
+// class UFilterCriterion;
 
 
-/**
- *
- */
-USTRUCT(BlueprintType)
-struct FAssetFilterCriterion
-{
+// /**
+//  *
+//  */
+// USTRUCT(BlueprintType)
+// struct FAssetFilterCriterion
+// {
 
-	GENERATED_BODY()
+// 	GENERATED_BODY()
 
-public:
+// public:
 
-	UPROPERTY(EditAnywhere)
-	FName FilterName = NAME_None;
+// 	UPROPERTY(EditAnywhere)
+// 	FName FilterName = NAME_None;
 
-	UPROPERTY(EditAnywhere, Instanced)
-	TObjectPtr<UFilterCriterion> FilterCriterion = nullptr;
+// 	UPROPERTY(EditAnywhere, Instanced)
+// 	TObjectPtr<UFilterCriterion> FilterCriterion = nullptr;
 
-};
-
-
-/**
- *
- */
-UCLASS(Abstract, MinimalAPI)
-class UAssetFilterUI : public UUserWidget
-{
-
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY(EditAnywhere)
-	FText TitleText = FText::GetEmpty();
-
-	DECLARE_DELEGATE(FOnSelected);
-	FOnSelected OnSelected;
+// };
 
 
-	// ~ UUserWidget
-	CASSETUI_API virtual void NativePreConstruct() override;
-	CASSETUI_API virtual void NativeConstruct() override;
-	CASSETUI_API virtual void NativeDestruct() override;
-	// ~ End of UUserWidget
+// /**
+//  *
+//  */
+// UCLASS(Abstract, MinimalAPI)
+// class UAssetFilterUI : public UUserWidget
+// {
 
-protected:
+// 	GENERATED_BODY()
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UTextBlock> FilterTitle = nullptr;
+// public:
 
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UButton> FilterButton = nullptr;
+// 	UPROPERTY(EditAnywhere)
+// 	FText TitleText = FText::GetEmpty();
 
-
-	UFUNCTION(BlueprintCallable)
-	void SetSelected();
-
-};
+// 	DECLARE_DELEGATE(FOnSelected);
+// 	FOnSelected OnSelected;
 
 
-/**
- *
- */
-UCLASS(Abstract, MinimalAPI)
-class UAssetFilterCollectionUI : public UUserWidget
-{
+// 	// ~ UUserWidget
+// 	CASSETUI_API virtual void NativePreConstruct() override;
+// 	CASSETUI_API virtual void NativeConstruct() override;
+// 	CASSETUI_API virtual void NativeDestruct() override;
+// 	// ~ End of UUserWidget
 
-	GENERATED_BODY()
+// protected:
 
-public:
+// 	UPROPERTY(meta = (BindWidget))
+// 	TObjectPtr<UTextBlock> FilterTitle = nullptr;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelected, int, Index);
-	UPROPERTY(BlueprintAssignable)
-	FOnSelected OnSelected;
-
-	UPROPERTY(EditAnywhere)
-	TArray<FAssetFilterCriterion> FilterCriteria;
+// 	UPROPERTY(meta = (BindWidget))
+// 	TObjectPtr<UButton> FilterButton = nullptr;
 
 
-	UFUNCTION(BlueprintCallable)
-	CASSETUI_API void SetTargetCollectionUI(UAssetCollectionUI* InCollectionUI);
+// 	UFUNCTION(BlueprintCallable)
+// 	void SetSelected();
 
-	// ~ UUserWidget
-	CASSETUI_API virtual void NativePreConstruct() override;
-	// ~ End of UUserWidget
-
-protected:
-
-	UPROPERTY(meta = (BindWidget))
-	TObjectPtr<UPanelWidget> FilterBox = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UAssetFilterUI> FilterClass = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FMargin FilterSpacing;
+// };
 
 
-	void OnFilterSelected(int Index);
+// /**
+//  *
+//  */
+// UCLASS(Abstract, MinimalAPI)
+// class UAssetFilterCollectionUI : public UUserWidget
+// {
 
-private:
+// 	GENERATED_BODY()
 
-	UPROPERTY()
-	TWeakObjectPtr<UAssetCollectionUI> _AssetCollection = nullptr;
+// public:
 
-};
+// 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSelected, int, Index);
+// 	UPROPERTY(BlueprintAssignable)
+// 	FOnSelected OnSelected;
+
+// 	UPROPERTY(EditAnywhere)
+// 	TArray<FAssetFilterCriterion> FilterCriteria;
+
+
+// 	UFUNCTION(BlueprintCallable)
+// 	CASSETUI_API void SetTargetCollectionUI(UAssetCollectionUI* InCollectionUI);
+
+// 	// ~ UUserWidget
+// 	CASSETUI_API virtual void NativePreConstruct() override;
+// 	// ~ End of UUserWidget
+
+// protected:
+
+// 	UPROPERTY(meta = (BindWidget))
+// 	TObjectPtr<UPanelWidget> FilterBox = nullptr;
+
+// 	UPROPERTY(EditAnywhere)
+// 	TSubclassOf<UAssetFilterUI> FilterClass = nullptr;
+
+// 	UPROPERTY(EditAnywhere)
+// 	FMargin FilterSpacing;
+
+
+// 	void OnFilterSelected(int Index);
+
+// private:
+
+// 	UPROPERTY()
+// 	TWeakObjectPtr<UAssetCollectionUI> _AssetCollection = nullptr;
+
+// };
 

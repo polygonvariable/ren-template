@@ -13,6 +13,7 @@
 #include "Task/EventflowNodeTask.h"
 #include "Task/EventflowGlobalTask.h"
 #include "GameplayContextAction.h"
+#include "Actor/QuestObjectiveActor.h"
 
 // Generated Headers
 #include "QuestPrimaryTask.generated.h"
@@ -21,6 +22,7 @@ class FObjectPreSaveContext;
 class UEventflowAsset;
 class AQuestObjectiveMarker;
 class UQuestEngine;
+class UUserWidget;
 
 
 /**
@@ -335,7 +337,7 @@ protected:
 
 
 	// ~ Binding
-	virtual void HandleOnInteractionCompleted();
+	virtual void HandleOnInteractionCompleted(EFSMResult Result);
 	// ~ End of Binding
 
 	// ~ UFiniteStateMachine
@@ -390,7 +392,6 @@ protected:
 	virtual void OnLoaded(EFSMState PreviousState) override;
 	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
-	virtual void OnFinished(EFSMResult Result) override;
 	virtual void OnReset() override;
 	// ~ End of UFiniteStateMachine
 
@@ -487,7 +488,7 @@ protected:
 #endif
 
 	// ~ Binding
-	virtual void HandleOnInteractionCompleted() override;
+	virtual void HandleOnInteractionCompleted(EFSMResult Result) override;
 	// ~ End of Binding
 
 };
@@ -540,7 +541,7 @@ protected:
 
 
 	// ~ Binding
-	virtual void HandleOnInteractionCompleted();
+	virtual void HandleOnInteractionCompleted(EFSMResult Result);
 	// ~ End of Binding
 
 	// ~ UFiniteStateMachine
@@ -711,3 +712,55 @@ protected:
 
 
 };
+
+
+
+
+/**
+ *
+ */
+UCLASS(MinimalAPI)
+class UQuestTask_WidgetGate : public UQuestPrimaryTask
+{
+
+	GENERATED_BODY()
+
+public:
+
+#if WITH_EDITOR
+	// ~ UEventflowTask
+	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
+	// ~ End of UEventflowTask
+	// ~ UObject
+	virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
+	// ~ End of UObject
+#endif
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	FName WidgetGameplayMode;
+
+	UPROPERTY(EditAnywhere, meta = (ExcludeBaseStruct))
+	TInstancedStruct<FWidgetTemplateDefinition> WidgetTemplate;
+
+	UPROPERTY()
+	TObjectPtr<UUserWidget> Widget;
+
+
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+
+	// ~ UEventflowTask
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
+	virtual void OnReset() override;
+	// ~ End of UEventflowTask
+
+	// ~ Binding
+	virtual void HandleOnObjectiveFeedback(EFSMResult Result);
+	// ~ End of Binding
+};
+
+

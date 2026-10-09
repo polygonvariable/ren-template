@@ -2,39 +2,35 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
+// Project Headers
+#include "FilterCriterion.h"
+
 // Generated Headers
 #include "FilterGroup.generated.h"
-
-// Forward Declarations
-class UFilterCriterion;
 
 
 /**
  *
  */
-UCLASS(MinimalAPI, Blueprintable, EditInlineNew, CollapseCategories)
-class UFilterGroup : public UObject
+USTRUCT()
+struct FFilterGroup
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TObjectPtr<UFilterCriterion> CriterionRoot;
+	UPROPERTY(EditAnywhere)
+	TInstancedStruct<FFilterCriterion> CriterionRoot;
 
-
-	CFILTER_API UFilterCriterion* GetCriterionByName(FName PropertyName) const;
-
-	template<typename T>
-	T* GetCriterionByName(FName PropertyName) const
-	{
-		return Cast<T>(GetCriterionByName(PropertyName));
-	}
+	CFILTER_API TInstancedStruct<FFilterCriterion>* GetCriterionByName(FName PropertyName);
 
 protected:
 
-	UFilterCriterion* FindCriterionByName(UFilterCriterion* Criterion, const FName& PropertyName) const;
+	CFILTER_API TInstancedStruct<FFilterCriterion>* FindCriterionByName(TInstancedStruct<FFilterCriterion>& Criterion, const FName& PropertyName);
 
 };
 

@@ -9,38 +9,38 @@
 #include "Core/AssetWidget.h"
 
 // Generated Headers
-#include "AssetFilterSlot.generated.h"
+//#include "AssetFilterSlot.generated.h"
 
 // Forward Declarations
-class UFilterGroup;
+//class UFilterGroup;
 class UFragmentedDataAsset;
 class UAssetEntry;
-struct FFilterContext;
+//struct FFilterContext;
 
 
 /**
  *
  */
-UCLASS(MinimalAPI, Abstract)
-class UAssetFilterSlot : public UNamedSlot, public IAssetWidget
-{
-
-	GENERATED_BODY()
-
-public:
-
-	// ~ IAssetWidget
-	virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override {};
-	virtual void InitializeEntryDetail(const UAssetEntry* Entry) override {};
-	// ~ End of IAssetWidget
-
-protected:
-
-	UPROPERTY(EditAnywhere, Instanced)
-	TObjectPtr<UFilterGroup> FilterGroup = nullptr;
-
-
-	CASSETUI_API void Evaluate(const FFilterContext& Context);
-
-};
+//UCLASS(MinimalAPI, Abstract)
+//class UAssetFilterSlot : public UNamedSlot, public IAssetWidget
+//{
+//
+//	GENERATED_BODY()
+//
+//// public:
+//
+//// 	// ~ IAssetWidget
+//// 	virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override {};
+//// 	virtual void InitializeEntryDetail(const UAssetEntry* Entry) override {};
+//// 	// ~ End of IAssetWidget
+//
+//// protected:
+//
+//// 	UPROPERTY(EditAnywhere, Instanced)
+//// 	TObjectPtr<UFilterGroup> FilterGroup = nullptr;
+//
+//
+//// 	CASSETUI_API void Evaluate(const FFilterContext& Context);
+//
+//};
 

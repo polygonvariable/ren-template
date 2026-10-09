@@ -28,6 +28,7 @@ public class CAssetUI : ModuleRules
 				"Core",
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
+                "CFilter",
             }
 			);
 			
@@ -41,7 +42,6 @@ public class CAssetUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
 				"CLibrary",
-                "CFilter",
                 "CAsset",
                 "CAssetManager",
             }

@@ -211,6 +211,47 @@ void UQuestEdNode_SubtaskGate::AllocateDefaultPins()
 
 
 
+UQuestEdNode_WidgetGate::UQuestEdNode_WidgetGate()
+{
+	NodeTitle = FText::FromString(TEXT("Widget Gate"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_WidgetGate::GetTaskClass() const
+{
+	return UQuestTask_WidgetGate::StaticClass();
+}
+
+FLinearColor UQuestEdNode_WidgetGate::GetNodeTitleColor() const
+{
+	return FLinearColor(0.0f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_WidgetGate::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutSuccess = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("success"));
+	PinOutSuccess->PinFriendlyName = FText::FromString(TEXT("success"));
+	PinOutSuccess->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutFail = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("fail"));
+	PinOutFail->PinFriendlyName = FText::FromString(TEXT("fail"));
+	PinOutFail->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOutCancel = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("cancel"));
+	PinOutCancel->PinFriendlyName = FText::FromString(TEXT("cancel"));
+	PinOutCancel->PinType.bIsConst = true;
+}
+
+
+
+
+
+
+
+
 
 
 

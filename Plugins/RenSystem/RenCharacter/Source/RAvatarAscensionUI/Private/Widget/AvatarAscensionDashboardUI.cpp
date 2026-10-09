@@ -100,26 +100,26 @@ void UAvatarAscensionDashboardUI::ToggleRankUp(const FAvatarInstance* Instance)
 
 	RankItemCollection->ClearSubDetails();
 
-	UFilterCriterion_Asset* AssetFilter = RankItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
-	if (IsValid(AssetFilter))
-	{
-		AssetFilter->Included.Empty();
+	// UFilterCriterion_Asset* AssetFilter = RankItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
+	// if (IsValid(AssetFilter))
+	// {
+	// 	AssetFilter->Included.Empty();
 
-		const UAssetCollection* ItemCollection = AscensionFragment->GetRankAssets(Instance->Ascension);
-		if (IsValid(ItemCollection))
-		{
-			TMap<FPrimaryAssetId, FAssetDetail> AssetList;
-			ItemCollection->GetAssetList(AssetList);
+	// 	const UAssetCollection* ItemCollection = AscensionFragment->GetRankAssets(Instance->Ascension);
+	// 	if (IsValid(ItemCollection))
+	// 	{
+	// 		TMap<FPrimaryAssetId, FAssetDetail> AssetList;
+	// 		ItemCollection->GetAssetList(AssetList);
 
-			for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
-			{
-				const FPrimaryAssetId& AssetId = Kv.Key;
+	// 		for (const TPair<FPrimaryAssetId, FAssetDetail>& Kv : AssetList)
+	// 		{
+	// 			const FPrimaryAssetId& AssetId = Kv.Key;
 
-				AssetFilter->Included.Add(AssetId);
-				RankItemCollection->AddSubDetails(AssetId, FInstancedStruct::Make(Kv.Value));
-			}
-		}
-	}
+	// 			AssetFilter->Included.Add(AssetId);
+	// 			RankItemCollection->AddSubDetails(AssetId, FInstancedStruct::Make(Kv.Value));
+	// 		}
+	// 	}
+	// }
 
 	RankItemCollection->RefreshEntries();
 }
@@ -164,28 +164,28 @@ TArray<UWidget*> UAvatarAscensionDashboardUI::GetLockingControls_Implementation(
 
 void UAvatarAscensionDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
-	AvatarDetail->InitializeAssetDetail(Asset);
+	// AvatarDetail->InitializeAssetDetail(Asset);
 
-	AscensionFragment = Asset->FindFragmentByClass<UAscensionFragment>();
-	if (IsValid(AscensionFragment))
-	{
-		UFilterCriterion_Asset* AssetFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
-		if (IsValid(AssetFilter))
-		{
-			AssetFilter->Included.Empty();
+	// AscensionFragment = Asset->FindFragmentByClass<UAscensionFragment>();
+	// if (IsValid(AscensionFragment))
+	// {
+	// 	UFilterCriterion_Asset* AssetFilter = LevelItemCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
+	// 	if (IsValid(AssetFilter))
+	// 	{
+	// 		AssetFilter->Included.Empty();
 
-			const UAssetCollection* ItemCollection = AscensionFragment->GetExperienceAssets(AscensionInstance);
-			if (IsValid(ItemCollection))
-			{
-				TArray<FPrimaryAssetId> AssetList;
-				ItemCollection->GetAssetIds(AssetList);
+	// 		const UAssetCollection* ItemCollection = AscensionFragment->GetExperienceAssets(AscensionInstance);
+	// 		if (IsValid(ItemCollection))
+	// 		{
+	// 			TArray<FPrimaryAssetId> AssetList;
+	// 			ItemCollection->GetAssetIds(AssetList);
 
-				AssetFilter->Included.Append(AssetList);
-			}
-		}
+	// 			AssetFilter->Included.Append(AssetList);
+	// 		}
+	// 	}
 
-		LevelItemCollection->DisplayEntries();
-	}
+	// 	LevelItemCollection->DisplayEntries();
+	// }
 }
 
 void UAvatarAscensionDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)

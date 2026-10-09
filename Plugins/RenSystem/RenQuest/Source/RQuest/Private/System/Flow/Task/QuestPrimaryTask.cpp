@@ -8,6 +8,7 @@
 #include "Misc/DataValidation.h"
 #endif
 #include "UObject/ObjectSaveContext.h"
+#include "Blueprint/UserWidget.h"
 
 //
 #include "Actor/QuestObjectiveActor.h"
@@ -318,7 +319,7 @@ void UQuestTask_SpawnMarker::OnReset()
 	Super::OnReset();
 }
 
-void UQuestTask_SpawnMarker::HandleOnInteractionCompleted()
+void UQuestTask_SpawnMarker::HandleOnInteractionCompleted(EFSMResult Result)
 {
 	Active();
 }
@@ -358,7 +359,7 @@ void UQuestTask_ConditionalSpawnMarker::PreSave(FObjectPreSaveContext ObjectSave
 	Super::PreSave(ObjectSaveContext);
 }
 
-void UQuestTask_ConditionalSpawnMarker::HandleOnInteractionCompleted()
+void UQuestTask_ConditionalSpawnMarker::HandleOnInteractionCompleted(EFSMResult Result)
 {
 	const UQuestTask_ConditionalSpawnMarker* Template = GetOwningTemplate<UQuestTask_ConditionalSpawnMarker>();
 	ULuauSubsystem* LuauSubsystem = ULuauSubsystem::Get(GetWorld());
@@ -830,10 +831,6 @@ void UQuestTask_SubtaskGate::OnActive(EFSMState PreviousState)
 	}
 }
 
-void UQuestTask_SubtaskGate::OnFinished(EFSMResult Result)
-{
-}
-
 void UQuestTask_SubtaskGate::OnReset()
 {
 	Super::OnReset();
@@ -946,7 +943,7 @@ void UQuestTask_SpawnLocation::OnReset()
 	Super::OnReset();
 }
 
-void UQuestTask_SpawnLocation::HandleOnInteractionCompleted()
+void UQuestTask_SpawnLocation::HandleOnInteractionCompleted(EFSMResult Result)
 {
 	Active();
 }
@@ -1191,4 +1188,142 @@ void UQuestTask_CheckStorage::OnActive(EFSMState PreviousState)
 		}
 	);
 	Finish(EFSMResult::Success);
+}
+
+
+
+
+
+#include "SubsystemLibrary.h"
+#include "GameplayModeProvider.h"
+
+#if WITH_EDITOR
+void UQuestTask_WidgetGate::AppendAssetBundleData(FAssetBundleData& AssetBundle)
+{
+	Super::AppendAssetBundleData(AssetBundle);
+
+	const UQuestSettings* Settings = UQuestSettings::Get();
+	const FName& BundleName = Settings->BundleName;
+
+	FWidgetTemplateDefinition* WidgetDefinition = WidgetTemplate.GetMutablePtr();
+	if (WidgetDefinition)
+	{
+		WidgetDefinition->AppendAssetBundleData(AssetBundle, BundleName);
+	}
+}
+EDataValidationResult UQuestTask_WidgetGate::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+
+	if (WidgetGameplayMode.IsNone())
+	{
+		Context.AddError(FText::FromString("Widget gameplay mode is empty"));
+		return EDataValidationResult::Invalid;
+	}
+
+	const FWidgetTemplateDefinition* RawWidget = WidgetTemplate.GetPtr();
+	if (!RawWidget || !RawWidget->IsDataValid())
+	{
+		Context.AddError(FText::FromString("Widget template is invalid or contains invalid data"));
+		return EDataValidationResult::Invalid;
+	}
+
+	return Result;
+}
+#endif
+
+void UQuestTask_WidgetGate::CopyFromAsset(const UEventflowTask* Template)
+{
+	Super::CopyFromAsset(Template);
+
+	const UQuestTask_WidgetGate* Task = Cast<UQuestTask_WidgetGate>(Template);
+	checkf(IsValid(Template), TEXT("Node task contains invalid template data"));
+
+	WidgetGameplayMode = Task->WidgetGameplayMode;
+}
+
+void UQuestTask_WidgetGate::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	Load();
+}
+
+void UQuestTask_WidgetGate::OnLoaded(EFSMState PreviousState)
+{
+	UQuestTask_WidgetGate* Template = GetOwningTemplate<UQuestTask_WidgetGate>();
+	checkf(IsValid(Template), TEXT("Node task contains invalid template data"));
+
+	FWidgetTemplateDefinition* WidgetData = Template->WidgetTemplate.GetMutablePtr();
+	checkf(WidgetData, TEXT("Widget template data is invalid"));
+
+	Widget = WidgetData->CreateWidget(GetWorld());
+	checkf(IsValid(Widget), TEXT("Failed to create widget"));
+
+	IObjectiveFeedback* WidgetObjective = CastChecked<IObjectiveFeedback>(Widget);
+	WidgetObjective->GetOnObjectiveFeedback().BindUObject(this, &UQuestTask_WidgetGate::HandleOnObjectiveFeedback);
+
+	Ready();
+}
+
+void UQuestTask_WidgetGate::OnReady(EFSMState PreviousState)
+{
+	Active();
+}
+
+void UQuestTask_WidgetGate::OnActive(EFSMState PreviousState)
+{
+	IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
+	if (GameplayMode)
+	{
+		GameplayMode->PushGameplayMode(WidgetGameplayMode);
+	}
+
+	Widget->AddToViewport();
+}
+
+void UQuestTask_WidgetGate::OnReset()
+{
+	IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
+	if (GameplayMode)
+	{
+		GameplayMode->PopGameplayMode(WidgetGameplayMode);
+	}
+
+	if (IsValid(Widget))
+	{
+		IObjectiveFeedback* WidgetObjective = CastChecked<IObjectiveFeedback>(Widget);
+		WidgetObjective->GetOnObjectiveFeedback().Unbind();
+
+		Widget->RemoveFromParent();
+	}
+	Widget = nullptr;
+
+	Super::OnReset();
+}
+
+void UQuestTask_WidgetGate::HandleOnObjectiveFeedback(EFSMResult Result)
+{
+	int Index = 2;
+	switch (Result)
+	{
+	case EFSMResult::Success:
+		Index = 0;
+		break;
+	case EFSMResult::Failed:
+		Index = 1;
+		break;
+	case EFSMResult::Cancelled:
+		Index = 2;
+		break;
+	}
+
+	ModifyTransitionData(
+		[Index](TInstancedStruct<FEventflowNodeTransitionData>& TransitionData)
+		{
+			FEventflowNodeTransitionData& Data = TransitionData.GetMutable();
+			Data.NextNodeIndex = Index;
+		}
+	);
+
+	Finish(Result);
 }

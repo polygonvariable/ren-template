@@ -72,37 +72,37 @@ void UTradeDashboardUI::InitializeTradeDetail()
 
 void UTradeDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 {
-	UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
+	// UAssetEntry* Entry = PrimaryCollection->GetSelectedEntry();
 
-	PrimaryDetail->InitializeAssetDetail(Asset);
-	PrimaryDetail->InitializeEntryDetail(Entry);
+	// PrimaryDetail->InitializeAssetDetail(Asset);
+	// PrimaryDetail->InitializeEntryDetail(Entry);
 
-	const UAssetCollection* MaterialCollection = GetTradeMaterialCollection(Asset);
-	if (!IsValid(MaterialCollection))
-	{
-		return;
-	}
+	// const UAssetCollection* MaterialCollection = GetTradeMaterialCollection(Asset);
+	// if (!IsValid(MaterialCollection))
+	// {
+	// 	return;
+	// }
 
-	SecondaryCollection->ClearSubDetails();
+	// SecondaryCollection->ClearSubDetails();
 
-	UFilterCriterion_Asset* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
-	if (IsValid(AssetCriterion))
-	{
-		AssetCriterion->Included.Empty();
+	// UFilterCriterion_Asset* AssetCriterion = SecondaryCollection->GetCriterionByName<UFilterCriterion_Asset>(FAssetFilterProperty::AssetId);
+	// if (IsValid(AssetCriterion))
+	// {
+	// 	AssetCriterion->Included.Empty();
 
-		TMap<FPrimaryAssetId, FAssetDetail> MaterialAssetList;
-		MaterialCollection->GetAssetList(MaterialAssetList);
+	// 	TMap<FPrimaryAssetId, FAssetDetail> MaterialAssetList;
+	// 	MaterialCollection->GetAssetList(MaterialAssetList);
 
-		for (const TPair<FPrimaryAssetId, FAssetDetail>& AssetKv : MaterialAssetList)
-		{
-			const FPrimaryAssetId& AssetId = AssetKv.Key;
+	// 	for (const TPair<FPrimaryAssetId, FAssetDetail>& AssetKv : MaterialAssetList)
+	// 	{
+	// 		const FPrimaryAssetId& AssetId = AssetKv.Key;
 
-			AssetCriterion->Included.Add(AssetId);
-			SecondaryCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
-		}
-	}
+	// 		AssetCriterion->Included.Add(AssetId);
+	// 		SecondaryCollection->AddSubDetails(AssetId, FInstancedStruct::Make(AssetKv.Value));
+	// 	}
+	// }
 
-	SecondaryCollection->RefreshEntries();
+	// SecondaryCollection->RefreshEntries();
 }
 
 void UTradeDashboardUI::CancelInitialization()

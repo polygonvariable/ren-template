@@ -37,9 +37,9 @@ protected:
 
 private:
 
-	bool GetTypedValue(FName Key, FName& OutValue) const;
-	bool GetTypedValue(FName Key, int& OutValue) const;
-	bool GetTypedValue(FName Key, FPrimaryAssetId& OutValue) const;
+	CFILTER_API bool GetTypedValue(FName Key, FName& OutValue) const;
+	CFILTER_API bool GetTypedValue(FName Key, int& OutValue) const;
+	CFILTER_API bool GetTypedValue(FName Key, FPrimaryAssetId& OutValue) const;
 
 	CFILTER_API void SetTypedValue(FName Key, FName Value);
 	CFILTER_API void SetTypedValue(FName Key, int Value);

@@ -29,24 +29,24 @@ void UAvatarCollectionUI::InitializeCollection()
 
 void UAvatarCollectionUI::DisplayEntries()
 {
-	if (!IsValid(StorageManager))
-	{
-		LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
-		return;
-	}
+	//if (!IsValid(StorageManager))
+	//{
+	//	LOG_ERROR(LogAvatar, TEXT("AvatarStorage is invalid"));
+	//	return;
+	//}
 
-	TArray<FAvatarSortEntry> SortedEntries;
-	StorageManager->QueryInstances(GetFilterRoot(), QueryRule, SortedEntries);
+	//TArray<FAvatarSortEntry> SortedEntries;
+	//StorageManager->QueryInstances(GetFilterRoot(), QueryRule, SortedEntries);
 
-	for (const FAvatarSortEntry& SortEntry : SortedEntries)
-	{
-		UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
-		if (IsValid(Entry))
-		{
-			Entry->AvatarInstance = SortEntry.Instance;
-			AddEntry(SortEntry.AssetId, Entry);
-		}
-	}
+	//for (const FAvatarSortEntry& SortEntry : SortedEntries)
+	//{
+	//	UAvatarEntry* Entry = GetEntryFromPool<UAvatarEntry>();
+	//	if (IsValid(Entry))
+	//	{
+	//		Entry->AvatarInstance = SortEntry.Instance;
+	//		AddEntry(SortEntry.AssetId, Entry);
+	//	}
+	//}
 }
 
 void UAvatarCollectionUI::NativeDestruct()

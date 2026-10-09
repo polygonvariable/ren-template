@@ -9,26 +9,26 @@
 #include "FilterGroup.h"
 
 
-void UAssetFilterSlot::Evaluate(const FFilterContext& Context)
-{
-	if (!IsValid(FilterGroup))
-	{
-		return;
-	}
+// void UAssetFilterSlot::Evaluate(const FFilterContext& Context)
+// {
+// 	if (!IsValid(FilterGroup))
+// 	{
+// 		return;
+// 	}
 
-	UFilterCriterion* Criterion = FilterGroup->CriterionRoot;
-	if (!IsValid(Criterion))
-	{
-		return;
-	}
+// 	UFilterCriterion* Criterion = FilterGroup->CriterionRoot;
+// 	if (!IsValid(Criterion))
+// 	{
+// 		return;
+// 	}
 
-	if (Criterion->Evaluate(Context))
-	{
-		SetVisibility(ESlateVisibility::Visible);
-	}
-	else
-	{
-		SetVisibility(ESlateVisibility::Collapsed);
-	}
-}
+// 	if (Criterion->Evaluate(Context))
+// 	{
+// 		SetVisibility(ESlateVisibility::Visible);
+// 	}
+// 	else
+// 	{
+// 		SetVisibility(ESlateVisibility::Collapsed);
+// 	}
+// }
 

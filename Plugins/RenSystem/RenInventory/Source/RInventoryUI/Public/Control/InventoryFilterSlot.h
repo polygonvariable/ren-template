@@ -6,7 +6,7 @@
 #include "Widget/Control/AssetFilterSlot.h"
 
 // Generated Headers
-#include "InventoryFilterSlot.generated.h"
+//#include "InventoryFilterSlot.generated.h"
 
 // Forward Declarations
 class UFragmentedDataAsset;
@@ -18,18 +18,18 @@ class UAssetEntry;
  *
  * 
  */
-UCLASS()
-class UInventoryFilterSlot : public UAssetFilterSlot
-{
-
-	GENERATED_BODY()
-
-public:
-
-	// ~ IAssetWidget
-	virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override;
-	virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
-	// ~ End of IAssetWidget
-
-};
+//UCLASS()
+//class UInventoryFilterSlot : public UAssetFilterSlot
+//{
+//
+//	GENERATED_BODY()
+//
+//public:
+//
+//	// ~ IAssetWidget
+//	virtual void InitializeAssetDetail(const UFragmentedDataAsset* Asset) override;
+//	virtual void InitializeEntryDetail(const UAssetEntry* Entry) override;
+//	// ~ End of IAssetWidget
+//
+//};
 

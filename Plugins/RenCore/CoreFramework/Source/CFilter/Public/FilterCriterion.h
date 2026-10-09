@@ -2,6 +2,12 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
+// Project Headers
+#include "FilterContext.h"
+
 // Generated Headers
 #include "FilterCriterion.generated.h"
 
@@ -12,21 +18,32 @@ struct FFilterContext;
 /**
  *
  */
-UCLASS(MinimalAPI, Abstract, Blueprintable, EditInlineNew, CollapseCategories)
-class UFilterCriterion : public UObject
+USTRUCT()
+struct FFilterCriterion
 {
 
 	GENERATED_BODY()
 
 public:
 
-	virtual bool Evaluate(const FFilterContext& Context) const;
+	virtual bool Evaluate(const FFilterContext& Context) const
+	{
+		return false;
+	}
 
-	virtual FName GetPropertyName() const;
-	virtual bool GetIsLeaf() const;
+	virtual FName GetPropertyName() const
+	{
+		return NAME_None;
+	}
+	virtual bool GetIsLeaf() const
+	{
+		return false;
+	}
 
-	virtual void ClearEvaluationData();
-	virtual void CopyEvaluationData(const UFilterCriterion* Other);
+	virtual void ClearEvaluationData() {};
+	virtual void CopyEvaluationData(const TInstancedStruct<FFilterCriterion>& Other) {};
+
+	virtual ~FFilterCriterion() = default;
 
 };
 

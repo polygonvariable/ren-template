@@ -7,6 +7,7 @@
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/StorageManager.h"
 #include "Delegate/GameEventDelegate.h"
+#include "FilterGroup.h"
 
 // Generated Headers
 #include "AvatarStorageManager.generated.h"
@@ -14,7 +15,7 @@
 // Forward Declarations
 class UAvatarStorage;
 class UAssetManager;
-class UFilterCriterion;
+//class UFilterCriterion;
 struct FAvatarInstance;
 struct FAvatarQueryRule;
 struct FAvatarSortEntry;
@@ -35,7 +36,7 @@ public:
 	RAVATAR_API const FAvatarInstance* GetInstanceById(const FGuid& InstanceId) const;
 
 	RAVATAR_API bool UpdateInstance(const FPrimaryAssetId& AssetId, TFunctionRef<void(FAvatarInstance*)> Callback);
-	RAVATAR_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems);
+	RAVATAR_API void QueryInstances(const TInstancedStruct<FFilterCriterion>& FilterCriterion, const FAvatarQueryRule& QueryRule, TArray<FAvatarSortEntry>& OutSortedItems);
 
 	// ~ IAssetInstanceCollection
 	virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
@@ -61,8 +62,8 @@ protected:
 
 
 	void HandleItemSorting(TArray<FAvatarSortEntry>& SortedItems, const FAvatarQueryRule& QueryRule) const;
-	void QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const;
-	void QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const;
+	void QueryAssetItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const;
+	void QueryInstanceItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FAvatarSortEntry>& OutSortedItems) const;
 
 	bool AddInstance_Internal(UAssetManager* AssetManager, const FPrimaryAssetId& AssetId);
 	bool RemoveInstance_Internal(const FPrimaryAssetId& AssetId);

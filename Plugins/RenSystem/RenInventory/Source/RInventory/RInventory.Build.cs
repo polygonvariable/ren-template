@@ -35,6 +35,7 @@ public class RInventory : ModuleRules
                 "CAssetInstance",
                 "CGamedataStorage",
                 "CDataManager",
+                "CFilter",
             }
 			);
 			
@@ -49,7 +50,6 @@ public class RInventory : ModuleRules
 				// ... add private dependencies that you statically link with here ...
                 "RCoreDelegate",
                 "CLibrary",
-                "CFilter",
                 "CGameplayBase",
             }
             );

@@ -44,30 +44,30 @@ void UEquipmentDashboardUI::SetPrimaryDetail(const UFragmentedDataAsset* Asset)
 
 void UEquipmentDashboardUI::SetSecondaryDetail(const UAssetEntry* Entry)
 {
-	if (!IsValid(Entry))
-	{
-		return;
-	}
+	// if (!IsValid(Entry))
+	// {
+	// 	return;
+	// }
 
-	OwnerInstanceId = Entry->GetAssetInstanceId();
+	// OwnerInstanceId = Entry->GetAssetInstanceId();
 
-	OwnerDetail->InitializeEntryDetail(Entry);
-	SlotCollection->InitializeEntryDetail(Entry);
+	// OwnerDetail->InitializeEntryDetail(Entry);
+	// SlotCollection->InitializeEntryDetail(Entry);
 
-	if (IsValid(StorageManager))
-	{
-		TArray<FGuid> EquipmentIds;
-		StorageManager->GetEquipmentIdsByOwnerId(OwnerInstanceId, true, EquipmentIds);
+	// if (IsValid(StorageManager))
+	// {
+	// 	TArray<FGuid> EquipmentIds;
+	// 	StorageManager->GetEquipmentIdsByOwnerId(OwnerInstanceId, true, EquipmentIds);
 
-		UFilterCriterion_Guid* AssetFilter = EquipmentCollection->GetCriterionByName<UFilterCriterion_Guid>(FAssetFilterProperty::InstanceId);
-		if (IsValid(AssetFilter))
-		{
-			AssetFilter->Included.Empty();
-			AssetFilter->Included.Append(EquipmentIds);
-		}
+	// 	UFilterCriterion_Guid* AssetFilter = EquipmentCollection->GetCriterionByName<UFilterCriterion_Guid>(FAssetFilterProperty::InstanceId);
+	// 	if (IsValid(AssetFilter))
+	// 	{
+	// 		AssetFilter->Included.Empty();
+	// 		AssetFilter->Included.Append(EquipmentIds);
+	// 	}
 
-		EquipmentCollection->DisplayEntries();
-	}
+	// 	EquipmentCollection->DisplayEntries();
+	// }
 }
 
 void UEquipmentDashboardUI::NativeConstruct()

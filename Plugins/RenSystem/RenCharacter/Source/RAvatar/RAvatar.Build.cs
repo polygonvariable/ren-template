@@ -34,6 +34,7 @@ public class RAvatar : ModuleRules
                 "CAssetInstance",
                 "CGamedataAscension",
                 "RCharacter",
+                "CFilter",
             }
 			);
 			
@@ -50,7 +51,6 @@ public class RAvatar : ModuleRules
                 "GameplayTags",
                 "CAsset",
                 "CLibrary",
-                "CFilter",
                 "CGameplayBase",
             }
 			);

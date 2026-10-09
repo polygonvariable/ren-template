@@ -6,6 +6,7 @@
 #include "AscensionInstanceProvider.h"
 #include "Core/Interface/AssetInstanceCollection.h"
 #include "Core/StorageManager.h"
+#include "FilterGroup.h"
 
 // Generated Headers
 #include "InventoryStorageManager.generated.h"
@@ -16,7 +17,6 @@
 // Forward Declarations
 class UAssetManager;
 class UInventoryStorage;
-class UFilterCriterion;
 struct FInventoryQueryRule;
 struct FInventorySortEntry;
 struct FInventoryStack;
@@ -41,7 +41,7 @@ public:
 	REN_API const FInventoryInstance* GetInstance(const FPrimaryAssetId& AssetId) const;
 	REN_API const FInventoryInstance* GetInstanceById(const FPrimaryAssetId& AssetId, const FGuid& InstanceId) const;
 
-	REN_API void QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TArray<FInventorySortEntry>& OutSortedItems);
+	REN_API void QueryInstances(const TInstancedStruct<FFilterCriterion>& FilterCriterion, const FInventoryQueryRule& QueryRule, TArray<FInventorySortEntry>& OutSortedItems);
 
 	// ~ IAssetInstanceCollection
 	REN_API virtual bool AddInstance(const FPrimaryAssetId& AssetId, int Quantity) override;
@@ -76,8 +76,8 @@ protected:
 	FInventoryInstance* GetMutableItemById(const FPrimaryAssetId& AssetId, const FGuid& ItemId);
 
 	void HandleItemSorting(TArray<FInventorySortEntry>& SortedItems, const FInventoryQueryRule& QueryRule) const;
-	void QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
-	void QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
+	void QueryAssetItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
+	void QueryInstanceItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const;
 
 	const FInventoryStack* GetStack(const FPrimaryAssetId& AssetId) const;
 	FInventoryStack* FindOrAddStack(const FPrimaryAssetId& AssetId);

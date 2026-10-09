@@ -30,6 +30,7 @@ public class RAvatarAscensionUI : ModuleRules
                 "UMG",
 				"CAssetUI",
                 "CGamedataAscension",
+                "CFilter",
             }
 			);
 			
@@ -43,7 +44,6 @@ public class RAvatarAscensionUI : ModuleRules
 				"SlateCore",
 				// ... add private dependencies that you statically link with here ...
                 "CAsset",
-                "CFilter",
                 "CLibrary",
                 "CGamedataStorage",
                 "CGamedataAscension",

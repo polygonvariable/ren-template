@@ -7,10 +7,8 @@
 #include "Components/ListView.h"
 
 // Project Headers
-#include "FilterGroup.h"
 #include "Log/LogMacro.h"
 #include "Widget/AssetEntry.h"
-
 
 
 void UAssetCollectionUI::InitializeCollection()
@@ -20,7 +18,7 @@ void UAssetCollectionUI::InitializeCollection()
 
 void UAssetCollectionUI::DisplayEntries()
 {
-
+	
 }
 
 void UAssetCollectionUI::ClearEntries(bool bRegenerate)
@@ -79,28 +77,6 @@ void UAssetCollectionUI::ClearSubDetails()
 {
 	SubDetails.Empty();
 }
-
-
-
-UFilterCriterion* UAssetCollectionUI::GetCriterionByName(FName Name) const
-{
-	if (!IsValid(FilterRule))
-	{
-		return nullptr;
-	}
-	return FilterRule->GetCriterionByName(Name);
-}
-
-const UFilterCriterion* UAssetCollectionUI::GetFilterRoot() const
-{
-	UFilterCriterion* CriterionRoot = nullptr;
-	if (IsValid(FilterRule))
-	{
-		return FilterRule->CriterionRoot;
-	}
-	return CriterionRoot;
-}
-
 
 
 void UAssetCollectionUI::AutoSelectCaching()

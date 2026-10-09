@@ -7,18 +7,18 @@
 #include "FilterContext.h"
 
 
-FName UFilterCriterion_Leaf::GetPropertyName() const
+FName FFilterCriterion_Leaf::GetPropertyName() const
 {
 	return PropertyName;
 }
 
-bool UFilterCriterion_Leaf::GetIsLeaf() const
+bool FFilterCriterion_Leaf::GetIsLeaf() const
 {
 	return true;
 }
 
 
-bool UFilterCriterion_Text::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Text::Evaluate(const FFilterContext& Context) const
 {
 	FName Value;
 	if (!Context.GetValue(PropertyName, Value))
@@ -28,14 +28,14 @@ bool UFilterCriterion_Text::Evaluate(const FFilterContext& Context) const
 	return Included.Contains(Value);
 }
 
-void UFilterCriterion_Text::ClearEvaluationData()
+void FFilterCriterion_Text::ClearEvaluationData()
 {
 	Included.Empty();
 }
 
-void UFilterCriterion_Text::CopyEvaluationData(const UFilterCriterion* Other)
+void FFilterCriterion_Text::CopyEvaluationData(const TInstancedStruct<FFilterCriterion>& Other)
 {
-	const UFilterCriterion_Text* OtherCriterion = Cast<UFilterCriterion_Text>(Other);
+	const FFilterCriterion_Text* OtherCriterion = Other.GetPtr<FFilterCriterion_Text>();
 	if (OtherCriterion)
 	{
 		Included.Append(OtherCriterion->Included);
@@ -43,7 +43,7 @@ void UFilterCriterion_Text::CopyEvaluationData(const UFilterCriterion* Other)
 }
 
 
-bool UFilterCriterion_Guid::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Guid::Evaluate(const FFilterContext& Context) const
 {
 	FName Value;
 	if (!Context.GetValue(PropertyName, Value))
@@ -53,14 +53,14 @@ bool UFilterCriterion_Guid::Evaluate(const FFilterContext& Context) const
 	return Included.Contains(FGuid(Value.ToString()));
 }
 
-void UFilterCriterion_Guid::ClearEvaluationData()
+void FFilterCriterion_Guid::ClearEvaluationData()
 {
 	Included.Empty();
 }
 
-void UFilterCriterion_Guid::CopyEvaluationData(const UFilterCriterion* Other)
+void FFilterCriterion_Guid::CopyEvaluationData(const TInstancedStruct<FFilterCriterion>& Other)
 {
-	const UFilterCriterion_Guid* OtherCriterion = Cast<UFilterCriterion_Guid>(Other);
+	const FFilterCriterion_Guid* OtherCriterion = Other.GetPtr<FFilterCriterion_Guid>();
 	if (OtherCriterion)
 	{
 		Included.Append(OtherCriterion->Included);
@@ -68,7 +68,7 @@ void UFilterCriterion_Guid::CopyEvaluationData(const UFilterCriterion* Other)
 }
 
 
-bool UFilterCriterion_Asset::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Asset::Evaluate(const FFilterContext& Context) const
 {
 	FPrimaryAssetId Value;
 	if (!Context.GetValue(PropertyName, Value))
@@ -78,14 +78,14 @@ bool UFilterCriterion_Asset::Evaluate(const FFilterContext& Context) const
 	return Included.Contains(Value);
 }
 
-void UFilterCriterion_Asset::ClearEvaluationData()
+void FFilterCriterion_Asset::ClearEvaluationData()
 {
 	Included.Empty();
 }
 
-void UFilterCriterion_Asset::CopyEvaluationData(const UFilterCriterion* Other)
+void FFilterCriterion_Asset::CopyEvaluationData(const TInstancedStruct<FFilterCriterion>& Other)
 {
-	const UFilterCriterion_Asset* OtherCriterion = Cast<UFilterCriterion_Asset>(Other);
+	const FFilterCriterion_Asset* OtherCriterion = Other.GetPtr<FFilterCriterion_Asset>();
 	if (OtherCriterion)
 	{
 		Included.Append(OtherCriterion->Included);
@@ -93,7 +93,7 @@ void UFilterCriterion_Asset::CopyEvaluationData(const UFilterCriterion* Other)
 }
 
 
-bool UFilterCriterion_Integer::Evaluate(const FFilterContext& Context) const
+bool FFilterCriterion_Integer::Evaluate(const FFilterContext& Context) const
 {
 	int Value;
 	if (!Context.GetValue(PropertyName, Value))
@@ -111,16 +111,16 @@ bool UFilterCriterion_Integer::Evaluate(const FFilterContext& Context) const
 	}
 }
 
-void UFilterCriterion_Integer::ClearEvaluationData()
+void FFilterCriterion_Integer::ClearEvaluationData()
 {
 	Min = 0;
 	Max = 0;
 	bEnableStrictMode = false;
 }
 
-void UFilterCriterion_Integer::CopyEvaluationData(const UFilterCriterion* Other)
+void FFilterCriterion_Integer::CopyEvaluationData(const TInstancedStruct<FFilterCriterion>& Other)
 {
-	const UFilterCriterion_Integer* OtherCriterion = Cast<UFilterCriterion_Integer>(Other);
+	const FFilterCriterion_Integer* OtherCriterion = Other.GetPtr<FFilterCriterion_Integer>();
 	if (OtherCriterion)
 	{
 		Min = OtherCriterion->Min;

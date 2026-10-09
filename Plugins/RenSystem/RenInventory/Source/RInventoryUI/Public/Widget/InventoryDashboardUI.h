@@ -11,7 +11,7 @@
 // Forward Declarations
 class UAssetCollectionUI;
 class UAssetDetailUI;
-class UAssetFilterCollectionUI;
+//class UAssetFilterCollectionUI;
 class UAssetEntry;
 class UInventoryAsset;
 

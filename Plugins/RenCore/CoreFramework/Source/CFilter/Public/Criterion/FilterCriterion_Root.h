@@ -2,34 +2,37 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
 // Project Headers
 #include "Core/QueryType.h"
+#include "FilterContext.h"
 #include "FilterCriterion.h"
 
 // Generated Headers
 #include "FilterCriterion_Root.generated.h"
 
-// Forward Declarations
+// Forward Declaration
 struct FFilterContext;
 
 
 /**
  *
  */
-UCLASS(MinimalAPI, DisplayName = "Filter (AND/OR)")
-class UFilterCriterion_Group : public UFilterCriterion
+USTRUCT()
+struct FFilterCriterion_Group : public FFilterCriterion
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	EFilterOperator Operator = EFilterOperator::And;
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TArray<TObjectPtr<UFilterCriterion>> Criteria;
-
+	UPROPERTY(EditAnywhere)
+	TArray<TInstancedStruct<FFilterCriterion>> Criteria;
 
 	// ~ UFilterCriterion
 	virtual bool Evaluate(const FFilterContext& Context) const override;
@@ -41,21 +44,20 @@ public:
 /**
  *
  */
-UCLASS(MinimalAPI, DisplayName = "Filter (NOT)")
-class UFilterCriterion_Not : public UFilterCriterion
+USTRUCT()
+struct FFilterCriterion_Not : public FFilterCriterion
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TObjectPtr<UFilterCriterion> Negate;
-
+	UPROPERTY(EditAnywhere)
+	TInstancedStruct<FFilterCriterion> Negate;
 
 	// ~ UFilterCriterion
 	virtual bool Evaluate(const FFilterContext& Context) const override;
 	// ~ End of UFilterCriterion
-
 };
+
 

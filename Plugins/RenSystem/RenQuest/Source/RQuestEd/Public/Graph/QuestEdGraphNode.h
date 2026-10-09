@@ -23,6 +23,7 @@ class UQuestTask_ExternalTask;
 class UQuestTask_SubtaskGate;
 class UQuestTask_EnsureGlobalTask;
 class UQuestTask_CheckStorage;
+class UQuestTask_WidgetGate;
 
 /*
  *
@@ -147,6 +148,30 @@ public:
 
 };
 
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_WidgetGate : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_WidgetGate();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
 
 
 

@@ -299,7 +299,7 @@ const FInventoryInstance* UInventoryStorageManager::GetInstanceById(const FPrima
 
 
 
-void UInventoryStorageManager::QueryInstances(const UFilterCriterion* FilterCriterion, const FInventoryQueryRule& QueryRule, TArray<FInventorySortEntry>& OutSortedItems)
+void UInventoryStorageManager::QueryInstances(const TInstancedStruct<FFilterCriterion>& FilterCriterion, const FInventoryQueryRule& QueryRule, TArray<FInventorySortEntry>& OutSortedItems)
 {
 	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
 	if (!IsValid(AssetManager))
@@ -406,7 +406,7 @@ void UInventoryStorageManager::HandleItemSorting(TArray<FInventorySortEntry>& So
 	}
 }
 
-void UInventoryStorageManager::QueryAssetItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
+void UInventoryStorageManager::QueryAssetItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
 {
 	TArray<FPrimaryAssetId> AssetIds;
 	if (!AssetManager->GetPrimaryAssetIdList(FInventoryPrimaryAsset::GetAssetType(), AssetIds))
@@ -432,14 +432,15 @@ void UInventoryStorageManager::QueryAssetItems(UAssetManager* AssetManager, cons
 		FInventoryPrimaryAsset::GetType(AssetData, ItemType);
 		FInventoryPrimaryAsset::GetRarity(AssetData, ItemRarity);
 
-		if (IsValid(FilterCriterion))
+		const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+		if (Criterion)
 		{
 			FFilterContext Context;
 			Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
 			Context.SetValue(FInventoryFilterProperty::ItemType, ItemType);
 			Context.SetValue(FInventoryFilterProperty::ItemRarity, ItemRarity);
 
-			if (!FilterCriterion->Evaluate(Context))
+			if (!Criterion->Evaluate(Context))
 			{
 				continue;
 			}
@@ -451,7 +452,7 @@ void UInventoryStorageManager::QueryAssetItems(UAssetManager* AssetManager, cons
 	}
 }
 
-void UInventoryStorageManager::QueryInstanceItems(UAssetManager* AssetManager, const UFilterCriterion* FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
+void UInventoryStorageManager::QueryInstanceItems(UAssetManager* AssetManager, const TInstancedStruct<FFilterCriterion>& FilterCriterion, TArray<FInventorySortEntry>& OutSortedItems) const
 {
 	UAssetInstanceRelationSubsystem* RelationSubsystem = UAssetInstanceRelationSubsystem::Get(GetWorld());
 	if (!IsValid(LocalStorage) || !IsValid(RelationSubsystem))
@@ -493,7 +494,9 @@ void UInventoryStorageManager::QueryInstanceItems(UAssetManager* AssetManager, c
 		for (const FInventoryInstance& Item : ItemList)
 		{
 			int ItemQuantity = Item.Quantity;
-			if (IsValid(FilterCriterion))
+
+			const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+			if (Criterion)
 			{
 				FFilterContext Context;
 				Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
@@ -502,7 +505,7 @@ void UInventoryStorageManager::QueryInstanceItems(UAssetManager* AssetManager, c
 				Context.SetValue(FInventoryFilterProperty::ItemId, FName(*Item.ItemId.ToString()));
 				Context.SetValue(FInventoryFilterProperty::ItemQuantity, ItemQuantity);
 
-				if (!FilterCriterion->Evaluate(Context))
+				if (!Criterion->Evaluate(Context))
 				{
 					continue;
 				}
@@ -513,6 +516,10 @@ void UInventoryStorageManager::QueryInstanceItems(UAssetManager* AssetManager, c
 		}
 	}
 }
+
+
+
+
 
 
 const FInventoryStack* UInventoryStorageManager::GetStack(const FPrimaryAssetId& AssetId) const

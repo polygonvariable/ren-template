@@ -8,7 +8,7 @@
 #include "Widget/AssetFilterUI.h"
 
 // Generated Headers
-#include "InventoryFilterUI.generated.h"
+//#include "InventoryFilterUI.generated.h"
 
 // Forward Declarations
 class UFragmentedDataAsset;
@@ -17,17 +17,17 @@ class UFragmentedDataAsset;
 /**
  * 
  */
-UCLASS(Abstract)
-class UInventoryFilterUI : public UAssetFilterUI
-{
-
-	GENERATED_BODY()
-
-protected:
-
-	// ~ UAssetFilterUI
-	// virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
-	// ~ End of UAssetFilterUI
-
-};
+//UCLASS(Abstract)
+//class UInventoryFilterUI : public UAssetFilterUI
+//{
+//
+//	GENERATED_BODY()
+//
+//protected:
+//
+//	// ~ UAssetFilterUI
+//	// virtual void SetPrimaryDetail(const UFragmentedDataAsset* Asset) override;
+//	// ~ End of UAssetFilterUI
+//
+//};
 

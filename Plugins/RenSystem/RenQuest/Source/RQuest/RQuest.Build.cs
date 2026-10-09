@@ -37,6 +37,10 @@ public class RQuest : ModuleRules
                 "CGamedataStorage",
                 "CWorlddataRegion",
                 "CGameplayContext",
+				"CAssetInstance",
+                "CAsset",
+                "CAssetUI",
+                "CFilter",
             }
 			);
 			
@@ -52,6 +56,7 @@ public class RQuest : ModuleRules
                 "CLibrary",
 				"CPool",
                 "CBroadcast",
+                "CGameplayMode",
             }
 			);
 		

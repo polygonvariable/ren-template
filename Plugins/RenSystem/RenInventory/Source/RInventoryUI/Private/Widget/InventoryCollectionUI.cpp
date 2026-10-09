@@ -35,7 +35,7 @@ void UInventoryCollectionUI::DisplayEntries()
 	}
 
 	TArray<FInventorySortEntry> SortedItems;
-	StorageManager->QueryInstances(GetFilterRoot(), QueryRule, SortedItems);
+	StorageManager->QueryInstances(FilterRule.CriterionRoot, QueryRule, SortedItems);
 	for (const FInventorySortEntry& SortItem : SortedItems)
 	{
 		UInventoryEntry* Entry = GetEntryFromPool<UInventoryEntry>();

@@ -6,14 +6,15 @@
 #include "Blueprint/UserWidget.h"
 #include "StructUtils/InstancedStruct.h"
 
+// Project Headers
+#include "FilterGroup.h"
+
 // Generated Headers
 #include "AssetCollectionUI.generated.h"
 
 // Forward Declarations
 class UListView;
 class UAssetEntry;
-class UFilterGroup;
-class UFilterCriterion;
 
 
 /**
@@ -36,9 +37,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ExposeOnSpawn = true))
 	FName PrimarySourceId = NAME_None;
 
+	UPROPERTY(EditAnywhere)
+	FFilterGroup FilterRule;
 
+
+	UFUNCTION(BlueprintCallable)
 	CASSETUI_API virtual void InitializeCollection();
 
+	UFUNCTION(BlueprintCallable)
 	CASSETUI_API virtual void DisplayEntries();
 	CASSETUI_API virtual void ClearEntries(bool bRegenerate);
 	CASSETUI_API virtual void RefreshEntries();
@@ -54,14 +60,6 @@ public:
 	CASSETUI_API void RemoveSubDetails(const FPrimaryAssetId& Id);
 	CASSETUI_API void ClearSubDetails();
 
-	CASSETUI_API UFilterCriterion* GetCriterionByName(FName Name) const;
-
-	template<typename T>
-	T* GetCriterionByName(FName Name)
-	{
-		return Cast<T>(GetCriterionByName(Name));
-	}
-
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -76,17 +74,12 @@ protected:
 	UPROPERTY()
 	TMap<FPrimaryAssetId, FInstancedStruct> SubDetails;
 
-	UPROPERTY(EditAnywhere, Instanced, BlueprintReadWrite)
-	TObjectPtr<UFilterGroup> FilterRule = nullptr;
-
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))
 	TObjectPtr<UListView> EntryList = nullptr;
 
 	UPROPERTY()
 	TArray<TObjectPtr<UAssetEntry>> EntryPool;
 
-
-	CASSETUI_API const UFilterCriterion* GetFilterRoot() const;
 
 	CASSETUI_API virtual void AutoSelectCaching();
 	CASSETUI_API virtual bool AutoSelectCondition(UAssetEntry* Item) const;

@@ -7,47 +7,44 @@
 #include "Criterion/FilterCriterion_Root.h"
 
 
-UFilterCriterion* UFilterGroup::FindCriterionByName(UFilterCriterion* Criterion, const FName& PropertyName) const
+TInstancedStruct<FFilterCriterion>* FFilterGroup::GetCriterionByName(FName PropertyName)
 {
-	if (!Criterion)
+	if (!CriterionRoot.IsValid())
+	{
+		return nullptr;
+	}
+	return FindCriterionByName(CriterionRoot, PropertyName);
+}
+
+TInstancedStruct<FFilterCriterion>* FFilterGroup::FindCriterionByName(TInstancedStruct<FFilterCriterion>& Criterion, const FName& PropertyName)
+{
+	FFilterCriterion* BaseCriterion = Criterion.GetMutablePtr();
+	if (!BaseCriterion)
 	{
 		return nullptr;
 	}
 
-	if (Criterion->GetIsLeaf() && Criterion->GetPropertyName() == PropertyName)
+	if (BaseCriterion->GetIsLeaf() && BaseCriterion->GetPropertyName().IsEqual(PropertyName))
 	{
-		return Criterion;
+		return &Criterion;
 	}
 
-	UFilterCriterion_Group* GroupCriterion = Cast<UFilterCriterion_Group>(Criterion);
-	if (IsValid(GroupCriterion))
+	FFilterCriterion_Group* GroupCriterion = Criterion.GetMutablePtr<FFilterCriterion_Group>();
+	if (GroupCriterion)
 	{
-		TArray<UFilterCriterion*> Criteria = GroupCriterion->Criteria;
-		for (UFilterCriterion* Child : Criteria)
+		TArray<TInstancedStruct<FFilterCriterion>>& Criteria = GroupCriterion->Criteria;
+		for (TInstancedStruct<FFilterCriterion>& Child : Criteria)
 		{
-			UFilterCriterion* Found = FindCriterionByName(Child, PropertyName);
-			if (IsValid(Found))
-			{
-				return Found;
-			}
+			return FindCriterionByName(Child, PropertyName);
 		}
 	}
 
-	UFilterCriterion_Not* NotCriterion = Cast<UFilterCriterion_Not>(Criterion);
-	if (IsValid(NotCriterion))
+	FFilterCriterion_Not* NotCriterion = Criterion.GetMutablePtr<FFilterCriterion_Not>();
+	if (NotCriterion)
 	{
 		return FindCriterionByName(NotCriterion->Negate, PropertyName);
 	}
 
 	return nullptr;
-}
-
-UFilterCriterion* UFilterGroup::GetCriterionByName(FName PropertyName) const
-{
-	if (!CriterionRoot)
-	{
-		return nullptr;
-	}
-	return FindCriterionByName(CriterionRoot, PropertyName);
 }
 

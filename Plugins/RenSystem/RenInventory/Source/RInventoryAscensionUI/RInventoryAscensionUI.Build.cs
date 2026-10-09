@@ -29,6 +29,7 @@ public class RInventoryAscensionUI : ModuleRules
 				// ... add other public dependencies that you statically link with here ...
                 "UMG",
 				"CAssetUI",
+                "CFilter",
             }
 			);
 			
@@ -44,7 +45,6 @@ public class RInventoryAscensionUI : ModuleRules
                 "CAsset",
                 "CGamedataAscension",
                 "RCoreDelegate",
-                "CFilter",
                 "CLibrary",
                 "CGamedataStorage",
                 "RInventory",
