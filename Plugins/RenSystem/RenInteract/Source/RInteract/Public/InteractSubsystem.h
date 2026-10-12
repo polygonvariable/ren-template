@@ -13,6 +13,7 @@
 
 // Forward Declaration
 class UInteractComponent;
+class IGameplayModeProvider;
 
 
 /**
@@ -40,13 +41,15 @@ public:
 
 protected:
 
-	bool bSetMode = false;
-	TMap<FGuid, TPair<TWeakObjectPtr<UInteractComponent>, FInteractItem>> RegisteredItems;
+	IGameplayModeProvider* GameplayMode;
+
+	TMap<FGuid, TWeakObjectPtr<UInteractComponent>> RegisteredItems;
 	
 	// ~ UWorldSubsystem
 	virtual bool DoesSupportWorldType(EWorldType::Type WorldType) const override;
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
-	virtual void Deinitialize() override;
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
+	virtual void OnWorldEndPlay(UWorld& InWorld) override;
 	// ~ End of UWorldSubsystem
 
 public:

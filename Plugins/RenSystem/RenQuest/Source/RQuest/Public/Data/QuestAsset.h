@@ -8,7 +8,9 @@
 // Generated Headers
 #include "QuestAsset.generated.h"
 
+// Forward Declaration
 class UQuestGlobalTask;
+
 
 /**
  * 
@@ -27,11 +29,16 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	FText Summary;
 
+
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")
-	bool bCanCancel = false;
+	bool bPushInHUD = true;
+
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	bool bAutoFocus = false;
 
 	UPROPERTY(EditAnywhere, Instanced, Category = "Quest Global Task")
 	TArray<TObjectPtr<UQuestGlobalTask>> GlobalTasks;
+
 
 	// ~ UEventflowAsset
 	virtual UEventflowGlobalTask* GetGlobalTask(FName TaskName) const override;

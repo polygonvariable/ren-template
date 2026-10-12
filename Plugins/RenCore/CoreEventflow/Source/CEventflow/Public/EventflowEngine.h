@@ -6,9 +6,9 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
+#include "Core/EventflowIO.h"
 #include "Core/PoolCollection.h"
 #include "StateMachine/FiniteStateMachine.h"
-#include "Type/EventflowEntry.h"
 
 // Generated Headers
 #include "EventflowEngine.generated.h"
@@ -34,7 +34,7 @@ class CEVENTFLOW_API UEventflowEngine : public UFiniteStateMachine
 
 public:
 
-	virtual void InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData);
+	virtual void InitializeData(const FPrimaryAssetId& InAssetId, const TInstancedStruct<FEventflowEntryData>& InEntryData);
 
 	UEventflowNodeTask* GetNodeTask() const;
 
@@ -60,6 +60,7 @@ public:
 		return Cast<T>(GetAsset());
 	}
 
+	const TInstancedStruct<FEventflowEntryData>& GetEntryData() const;
 	const TInstancedStruct<FEventflowReturnData>& GetReturnData() const;
 
 	// ~ UObject
@@ -104,7 +105,7 @@ protected:
 
 private:
 
-	FEventflowEntryData _EntryData;
+	TInstancedStruct<FEventflowEntryData> _EntryData;
 	TInstancedStruct<FEventflowReturnData> _ReturnData;
 
 	UPROPERTY()

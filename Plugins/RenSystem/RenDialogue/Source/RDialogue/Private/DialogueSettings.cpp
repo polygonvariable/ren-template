@@ -8,7 +8,7 @@ UDialogueSettings::UDialogueSettings(const FObjectInitializer& ObjectInitializer
 {
 	CategoryName = TEXT("Ren Project");
 
-	DialogueMode = TEXT("Dialogue");
+	DialogueMode = TEXT("DialogueUI");
 }
 
 const UDialogueSettings* UDialogueSettings::Get()

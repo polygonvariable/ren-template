@@ -3,6 +3,7 @@
 #pragma once
 
 // Project Headers
+#include "Core/IQuestRuntimeDataProvider.h"
 #include "Task/EventflowSubTask.h"
 
 // Generated Headers
@@ -13,10 +14,8 @@
  *
  */
 UCLASS(Abstract, MinimalAPI)
-class UQuestSubTask : public UEventflowSubTask
+class UQuestSubTask : public UEventflowSubTask, public IQuestRuntimeDataProvider
 {
-
 	GENERATED_BODY()
-
 };
 

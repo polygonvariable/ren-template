@@ -37,6 +37,7 @@ public:
 	// ~ IGameplayModeProvider
 	virtual void PushGameplayMode(FName Mode) override;
 	virtual void PopGameplayMode(FName Mode) override;
+	virtual void PopGameplayModeWithTag(const FGameplayTag& Tag) override;
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) override;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) override;
 	RGAMEPLAYMODE_API virtual const FGameplayTagContainer& GetGameplayModeTags() const override;

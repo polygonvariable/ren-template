@@ -4,7 +4,7 @@
 #include "Data/QuestAsset.h"
 
 // Project Headers
-#include "System/Flow/Task/QuestPrimaryTask.h"
+#include "System/Flow/Task/QuestGlobalTask.h"
 
 
 #if WITH_EDITORONLY_DATA

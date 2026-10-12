@@ -29,12 +29,12 @@ class UDialogueSubsystem : public UWorldSubsystem, public IEventflowEngineProvid
 public:
 
 	// ~ IEventflowEngineProvider
-	virtual void StartEventflow(const FPrimaryAssetId& AssetId) override;
+	virtual void StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData) override;
 	virtual void StopEventflow(const FPrimaryAssetId& AssetId) override;
 	// ~ End of IEventflowEngineProvider
 
 	UFUNCTION(BlueprintCallable)
-	void StartDialogue(const FPrimaryAssetId& AssetId);
+	void StartDialogue(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData);
 
 #if UE_BUILD_DEVELOPMENT
 	RDIALOGUE_API const TMap<FPrimaryAssetId, TObjectPtr<UDialogueEngine>>& GetEditorDialogues() const;

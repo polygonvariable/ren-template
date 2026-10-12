@@ -33,6 +33,7 @@ public class RQuest : ModuleRules
                 "CEventflow",
                 "CLuau",
                 "CDataManager",
+                "CGamedataWidget",
                 "CGamedataComponent",
                 "CGamedataStorage",
                 "CWorlddataRegion",
@@ -41,6 +42,8 @@ public class RQuest : ModuleRules
                 "CAsset",
                 "CAssetUI",
                 "CFilter",
+                "InputCore",
+                "EnhancedInput",
             }
 			);
 			

@@ -3,6 +3,7 @@
 #pragma once
 
 // Engine Headers
+#include "StructUtils/InstancedStruct.h"
 #include "UObject/Interface.h"
 
 // Generated Headers
@@ -10,6 +11,7 @@
 
 // Forward Declarations
 class UEventflowEngine;
+struct FEventflowEntryData;
 
 // Delegate Declarations
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnEvenflowEngineAdded, FPrimaryAssetId /* AssetId */, UEventflowEngine* /* Engine */);
@@ -42,7 +44,7 @@ public:
 		return OnEngineRemoved;
 	}
 
-	virtual void StartEventflow(const FPrimaryAssetId& AssetId) = 0;
+	virtual void StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData) = 0;
 	virtual void StopEventflow(const FPrimaryAssetId& AssetId) = 0;
 
 protected:

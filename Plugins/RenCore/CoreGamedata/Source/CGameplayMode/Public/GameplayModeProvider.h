@@ -42,6 +42,7 @@ public:
 
 	virtual void PushGameplayMode(FName Mode) = 0;
 	virtual void PopGameplayMode(FName Mode) = 0;
+	virtual void PopGameplayModeWithTag(const FGameplayTag& Tag) = 0;
 
 	virtual void RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback) = 0;
 	virtual void UnregisterTagNotify(FGameplayTag Tag, UObject* Target) = 0;

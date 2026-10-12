@@ -3,7 +3,7 @@
 #pragma once
 
 // Project Headers
-#include "Type/EventflowGraphData.h"
+#include "Core/EventflowGraphData.h"
 
 // Generated Headers
 #include "EventflowAsset.generated.h"

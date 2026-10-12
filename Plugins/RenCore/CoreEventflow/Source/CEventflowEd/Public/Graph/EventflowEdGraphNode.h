@@ -7,7 +7,7 @@
 
 // Project Headers
 #include "LuauSourceCode.h"
-#include "Type/EventflowTransition.h"
+#include "Core/EventflowTransitionData.h"
 
 // Generated Headers
 #include "EventflowEdGraphNode.generated.h"

@@ -144,7 +144,7 @@ void ACharacterBase::CallOnCharacterRevived()
 
 void ACharacterBase::InitializeComponents()
 {
-	TArray<FComponentDefinition>& Components = CharacterData.Components;
+	TArray<TInstancedStruct<FComponentTemplateDefinition>>& Components = CharacterData.Components;
 	if (Components.Num() > 0)
 	{
 		RegisterComponents(Components);
@@ -159,7 +159,7 @@ void ACharacterBase::InitializeComponents()
 	}
 }
 
-void ACharacterBase::RegisterComponents(TArray<FComponentDefinition>& Components)
+void ACharacterBase::RegisterComponents(TArray<TInstancedStruct<FComponentTemplateDefinition>>& Components)
 {
 	FComponentTemplateLibrary::RegisterComponents(this, Components, RuntimeComponents);
 }

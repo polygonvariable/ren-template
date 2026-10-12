@@ -12,7 +12,8 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "Task/EventflowSubTask.h"
-#include "Type/EventflowGraphData.h"
+#include "Core/EventflowGraphData.h"
+#include "Core/EventflowIO.h"
 
 
 void UEventflowNodeTask::InitializeData(const FGuid& NodeId, const FEventflowNode* Node)

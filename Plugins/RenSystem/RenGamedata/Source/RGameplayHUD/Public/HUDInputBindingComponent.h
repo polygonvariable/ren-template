@@ -43,6 +43,9 @@ public:
 
 protected:
 
+	UPROPERTY(EditAnywhere, meta = (Categories = "Gameplay"))
+	FGameplayTag DashboardTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.UI.Dashboard"));
+
 	UPROPERTY(EditAnywhere)
 	FName HUDInputMode;
 
@@ -64,6 +67,7 @@ protected:
 
 	UFUNCTION()
 	void HandleOnWidgetVisibilityChanged(ESlateVisibility Visiblity);
+	void HandleOnDashboardTagChanged(bool bAdded);
 	// ~ End of Binding
 
 private:

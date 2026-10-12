@@ -8,8 +8,6 @@
 // Generated Headers
 #include "QuestStorageManager.generated.h"
 
-// Module Macros
-#define REN_API RENEMY_API
 
 // Forward Declarations
 class UQuestStorage;
@@ -42,8 +40,4 @@ protected:
 	TObjectPtr<UQuestStorage> LocalStorage = nullptr;
 
 };
-
-
-// Module Macros
-#undef REN_API
 

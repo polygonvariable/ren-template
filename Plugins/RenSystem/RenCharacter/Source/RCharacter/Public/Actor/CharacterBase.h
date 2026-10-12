@@ -110,7 +110,7 @@ protected:
 
 
 	void InitializeComponents();
-	void RegisterComponents(TArray<FComponentDefinition>& Components);
+	void RegisterComponents(TArray<TInstancedStruct<FComponentTemplateDefinition>>& Components);
 	void ActivateComponents();
 
 

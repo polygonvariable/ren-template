@@ -29,6 +29,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FName DisplayName;
 
+
 	virtual void CopyFromAsset(const UEventflowTask* Template);
 
 	// ~ UObject

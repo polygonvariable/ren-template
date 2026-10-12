@@ -40,6 +40,11 @@ void UGameplayModeSubsystem::PushGameplayMode(FName Mode)
 		return;
 	}
 
+	if (FoundRow->bAllowPopWithTag)
+	{
+		PopGameplayModeWithTag(FoundRow->PopWithTag);
+	}
+
 	GameplayModeStack.Push(Mode);
 
 	const FGameplayTagContainer OldTags = GameplayModeTag;
@@ -75,6 +80,7 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 
 	if (!GameplayModeStack.Last().IsEqual(Mode))
 	{
+		GameplayModeStack.Remove(Mode);
 		return;
 	}
 
@@ -117,6 +123,15 @@ void UGameplayModeSubsystem::PopGameplayMode(FName Mode)
 		BroadcastTagChange(Tag, true);
 	}
 }
+
+void UGameplayModeSubsystem::PopGameplayModeWithTag(const FGameplayTag& Tag)
+{
+	if (Tag.IsValid() && GameplayModeTag.HasTag(Tag))
+	{
+		PopGameplayMode(GameplayModeStack.Last());
+	}
+}
+
 
 void UGameplayModeSubsystem::RegisterTagNotify(FGameplayTag Tag, FOnGameplayModeTagChanged::FDelegate&& Callback)
 {

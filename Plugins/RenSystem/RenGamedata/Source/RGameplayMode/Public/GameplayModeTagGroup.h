@@ -21,10 +21,16 @@ struct FGameplayModeTagGroup : public FTableRowBase
 
 public:
 
-	UPROPERTY(EditDefaultsOnly, meta = (Categories = "Gameplay"))
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Mode", meta = (Categories = "Gameplay"))
 	FGameplayTagContainer ActivateTags;
 
-	UPROPERTY(EditDefaultsOnly, meta = (Categories = "InputMode"))
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Mode")
+	bool bAllowPopWithTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Mode", meta = (Categories = "Gameplay"))
+	FGameplayTag PopWithTag;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input Mode", meta = (Categories = "InputMode"))
 	FGameplayTag InputModeTag;
 
 };

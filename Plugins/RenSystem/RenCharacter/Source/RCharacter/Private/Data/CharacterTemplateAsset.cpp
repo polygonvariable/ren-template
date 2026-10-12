@@ -21,15 +21,6 @@ EDataValidationResult UCharacterTemplateAsset::IsDataValid(FDataValidationContex
 		return EDataValidationResult::Invalid;
 	}
 
-	for (const FComponentDefinition& Definition : Components)
-	{
-		if (!Definition.IsValid())
-		{
-			Context.AddError(FText::FromString("Invalid component definition"));
-			return EDataValidationResult::Invalid;
-		}
-	}
-
 	return Result;
 }
 #endif

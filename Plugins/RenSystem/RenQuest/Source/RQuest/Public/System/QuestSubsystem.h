@@ -18,6 +18,7 @@ class UQuestEngine;
 class AQuestActor;
 
 
+
 /**
  * 
  */
@@ -29,15 +30,26 @@ class UQuestSubsystem : public UWorldSubsystem, public IEventflowEngineProvider
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	void StartQuest(const FPrimaryAssetId& AssetId);
+	DECLARE_MULTICAST_DELEGATE(FOnQuestDataChanged);
+	FOnQuestDataChanged OnQuestDataChanged;
+
+	DECLARE_MULTICAST_DELEGATE(FOnQuestFocusChanged);
+	FOnQuestFocusChanged OnQuestFocusChanged;
 
 	UFUNCTION(BlueprintCallable)
-	void CancelQuest(const FPrimaryAssetId& AssetId);
+	void StartQuest(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData);
 
+	void FocusQuest(FPrimaryAssetId AssetId);
+	void CancelFocusedTask();
+	void CancelQuestTask(FPrimaryAssetId AssetId);
+	void CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive);
+
+	UQuestEngine* GetFocusedQuest() const;
+	const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetQuests() const;
+	void GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& OutQuests) const;
 
 	// ~ IEventflowEngineProvider
-	virtual void StartEventflow(const FPrimaryAssetId& AssetId) override;
+	virtual void StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData) override;
 	virtual void StopEventflow(const FPrimaryAssetId& AssetId) override;
 	// ~ End of IEventflowEngineProvider
 
@@ -45,6 +57,9 @@ protected:
 
 	UPROPERTY()
 	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> Quests;
+
+	UPROPERTY()
+	TWeakObjectPtr<UQuestEngine> FocusedQuest;
 
 
 	UQuestEngine* GetQuestEngine(const FPrimaryAssetId& AssetId) const;

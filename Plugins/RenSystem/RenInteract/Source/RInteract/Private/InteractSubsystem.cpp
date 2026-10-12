@@ -6,6 +6,7 @@
 // Project Headers
 #include "GameplayModeProvider.h"
 #include "InteractComponent.h"
+#include "InteractSettings.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "SubsystemLibrary.h"
@@ -19,17 +20,13 @@ void UInteractSubsystem::RegisterItem(const FGuid& InteractId, UInteractComponen
 		return;
 	}
 
-	RegisteredItems.Add(InteractId, TPair<TWeakObjectPtr<UInteractComponent>, FInteractItem>(Interact, InteractItem));
+	RegisteredItems.Add(InteractId, TWeakObjectPtr<UInteractComponent>(Interact));
 	OnInteractAdded.ExecuteIfBound(InteractId, InteractItem);
 
-	if (RegisteredItems.Num() > 0 && !bSetMode)
+	if (RegisteredItems.Num() > 0 && GameplayMode)
 	{
-		IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
-		if (GameplayMode)
-		{
-			GameplayMode->PushGameplayMode(TEXT("Interact"));
-			bSetMode = true;
-		}
+		const UInteractSettings* InteractSettings = UInteractSettings::Get();
+		GameplayMode->PushGameplayMode(InteractSettings->InteractMode);
 	}
 }
 
@@ -40,28 +37,24 @@ void UInteractSubsystem::UnregisterItem(const FGuid& InteractId)
 		OnInteractRemoved.ExecuteIfBound(InteractId);
 	}
 
-	if (RegisteredItems.Num() <= 0 && bSetMode)
+	if (RegisteredItems.Num() <= 0 && GameplayMode)
 	{
-		IGameplayModeProvider* GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
-		if (GameplayMode)
-		{
-			GameplayMode->PopGameplayMode(TEXT("Interact"));
-			bSetMode = false;
-		}
+		const UInteractSettings* InteractSettings = UInteractSettings::Get();
+		GameplayMode->PopGameplayMode(InteractSettings->InteractMode);
 	}
 }
 
 void UInteractSubsystem::InteractItemById(const FGuid& InteractId)
 {
-	const TPair<TWeakObjectPtr<UInteractComponent>, FInteractItem>* FoundHandle = RegisteredItems.Find(InteractId);
-	if (!FoundHandle)
+	TWeakObjectPtr<UInteractComponent>* FoundComponent = RegisteredItems.Find(InteractId);
+	if (!FoundComponent)
 	{
 		LOG_ERROR(LogInteract, TEXT("Interact handle not found"));
 		return;
 	}
 
-	UInteractComponent* Component = FoundHandle->Key.Get();
-	if (!Component)
+	UInteractComponent* Component = FoundComponent->Get();
+	if (!IsValid(Component))
 	{
 		LOG_ERROR(LogInteract, TEXT("Interact component is invalid"));
 		return;
@@ -75,18 +68,30 @@ bool UInteractSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 	return WorldType == EWorldType::Game || WorldType == EWorldType::PIE;
 }
 
-void UInteractSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+bool UInteractSubsystem::ShouldCreateSubsystem(UObject* Outer) const
 {
-	Super::Initialize(Collection);
-	LOG_WARNING(LogInteract, TEXT("InteractSubsystem initialized"));
+	if (!Super::ShouldCreateSubsystem(Outer) || GetClass() != UInteractSettings::Get()->SubsystemClass)
+	{
+		return false;
+	}
+	return true;
 }
 
-void UInteractSubsystem::Deinitialize()
+void UInteractSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
+	Super::OnWorldBeginPlay(InWorld);
+	LOG_WARNING(LogInteract, TEXT("InteractSubsystem OnWorldBeginPlay"));
+
+	GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(&InWorld);
+}
+
+void UInteractSubsystem::OnWorldEndPlay(UWorld& InWorld)
+{
+	GameplayMode = nullptr;
 	RegisteredItems.Empty();
 
-	LOG_WARNING(LogInteract, TEXT("InteractSubsystem deinitialized"));
-	Super::Deinitialize();
+	LOG_WARNING(LogInteract, TEXT("InteractSubsystem OnWorldEndPlay"));
+	Super::OnWorldEndPlay(InWorld);
 }
 
 UInteractSubsystem* UInteractSubsystem::Get(const UWorld* World)

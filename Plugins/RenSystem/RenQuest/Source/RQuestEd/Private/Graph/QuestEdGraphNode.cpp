@@ -9,6 +9,14 @@
 #include "Graph/EventflowEdGraphSchema.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
 #include "System/Flow/Task/QuestSubTask.h"
+#include "System/Flow/Task/QuestTask_ExternalTask.h"
+#include "System/Flow/Task/QuestTask_Reroute.h"
+#include "System/Flow/Task/QuestTask_IO.h"
+#include "System/Flow/Task/QuestTask_EnsureGlobalTask.h"
+#include "System/Flow/Task/QuestTask_SpawnMarker.h"
+#include "System/Flow/Task/QuestTask_SubtaskGate.h"
+#include "System/Flow/Task/QuestTask_WidgetGate.h"
+#include "System/Flow/Task/QuestTask_CheckStorage.h"
 
 
 

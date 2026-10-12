@@ -12,18 +12,19 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "SubsystemLibrary.h"
+#include "MiscLibrary.h"
 
 
-void UDialogueSubsystem::StartEventflow(const FPrimaryAssetId& AssetId)
+void UDialogueSubsystem::StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
 {
-	StartDialogue(AssetId);
+	StartDialogue(AssetId, EntryData);
 }
 
 void UDialogueSubsystem::StopEventflow(const FPrimaryAssetId& AssetId)
 {
 }
 
-void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId)
+void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
 {
 	if (Dialogues.Contains(AssetId))
 	{
@@ -41,7 +42,7 @@ void UDialogueSubsystem::StartDialogue(const FPrimaryAssetId& AssetId)
 	Dialogues.Add(AssetId, Dialogue);
 
 	Dialogue->OnStateChanged.BindUObject(this, &UDialogueSubsystem::HandleOnEngineStateChanged, AssetId);
-	Dialogue->InitializeData(AssetId, FEventflowEntryData());
+	Dialogue->InitializeData(AssetId, EntryData);
 	Dialogue->Initialize();
 }
 

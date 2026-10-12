@@ -15,19 +15,20 @@
 #include "luacode.h"
 #include "lualib.h"
 #include "MiscLibrary.h"
+#include "System/Flow/Task/QuestPrimaryTask.h"
 
 
-void UQuestSubsystem::StartEventflow(const FPrimaryAssetId& AssetId)
+void UQuestSubsystem::StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
 {
-	StartQuest(AssetId);
+	StartQuest(AssetId, EntryData);
 }
 
 void UQuestSubsystem::StopEventflow(const FPrimaryAssetId& AssetId)
 {
-	CancelQuest(AssetId);
+
 }
 
-void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId)
+void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
 {
 	if (!AssetId.IsValid() || Quests.Contains(AssetId))
 	{
@@ -43,9 +44,6 @@ void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId)
 
 	Quests.Add(AssetId, Engine);
 
-	FEventflowEntryData EntryData;
-	EntryData.EntryType = EEventflowEntryType::Root;
-
 	Engine->OnStateChanged.BindUObject(this, &UQuestSubsystem::HandleOnQuestStateChanged, AssetId);
 	Engine->InitializeData(AssetId, EntryData);
 	Engine->Initialize();
@@ -54,29 +52,160 @@ void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId)
 }
 
 
-void UQuestSubsystem::CancelQuest(const FPrimaryAssetId& AssetId)
-{
-	UQuestEngine* Engine = GetQuestEngine(AssetId);
-	if (IsValid(Engine))
-	{
-		UQuestAsset* QuestAsset = Engine->GetAsset<UQuestAsset>();
-		if (IsValid(QuestAsset) && QuestAsset->bCanCancel)
-		{
-			Engine->OnStateChanged.Unbind();
 
-			if (Engine->GetState() == EFSMState::Active)
-			{
-				Engine->Finish(EFSMResult::Aborted);
-			}
-			if (Engine->GetState() != EFSMState::Uninitialized)
-			{
-				Engine->Reset();
-			}
-		}
+void UQuestSubsystem::FocusQuest(FPrimaryAssetId AssetId)
+{
+	TObjectPtr<UQuestEngine>* FoundQEngine = Quests.Find(AssetId);
+	if (!FoundQEngine) return;
+
+	UQuestEngine* QEngine = FoundQEngine->Get();
+	if (!QEngine) return;
+
+	const FEventflowEntryData* QData = QEngine->GetEntryData().GetPtr<FEventflowEntryData>();
+	if (!QData) return;
+
+	UQuestEngine* ParentEngine = nullptr;
+
+	if (QData->GroupId.IsValid())
+	{
+		TObjectPtr<UQuestEngine>* FoundParentEngine = Quests.Find(QData->GroupId);
+		if (!FoundParentEngine) return;
+
+		ParentEngine = FoundParentEngine->Get();
+	}
+	else
+	{
+		ParentEngine = QEngine;
 	}
 
-	Quests.Remove(AssetId);
-	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest canceled, removing from Quests"));
+	if (FocusedQuest == ParentEngine)
+	{
+		FocusedQuest.Reset();
+		OnQuestFocusChanged.Broadcast();
+		return;
+	}
+
+	FocusedQuest = TWeakObjectPtr<UQuestEngine>(ParentEngine);
+	OnQuestFocusChanged.Broadcast();
+}
+
+void UQuestSubsystem::CancelFocusedTask()
+{
+	UQuestEngine* Engine = GetFocusedQuest();
+	if (!Engine)
+	{
+		return;
+	}
+	const UQuestAsset* Asset = Engine->GetAsset<UQuestAsset>();
+	if (!Asset)
+	{
+		return;
+	}
+
+	CancelQuestTask(Asset->GetPrimaryAssetId(), true);
+}
+
+void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId)
+{
+	TObjectPtr<UQuestEngine>* FoundEngine = Quests.Find(AssetId);
+	if (!FoundEngine) return;
+
+	UQuestEngine* Engine = FoundEngine->Get();
+	if (!Engine) return;
+
+	UQuestPrimaryTask* Node = Engine->GetNodeTask<UQuestPrimaryTask>();
+	if (!Node) return;
+
+	if (Node->bCanCancel)
+	{
+		Node->Finish(EFSMResult::Cancelled);
+	}
+}
+
+void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive)
+{
+	TObjectPtr<UQuestEngine>* FoundQEngine = Quests.Find(AssetId);
+	if (!FoundQEngine) return;
+
+	UQuestEngine* QEngine = FoundQEngine->Get();
+	if (!QEngine) return;
+
+	const FEventflowEntryData* QData = QEngine->GetEntryData().GetPtr<FEventflowEntryData>();
+	if (!QData) return;
+
+	UQuestEngine* ParentEngine = nullptr;
+
+	if (QData->GroupId.IsValid())
+	{
+		TObjectPtr<UQuestEngine>* FoundParentEngine = Quests.Find(QData->GroupId);
+		if (!FoundParentEngine) return;
+
+		ParentEngine = FoundParentEngine->Get();
+	}
+	else
+	{
+		ParentEngine = QEngine;
+	}
+
+	if (!ParentEngine) return;
+
+	UQuestPrimaryTask* ParentNode = ParentEngine->GetNodeTask<UQuestPrimaryTask>();
+	if (!ParentNode) return;
+
+	if (ParentNode->bCanCancel)
+	{
+		ParentNode->Finish(EFSMResult::Cancelled);
+		return;
+	}
+
+	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> GroupQuests;
+	GetQuestsByGroup(ParentEngine->GetAsset()->GetPrimaryAssetId(), GroupQuests);
+
+	for (TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : GroupQuests)
+	{
+		UQuestEngine* GroupEngine = Kv.Value.Get();
+		if (!GroupEngine) return;
+
+		UQuestPrimaryTask* GroupNode = GroupEngine->GetNodeTask<UQuestPrimaryTask>();
+		if (!GroupNode) return;
+
+		if (GroupNode->bCanCancel)
+		{
+			GroupNode->Finish(EFSMResult::Cancelled);
+			return;
+		}
+	}
+}
+
+
+
+
+UQuestEngine* UQuestSubsystem::GetFocusedQuest() const
+{
+	return FocusedQuest.Get();
+}
+
+const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& UQuestSubsystem::GetQuests() const
+{
+	return Quests;
+}
+
+void UQuestSubsystem::GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& OutQuests) const
+{
+	for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : Quests)
+	{
+		UQuestEngine* Engine = Kv.Value.Get();
+		if (!Engine)
+		{
+			continue;
+		}
+
+		const FEventflowEntryData* Data = Engine->GetEntryData().GetPtr<FEventflowEntryData>();
+		if (Data && Data->GroupId == InAssetId)
+		{
+			OutQuests.Add(Kv);
+		}
+	}
 }
 
 
@@ -145,11 +274,25 @@ void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMSta
 	switch (NewState)
 	{
 	case EFSMState::Ready:
-		OnEngineAdded.Broadcast(AssetId, Engine);
-		Engine->Active();
+		{
+			OnEngineAdded.Broadcast(AssetId, Engine);
+			Engine->Active();
+
+			UQuestAsset* Asset = Engine->GetAsset<UQuestAsset>();
+			if (Asset->bAutoFocus)
+			{
+				FocusedQuest = Engine;
+				OnQuestFocusChanged.Broadcast();
+			}
+		}
 		break;
 
 	case EFSMState::Finished:
+		if (FocusedQuest == Engine)
+		{
+			FocusedQuest.Reset();
+			OnQuestFocusChanged.Broadcast();
+		}
 		OnEngineRemoved.Broadcast(AssetId, Engine);
 		Engine->Reset();
 		break;
@@ -160,6 +303,7 @@ void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMSta
 		{
 			FPoolLibrary::ReturnToArray(EnginePool, Engine);
 		}
+		OnQuestDataChanged.Broadcast();
 		break;
 	}
 }

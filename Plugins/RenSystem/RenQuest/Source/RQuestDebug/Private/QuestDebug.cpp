@@ -91,6 +91,8 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 								SlateIM::AddTableColumn(TEXT("Quest_EngineState"), TEXT("State"));
 								SlateIM::InitialTableColumnWidth(150.0f);
 								SlateIM::AddTableColumn(TEXT("Quest_EngineResult"), TEXT("Result"));
+								SlateIM::InitialTableColumnWidth(150.0f);
+								SlateIM::AddTableColumn(TEXT("Quest_GroupId"), TEXT("GroupUd"));
 							}
 							SlateIM::EndTableHeader();
 
@@ -107,6 +109,10 @@ void FQuestDebugWidget::DrawWidget(float DeltaTime)
 
 								SlateIM::NextTableCell();
 								SlateIM::Text(ResultString);
+
+								SlateIM::NextTableCell();
+								const FEventflowEntryData* Data = Engine->GetEntryData().GetPtr<FEventflowEntryData>();
+								SlateIM::Text((Data) ? Data->GroupId.ToString() : "(Invalid Entry)");
 							}
 							SlateIM::EndTableBody();
 						}

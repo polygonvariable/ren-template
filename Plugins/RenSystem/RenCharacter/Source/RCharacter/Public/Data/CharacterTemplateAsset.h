@@ -6,7 +6,7 @@
 #include "Engine/DataAsset.h"
 
 // Project Headers
-#include "ComponentDefinition.h"
+#include "ComponentTemplateDefinition.h"
 
 // Generated Headers
 #include "CharacterTemplateAsset.generated.h"
@@ -29,8 +29,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Gameplay Ability")
 	TSubclassOf<UGameplayEffect> InitialAttributeEffect;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Component")
-	TArray<FComponentDefinition> Components;
+	UPROPERTY(EditDefaultsOnly, Category = "Component", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FComponentTemplateDefinition>> Components;
 
 
 #if WITH_EDITORONLY_DATA

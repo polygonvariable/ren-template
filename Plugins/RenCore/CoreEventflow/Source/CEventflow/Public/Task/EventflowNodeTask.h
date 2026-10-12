@@ -6,9 +6,9 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
+#include "Core/EventflowGraphData.h"
+#include "Core/EventflowTransitionData.h"
 #include "EventflowTask.h"
-#include "Type/EventflowTransition.h"
-#include "Type/EventflowEntry.h"
 
 // Generated Headers
 #include "EventflowNodeTask.generated.h"
@@ -16,6 +16,7 @@
 // Forward Declarations
 class UEventflowSubTask;
 struct FEventflowNode;
+struct FEventflowReturnData;
 
 
 /**

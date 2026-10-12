@@ -16,7 +16,7 @@
 #include "Task/EventflowGlobalTask.h"
 
 
-void UEventflowEngine::InitializeData(const FPrimaryAssetId& InAssetId, const FEventflowEntryData& InEntryData)
+void UEventflowEngine::InitializeData(const FPrimaryAssetId& InAssetId, const TInstancedStruct<FEventflowEntryData>& InEntryData)
 {
 	_AssetId = InAssetId;
 	_EntryData = InEntryData;
@@ -36,6 +36,11 @@ UEventflowNodeTask* UEventflowEngine::GetNodeTask() const
 UEventflowAsset* UEventflowEngine::GetAsset() const
 {
 	return _Asset;
+}
+
+const TInstancedStruct<FEventflowEntryData>& UEventflowEngine::GetEntryData() const
+{
+	return _EntryData;
 }
 
 const TInstancedStruct<FEventflowReturnData>& UEventflowEngine::GetReturnData() const
@@ -314,14 +319,21 @@ void UEventflowEngine::OnReady(EFSMState PreviousState)
 
 void UEventflowEngine::OnActive(EFSMState PreviousState)
 {
-	switch (_EntryData.EntryType)
+	const FEventflowEntryData* EntryData = _EntryData.GetPtr();
+	if (!EntryData)
+	{
+		ensureMsgf(false, TEXT("Eventflow contains invalid entry data"));
+		return;
+	}
+
+	switch (EntryData->EntryType)
 	{
 	case EEventflowEntryType::Root:
 		ReachEntryNode();
 		break;
 
 	case EEventflowEntryType::Custom:
-		ReachNode(_EntryData.EntryNodeId);
+		ReachNode(EntryData->EntryNodeId);
 		break;
 
 	default:

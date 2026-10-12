@@ -2,9 +2,13 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
 // Project Headers
 #include "DialogueSubsystem.h"
 #include "GameplayContextAction.h"
+#include "Core/EventflowIO.h"
 
 // Generated Headers
 #include "DialogueGameplayContext.generated.h"
@@ -37,7 +41,10 @@ public:
             return false;
         }
         
-        DialogueSubsystem->StartDialogue(DialogueAssetId);
+        TInstancedStruct<FEventflowEntryData> EntryData;
+        FEventflowEntryData& Data = EntryData.InitializeAs<FEventflowEntryData>();
+
+        DialogueSubsystem->StartDialogue(DialogueAssetId, EntryData);
 		return false;
 	};
     

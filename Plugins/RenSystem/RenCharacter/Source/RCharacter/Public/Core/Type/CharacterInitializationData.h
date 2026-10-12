@@ -7,7 +7,7 @@
 #include "StructUtils/InstancedStruct.h"
 
 // Project Headers
-#include "ComponentDefinition.h"
+#include "ComponentTemplateDefinition.h"
 
 // Generated Headers
 #include "CharacterInitializationData.generated.h"
@@ -36,8 +36,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	TMap<FGameplayTag, FInstancedStruct> Metadata;
 
-	UPROPERTY(EditAnywhere)
-	TArray<FComponentDefinition> Components;
+	UPROPERTY(EditAnywhere, meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FComponentTemplateDefinition>> Components;
 
 	bool IsValid() const
 	{

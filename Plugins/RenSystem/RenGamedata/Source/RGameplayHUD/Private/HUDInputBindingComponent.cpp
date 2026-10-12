@@ -104,6 +104,8 @@ void UHUDInputBindingComponent::HandleOnAssetLoaded()
 	InputBindingAsset = InputBinding.Get();
 	GameplayMode = FSubsystemLibrary::GetSubsystemInterface<IGameplayModeProvider>(GetWorld());
 
+	GameplayMode->RegisterTagNotify(DashboardTag, FOnGameplayModeTagChanged::FDelegate::CreateUObject(this, &UHUDInputBindingComponent::HandleOnDashboardTagChanged));
+
 	UEnhancedInputComponent* InputComponent = GetInputComponent();
 	if (IsValid(InputBindingAsset) && IsValid(InputComponent))
 	{
@@ -184,6 +186,20 @@ void UHUDInputBindingComponent::HandleOnWidgetVisibilityChanged(ESlateVisibility
 	else if (Visiblity == ESlateVisibility::Collapsed)
 	{
 		GameplayMode->PopGameplayMode(HUDInputMode);
+	}
+}
+
+void UHUDInputBindingComponent::HandleOnDashboardTagChanged(bool bAdded)
+{
+	if (!bAdded)
+	{
+		for (TPair<FGuid, TObjectPtr<UUserWidget>>& Kv : WidgetCollection)
+		{
+			if (Kv.Value && Kv.Value->IsVisible())
+			{
+				Kv.Value->SetVisibility(ESlateVisibility::Collapsed);
+			}
+		}
 	}
 }
 

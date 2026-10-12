@@ -2,8 +2,11 @@
 
 #pragma once
 
+// Engine Headers
+#include "StructUtils/InstancedStruct.h"
+
 // Project Headers
-#include "ComponentDefinition.h"
+#include "ComponentTemplateDefinition.h"
 
 
 /**
@@ -14,8 +17,8 @@ class FComponentTemplateLibrary
 
 public:
 
-    CGAMEDATACOMPONENT_API static void RegisterComponents(AActor* InActor, TArray<FComponentDefinition>& InComponents, TArray<UActorComponent*>& OutComponents);
-    CGAMEDATACOMPONENT_API static void RegisterComponents(AActor* InActor, TArray<FComponentDefinition>& InComponents);
+    CGAMEDATACOMPONENT_API static void RegisterComponents(AActor* InActor, TArray<TInstancedStruct<FComponentTemplateDefinition>>& InComponents, TArray<UActorComponent*>& OutComponents);
+    CGAMEDATACOMPONENT_API static void RegisterComponents(AActor* InActor, TArray<TInstancedStruct<FComponentTemplateDefinition>>& InComponents);
 
 };
 
