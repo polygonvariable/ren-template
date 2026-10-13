@@ -35,5 +35,14 @@ public:
 	virtual void Execute(const FGameplayTagContainer& ContextTags, UObject* Caller) override;
 	// ~ End of IGameplayContextInterface
 
+	// ~ UActorComponent
+	virtual void BeginPlay() override;
+	// ~ End of UActorComponent
+
+protected:
+
+	UPROPERTY(EditAnywhere, meta = (Categories = "GameContext"))
+	FGameplayTagContainer OnBeginPlayTags;
+
 };
 

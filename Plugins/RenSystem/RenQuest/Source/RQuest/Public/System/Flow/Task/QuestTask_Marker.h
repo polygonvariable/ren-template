@@ -8,7 +8,7 @@
 #include "System/Flow/Task/QuestPrimaryTask.h"
 
 // Generated Headers
-#include "QuestTask_SpawnMarker.generated.h"
+#include "QuestTask_Marker.generated.h"
 
 // Forward Declarations
 class FObjectPreSaveContext;
@@ -25,8 +25,6 @@ class UQuestTask_SpawnMarker : public UQuestPrimaryTask
 	GENERATED_BODY()
 
 public:
-
-	UQuestTask_SpawnMarker();
 
 	UPROPERTY(EditAnywhere, Category = "Marker")
 	TSoftClassPtr<AQuestObjectiveMarker> MarkerClass;

@@ -42,9 +42,19 @@ public:
 	virtual void LoadStorage(const FStorageDefinition& Definition, FOnStorageLoaded&& Callback) = 0;
 	virtual void SaveStorage(const FName& StorageId) = 0;
 
+	template<typename T>
+	void LoadStorageFromSettings(FOnStorageLoaded&& Callback)
+	{
+		const T* Settings = T::Get();
+		check(Settings);
+
+		FStorageDefinition StorageDefinition;
+		StorageDefinition.StorageId = Settings->StorageId;
+		StorageDefinition.StorageClass = Settings->StorageClass;
+		StorageDefinition.ManagerClass = Settings->StorageManagerClass;
+
+		LoadStorage(StorageDefinition, MoveTemp(Callback));
+	}
+
 };
-
-
-// Module Macros
-#undef REN_API
 

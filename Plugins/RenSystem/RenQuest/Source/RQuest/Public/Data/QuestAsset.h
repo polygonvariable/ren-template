@@ -13,6 +13,17 @@ class UQuestGlobalTask;
 
 
 /**
+ *
+ */
+UENUM()
+enum class EQuestType : uint8
+{
+	World,
+	Story,
+};
+
+
+/**
  * 
  */
 UCLASS(MinimalAPI)
@@ -28,6 +39,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	FText Summary;
+
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	EQuestType QuestType = EQuestType::Story;
+
+	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	bool bIsTransient = true;
 
 
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")

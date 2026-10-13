@@ -4,19 +4,21 @@
 #include "Graph/QuestEdGraphNode.h"
 
 // Project Headers
-#include "EventflowAsset.h"
 #include "Data/QuestAsset.h"
+#include "EventflowAsset.h"
 #include "Graph/EventflowEdGraphSchema.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
 #include "System/Flow/Task/QuestSubTask.h"
+#include "System/Flow/Task/QuestTask_Storage.h"
+#include "System/Flow/Task/QuestTask_GlobalTask.h"
 #include "System/Flow/Task/QuestTask_ExternalTask.h"
-#include "System/Flow/Task/QuestTask_Reroute.h"
+#include "System/Flow/Task/QuestTask_GameplayContext.h"
 #include "System/Flow/Task/QuestTask_IO.h"
-#include "System/Flow/Task/QuestTask_EnsureGlobalTask.h"
-#include "System/Flow/Task/QuestTask_SpawnMarker.h"
+#include "System/Flow/Task/QuestTask_Reroute.h"
+#include "System/Flow/Task/QuestTask_Marker.h"
 #include "System/Flow/Task/QuestTask_SubtaskGate.h"
 #include "System/Flow/Task/QuestTask_WidgetGate.h"
-#include "System/Flow/Task/QuestTask_CheckStorage.h"
+#include "System/Flow/Task/QuestTask_Player.h"
 
 
 
@@ -270,7 +272,7 @@ UQuestEdNode_EnsureGlobal::UQuestEdNode_EnsureGlobal()
 
 TSubclassOf<UEventflowNodeTask> UQuestEdNode_EnsureGlobal::GetTaskClass() const
 {
-	return UQuestTask_EnsureGlobalTask::StaticClass();
+	return UQuestTask_EnsureGlobal::StaticClass();
 }
 
 FLinearColor UQuestEdNode_EnsureGlobal::GetNodeTitleColor() const
@@ -451,13 +453,123 @@ void UQuestEdNode_CheckStorage::AllocateDefaultPins()
 	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
 	PinIn->PinType.bIsConst = true;
 
-	UEdGraphPin* PinOutFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("found"));
-	PinOutFound->PinFriendlyName = FText::FromString(TEXT("found"));
+	UEdGraphPin* PinOutFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("completed"));
+	PinOutFound->PinFriendlyName = FText::FromString(TEXT("completed"));
 	PinOutFound->PinType.bIsConst = true;
 
-	UEdGraphPin* PinOutNotFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("not found"));
-	PinOutNotFound->PinFriendlyName = FText::FromString(TEXT("not found"));
+	UEdGraphPin* PinOutNotFound = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("not completed"));
+	PinOutNotFound->PinFriendlyName = FText::FromString(TEXT("not completed"));
 	PinOutNotFound->PinType.bIsConst = true;
 }
 
+
+
+UQuestEdNode_Checkpoint::UQuestEdNode_Checkpoint()
+{
+	NodeTitle = FText::FromString(TEXT("Checkpoint"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_Checkpoint::GetTaskClass() const
+{
+	return UQuestTask_Checkpoint::StaticClass();
+}
+
+FLinearColor UQuestEdNode_Checkpoint::GetNodeTitleColor() const
+{
+	return FLinearColor(0.35f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_Checkpoint::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
+}
+
+
+UQuestEdNode_Complete::UQuestEdNode_Complete()
+{
+	NodeTitle = FText::FromString(TEXT("Complete"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_Complete::GetTaskClass() const
+{
+	return UQuestTask_Complete::StaticClass();
+}
+
+FLinearColor UQuestEdNode_Complete::GetNodeTitleColor() const
+{
+	return FLinearColor(0.35f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_Complete::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
+}
+
+
+
+UQuestEdNode_GameplayContext::UQuestEdNode_GameplayContext()
+{
+	NodeTitle = FText::FromString(TEXT("Gameplay Context"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_GameplayContext::GetTaskClass() const
+{
+	return UQuestTask_GameplayContext::StaticClass();
+}
+
+FLinearColor UQuestEdNode_GameplayContext::GetNodeTitleColor() const
+{
+	return FLinearColor(0.15f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_GameplayContext::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
+}
+
+
+
+UQuestEdNode_MovePlayer::UQuestEdNode_MovePlayer()
+{
+	NodeTitle = FText::FromString(TEXT("Move Player"));
+}
+
+TSubclassOf<UEventflowNodeTask> UQuestEdNode_MovePlayer::GetTaskClass() const
+{
+	return UQuestTask_MovePlayer::StaticClass();
+}
+
+FLinearColor UQuestEdNode_MovePlayer::GetNodeTitleColor() const
+{
+	return FLinearColor(0.15f, 0.0f, 1.0f);
+}
+
+void UQuestEdNode_MovePlayer::AllocateDefaultPins()
+{
+	UEdGraphPin* PinIn = CreatePin(EEdGraphPinDirection::EGPD_Input, UEventflowEdGraphSchema::PC_Exec, TEXT("in"));
+	PinIn->PinFriendlyName = FText::FromString(TEXT("in"));
+	PinIn->PinType.bIsConst = true;
+
+	UEdGraphPin* PinOut = CreatePin(EEdGraphPinDirection::EGPD_Output, UEventflowEdGraphSchema::PC_Exec, TEXT("out"));
+	PinOut->PinFriendlyName = FText::FromString(TEXT("out"));
+	PinOut->PinType.bIsConst = true;
+}
 

@@ -22,11 +22,23 @@ class UQuestStorageManager : public UObject, public IStorageManager
 
 	GENERATED_BODY()
 
+
 public:
 
-	void AddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid);
+	FGuid GetActiveQuest(const FPrimaryAssetId& QuestId);
+
+	void FindAddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid);
+	bool AddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid);
+	bool CompleteActiveQuest(const FPrimaryAssetId& QuestId);
+
 	void UpdateActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid);
 	void RemoveActiveQuest(const FPrimaryAssetId& QuestId);
+
+
+	bool ContainsActiveQuest(const FPrimaryAssetId& QuestId, bool& OutResult);
+	bool ContainsCompletedQuest(const FPrimaryAssetId& QuestId, bool& OutResult);
+
+
 	const TMap<FPrimaryAssetId, FGuid>* GetActiveQuests() const;
 
 	// ~ UStorageManager

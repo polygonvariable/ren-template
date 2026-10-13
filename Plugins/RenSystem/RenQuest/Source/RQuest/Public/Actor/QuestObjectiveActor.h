@@ -17,6 +17,16 @@
  *
  */
 UCLASS(Abstract)
+class AQuestActor : public ARegionActor
+{
+	GENERATED_BODY()
+};
+
+
+/*
+ *
+ */
+UCLASS(Abstract)
 class AQuestObjectiveActor : public ARegionActor
 {
 	GENERATED_BODY()

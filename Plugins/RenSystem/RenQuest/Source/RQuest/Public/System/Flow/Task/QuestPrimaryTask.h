@@ -27,9 +27,6 @@ public:
 	FName Summary;
 
 	UPROPERTY(EditAnywhere, Category = "Objective")
-	bool bIsTransient = true;
-
-	UPROPERTY(EditAnywhere, Category = "Objective")
 	bool bCanCancel = false;
 
 	// ~ UEventflowTask

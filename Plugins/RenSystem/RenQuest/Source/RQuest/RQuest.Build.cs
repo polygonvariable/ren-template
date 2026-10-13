@@ -44,6 +44,7 @@ public class RQuest : ModuleRules
                 "CFilter",
                 "InputCore",
                 "EnhancedInput",
+				"CGameplayContext",
             }
 			);
 			

@@ -133,7 +133,6 @@ FPrimaryAssetId UQuestTask_ExternalTask::GetGroupId() const
 	return Asset->GetPrimaryAssetId();
 }
 
-
 void UQuestTask_ExternalTask::OnInitialized(EFSMState PreviousState)
 {
 	Super::OnInitialized(PreviousState);
@@ -184,3 +183,4 @@ void UQuestTask_ExternalTask::OnReset()
 
 	Super::OnReset();
 }
+

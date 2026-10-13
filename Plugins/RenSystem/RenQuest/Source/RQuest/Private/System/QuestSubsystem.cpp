@@ -10,12 +10,24 @@
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "LuauSubsystem.h"
+#include "MiscLibrary.h"
 #include "System/Flow/QuestEngine.h"
+#include "System/Flow/Task/QuestPrimaryTask.h"
 #include "lua.h"
 #include "luacode.h"
 #include "lualib.h"
-#include "MiscLibrary.h"
-#include "System/Flow/Task/QuestPrimaryTask.h"
+#include "Core/StorageProvider.h"
+#include "System/QuestStorageManager.h"
+#include "Data/QuestStorage.h"
+#include "SubsystemLibrary.h"
+
+
+
+UQuestStorageManager* UQuestSubsystem::GetStorageManager() const
+{
+	return StorageManager;
+}
+
 
 
 void UQuestSubsystem::StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
@@ -270,7 +282,6 @@ void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMSta
 		return;
 	}
 
-	FTimerManager& TimerManager = GetWorld()->GetTimerManager();
 	switch (NewState)
 	{
 	case EFSMState::Ready:
@@ -309,8 +320,30 @@ void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMSta
 }
 
 
+void UQuestSubsystem::HandleOnStorageLoaded(UObject* InManager)
+{
+	StorageManager = Cast<UQuestStorageManager>(InManager);
+	if (!IsValid(StorageManager))
+	{
+		return;
+	}
 
+	const TMap<FPrimaryAssetId, FGuid>* ActiveQuests = StorageManager->GetActiveQuests();
+	if (!ActiveQuests)
+	{
+		return;
+	}
 
+	for (const TPair<FPrimaryAssetId, FGuid>& Kv : *ActiveQuests)
+	{
+		TInstancedStruct<FEventflowEntryData> EntryData;
+		FEventflowEntryData& Data = EntryData.InitializeAs<FEventflowEntryData>();
+		Data.EntryNodeId = Kv.Value;
+		Data.EntryType = EEventflowEntryType::Custom;
+
+		StartQuest(Kv.Key, EntryData);
+	}
+}
 
 bool UQuestSubsystem::DoesSupportWorldType(EWorldType::Type WorldType) const
 {
@@ -333,6 +366,12 @@ void UQuestSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 	LOG_WARNING(LogTemp, TEXT("QuestSubsystem initialized"));
+
+	IStorageProvider* StorageProvider = FSubsystemLibrary::GetSubsystemInterface<IStorageProvider>(GetWorld()->GetGameInstance());
+	if (StorageProvider)
+	{
+		StorageProvider->LoadStorageFromSettings<UQuestSettings>(FOnStorageLoaded::CreateUObject(this, &UQuestSubsystem::HandleOnStorageLoaded));
+	}
 }
 
 void UQuestSubsystem::Deinitialize()

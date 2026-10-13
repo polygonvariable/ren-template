@@ -1,24 +1,24 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "System/Flow/Task/QuestTask_EnsureGlobalTask.h"
+#include "System/Flow/Task/QuestTask_GlobalTask.h"
 
 // Project Headers
 #include "System/Flow/QuestEngine.h"
 
 
-void UQuestTask_EnsureGlobalTask::OnInitialized(EFSMState PreviousState)
+void UQuestTask_EnsureGlobal::OnInitialized(EFSMState PreviousState)
 {
 	Super::OnInitialized(PreviousState);
 	Load();
 }
 
-void UQuestTask_EnsureGlobalTask::OnLoaded(EFSMState PreviousState)
+void UQuestTask_EnsureGlobal::OnLoaded(EFSMState PreviousState)
 {
 	UQuestEngine* Engine = GetOwningEngine<UQuestEngine>();
 	checkf(IsValid(Engine), TEXT("Quest engine is invalid"));
 
-	UQuestTask_EnsureGlobalTask* Template = GetOwningTemplate<UQuestTask_EnsureGlobalTask>();
+	UQuestTask_EnsureGlobal* Template = GetOwningTemplate<UQuestTask_EnsureGlobal>();
 	checkf(IsValid(Template), TEXT("Node have invalid template"));
 
 	TArray<TInstancedStruct<FObjectiveGlobalTaskFragment>>& TemplateTasks = Template->GlobalTasks;
@@ -35,12 +35,12 @@ void UQuestTask_EnsureGlobalTask::OnLoaded(EFSMState PreviousState)
 	Ready();
 }
 
-void UQuestTask_EnsureGlobalTask::OnReady(EFSMState PreviousState)
+void UQuestTask_EnsureGlobal::OnReady(EFSMState PreviousState)
 {
 	Active();
 }
 
-void UQuestTask_EnsureGlobalTask::OnActive(EFSMState PreviousState)
+void UQuestTask_EnsureGlobal::OnActive(EFSMState PreviousState)
 {
 	Finish(EFSMResult::Success);
 }

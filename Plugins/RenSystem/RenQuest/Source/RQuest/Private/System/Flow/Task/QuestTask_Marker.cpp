@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 // Parent Header
-#include "System/Flow/Task/QuestTask_SpawnMarker.h"
+#include "System/Flow/Task/QuestTask_Marker.h"
 
 // Engine Headers
 #include "UObject/ObjectSaveContext.h"
@@ -12,17 +12,11 @@
 #endif
 #include "Actor/QuestObjectiveActor.h"
 #include "ComponentTemplateLibrary.h"
-#include "Log/LogMacro.h"
 #include "LuauLibrary.h"
 #include "LuauProperty.h"
 #include "LuauSubsystem.h"
 #include "MiscLibrary.h"
 
-
-
-UQuestTask_SpawnMarker::UQuestTask_SpawnMarker()
-{
-}
 
 void UQuestTask_SpawnMarker::CopyFromAsset(const UEventflowTask* Template)
 {
@@ -54,7 +48,6 @@ void UQuestTask_SpawnMarker::HandleOnInteractionCompleted(EFSMResult Result)
 {
 	Active();
 }
-
 
 void UQuestTask_SpawnMarker::OnInitialized(EFSMState PreviousState)
 {
@@ -134,6 +127,7 @@ void UQuestTask_ConditionalSpawnMarker::HandleOnInteractionCompleted(EFSMResult 
 	ULuauSubsystem* LuauSubsystem = ULuauSubsystem::Get(GetWorld());
 	if (!IsValid(Template) || !IsValid(LuauSubsystem))
 	{
+		ensureMsgf(false, TEXT("Quest task contains invalid task template or luau subsystem"));
 		return;
 	}
 
@@ -154,35 +148,22 @@ void UQuestTask_ConditionalSpawnMarker::HandleOnInteractionCompleted(EFSMResult 
 	bool bSuccess = LuauSubsystem->ExecuteBytecode(Template->LuauCode.Bytecode, TEXT("script"), TEXT("evaluateCondition"), Inputs, Outputs);
 	if (!bSuccess)
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to execute quest luau bytecode"));
+		ensureMsgf(false, TEXT("Failed to execute quest luau bytecode"));
 		return;
 	}
 
 	const FLuauProperty_Boolean* OutputResult = Outputs.Get<FLuauProperty_Boolean>(0);
 	if (!OutputResult)
 	{
-		LOG_ERROR(LogTemp, TEXT("Failed to get output from luau method"));
+		ensureMsgf(false, TEXT("Failed to get output from luau method"));
 		return;
 	}
 
 	if (OutputResult->bValue)
 	{
-		TWeakObjectPtr<UQuestTask_ConditionalSpawnMarker> WeakThis(this);
-
-		FTimerManager& TimerManager = GetWorld()->GetTimerManager();
-		TimerManager.SetTimerForNextTick(FTimerDelegate::CreateWeakLambda(this,
-			[WeakThis]()
-			{
-				UQuestTask_ConditionalSpawnMarker* This = WeakThis.Get();
-				if (IsValid(This))
-				{
-					This->Active();
-				}
-			}
-		));
+		FMiscLibrary::NextFrame(this, &UQuestTask_ConditionalSpawnMarker::Active);
 	}
 }
-
 
 
 bool FQuestConditionDefinition::Evaluate(UWorld* World, UQuestPrimaryTask* Task) const

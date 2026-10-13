@@ -45,7 +45,7 @@ void UQuestUI::RenderSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* NewItem
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->TaskName.ToString();
+			SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -74,7 +74,7 @@ void UQuestUI::RenderNodeTask(UQuestEngine* Engine, UEventflowNodeTask* NodeTask
 			NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->TaskName));
+		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 
 		RenderSubTask(NodeTask, NewItem);
 
@@ -129,7 +129,7 @@ void UQuestUI::RenderGroupSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* Gr
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->TaskName.ToString();
+			SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -158,7 +158,7 @@ void UQuestUI::RenderGroupNodeTask(UQuestEngine* Engine, UEventflowNodeTask* Nod
 			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->TaskName));
+		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 		RenderGroupSubTask(NodeTask, GroupItem);
 	}
 }
@@ -236,7 +236,7 @@ void UQuestFocusUI::RenderSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* Ne
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->TaskName.ToString();
+			SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -265,7 +265,7 @@ void UQuestFocusUI::RenderNodeTask(UQuestEngine* Engine, UEventflowNodeTask* Nod
 			NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->TaskName));
+		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 
 		RenderSubTask(NodeTask, NewItem);
 
@@ -317,7 +317,7 @@ void UQuestFocusUI::RenderGroupSubTask(UEventflowNodeTask* NodeTask, UQuestItemU
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->TaskName.ToString();
+			SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -346,7 +346,7 @@ void UQuestFocusUI::RenderGroupNodeTask(UQuestEngine* Engine, UEventflowNodeTask
 			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
 		}
 
-		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->TaskName));
+		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 		RenderGroupSubTask(NodeTask, GroupItem);
 	}
 }

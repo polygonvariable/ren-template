@@ -35,3 +35,9 @@ void UGameplayContextComponent::Execute(const FGameplayTagContainer& ContextTags
 	}
 }
 
+void UGameplayContextComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	Execute(OnBeginPlayTags, this);
+}
+

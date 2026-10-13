@@ -7,16 +7,60 @@
 #include "Data/QuestStorage.h"
 
 
-void UQuestStorageManager::AddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid)
+
+FGuid UQuestStorageManager::GetActiveQuest(const FPrimaryAssetId& QuestId)
 {
-	if (LocalStorage)
+	if (!IsValid(LocalStorage))
 	{
-		TMap<FPrimaryAssetId, FGuid>& ActiveQuests = LocalStorage->ActiveQuests;
-		if (!ActiveQuests.Contains(QuestId))
-		{
-			ActiveQuests.Add(QuestId, Guid);
-		}
+		return FGuid();
 	}
+	return LocalStorage->ActiveQuests.FindRef(QuestId);
+}
+
+void UQuestStorageManager::FindAddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid)
+{
+	if (!IsValid(LocalStorage))
+	{
+		return;
+	}
+
+	LocalStorage->ActiveQuests.Add(QuestId, Guid);
+}
+
+bool UQuestStorageManager::AddActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid)
+{
+	if (!IsValid(LocalStorage))
+	{
+		return false;
+	}
+
+	TMap<FPrimaryAssetId, FGuid>& ActiveQuests = LocalStorage->ActiveQuests;
+	if (ActiveQuests.Contains(QuestId))
+	{
+		return false;
+	}
+
+	ActiveQuests.Add(QuestId, Guid);
+	return true;
+}
+
+bool UQuestStorageManager::CompleteActiveQuest(const FPrimaryAssetId& QuestId)
+{
+	if (!IsValid(LocalStorage))
+	{
+		return false;
+	}
+
+	TMap<FPrimaryAssetId, FGuid>& ActiveQuests = LocalStorage->ActiveQuests;
+	if (!ActiveQuests.Contains(QuestId))
+	{
+		return false;
+	}
+
+	ActiveQuests.Remove(QuestId);
+	LocalStorage->CompletedQuests.Add(QuestId, FDateTime::UtcNow());
+
+	return true;
 }
 
 void UQuestStorageManager::UpdateActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid)
@@ -39,6 +83,34 @@ void UQuestStorageManager::RemoveActiveQuest(const FPrimaryAssetId& QuestId)
 		ActiveQuests.Remove(QuestId);
 	}
 }
+
+
+
+bool UQuestStorageManager::ContainsActiveQuest(const FPrimaryAssetId& QuestId, bool& OutResult)
+{
+	if (!LocalStorage)
+	{
+		OutResult = false;
+		return false;
+	}
+
+	OutResult = LocalStorage->ActiveQuests.Contains(QuestId);
+	return true;
+}
+
+bool UQuestStorageManager::ContainsCompletedQuest(const FPrimaryAssetId& QuestId, bool& OutResult)
+{
+	if (!LocalStorage)
+	{
+		OutResult = false;
+		return false;
+	}
+
+	OutResult = LocalStorage->CompletedQuests.Contains(QuestId);
+	return true;
+}
+
+
 
 const TMap<FPrimaryAssetId, FGuid>* UQuestStorageManager::GetActiveQuests() const
 {

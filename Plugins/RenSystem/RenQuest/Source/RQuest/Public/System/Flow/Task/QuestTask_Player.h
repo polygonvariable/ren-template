@@ -3,26 +3,29 @@
 #pragma once
 
 // Project Headers
-#include "Core/ObjectiveGlobalTaskFragment.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
 
 // Generated Headers
-#include "QuestTask_EnsureGlobalTask.generated.h"
+#include "QuestTask_Player.generated.h"
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UQuestTask_EnsureGlobalTask : public UQuestPrimaryTask
+class UQuestTask_MovePlayer : public UQuestPrimaryTask
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Global Task", meta = (ExcludeBaseStruct))
-	TArray<TInstancedStruct<FObjectiveGlobalTaskFragment>> GlobalTasks;
+	UPROPERTY(EditAnywhere, Category = "Move Player")
+	FTransform Transform;
+
+	// ~ UEventflowTask
+	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	// ~ End of UEventflowTask
 
 protected:
 

@@ -21,9 +21,12 @@ class UQuestTask_SpawnMarker;
 class UQuestTask_Reroute;
 class UQuestTask_ExternalTask;
 class UQuestTask_SubtaskGate;
-class UQuestTask_EnsureGlobalTask;
+class UQuestTask_EnsureGlobal;
 class UQuestTask_CheckStorage;
 class UQuestTask_WidgetGate;
+class UQuestTask_Checkpoint;
+class UQuestTask_GameplayContext;
+
 
 /*
  *
@@ -109,6 +112,106 @@ class UQuestEdNode_CheckStorage : public UQuestEdGraphNode
 public:
 
 	UQuestEdNode_CheckStorage();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
+
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_Checkpoint : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_Checkpoint();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_Complete : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_Complete();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
+
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_MovePlayer : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_MovePlayer();
+
+	// ~ UEventflowEdGraphNode
+	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;
+	// ~ UEventflowEdGraphNode
+
+	// ~ UEdGraphNode
+	virtual FLinearColor GetNodeTitleColor() const override;
+	virtual void AllocateDefaultPins() override;
+	// ~ End of UEdGraphNode
+
+};
+
+
+
+/*
+ *
+ */
+UCLASS(meta = (QuestNode))
+class UQuestEdNode_GameplayContext : public UQuestEdGraphNode
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UQuestEdNode_GameplayContext();
 
 	// ~ UEventflowEdGraphNode
 	virtual TSubclassOf<UEventflowNodeTask> GetTaskClass() const;

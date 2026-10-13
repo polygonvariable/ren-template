@@ -13,10 +13,10 @@
 #include "QuestSubsystem.generated.h"
 
 // Forward Declarations
-// class UQuestStorageManager;
+class UQuestStorageManager;
 class UQuestEngine;
 class AQuestActor;
-
+class IStorageProvider;
 
 
 /**
@@ -35,6 +35,9 @@ public:
 
 	DECLARE_MULTICAST_DELEGATE(FOnQuestFocusChanged);
 	FOnQuestFocusChanged OnQuestFocusChanged;
+
+	UQuestStorageManager* GetStorageManager() const;
+
 
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData);
@@ -56,6 +59,9 @@ public:
 protected:
 
 	UPROPERTY()
+	UQuestStorageManager* StorageManager;
+
+	UPROPERTY()
 	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> Quests;
 
 	UPROPERTY()
@@ -64,6 +70,8 @@ protected:
 
 	UQuestEngine* GetQuestEngine(const FPrimaryAssetId& AssetId) const;
 	void RemoveQuests();
+
+	void HandleOnStorageLoaded(UObject* InManager);
 
 	// ~ Binding
 	virtual void HandleOnQuestStateChanged(EFSMState PreviousState, EFSMState NewState, EFSMResult Result, FPrimaryAssetId AssetId);

@@ -17,7 +17,6 @@ void UQuestPrimaryTask::CopyFromAsset(const UEventflowTask* Template)
 	checkf(Task, TEXT("Quest task contains invalid template or doesnt match its type"));
 
 	Summary = Task->Summary;
-	bIsTransient = Task->bIsTransient;
 	bCanCancel = Task->bCanCancel;
 }
 

@@ -24,5 +24,9 @@ public:
 	UPROPERTY(SaveGame)
 	TMap<FPrimaryAssetId, FGuid> ActiveQuests;
 
+	/* TMap<QuestId, Completion date> */
+	UPROPERTY(SaveGame)
+	TMap<FPrimaryAssetId, FDateTime> CompletedQuests;
+
 };
 

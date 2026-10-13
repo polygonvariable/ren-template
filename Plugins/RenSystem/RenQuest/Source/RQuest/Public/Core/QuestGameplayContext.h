@@ -47,3 +47,40 @@ public:
 
 };
 
+
+/*
+ *
+ */
+UENUM()
+enum class EQuestActorVisibilityCondition : uint8
+{
+	OnActive,
+	OnCompleted,
+};
+
+/*
+ *
+ */
+USTRUCT(DisplayName = "Quest Actor Visibility")
+struct FGameplayContext_QuestActorVisibility : public FGameplayContextAction
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, meta = (AllowedTypes = "Quest"))
+	FPrimaryAssetId QuestId;
+
+	UPROPERTY(EditAnywhere)
+	bool bHidden = false;
+
+	UPROPERTY(EditAnywhere)
+	EQuestActorVisibilityCondition Condition = EQuestActorVisibilityCondition::OnCompleted;
+
+	// ~ FGameplayContextAction
+	virtual bool Execute(UWorld* World, UObject* Owner, UObject* Instigator) override;
+	// ~ End of FGameplayContextAction
+
+};
+

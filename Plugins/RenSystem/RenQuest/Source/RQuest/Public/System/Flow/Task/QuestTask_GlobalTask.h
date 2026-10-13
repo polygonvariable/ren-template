@@ -3,20 +3,26 @@
 #pragma once
 
 // Project Headers
+#include "Core/ObjectiveGlobalTaskFragment.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
 
 // Generated Headers
-#include "QuestTask_CheckStorage.generated.h"
+#include "QuestTask_GlobalTask.generated.h"
 
 
 /**
  *
  */
 UCLASS(MinimalAPI)
-class UQuestTask_CheckStorage : public UQuestPrimaryTask
+class UQuestTask_EnsureGlobal : public UQuestPrimaryTask
 {
 
 	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, Category = "Global Task", meta = (ExcludeBaseStruct))
+	TArray<TInstancedStruct<FObjectiveGlobalTaskFragment>> GlobalTasks;
 
 protected:
 

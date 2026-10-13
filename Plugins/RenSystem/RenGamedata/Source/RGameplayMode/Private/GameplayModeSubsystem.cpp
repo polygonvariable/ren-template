@@ -34,6 +34,11 @@ void UGameplayModeSubsystem::PushGameplayMode(FName Mode)
 		return;
 	}
 
+	if (!GameplayModeStack.IsEmpty() && GameplayModeStack.Last().IsEqual(Mode))
+	{
+		return;
+	}
+
 	const FGameplayModeTagGroup* FoundRow = GameplayModeTable->FindRow<FGameplayModeTagGroup>(Mode, FString());
 	if (!FoundRow)
 	{
