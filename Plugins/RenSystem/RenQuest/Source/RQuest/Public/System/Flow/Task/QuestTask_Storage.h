@@ -21,9 +21,6 @@ class UQuestTask_CheckStorage : public UQuestPrimaryTask
 protected:
 
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
@@ -42,9 +39,6 @@ class UQuestTask_Checkpoint : public UQuestPrimaryTask
 protected:
 
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
@@ -63,9 +57,6 @@ class UQuestTask_Complete : public UQuestPrimaryTask
 protected:
 
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 

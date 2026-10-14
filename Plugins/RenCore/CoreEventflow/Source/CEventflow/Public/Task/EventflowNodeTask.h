@@ -47,6 +47,8 @@ public:
 	UEventflowSubTask* GetSubTask(const FName& InTaskName) const;
 
 #if WITH_EDITOR
+	virtual FText GetEditorNodeTitle() const;
+
 	// ~ UEventflowTask
 	virtual void AppendAssetBundleData(FAssetBundleData& AssetBundle) override;
 	// ~ End of UEventflowTask

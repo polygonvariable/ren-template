@@ -45,7 +45,7 @@ void UQuestUI::RenderSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* NewItem
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->DisplayName.ToString();
+			//SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -65,16 +65,16 @@ void UQuestUI::RenderNodeTask(UQuestEngine* Engine, UEventflowNodeTask* NodeTask
 	if (NodeTask)
 	{
 		UQuestPrimaryTask* QTask = Cast<UQuestPrimaryTask>(NodeTask);
-		if (QTask->bCanCancel)
-		{
-			NewItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		//if (QTask->bCanCancel)
+		//{
+		//	NewItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
+		//}
+		//else
+		//{
+		//	NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
+		//}
 
-		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
+		//NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 
 		RenderSubTask(NodeTask, NewItem);
 
@@ -129,7 +129,7 @@ void UQuestUI::RenderGroupSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* Gr
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->DisplayName.ToString();
+			//SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -149,16 +149,16 @@ void UQuestUI::RenderGroupNodeTask(UQuestEngine* Engine, UEventflowNodeTask* Nod
 	if (NodeTask)
 	{
 		UQuestPrimaryTask* QTask = Cast<UQuestPrimaryTask>(NodeTask);
-		if (QTask->bCanCancel)
-		{
-			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		//if (QTask->bCanCancel)
+		//{
+		//	GroupItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
+		//}
+		//else
+		//{
+		//	GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
+		//}
 
-		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
+		//GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 		RenderGroupSubTask(NodeTask, GroupItem);
 	}
 }
@@ -236,7 +236,7 @@ void UQuestFocusUI::RenderSubTask(UEventflowNodeTask* NodeTask, UQuestItemUI* Ne
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->DisplayName.ToString();
+			//SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -256,16 +256,16 @@ void UQuestFocusUI::RenderNodeTask(UQuestEngine* Engine, UEventflowNodeTask* Nod
 	if (NodeTask)
 	{
 		UQuestPrimaryTask* QTask = Cast<UQuestPrimaryTask>(NodeTask);
-		if (QTask->bCanCancel)
-		{
-			NewItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		//if (QTask->bCanCancel)
+		//{
+		//	NewItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
+		//}
+		//else
+		//{
+		//	NewItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
+		//}
 
-		NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
+		//NewItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 
 		RenderSubTask(NodeTask, NewItem);
 
@@ -317,7 +317,7 @@ void UQuestFocusUI::RenderGroupSubTask(UEventflowNodeTask* NodeTask, UQuestItemU
 			TInstancedStruct<FQuestRuntimeData> QData;
 			QSub->PullQuestData(QData);
 
-			SubtaskData += QSub->DisplayName.ToString();
+			//SubtaskData += QSub->DisplayName.ToString();
 
 			FQuestRuntimeData* QDataPtr = QData.GetMutablePtr();
 			if (QDataPtr)
@@ -337,16 +337,16 @@ void UQuestFocusUI::RenderGroupNodeTask(UQuestEngine* Engine, UEventflowNodeTask
 	if (NodeTask)
 	{
 		UQuestPrimaryTask* QTask = Cast<UQuestPrimaryTask>(NodeTask);
-		if (QTask->bCanCancel)
-		{
-			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-		}
+		//if (QTask->bCanCancel)
+		//{
+		//	GroupItem->CancelButton->SetVisibility(ESlateVisibility::Visible);
+		//}
+		//else
+		//{
+		//	GroupItem->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
+		//}
 
-		GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
+		//GroupItem->NodeTaskTextBlock->SetText(FText::FromName(NodeTask->DisplayName));
 		RenderGroupSubTask(NodeTask, GroupItem);
 	}
 }
@@ -397,6 +397,7 @@ void UQuestFocusUI::NativeConstruct()
 	QuestSubsystem = UQuestSubsystem::Get(GetWorld());
 	if (IsValid(QuestSubsystem))
 	{
+		HandleOnQuestUpdated();
 		QuestSubsystem->OnQuestFocusChanged.AddWeakLambda(this, [this]() { this->HandleOnQuestUpdated(); });
 		QuestSubsystem->OnQuestDataChanged.AddWeakLambda(this, [this]() { this->HandleOnQuestUpdated(); });
 		QuestSubsystem->GetOnEngineAdded().AddWeakLambda(this, [this](FPrimaryAssetId, UEventflowEngine*) { this->HandleOnQuestUpdated(); });

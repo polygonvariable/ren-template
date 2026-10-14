@@ -16,7 +16,30 @@ void UQuestPrimaryTask::CopyFromAsset(const UEventflowTask* Template)
 	const UQuestPrimaryTask* Task = Cast<UQuestPrimaryTask>(Template);
 	checkf(Task, TEXT("Quest task contains invalid template or doesnt match its type"));
 
-	Summary = Task->Summary;
-	bCanCancel = Task->bCanCancel;
+	ObjectiveTitle = Task->ObjectiveTitle;
+	ObjectiveDescription = Task->ObjectiveDescription;
+	bCanBeCancelled = Task->bCanBeCancelled;
+	bShowInUI = Task->bShowInUI;
+}
+
+void UQuestPrimaryTask::OnInitialized(EFSMState PreviousState)
+{
+	Super::OnInitialized(PreviousState);
+	Load();
+}
+
+void UQuestPrimaryTask::OnLoaded(EFSMState PreviousState)
+{
+	Ready();
+}
+
+void UQuestPrimaryTask::OnReady(EFSMState PreviousState)
+{
+	Active();
+}
+
+void UQuestPrimaryTask::OnActive(EFSMState PreviousState)
+{
+	Finish(EFSMResult::Success);
 }
 

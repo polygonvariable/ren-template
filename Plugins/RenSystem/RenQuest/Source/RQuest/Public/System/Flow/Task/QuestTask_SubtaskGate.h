@@ -42,9 +42,6 @@ protected:
 	// ~ End of Bindings
 
 	// ~ UFiniteStateMachine
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	virtual void OnFinished(EFSMResult Result) override;
 	virtual void OnReset() override;

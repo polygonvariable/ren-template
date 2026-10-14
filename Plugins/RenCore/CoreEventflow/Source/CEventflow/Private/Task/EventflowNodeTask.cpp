@@ -65,6 +65,10 @@ UEventflowSubTask* UEventflowNodeTask::GetSubTask(const FName& InTaskName) const
 
 
 #if WITH_EDITOR
+FText UEventflowNodeTask::GetEditorNodeTitle() const
+{
+	return FText();
+}
 void UEventflowNodeTask::AppendAssetBundleData(FAssetBundleData& AssetBundle)
 {
 	Super::AppendAssetBundleData(AssetBundle);

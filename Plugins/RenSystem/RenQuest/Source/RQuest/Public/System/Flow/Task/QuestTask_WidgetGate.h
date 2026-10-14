@@ -53,9 +53,7 @@ protected:
 	// ~ End of Binding
 
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
 	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	virtual void OnReset() override;
 	// ~ End of UEventflowTask

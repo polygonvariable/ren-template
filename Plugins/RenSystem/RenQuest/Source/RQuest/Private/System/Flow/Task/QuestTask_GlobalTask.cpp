@@ -7,13 +7,7 @@
 #include "System/Flow/QuestEngine.h"
 
 
-void UQuestTask_EnsureGlobal::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_EnsureGlobal::OnLoaded(EFSMState PreviousState)
+void UQuestTask_EnsureGlobal::OnActive(EFSMState PreviousState)
 {
 	UQuestEngine* Engine = GetOwningEngine<UQuestEngine>();
 	checkf(IsValid(Engine), TEXT("Quest engine is invalid"));
@@ -32,16 +26,6 @@ void UQuestTask_EnsureGlobal::OnLoaded(EFSMState PreviousState)
 		}
 	}
 
-	Ready();
-}
-
-void UQuestTask_EnsureGlobal::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
-void UQuestTask_EnsureGlobal::OnActive(EFSMState PreviousState)
-{
 	Finish(EFSMResult::Success);
 }
 

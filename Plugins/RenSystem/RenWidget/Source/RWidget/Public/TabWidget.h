@@ -6,18 +6,20 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Border.h"
 #include "Components/Button.h"
-#include "CoreMinimal.h"
+#include "Components/TextBlock.h"
+#include "StructUtils/InstancedStruct.h"
+
+// Project Headers
+#include "FilterUIInterface.h"
+#include "FilterGroup.h"
 
 // Generated Headers
 #include "TabWidget.generated.h"
 
 // Forward Declarations
-class UButton;
-class UTextBlock;
 class UPanelWidget;
 class UImage;
 class UTexture2D;
-class UBorder;
 class USlateBrushAsset;
 
 
@@ -138,14 +140,17 @@ public:
  *
  */
 UCLASS(HideCategories = "Appearance")
-class UCardButton : public UButton
+class UKeyActionButton : public UButton
 {
 
 	GENERATED_BODY()
 
 public:
 
-	UCardButton();
+	UKeyActionButton();
+
+	UFUNCTION(BlueprintCallable)
+	void SetLabel(FText NewLabel);
 
 protected:
 
@@ -178,6 +183,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FMargin TextSlotPadding;
 
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EHorizontalAlignment> HorizontalAlignment;
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EVerticalAlignment> VerticalAlignment;
+
 
 	UPROPERTY(Transient)
 	TObjectPtr<UBorder> CardBorder;
@@ -188,6 +199,74 @@ protected:
 	UPROPERTY(Transient)
 	TObjectPtr<UTextBlock> LabelTextBlock;
 
+	// ~ UButton
+	virtual TSharedRef<SWidget> RebuildWidget() override;
+	virtual void SynchronizeProperties() override;
+	virtual void ReleaseSlateResources(bool bReleaseChildren) override;
+	// ~ End of UButton
+
+private:
+
+	void BuildDefaultContent();
+
+};
+
+
+/*
+ *
+ */
+UCLASS(HideCategories = "Appearance")
+class UIconButton : public UButton
+{
+
+	GENERATED_BODY()
+
+public:
+
+	UIconButton();
+
+	UFUNCTION(BlueprintCallable)
+	void SetLabel(FText NewLabel);
+
+	UFUNCTION(BlueprintCallable)
+	void SetActive(bool bActive);
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	FText LabelText;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USlateWidgetStyleAsset> ActiveButtonStyle;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USlateWidgetStyleAsset> InactiveButtonStyle;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USlateBrushAsset> CardStyle;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USlateWidgetStyleAsset> LabelTextStyle;
+
+
+	UPROPERTY(EditAnywhere)
+	FMargin CardSlotPadding;
+
+	UPROPERTY(EditAnywhere)
+	FMargin TextSlotPadding;
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EHorizontalAlignment> HorizontalAlignment;
+
+	UPROPERTY(EditAnywhere)
+	TEnumAsByte<EVerticalAlignment> VerticalAlignment;
+
+
+	UPROPERTY(Transient)
+	TObjectPtr<UImage> CardImage;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UTextBlock> LabelTextBlock;
 
 	// ~ UButton
 	virtual TSharedRef<SWidget> RebuildWidget() override;
@@ -248,6 +327,108 @@ protected:
 	// ~ UBorder
 	virtual void SynchronizeProperties() override;
 	// ~ End of UBorder
+
+};
+
+
+/*
+ *
+ */
+UCLASS(HideCategories = "Appearance")
+class ULabelBlock : public UTextBlock
+{
+
+	GENERATED_BODY()
+
+protected:
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USlateWidgetStyleAsset> LabelStyle;
+
+	UPROPERTY(EditAnywhere)
+	int FontSize = 20;
+
+	// ~ UBorder
+	virtual void SynchronizeProperties() override;
+	// ~ End of UBorder
+
+};
+
+
+
+
+
+
+/**
+ *
+ */
+UCLASS(Abstract, MinimalAPI)
+class UFilterUI : public UUserWidget
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FOnFilterSelected OnSelected;
+
+	UPROPERTY(EditAnywhere)
+	FInstancedStruct FilterData;
+
+	void OnSelectionChanged(bool bSelected);
+
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UButton> FilterButton = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool bActiveInitally = false;
+
+	UPROPERTY(EditAnywhere)
+	FText FilterLabel;
+
+	// ~ Binding
+	UFUNCTION()
+	void HandleOnFilterClicked();
+	// ~ End of Binding
+
+	// ~ UUserWidget
+	virtual void NativePreConstruct() override;
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
+
+};
+
+/**
+ *
+ */
+UCLASS(Abstract, MinimalAPI)
+class UFilterCollectionUI : public UUserWidget, public IFilterUIInterface
+{
+
+	GENERATED_BODY()
+
+public:
+
+	// ~ IFilterUIInterface
+	virtual void SetSelected(int Index) override;
+	// ~ End of IFilterUIInterface
+
+protected:
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<UPanelWidget> FilterCollection = nullptr;
+
+	// ~ Binding
+	void HandleOnFilterSelected(const FInstancedStruct& Data, UFilterUI* Filter);
+	// ~ End of Binding
+
+	// ~ UUserWidget
+	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
+	// ~ End of UUserWidget
 
 };
 

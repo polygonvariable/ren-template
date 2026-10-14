@@ -22,16 +22,8 @@ public:
 
 	UQuestTask_Begin();
 
-protected:
-
-	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
-	virtual void OnActive(EFSMState PreviousState) override;
-	// ~ End of UEventflowTask
-
 };
+
 
 /**
  *
@@ -52,15 +44,6 @@ public:
 	// ~ UEventflowTask
 	virtual void GetReturnData(TInstancedStruct<FEventflowReturnData>& ReturnData) override;
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
-	// ~ End of UEventflowTask
-
-protected:
-
-	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
-	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
 };

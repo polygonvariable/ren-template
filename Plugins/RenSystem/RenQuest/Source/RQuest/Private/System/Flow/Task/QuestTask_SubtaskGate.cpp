@@ -107,22 +107,6 @@ void UQuestTask_SubtaskGate::HandleOnSubTaskStateChanged(EFSMState PreviousState
 	Finish(FSMResult);
 }
 
-void UQuestTask_SubtaskGate::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_SubtaskGate::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_SubtaskGate::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_SubtaskGate::OnActive(EFSMState PreviousState)
 {
 	FQuestEvents::DataChanged(GetWorld());

@@ -10,22 +10,6 @@
 #include "Core/Type/AssetFilterProperty.h"
 
 
-void UQuestTask_GameplayContext::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_GameplayContext::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_GameplayContext::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_GameplayContext::OnActive(EFSMState PreviousState)
 {
 	UWorld* World = GetWorld();
@@ -43,22 +27,6 @@ void UQuestTask_GameplayContext::OnActive(EFSMState PreviousState)
 }
 
 
-void UQuestTask_AddAssetInstance::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_AddAssetInstance::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_AddAssetInstance::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_AddAssetInstance::OnActive(EFSMState PreviousState)
 {
 	UGameInstance* GameInstance = GetWorld()->GetGameInstance();
@@ -74,22 +42,6 @@ void UQuestTask_AddAssetInstance::OnActive(EFSMState PreviousState)
 	Finish(EFSMResult::Success);
 }
 
-
-void UQuestTask_ContainAssetInstance::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_ContainAssetInstance::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_ContainAssetInstance::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
 
 void UQuestTask_ContainAssetInstance::OnActive(EFSMState PreviousState)
 {

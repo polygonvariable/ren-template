@@ -24,11 +24,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Gameplay Context", meta = (ExcludeBaseStruct))
 	TArray<TInstancedStruct<FGameplayContextAction>> Contexts;
 
-
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
@@ -55,11 +51,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TMap<FPrimaryAssetId, int> Items;
 
-
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
@@ -89,11 +81,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	bool bContainsAll = false;
 
-
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 

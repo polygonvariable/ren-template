@@ -34,6 +34,11 @@ UEventflowGlobalTask* UQuestAsset::GetGlobalTask(FName TaskName) const
 
 FPrimaryAssetId UQuestAsset::GetPrimaryAssetId() const
 {
-	return FPrimaryAssetId(TEXT("Quest"), GetFName());
+	return FPrimaryAssetId(GetPrimaryAssetType(), GetFName());
+}
+
+FPrimaryAssetType UQuestAsset::GetPrimaryAssetType()
+{
+	return TEXT("Quest");
 }
 

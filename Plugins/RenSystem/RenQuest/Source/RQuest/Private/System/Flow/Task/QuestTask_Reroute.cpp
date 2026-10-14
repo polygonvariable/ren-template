@@ -34,7 +34,7 @@ void UQuestTask_Reroute::CopyFromAsset(const UEventflowTask* Template)
 	Super::CopyFromAsset(Template);
 
 	const UQuestTask_Reroute* Task = Cast<UQuestTask_Reroute>(Template);
-	checkf(Task, TEXT("Invalid task template"));
+	checkf(Task, TEXT("Quest task contains invalid task template"));
 
 	RerouteType = Task->RerouteType;
 	RerouteName = Task->RerouteName;
@@ -65,26 +65,5 @@ void UQuestTask_Reroute::PreSave(FObjectPreSaveContext ObjectSaveContext)
 #endif
 
 	Super::PreSave(ObjectSaveContext);
-}
-
-void UQuestTask_Reroute::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_Reroute::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_Reroute::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
-void UQuestTask_Reroute::OnActive(EFSMState PreviousState)
-{
-	Finish(EFSMResult::Success);
 }
 

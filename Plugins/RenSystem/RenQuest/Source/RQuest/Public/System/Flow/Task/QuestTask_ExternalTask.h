@@ -30,7 +30,6 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "External Asset")
 	TArray<FGuid> ExternalPins;
 
-
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
 	// ~ End of UEventflowTask
@@ -54,9 +53,6 @@ protected:
 	// ~ End of Binding
 
 	// ~ UEventflowTask
-	virtual void OnInitialized(EFSMState PreviousState) override;
-	virtual void OnLoaded(EFSMState PreviousState) override;
-	virtual void OnReady(EFSMState PreviousState) override;
 	virtual void OnActive(EFSMState PreviousState) override;
 	virtual void OnReset() override;
 	// ~ End of UEventflowTask

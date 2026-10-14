@@ -89,9 +89,9 @@ void UEventflowEdGraphNode::SyncRuntimeData()
 
 FText UEventflowEdGraphNode::GetNodeTitle(ENodeTitleType::Type TitleType) const
 {
-	if (IsValid(NodeTask) && !NodeTask->DisplayName.IsNone())
+	if (IsValid(NodeTask) && !NodeTask->GetEditorNodeTitle().IsEmpty())
 	{
-		FString NewTitle = NodeTask->DisplayName.ToString();
+		FString NewTitle = NodeTask->GetEditorNodeTitle().ToString();
 		const int MaxLength = 35;
 
 		if (NewTitle.Len() > MaxLength)

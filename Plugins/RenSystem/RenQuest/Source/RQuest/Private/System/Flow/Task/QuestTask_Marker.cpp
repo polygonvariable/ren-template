@@ -49,12 +49,6 @@ void UQuestTask_SpawnMarker::HandleOnInteractionCompleted(EFSMResult Result)
 	Active();
 }
 
-void UQuestTask_SpawnMarker::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	FMiscLibrary::NextFrame(this, &UQuestTask_SpawnMarker::Load);
-}
-
 void UQuestTask_SpawnMarker::OnLoaded(EFSMState PreviousState)
 {
 	UQuestTask_SpawnMarker* Template = GetOwningTemplate<UQuestTask_SpawnMarker>();
@@ -78,11 +72,6 @@ void UQuestTask_SpawnMarker::OnReady(EFSMState PreviousState)
 	
 	MarkerActor->SetActorHiddenInGame(false);
 	MarkerActor->SetActorEnableCollision(true);
-}
-
-void UQuestTask_SpawnMarker::OnActive(EFSMState PreviousState)
-{
-	Finish(EFSMResult::Success);
 }
 
 void UQuestTask_SpawnMarker::OnFinished(EFSMResult Result)

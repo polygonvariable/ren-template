@@ -133,22 +133,6 @@ FPrimaryAssetId UQuestTask_ExternalTask::GetGroupId() const
 	return Asset->GetPrimaryAssetId();
 }
 
-void UQuestTask_ExternalTask::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_ExternalTask::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_ExternalTask::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_ExternalTask::OnActive(EFSMState PreviousState)
 {
 	FQuestEvents::DataChanged(GetWorld());

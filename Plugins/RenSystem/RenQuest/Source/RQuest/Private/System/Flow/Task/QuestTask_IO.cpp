@@ -14,27 +14,6 @@ UQuestTask_Begin::UQuestTask_Begin()
 	NodeType = EEventflowNodeType::Entry;
 }
 
-void UQuestTask_Begin::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	FMiscLibrary::NextFrame(this, &UQuestTask_Begin::Load);
-}
-
-void UQuestTask_Begin::OnLoaded(EFSMState PreviousState)
-{
-	FMiscLibrary::NextFrame(this, &UQuestTask_Begin::Ready);
-}
-
-void UQuestTask_Begin::OnReady(EFSMState PreviousState)
-{
-	FMiscLibrary::NextFrame(this, &UQuestTask_Begin::Active);
-}
-
-void UQuestTask_Begin::OnActive(EFSMState PreviousState)
-{
-	Finish(EFSMResult::Success);
-}
-
 
 UQuestTask_End::UQuestTask_End()
 {
@@ -60,26 +39,4 @@ void UQuestTask_End::CopyFromAsset(const UEventflowTask* Template)
 
 	GraphResult = Task->GraphResult;
 }
-
-void UQuestTask_End::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	FMiscLibrary::NextFrame(this, &UQuestTask_End::Load);
-}
-
-void UQuestTask_End::OnLoaded(EFSMState PreviousState)
-{
-	FMiscLibrary::NextFrame(this, &UQuestTask_End::Ready);
-}
-
-void UQuestTask_End::OnReady(EFSMState PreviousState)
-{
-	FMiscLibrary::NextFrame(this, &UQuestTask_End::Active);
-}
-
-void UQuestTask_End::OnActive(EFSMState PreviousState)
-{
-	Finish(EFSMResult::Success);
-}
-
 

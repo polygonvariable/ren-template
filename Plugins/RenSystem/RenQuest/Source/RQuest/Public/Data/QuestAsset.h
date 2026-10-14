@@ -4,6 +4,7 @@
 
 // Project Headers
 #include "EventflowAsset.h"
+#include "Core/QuestType.h"
 
 // Generated Headers
 #include "QuestAsset.generated.h"
@@ -11,16 +12,6 @@
 // Forward Declaration
 class UQuestGlobalTask;
 
-
-/**
- *
- */
-UENUM()
-enum class EQuestType : uint8
-{
-	World,
-	Story,
-};
 
 
 /**
@@ -34,18 +25,14 @@ class UQuestAsset : public UEventflowAsset
 
 public:
 
-	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	UPROPERTY(EditAnywhere, Category = "Quest Detail", AssetRegistrySearchable)
 	FText Title;
 
-	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	UPROPERTY(EditAnywhere, Category = "Quest Detail", AssetRegistrySearchable)
 	FText Summary;
 
-	UPROPERTY(EditAnywhere, Category = "Quest Detail")
+	UPROPERTY(EditAnywhere, Category = "Quest Detail", AssetRegistrySearchable)
 	EQuestType QuestType = EQuestType::Story;
-
-	UPROPERTY(EditAnywhere, Category = "Quest Detail")
-	bool bIsTransient = true;
-
 
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	bool bPushInHUD = true;
@@ -53,7 +40,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Quest Detail")
 	bool bAutoFocus = false;
 
-	UPROPERTY(EditAnywhere, Instanced, Category = "Quest Global Task")
+	UPROPERTY(EditAnywhere, Instanced, Category = "Global Task")
 	TArray<TObjectPtr<UQuestGlobalTask>> GlobalTasks;
 
 
@@ -70,6 +57,10 @@ public:
 	virtual void UpdateAssetBundleData() override;
 	// ~ End of UPrimaryDataAsset
 #endif
+
+public:
+
+	static RQUEST_API FPrimaryAssetType GetPrimaryAssetType();
 
 };
 

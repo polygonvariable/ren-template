@@ -20,7 +20,14 @@ struct FQuestRuntimeData
 
 public:
 
+	FText Title;
+
 	FString Value;
+
+	bool IsValid() const
+	{
+		return !Title.IsEmpty() && !Value.IsEmpty();
+	}
 
 };
 

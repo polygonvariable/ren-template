@@ -14,22 +14,6 @@ void UQuestTask_MovePlayer::CopyFromAsset(const UEventflowTask* Template)
 	Transform = Task->Transform;
 }
 
-void UQuestTask_MovePlayer::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_MovePlayer::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_MovePlayer::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_MovePlayer::OnActive(EFSMState PreviousState)
 {
 	UWorld* World = GetWorld();

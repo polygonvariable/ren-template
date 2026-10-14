@@ -23,14 +23,29 @@ public:
 
 	UQuestPrimaryTask();
 
-	UPROPERTY(EditAnywhere, Category = "Objective")
-	FName Summary;
+	UPROPERTY(EditAnywhere, Category = "Objective", meta = (EditCondition = "bShowInUI==true", EditConditionHides))
+	FText ObjectiveTitle;
+
+	UPROPERTY(EditAnywhere, Category = "Objective", meta = (EditCondition = "bShowInUI==true", EditConditionHides))
+	FText ObjectiveDescription;
 
 	UPROPERTY(EditAnywhere, Category = "Objective")
-	bool bCanCancel = false;
+	bool bCanBeCancelled = false;
+
+	UPROPERTY(EditAnywhere, Category = "Objective")
+	bool bShowInUI = false;
 
 	// ~ UEventflowTask
 	virtual void CopyFromAsset(const UEventflowTask* Template) override;
+	// ~ End of UEventflowTask
+
+protected:
+
+	// ~ UEventflowTask
+	virtual void OnInitialized(EFSMState PreviousState) override;
+	virtual void OnLoaded(EFSMState PreviousState) override;
+	virtual void OnReady(EFSMState PreviousState) override;
+	virtual void OnActive(EFSMState PreviousState) override;
 	// ~ End of UEventflowTask
 
 };

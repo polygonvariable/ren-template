@@ -4,14 +4,11 @@
 #include "TabWidget.h"
 
 // Engine Headers
-#include "Components/Button.h"
-#include "Components/PanelWidget.h"
-#include "Components/TextBlock.h"
-#include "Components/Border.h"
+#include "Components/ButtonSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
-
-
+#include "Components/Image.h"
+#include "Components/PanelWidget.h"
 
 // Project Headers
 #include "Log/LogMacro.h"
@@ -132,7 +129,8 @@ void UTabBoxControl::HandleTabSetup_Implementation(UTabControl* NewTab) {
 	TabContainer->AddChild(NewTab);
 }
 
-UCardButton::UCardButton()
+
+UKeyActionButton::UKeyActionButton()
 {
 	LabelText = FText::FromString(TEXT("Button"));
 
@@ -141,7 +139,15 @@ UCardButton::UCardButton()
 	TextSlotPadding = FMargin(0.0f, 4.0f, 12.0f, 4.0f);
 }
 
-void UCardButton::BuildDefaultContent()
+void UKeyActionButton::SetLabel(FText NewLabel)
+{
+	if (IsValid(LabelTextBlock))
+	{
+		LabelTextBlock->SetText(NewLabel);
+	}
+}
+
+void UKeyActionButton::BuildDefaultContent()
 {
 	if (GetChildrenCount() > 0)
 	{
@@ -191,10 +197,16 @@ void UCardButton::BuildDefaultContent()
 		}
 
 		AddChild(HorizontalBox);
+		
+		if (UButtonSlot* ButtonSlot = Cast<UButtonSlot>(HorizontalBox->Slot))
+		{
+			ButtonSlot->SetHorizontalAlignment(HorizontalAlignment);
+			ButtonSlot->SetVerticalAlignment(VerticalAlignment);
+		}
 	}
 }
 
-TSharedRef<SWidget> UCardButton::RebuildWidget()
+TSharedRef<SWidget> UKeyActionButton::RebuildWidget()
 {
 	BuildDefaultContent();
 
@@ -202,7 +214,7 @@ TSharedRef<SWidget> UCardButton::RebuildWidget()
 	return ButtonWidget;
 }
 
-void UCardButton::SynchronizeProperties()
+void UKeyActionButton::SynchronizeProperties()
 {
 	Super::SynchronizeProperties();
 	
@@ -259,7 +271,7 @@ void UCardButton::SynchronizeProperties()
 	}
 }
 
-void UCardButton::ReleaseSlateResources(bool bReleaseChildren)
+void UKeyActionButton::ReleaseSlateResources(bool bReleaseChildren)
 {
 	Super::ReleaseSlateResources(bReleaseChildren);
 
@@ -268,6 +280,136 @@ void UCardButton::ReleaseSlateResources(bool bReleaseChildren)
 	CardTextBlock = nullptr;
 }
 
+
+UIconButton::UIconButton()
+{
+	LabelText = FText::FromString(TEXT("Button"));
+
+	CardSlotPadding = FMargin(12.0f, 4.0f, 4.0f, 4.0f);
+	TextSlotPadding = FMargin(0.0f, 4.0f, 12.0f, 4.0f);
+}
+
+void UIconButton::SetLabel(FText NewLabel)
+{
+	if (IsValid(LabelTextBlock))
+	{
+		LabelTextBlock->SetText(NewLabel);
+	}
+}
+
+void UIconButton::SetActive(bool bActive)
+{
+	USlateWidgetStyleAsset* StyleAsset = bActive ? ActiveButtonStyle : InactiveButtonStyle;
+	if (!IsValid(StyleAsset))
+	{
+		return;
+	}
+
+	const FButtonStyle* Style = StyleAsset->GetStyle<FButtonStyle>();
+	if (Style)
+	{
+		SetStyle(*Style);
+	}
+}
+
+void UIconButton::BuildDefaultContent()
+{
+	if (GetChildrenCount() > 0)
+	{
+		return;
+	}
+
+	UHorizontalBox* HorizontalBox = NewObject<UHorizontalBox>(this, TEXT("HorizontalBox001"));
+	if (IsValid(HorizontalBox))
+	{
+		HorizontalBox->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+		CardImage = NewObject<UImage>(this, TEXT("CardImage001"));
+		if (IsValid(CardImage))
+		{
+			CardImage->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+			UHorizontalBoxSlot* CardSlot = HorizontalBox->AddChildToHorizontalBox(CardImage);
+			if (IsValid(CardSlot))
+			{
+				CardSlot->SetPadding(CardSlotPadding);
+				CardSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+			}
+		}
+
+		LabelTextBlock = NewObject<UTextBlock>(this, TEXT("Label001"));
+		if (IsValid(LabelTextBlock))
+		{
+			LabelTextBlock->SetText(LabelText);
+			LabelTextBlock->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
+
+			UHorizontalBoxSlot* TextSlot = HorizontalBox->AddChildToHorizontalBox(LabelTextBlock);
+			if (IsValid(TextSlot))
+			{
+				TextSlot->SetPadding(TextSlotPadding);
+				TextSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+			}
+		}
+
+		AddChild(HorizontalBox);
+
+		if (UButtonSlot* ButtonSlot = Cast<UButtonSlot>(HorizontalBox->Slot))
+		{
+			ButtonSlot->SetHorizontalAlignment(HorizontalAlignment);
+			ButtonSlot->SetVerticalAlignment(VerticalAlignment);
+		}
+	}
+}
+
+TSharedRef<SWidget> UIconButton::RebuildWidget()
+{
+	BuildDefaultContent();
+
+	TSharedRef<SWidget> ButtonWidget = Super::RebuildWidget();
+	return ButtonWidget;
+}
+
+void UIconButton::SynchronizeProperties()
+{
+	Super::SynchronizeProperties();
+
+	if (IsValid(InactiveButtonStyle))
+	{
+		const FButtonStyle* Style = InactiveButtonStyle->GetStyle<FButtonStyle>();
+		if (Style)
+		{
+			SetStyle(*Style);
+		}
+	}
+
+	if (IsValid(LabelTextBlock))
+	{
+		LabelTextBlock->SetText(LabelText);
+
+		if (LabelTextStyle)
+		{
+			const FTextBlockStyle* TextStyle = LabelTextStyle->GetStyle<FTextBlockStyle>();
+			if (TextStyle)
+			{
+				LabelTextBlock->SetFont(TextStyle->Font);
+				LabelTextBlock->SetColorAndOpacity(TextStyle->ColorAndOpacity);
+			}
+		}
+	}
+
+	if (IsValid(CardImage))
+	{
+		CardImage->SetBrushFromAsset(CardStyle);
+	}
+}
+
+void UIconButton::ReleaseSlateResources(bool bReleaseChildren)
+{
+	Super::ReleaseSlateResources(bReleaseChildren);
+
+	LabelTextBlock = nullptr;
+	CardImage = nullptr;
+}
 
 
 void UCardContainer::SynchronizeProperties()
@@ -279,7 +421,6 @@ void UCardContainer::SynchronizeProperties()
 		SetBrushFromAsset(CardStyle);
 	}
 }
-
 
 
 void UCardItem::IsActive(bool bActive)
@@ -309,3 +450,134 @@ void UCardItem::SynchronizeProperties()
 		SetBrushFromAsset(InactiveStyle);
 	}
 }
+
+
+void ULabelBlock::SynchronizeProperties()
+{
+	Super::SynchronizeProperties();
+	
+	if (LabelStyle)
+	{
+		const FTextBlockStyle* Style = LabelStyle->GetStyle<FTextBlockStyle>();
+		if (Style)
+		{
+			SetFont(Style->Font);
+			if (FontSize > 0)
+			{
+				SetFontSize(static_cast<float>(FontSize));
+			}
+			SetColorAndOpacity(Style->ColorAndOpacity);
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+void UFilterUI::OnSelectionChanged(bool bSelected)
+{
+	UIconButton* Button = Cast<UIconButton>(FilterButton);
+	if (IsValid(Button))
+	{
+		Button->SetActive(bSelected);
+	}
+}
+
+void UFilterUI::HandleOnFilterClicked()
+{
+	OnSelected.ExecuteIfBound(FilterData);
+}
+
+void UFilterUI::NativePreConstruct()
+{
+	UIconButton* Button = Cast<UIconButton>(FilterButton);
+	if (IsValid(Button))
+	{
+		Button->SetLabel(FilterLabel);
+	}
+	if (bActiveInitally)
+	{
+		OnSelectionChanged(true);
+	}
+}
+
+void UFilterUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+	FilterButton->OnClicked.AddDynamic(this, &UFilterUI::HandleOnFilterClicked);
+}
+
+void UFilterUI::NativeDestruct()
+{
+	FilterButton->OnClicked.RemoveAll(this);
+	Super::NativeDestruct();
+}
+
+
+
+
+
+void UFilterCollectionUI::SetSelected(int Index)
+{
+
+}
+
+void UFilterCollectionUI::HandleOnFilterSelected(const FInstancedStruct& Data, UFilterUI* Filter)
+{
+	TArray<UWidget*> Children = FilterCollection->GetAllChildren();
+	for (UWidget* Child : Children)
+	{
+		UFilterUI* OtherFilter = Cast<UFilterUI>(Child);
+		if (!IsValid(OtherFilter) || OtherFilter == Filter)
+		{
+			continue;
+		}
+		OtherFilter->OnSelectionChanged(false);
+	}
+
+	if (IsValid(Filter))
+	{
+		Filter->OnSelectionChanged(true);
+	}
+
+	OnFilterSelected.ExecuteIfBound(Data);
+}
+
+void UFilterCollectionUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	TArray<UWidget*> Children = FilterCollection->GetAllChildren();
+	for (UWidget* Child : Children)
+	{
+		UFilterUI* Filter = Cast<UFilterUI>(Child);
+		if (!IsValid(Filter))
+		{
+			continue;
+		}
+		Filter->OnSelected.BindUObject(this, &UFilterCollectionUI::HandleOnFilterSelected, Filter);
+	}
+}
+
+void UFilterCollectionUI::NativeDestruct()
+{
+	TArray<UWidget*> Children = FilterCollection->GetAllChildren();
+	for (UWidget* Child : Children)
+	{
+		UFilterUI* Filter = Cast<UFilterUI>(Child);
+		if (!IsValid(Filter))
+		{
+			continue;
+		}
+		Filter->OnSelected.Unbind();
+	}
+
+	Super::NativeDestruct();
+}
+
+

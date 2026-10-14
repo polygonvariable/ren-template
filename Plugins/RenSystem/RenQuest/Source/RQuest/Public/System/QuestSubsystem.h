@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 
 // Project Headers
+#include "Core/QuestQueryDefinition.h"
 #include "EventflowEngineProvider.h"
 #include "StateMachine/FiniteStateMachineType.h"
 
@@ -36,20 +37,23 @@ public:
 	DECLARE_MULTICAST_DELEGATE(FOnQuestFocusChanged);
 	FOnQuestFocusChanged OnQuestFocusChanged;
 
-	UQuestStorageManager* GetStorageManager() const;
-
+	RQUEST_API UQuestStorageManager* GetStorageManager() const;
 
 	UFUNCTION(BlueprintCallable)
 	void StartQuest(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData);
 
-	void FocusQuest(FPrimaryAssetId AssetId);
-	void CancelFocusedTask();
-	void CancelQuestTask(FPrimaryAssetId AssetId);
-	void CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive);
+	RQUEST_API void FocusQuest(FPrimaryAssetId AssetId);
+	RQUEST_API void CancelFocusedTask();
+	RQUEST_API void CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive);
 
-	UQuestEngine* GetFocusedQuest() const;
-	const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetQuests() const;
-	void GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& OutQuests) const;
+	RQUEST_API UQuestEngine* GetFocusedQuest() const;
+	RQUEST_API const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetQuests() const;
+	RQUEST_API void GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& OutQuests) const;
+
+
+	RQUEST_API void QueryQuests(const FQuestQueryDefinition& Query, TArray<FQuestQueryResult>& OutResult);
+
+
 
 	// ~ IEventflowEngineProvider
 	virtual void StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData) override;

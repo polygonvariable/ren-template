@@ -13,7 +13,6 @@ void UEventflowTask::CopyFromAsset(const UEventflowTask* Template)
 	check(IsValid(TaskTemplate));
 
 	TaskName = TaskTemplate->TaskName;
-	DisplayName = TaskTemplate->DisplayName;
 }
 
 UWorld* UEventflowTask::GetWorld() const

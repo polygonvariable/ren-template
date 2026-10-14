@@ -90,12 +90,6 @@ void UQuestTask_WidgetGate::HandleOnObjectiveFeedback(EFSMResult Result)
 	Finish(Result);
 }
 
-void UQuestTask_WidgetGate::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
 void UQuestTask_WidgetGate::OnLoaded(EFSMState PreviousState)
 {
 	UQuestTask_WidgetGate* Template = GetOwningTemplate<UQuestTask_WidgetGate>();
@@ -111,11 +105,6 @@ void UQuestTask_WidgetGate::OnLoaded(EFSMState PreviousState)
 	WidgetObjective->GetOnObjectiveFeedback().BindUObject(this, &UQuestTask_WidgetGate::HandleOnObjectiveFeedback);
 
 	Ready();
-}
-
-void UQuestTask_WidgetGate::OnReady(EFSMState PreviousState)
-{
-	Active();
 }
 
 void UQuestTask_WidgetGate::OnActive(EFSMState PreviousState)

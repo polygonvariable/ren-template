@@ -3,9 +3,14 @@
 // Parent Header
 #include "System/QuestStorageManager.h"
 
-// Project Headers
-#include "Data/QuestStorage.h"
+// Engine Headers
+#include "Engine/AssetManager.h"
 
+// Project Headers
+#include "Core/QuestPropertyDefinition.h"
+#include "Core/Type/AssetFilterProperty.h"
+#include "Data/QuestStorage.h"
+#include "FilterCriterion.h"
 
 
 FGuid UQuestStorageManager::GetActiveQuest(const FPrimaryAssetId& QuestId)
@@ -111,14 +116,76 @@ bool UQuestStorageManager::ContainsCompletedQuest(const FPrimaryAssetId& QuestId
 }
 
 
-
-const TMap<FPrimaryAssetId, FGuid>* UQuestStorageManager::GetActiveQuests() const
+void UQuestStorageManager::QueryQuests(const FQuestQueryDefinition& Query, TArray<FQuestQueryResult>& OutResult)
 {
-	if (!LocalStorage)
+	UAssetManager* AssetManager = UAssetManager::GetIfInitialized();
+	if (!IsValid(LocalStorage) || !IsValid(AssetManager))
 	{
-		return nullptr;
+		return;
 	}
-	return &LocalStorage->ActiveQuests;
+
+	const TInstancedStruct<FFilterCriterion>& FilterCriterion = Query.FilterRule.CriterionRoot;
+	const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+
+	if (Query.bActive)
+	{
+		const TMap<FPrimaryAssetId, FGuid>& Quests = LocalStorage->ActiveQuests;
+		for (const TPair<FPrimaryAssetId, FGuid>& Kv : Quests)
+		{
+			if (!EvaluateQueryQuests(AssetManager, Criterion, Kv.Key))
+			{
+				continue;
+			}
+
+			FQuestQueryResult Result;
+			Result.bActive = true;
+			Result.ActiveNodeId = Kv.Value;
+			Result.QuestAssetId = Kv.Key;
+
+			OutResult.Add(MoveTemp(Result));
+		}
+	}
+	else
+	{
+		const TMap<FPrimaryAssetId, FDateTime>& Quests = LocalStorage->CompletedQuests;
+		for (const TPair<FPrimaryAssetId, FDateTime>& Kv : Quests)
+		{
+			if (!EvaluateQueryQuests(AssetManager, Criterion, Kv.Key))
+			{
+				continue;
+			}
+
+			FQuestQueryResult Result;
+			Result.bActive = true;
+			Result.QuestAssetId = Kv.Key;
+
+			OutResult.Add(MoveTemp(Result));
+		}
+	}
+}
+
+bool UQuestStorageManager::EvaluateQueryQuests(UAssetManager* AssetManager, const FFilterCriterion* Criterion, const FPrimaryAssetId& AssetId) const
+{
+	FAssetData AssetData;
+	if (!AssetManager->GetPrimaryAssetData(AssetId, AssetData))
+	{
+		ensureMsgf(false, TEXT("Failed to get asset data"));
+		return false;
+	}
+
+	FName QuestType;
+	FQuestAssetData::GetQuestType(AssetData, QuestType);
+
+	if (Criterion)
+	{
+		FFilterContext Context;
+		Context.SetValue(FAssetFilterProperty::AssetId, AssetId);
+		Context.SetValue(FQuestFilterProperty::QuestType, QuestType);
+
+		return Criterion->Evaluate(Context);
+	}
+
+	return true;
 }
 
 UObject* UQuestStorageManager::GetStorage() const

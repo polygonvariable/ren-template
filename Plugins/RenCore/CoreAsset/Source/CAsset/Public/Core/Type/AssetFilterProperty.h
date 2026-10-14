@@ -6,13 +6,9 @@
 /**
  *
  */
-class CASSET_API FAssetFilterProperty
+namespace FAssetFilterProperty
 {
-
-public:
-
-	static const FName AssetId;
-	static const FName InstanceId;
-
+	const FName AssetId = TEXT("AssetId");
+	const FName InstanceId = TEXT("AssetInstanceId");
 };
 

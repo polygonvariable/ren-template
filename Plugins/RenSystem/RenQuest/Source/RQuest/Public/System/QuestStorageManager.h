@@ -4,13 +4,15 @@
 
 // Project Headers
 #include "Core/StorageManager.h"
+#include "Core/QuestQueryDefinition.h"
 
 // Generated Headers
 #include "QuestStorageManager.generated.h"
 
-
 // Forward Declarations
 class UQuestStorage;
+class UAssetManager;
+struct FFilterCriterion;
 
 
 /**
@@ -34,12 +36,10 @@ public:
 	void UpdateActiveQuest(const FPrimaryAssetId& QuestId, const FGuid& Guid);
 	void RemoveActiveQuest(const FPrimaryAssetId& QuestId);
 
-
 	bool ContainsActiveQuest(const FPrimaryAssetId& QuestId, bool& OutResult);
 	bool ContainsCompletedQuest(const FPrimaryAssetId& QuestId, bool& OutResult);
 
-
-	const TMap<FPrimaryAssetId, FGuid>* GetActiveQuests() const;
+	RQUEST_API void QueryQuests(const FQuestQueryDefinition& Query, TArray<FQuestQueryResult>& OutResult);
 
 	// ~ UStorageManager
 	virtual UObject* GetStorage() const override;
@@ -50,6 +50,9 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UQuestStorage> LocalStorage = nullptr;
+
+
+	bool EvaluateQueryQuests(UAssetManager* AssetManager, const FFilterCriterion* Criterion, const FPrimaryAssetId& AssetId) const;
 
 };
 

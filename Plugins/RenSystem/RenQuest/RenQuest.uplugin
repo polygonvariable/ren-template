@@ -21,6 +21,11 @@
 			"LoadingPhase": "Default"
 		},
 		{
+			"Name": "RQuestUI",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
 			"Name": "RQuestEd",
 			"Type": "Editor",
 			"LoadingPhase": "Default"

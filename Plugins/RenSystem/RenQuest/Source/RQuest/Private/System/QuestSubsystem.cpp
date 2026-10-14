@@ -3,32 +3,36 @@
 // Parent Header
 #include "System/QuestSubsystem.h"
 
+// Engine Headers
+#include "Engine/AssetManager.h"
+
 // Project Headers
 #include "Core/PoolLibrary.h"
 #include "Core/QuestSettings.h"
+#include "Core/StorageProvider.h"
 #include "Data/QuestAsset.h"
+#include "Data/QuestStorage.h"
 #include "Log/LogCategory.h"
 #include "Log/LogMacro.h"
 #include "LuauSubsystem.h"
 #include "MiscLibrary.h"
+#include "SubsystemLibrary.h"
 #include "System/Flow/QuestEngine.h"
 #include "System/Flow/Task/QuestPrimaryTask.h"
+#include "System/QuestStorageManager.h"
 #include "lua.h"
 #include "luacode.h"
 #include "lualib.h"
-#include "Core/StorageProvider.h"
-#include "System/QuestStorageManager.h"
+#include "Core/QuestPropertyDefinition.h"
+#include "Core/Type/AssetFilterProperty.h"
 #include "Data/QuestStorage.h"
-#include "SubsystemLibrary.h"
-
+#include "FilterCriterion.h"
 
 
 UQuestStorageManager* UQuestSubsystem::GetStorageManager() const
 {
 	return StorageManager;
 }
-
-
 
 void UQuestSubsystem::StartEventflow(const FPrimaryAssetId& AssetId, const TInstancedStruct<FEventflowEntryData>& EntryData)
 {
@@ -49,8 +53,9 @@ void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId, const TInstance
 	}
 
 	UQuestEngine* Engine = FPoolLibrary::AcquireFromArray<UQuestEngine>(EnginePool, UQuestEngine::StaticClass(), this);
-	if (!ensureAlwaysMsgf(IsValid(Engine), TEXT("Failed to acquire/create quest engine")))
+	if (!IsValid(Engine))
 	{
+		ensureMsgf(false, TEXT("Failed to acquire/create quest engine"));
 		return;
 	}
 
@@ -59,8 +64,6 @@ void UQuestSubsystem::StartQuest(const FPrimaryAssetId& AssetId, const TInstance
 	Engine->OnStateChanged.BindUObject(this, &UQuestSubsystem::HandleOnQuestStateChanged, AssetId);
 	Engine->InitializeData(AssetId, EntryData);
 	Engine->Initialize();
-
-	PRINT_SUCCESS(LogTemp, 1.0f, TEXT("Quest started, added to Quests"));
 }
 
 
@@ -117,23 +120,6 @@ void UQuestSubsystem::CancelFocusedTask()
 	CancelQuestTask(Asset->GetPrimaryAssetId(), true);
 }
 
-void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId)
-{
-	TObjectPtr<UQuestEngine>* FoundEngine = Quests.Find(AssetId);
-	if (!FoundEngine) return;
-
-	UQuestEngine* Engine = FoundEngine->Get();
-	if (!Engine) return;
-
-	UQuestPrimaryTask* Node = Engine->GetNodeTask<UQuestPrimaryTask>();
-	if (!Node) return;
-
-	if (Node->bCanCancel)
-	{
-		Node->Finish(EFSMResult::Cancelled);
-	}
-}
-
 void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive)
 {
 	TObjectPtr<UQuestEngine>* FoundQEngine = Quests.Find(AssetId);
@@ -164,7 +150,7 @@ void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive)
 	UQuestPrimaryTask* ParentNode = ParentEngine->GetNodeTask<UQuestPrimaryTask>();
 	if (!ParentNode) return;
 
-	if (ParentNode->bCanCancel)
+	if (ParentNode->bCanBeCancelled)
 	{
 		ParentNode->Finish(EFSMResult::Cancelled);
 		return;
@@ -181,7 +167,7 @@ void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive)
 		UQuestPrimaryTask* GroupNode = GroupEngine->GetNodeTask<UQuestPrimaryTask>();
 		if (!GroupNode) return;
 
-		if (GroupNode->bCanCancel)
+		if (GroupNode->bCanBeCancelled)
 		{
 			GroupNode->Finish(EFSMResult::Cancelled);
 			return;
@@ -217,6 +203,67 @@ void UQuestSubsystem::GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FP
 		{
 			OutQuests.Add(Kv);
 		}
+	}
+}
+
+
+
+void UQuestSubsystem::QueryQuests(const FQuestQueryDefinition& Query, TArray<FQuestQueryResult>& OutResult)
+{
+	if (Query.bActive)
+	{
+		const TInstancedStruct<FFilterCriterion>& FilterCriterion = Query.FilterRule.CriterionRoot;
+		const FFilterCriterion* Criterion = FilterCriterion.GetPtr();
+
+		for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : Quests)
+		{
+			UQuestEngine* Engine = Kv.Value.Get();
+			if (!IsValid(Engine))
+			{
+				ensureMsgf(false, TEXT("Active quest contains invalid quest engine"));
+				continue;
+			}
+
+			const FEventflowEntryData* EntryData = Engine->GetEntryData().GetPtr<FEventflowEntryData>();
+			if (!EntryData || EntryData->GroupId.IsValid())
+			{
+				continue;
+			}
+
+			const UQuestAsset* Asset = Engine->GetAsset<UQuestAsset>();
+			if (!IsValid(Asset))
+			{
+				ensureMsgf(false, TEXT("Quest engine contains invalid quest asset"));
+				continue;
+			}
+
+			if (Criterion)
+			{
+				UEnum* QuestTypeEnum = StaticEnum<EQuestType>();
+				FString QuestType = QuestTypeEnum->GetNameStringByValue(static_cast<int64>(Asset->QuestType));
+
+				FFilterContext Context;
+				Context.SetValue(FAssetFilterProperty::AssetId, Kv.Key);
+				Context.SetValue(FQuestFilterProperty::QuestType, *QuestType);
+
+				if (!Criterion->Evaluate(Context))
+				{
+					continue;
+				}
+			}
+
+			FQuestQueryResult Result;
+			Result.bActive = true;
+			Result.bTracked = (Engine == FocusedQuest);
+			Result.QuestEngine = TWeakObjectPtr<UQuestEngine>(Engine);
+			Result.QuestAssetId = Kv.Key;
+
+			OutResult.Add(MoveTemp(Result));
+		}
+	}
+	else
+	{
+		StorageManager->QueryQuests(Query, OutResult);
 	}
 }
 
@@ -279,6 +326,7 @@ void UQuestSubsystem::HandleOnQuestStateChanged(EFSMState PreviousState, EFSMSta
 	UQuestEngine* Engine = GetQuestEngine(AssetId);
 	if (!IsValid(Engine))
 	{
+		ensureMsgf(false, TEXT("Quest engine state changed but not valid engine found for assetId"));
 		return;
 	}
 
@@ -325,23 +373,23 @@ void UQuestSubsystem::HandleOnStorageLoaded(UObject* InManager)
 	StorageManager = Cast<UQuestStorageManager>(InManager);
 	if (!IsValid(StorageManager))
 	{
+		ensureMsgf(false, TEXT("Recieved quest storage manager is invalid"));
 		return;
 	}
+	FQuestQueryDefinition QueryDefinition;
+	QueryDefinition.bActive = true;
+	
+	TArray<FQuestQueryResult> QueryResult;
+	StorageManager->QueryQuests(QueryDefinition, QueryResult);
 
-	const TMap<FPrimaryAssetId, FGuid>* ActiveQuests = StorageManager->GetActiveQuests();
-	if (!ActiveQuests)
-	{
-		return;
-	}
-
-	for (const TPair<FPrimaryAssetId, FGuid>& Kv : *ActiveQuests)
+	for (const FQuestQueryResult& Result : QueryResult)
 	{
 		TInstancedStruct<FEventflowEntryData> EntryData;
 		FEventflowEntryData& Data = EntryData.InitializeAs<FEventflowEntryData>();
-		Data.EntryNodeId = Kv.Value;
+		Data.EntryNodeId = Result.ActiveNodeId;
 		Data.EntryType = EEventflowEntryType::Custom;
 
-		StartQuest(Kv.Key, EntryData);
+		StartQuest(Result.QuestAssetId, EntryData);
 	}
 }
 

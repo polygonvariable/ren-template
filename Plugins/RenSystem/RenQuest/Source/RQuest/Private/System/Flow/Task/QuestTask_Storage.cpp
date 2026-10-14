@@ -10,22 +10,6 @@
 #include "System/QuestSubsystem.h"
 
 
-void UQuestTask_CheckStorage::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_CheckStorage::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_CheckStorage::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_CheckStorage::OnActive(EFSMState PreviousState)
 {
 	UQuestSubsystem* Subsystem = UQuestSubsystem::Get(GetWorld());
@@ -61,22 +45,6 @@ void UQuestTask_CheckStorage::OnActive(EFSMState PreviousState)
 }
 
 
-void UQuestTask_Checkpoint::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_Checkpoint::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_Checkpoint::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
-
 void UQuestTask_Checkpoint::OnActive(EFSMState PreviousState)
 {
 	UQuestSubsystem* Subsystem = UQuestSubsystem::Get(GetWorld());
@@ -96,22 +64,6 @@ void UQuestTask_Checkpoint::OnActive(EFSMState PreviousState)
 	Finish(EFSMResult::Success);
 }
 
-
-void UQuestTask_Complete::OnInitialized(EFSMState PreviousState)
-{
-	Super::OnInitialized(PreviousState);
-	Load();
-}
-
-void UQuestTask_Complete::OnLoaded(EFSMState PreviousState)
-{
-	Ready();
-}
-
-void UQuestTask_Complete::OnReady(EFSMState PreviousState)
-{
-	Active();
-}
 
 void UQuestTask_Complete::OnActive(EFSMState PreviousState)
 {
