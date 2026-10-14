@@ -4,6 +4,9 @@
 #include "TabWidget.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "Components/ButtonSlot.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"

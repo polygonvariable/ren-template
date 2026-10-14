@@ -4,6 +4,9 @@
 #include "QuestDetailUI.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
@@ -12,12 +15,8 @@
 // Project Headers
 #include "Core/QuestPropertyDefinition.h"
 #include "QuestEntryUI.h"
+#include "QuestRuntimeDataUI.h"
 #include "System/QuestSubsystem.h"
-#include "System/Flow/QuestEngine.h"
-#include "System/Flow/Task/QuestSubTask.h"
-#include "System/Flow/Task/QuestPrimaryTask.h"
-#include "EventflowAsset.h"
-#include "Data/QuestAsset.h"
 
 
 UQuestDetailUI::UQuestDetailUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -36,6 +35,39 @@ void UQuestDetailUI::ShowDetail(UQuestEntry* Entry)
 	ShowPrimaryDetail(Entry->QuestResult.QuestAssetId);
 	ShowSecondayDetail(Entry);
 }
+
+void UQuestDetailUI::HideDetail()
+{
+	bQuestIsActive = false;
+	QuestAssetId = FPrimaryAssetId();
+	DetailSwitch->SetActiveWidgetIndex(0);
+}
+
+bool UQuestDetailUI::HandleOnKeyDown(const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == TrackKey)
+	{
+		HandleOnTrackClicked();
+		return true;
+	}
+	if (QuestData->HandleOnKeyDown(InKeyEvent))
+	{
+		return true;
+	}
+	return false;
+}
+
+#if WITH_EDITOR
+EDataValidationResult UQuestDetailUI::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+	if (!TrackKey.IsValid())
+	{
+		Context.AddWarning(FText::FromString("Invalid track input key, input wont be handled"));
+	}
+	return Result;
+}
+#endif
 
 void UQuestDetailUI::ShowPrimaryDetail(FPrimaryAssetId AssetId)
 {
@@ -70,38 +102,19 @@ void UQuestDetailUI::ShowSecondayDetail(UQuestEntry* Entry)
 	check(Entry);
 
 	QuestAssetId = Entry->QuestResult.QuestAssetId;
+	bQuestIsActive = Entry->QuestResult.bActive;
 
 	TrackButton->SetVisibility(Entry->QuestResult.bActive ? ESlateVisibility::Visible : ESlateVisibility::Collapsed);
-	QuestData->ShowDetail(Entry->QuestResult.QuestEngine.Get(), QuestAssetId);
-}
-
-void UQuestDetailUI::HideDetail()
-{
-	QuestAssetId = FPrimaryAssetId();
-	DetailSwitch->SetActiveWidgetIndex(0);
+	QuestData->ShowDetail(Entry->QuestResult.QuestEngine.Get());
 }
 
 void UQuestDetailUI::HandleOnTrackClicked()
 {
-	if (IsValid(QuestSubsystem) && DetailSwitch->GetActiveWidgetIndex() == 1 && QuestAssetId.IsValid())
+	if (IsValid(QuestSubsystem) && DetailSwitch->GetActiveWidgetIndex() == 1 && QuestAssetId.IsValid() && bQuestIsActive)
 	{
 		OnCloseRequest.ExecuteIfBound();
 		QuestSubsystem->FocusQuest(QuestAssetId);
 	}
-}
-
-bool UQuestDetailUI::HandleOnKeyDown(const FKeyEvent& InKeyEvent)
-{
-	if (InKeyEvent.GetKey() == TrackKey)
-	{
-		HandleOnTrackClicked();
-		return true;
-	}
-	if (QuestData->HandleOnKeyDown(InKeyEvent))
-	{
-		return true;
-	}
-	return false;
 }
 
 void UQuestDetailUI::NativeConstruct()
@@ -124,212 +137,5 @@ void UQuestDetailUI::NativeDestruct()
 	AssetManager = nullptr;
 
 	Super::NativeDestruct();
-}
-
-
-
-
-
-UQuestRuntimeDataCollectionUI::UQuestRuntimeDataCollectionUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
-	CancelKey = EKeys::P;
-}
-
-void UQuestRuntimeDataCollectionUI::ShowDetail(UQuestEngine* Engine, const FPrimaryAssetId& AssetId)
-{
-	HideDetail();
-	
-	if (IsValid(Engine))
-	{
-		ShowEngineDetail(Engine, AssetId);
-		ShowGroupEngines(Engine);
-	}
-}
-
-void UQuestRuntimeDataCollectionUI::HideDetail()
-{
-	QuestAssetId = FPrimaryAssetId();
-
-	CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-	DataPanel->ClearChildren();
-}
-
-bool UQuestRuntimeDataCollectionUI::HandleOnKeyDown(const FKeyEvent& InKeyEvent)
-{
-	if (InKeyEvent.GetKey() == CancelKey)
-	{
-		HandleOnCancelClicked();
-		return true;
-	}
-	return false;
-}
-
-void UQuestRuntimeDataCollectionUI::ShowEngineDetail(UQuestEngine* Engine, const FPrimaryAssetId& AssetId)
-{
-	check(IsValid(Engine));
-
-	UQuestPrimaryTask* NodeTask = Engine->GetNodeTask<UQuestPrimaryTask>();
-	if (IsValid(NodeTask))
-	{
-		ShowNodeDetail(NodeTask, AssetId);
-		ShowSubDetail(NodeTask);
-	}
-}
-
-void UQuestRuntimeDataCollectionUI::ShowNodeDetail(UQuestPrimaryTask* NodeTask, const FPrimaryAssetId& AssetId)
-{
-	check(IsValid(NodeTask));
-
-	if (NodeTask->bShowInUI)
-	{
-		const FText& NodeTitle = NodeTask->ObjectiveTitle;
-		const FText& NodeDescription = NodeTask->ObjectiveDescription;
-
-		TInstancedStruct<FQuestRuntimeData> NodeRuntimeData;
-		NodeTask->PullQuestData(NodeRuntimeData);
-
-		const FQuestRuntimeData* NodeData = NodeRuntimeData.GetPtr();
-		if (NodeData || !NodeTitle.IsEmpty() || !NodeDescription.IsEmpty())
-		{
-			UQuestRuntimeDataUI* NewItem = CreateWidget<UQuestRuntimeDataUI>(this, QuestDataClass);
-			NewItem->ShowPrimaryDetail(NodeTitle, NodeDescription);
-			NewItem->ShowRuntimeDetail(NodeData);
-
-			DataPanel->AddChild(NewItem);
-		}
-	}
-
-	if (!QuestAssetId.IsValid())
-	{
-		if (NodeTask->bCanBeCancelled)
-		{
-			QuestAssetId = AssetId;
-			CancelButton->SetVisibility(ESlateVisibility::Visible);
-		}
-		else
-		{
-			QuestAssetId = FPrimaryAssetId();
-			CancelButton->SetVisibility(ESlateVisibility::Collapsed);
-		}
-	}
-}
-
-void UQuestRuntimeDataCollectionUI::ShowSubDetail(UQuestPrimaryTask* NodeTask)
-{
-	check(IsValid(NodeTask));
-
-	const TArray<TObjectPtr<UEventflowSubTask>>& SubTasks = NodeTask->GetSubTasks();
-	for (UEventflowSubTask* Task : SubTasks)
-	{
-		UQuestSubTask* SubTask = Cast<UQuestSubTask>(Task);
-		if (!IsValid(SubTask) || !SubTask->bShowInUI)
-		{
-			continue;
-		}
-
-		const FText& SubTitle = SubTask->ObjectiveTitle;
-		const FText& SubDescription = SubTask->ObjectiveDescription;
-
-		TInstancedStruct<FQuestRuntimeData> SubRuntimeData;
-		SubTask->PullQuestData(SubRuntimeData);
-
-		const FQuestRuntimeData* SubData = SubRuntimeData.GetPtr();
-		if (SubData || !SubTitle.IsEmpty() || !SubDescription.IsEmpty())
-		{
-			UQuestRuntimeDataUI* NewItem = CreateWidget<UQuestRuntimeDataUI>(this, QuestDataClass);
-			NewItem->ShowPrimaryDetail(SubTitle, SubDescription);
-			NewItem->ShowRuntimeDetail(SubData);
-
-			DataPanel->AddChild(NewItem);
-		}
-	}
-}
-
-void UQuestRuntimeDataCollectionUI::ShowGroupEngines(UQuestEngine* Engine)
-{
-	check(IsValid(Engine));
-
-	const UEventflowAsset* Asset = Engine->GetAsset();
-	if (!IsValid(Asset))
-	{
-		ensureMsgf(false, TEXT("Eventflow engine contains invalid asset"));
-		return;
-	}
-
-	TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>> GroupedEngines;
-	QuestSubsystem->GetQuestsByGroup(Asset->GetPrimaryAssetId(), GroupedEngines);
-
-	for (const TPair<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& Kv : GroupedEngines)
-	{
-		ShowEngineDetail(Kv.Value, Kv.Key);
-	}
-}
-
-void UQuestRuntimeDataCollectionUI::HandleOnCancelClicked()
-{
-	if (IsValid(QuestSubsystem) && CancelButton->GetVisibility() == ESlateVisibility::Visible && QuestAssetId.IsValid())
-	{
-		OnCloseRequest.ExecuteIfBound();
-		QuestSubsystem->CancelQuestTask(QuestAssetId, true);
-	}
-}
-
-
-
-
-
-void UQuestRuntimeDataCollectionUI::NativeConstruct()
-{
-	Super::NativeConstruct();
-
-	CancelButton->OnClicked.AddDynamic(this, &UQuestRuntimeDataCollectionUI::HandleOnCancelClicked);
-	QuestSubsystem = UQuestSubsystem::Get(GetWorld());
-}
-
-void UQuestRuntimeDataCollectionUI::NativeDestruct()
-{
-	CancelButton->OnClicked.RemoveAll(this);
-	QuestSubsystem = nullptr;
-
-	Super::NativeDestruct();
-}
-
-
-
-
-void UQuestRuntimeDataUI::ShowPrimaryDetail(const FText& Title, const FText& Description)
-{
-	if (Title.IsEmpty())
-	{
-		TitleText->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	else
-	{
-		TitleText->SetText(Title);
-		TitleText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-
-	if (Description.IsEmpty())
-	{
-		DescriptionText->SetVisibility(ESlateVisibility::Collapsed);
-	}
-	else
-	{
-		DescriptionText->SetText(Description);
-		DescriptionText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-}
-
-void UQuestRuntimeDataUI::ShowRuntimeDetail(const FQuestRuntimeData* Data)
-{
-	if (Data)
-	{
-		ValueText->SetText(FText::FromString(Data->Value));
-		ValueText->SetVisibility(ESlateVisibility::HitTestInvisible);
-	}
-	else
-	{
-		ValueText->SetVisibility(ESlateVisibility::Collapsed);
-	}
 }
 

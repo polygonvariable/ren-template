@@ -178,6 +178,7 @@ void UQuestSubsystem::CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive)
 
 
 
+
 UQuestEngine* UQuestSubsystem::GetFocusedQuest() const
 {
 	return FocusedQuest.Get();

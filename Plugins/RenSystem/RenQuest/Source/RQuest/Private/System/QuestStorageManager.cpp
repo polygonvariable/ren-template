@@ -156,7 +156,7 @@ void UQuestStorageManager::QueryQuests(const FQuestQueryDefinition& Query, TArra
 			}
 
 			FQuestQueryResult Result;
-			Result.bActive = true;
+			Result.bActive = false;
 			Result.QuestAssetId = Kv.Key;
 
 			OutResult.Add(MoveTemp(Result));

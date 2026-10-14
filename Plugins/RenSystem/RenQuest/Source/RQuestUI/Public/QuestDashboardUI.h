@@ -35,6 +35,12 @@ public:
 
 	UQuestDashboardUI(const FObjectInitializer& ObjectInitializer);
 
+#if WITH_EDITORONLY_DATA
+	// ~ UPrimaryDataAsset
+	virtual EDataValidationResult IsDataValid(class FDataValidationContext& Context) const override;
+	// ~ End of UPrimaryDataAsset
+#endif
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidget))

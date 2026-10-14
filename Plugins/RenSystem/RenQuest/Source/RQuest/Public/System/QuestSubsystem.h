@@ -47,6 +47,7 @@ public:
 	RQUEST_API void CancelQuestTask(FPrimaryAssetId AssetId, bool bRecursive);
 
 	RQUEST_API UQuestEngine* GetFocusedQuest() const;
+
 	RQUEST_API const TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& GetQuests() const;
 	RQUEST_API void GetQuestsByGroup(const FPrimaryAssetId& InAssetId, TMap<FPrimaryAssetId, TObjectPtr<UQuestEngine>>& OutQuests) const;
 

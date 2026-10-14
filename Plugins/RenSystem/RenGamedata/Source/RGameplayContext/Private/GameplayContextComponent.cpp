@@ -21,7 +21,7 @@ void UGameplayContextComponent::PushContext(TInstancedStruct<FGameplayContextAct
 	Contexts.Add(MoveTemp(Context));
 }
 
-void UGameplayContextComponent::Execute(const FGameplayTagContainer& ContextTags, UObject* Caller)
+void UGameplayContextComponent::Execute(const FGameplayTagContainer& ContextTags, UObject* Instigator)
 {
 	UWorld* World = GetWorld();
 
@@ -30,7 +30,7 @@ void UGameplayContextComponent::Execute(const FGameplayTagContainer& ContextTags
 		FGameplayContextAction* Data = ContextData.GetMutablePtr();
 		if (Data && Data->ContextTags.HasAnyExact(ContextTags))
 		{
-			Data->Execute(World, this, Caller);
+			Data->Execute(World, this, Instigator);
 		}
 	}
 }

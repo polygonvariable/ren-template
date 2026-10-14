@@ -31,7 +31,7 @@ class CGAMEPLAYCONTEXT_API IGameplayContextInterface
 public:
 
 	virtual void PushContext(TInstancedStruct<FGameplayContextAction>&& Context) = 0;
-	virtual void Execute(const FGameplayTagContainer& ContextTags, UObject* Caller) = 0;
+	virtual void Execute(const FGameplayTagContainer& ContextTags, UObject* Instigator) = 0;
 
 };
 

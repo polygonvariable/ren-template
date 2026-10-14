@@ -4,6 +4,9 @@
 #include "QuestDashboardUI.h"
 
 // Engine Headers
+#if WITH_EDITOR
+#include "Misc/DataValidation.h"
+#endif
 #include "Components/Button.h"
 #include "Components/ListView.h"
 #include "Engine/AssetManager.h"
@@ -21,6 +24,23 @@ UQuestDashboardUI::UQuestDashboardUI(const FObjectInitializer& ObjectInitializer
 	CloseKey = EKeys::Escape;
 	SetIsFocusable(true);
 }
+
+#if WITH_EDITOR
+EDataValidationResult UQuestDashboardUI::IsDataValid(FDataValidationContext& Context) const
+{
+	EDataValidationResult Result = Super::IsDataValid(Context);
+	if (!CloseKey.IsValid())
+	{
+		Context.AddWarning(FText::FromString("Invalid close input key, input wont be handled"));
+	}
+	if (!QuestQuery.FilterRule.CriterionRoot.IsValid())
+	{
+		Context.AddError(FText::FromString("Quest query contains invalid filter rule"));
+		return EDataValidationResult::Invalid;
+	}
+	return Result;
+}
+#endif
 
 void UQuestDashboardUI::HandleOnCloseClicked()
 {
@@ -43,12 +63,14 @@ void UQuestDashboardUI::HandleOnVisibilityChanged(ESlateVisibility Visiblity)
 
 void UQuestDashboardUI::HandleOnFilterSelected(const FInstancedStruct& Data)
 {
-	const FQuestQueryDefinition* Q = Data.GetPtr<FQuestQueryDefinition>();
-	if (Q)
+	const FQuestQueryDefinition* Query = Data.GetPtr<FQuestQueryDefinition>();
+	if (!Query)
 	{
-		QuestQuery = *Q;
-		HandleOnQuestChanged();
+		ensureMsgf(false, TEXT("Quest query filter is invalid"));
+		return;
 	}
+	QuestQuery = *Query;
+	HandleOnQuestChanged();
 }
 
 void UQuestDashboardUI::HandleOnQuestChanged()

@@ -375,6 +375,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	FInstancedStruct FilterData;
 
+
 	void OnSelectionChanged(bool bSelected);
 
 protected:
@@ -387,6 +388,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FText FilterLabel;
+
 
 	// ~ Binding
 	UFUNCTION()
@@ -420,6 +422,7 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<UPanelWidget> FilterCollection = nullptr;
+
 
 	// ~ Binding
 	void HandleOnFilterSelected(const FInstancedStruct& Data, UFilterUI* Filter);

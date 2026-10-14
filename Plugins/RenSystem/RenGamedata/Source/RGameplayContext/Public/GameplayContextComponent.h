@@ -32,7 +32,7 @@ public:
 
 	// ~ IGameplayContextInterface
 	virtual void PushContext(TInstancedStruct<FGameplayContextAction>&& Context) override;
-	virtual void Execute(const FGameplayTagContainer& ContextTags, UObject* Caller) override;
+	virtual void Execute(const FGameplayTagContainer& ContextTags, UObject* Instigator) override;
 	// ~ End of IGameplayContextInterface
 
 	// ~ UActorComponent
